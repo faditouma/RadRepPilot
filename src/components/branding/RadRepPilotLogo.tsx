@@ -1,5 +1,3 @@
-import { RadIcon } from '../icons/RadIcon';
-
 type RadRepPilotLogoProps = {
   variant?: 'iconOnly' | 'full';
   size?: number;
@@ -13,14 +11,21 @@ export function RadRepPilotLogo({
   showText = false,
   showTagline = false,
 }: RadRepPilotLogoProps) {
-  const iconSize = Math.max(20, Math.round(size * 0.68));
+  const logoSrc = `${import.meta.env.BASE_URL}Logo%201.png`;
   const icon = (
     <span
       className="radrep-logo-tile"
       style={{ width: size, height: size, flexBasis: size }}
-      aria-hidden="true"
+      aria-hidden={variant === 'full' || showText ? 'true' : undefined}
     >
-      <RadIcon name="logoMark" size={iconSize} strokeWidth={2.1} />
+      <img
+        src={logoSrc}
+        alt={variant === 'full' || showText ? '' : 'RadRepPilot logo'}
+        className="radrep-logo-image"
+        width={size}
+        height={size}
+        draggable={false}
+      />
     </span>
   );
 
