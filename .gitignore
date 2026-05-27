@@ -1,0 +1,27 @@
+.DS_Store
+.Rhistory
+.env*
+node_modules/
+dist/
+.vite/
+Website GitHub Pages/
+guidelines/
+extracted-guidelines/
+Antibiotic iOS Project/
+Open Website.command
+Open iOS Xcode Project.command
+extract_pdf_text.swift
+public/clinic-note-icon.svg
+public/site.webmanifest
+src/.DS_Store
+src/ambossAdditionalBacteria.ts
+src/bacteriaData.ts
+src/components/FormControls.tsx
+src/components/SectionCard.tsx
+src/data/presets.ts
+src/services/
+src/types.ts
+Antibiotic iOS Project/DerivedData/
+Shortcuts/
+*.xcuserstate
+tsconfig.*.tsbuildinfo
