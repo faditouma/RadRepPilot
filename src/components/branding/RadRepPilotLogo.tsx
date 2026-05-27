@@ -11,7 +11,7 @@ export function RadRepPilotLogo({
   showText = false,
   showTagline = false,
 }: RadRepPilotLogoProps) {
-  const logoSrc = `${import.meta.env.BASE_URL}Logo%201.png`;
+  const logoSrc = './Logo%201.png';
   const icon = (
     <span
       className="radrep-logo-tile"
