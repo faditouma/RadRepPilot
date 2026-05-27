@@ -42,6 +42,10 @@ export function Sidebar({ activePage, onNavigate }: SidebarProps) {
     <aside className="sidebar" aria-label="RadRepPilot navigation">
       <div className="sidebar-brand">
         <RadRepPilotLogo variant="iconOnly" size={40} />
+        <div className="sidebar-brand-copy">
+          <strong>RadRepPilot</strong>
+          <small>Radiology cockpit</small>
+        </div>
       </div>
       <nav className="sidebar-nav">
         {navItems.map((item) => (
