@@ -132,7 +132,8 @@ export function generateReferralText(form: ReferralFormState, style: Requisition
   const cancerHistory = valueFor(form, 'cancerHistory');
   const immunosuppression = valueFor(form, 'immunosuppression');
   const surgicalHistory = valueFor(form, 'surgicalHistory');
-  const tone = form.tone ?? (typeof form.values.requisitionTone === 'string' ? form.values.requisitionTone : 'polite');
+  const rawTone = form.tone ?? form.values.requisitionTone;
+  const tone: 'polite' | 'direct' = rawTone === 'direct' ? 'direct' : 'polite';
   const symptom =
     valueFor(form, 'positiveSymptoms') ||
     valueFor(form, 'mainSymptom') ||
