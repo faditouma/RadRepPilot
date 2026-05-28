@@ -51,6 +51,13 @@ function hasMeaningfulText(value: unknown): boolean {
   return Boolean(text) && !['no', 'none', 'nil', 'n/a', 'na', 'not applicable', 'negative'].includes(text);
 }
 
+function hasPmhxAddressed(values: Record<string, unknown>): boolean {
+  const pmhxStatus = textValue(values.pmhxStatus).toLowerCase();
+  const pmhx = textValue(values.pmhx).toLowerCase();
+  if (pmhxStatus === 'no-significant-pmhx' || pmhxStatus === 'relevant-pmhx') return true;
+  return hasValue(values.pmhx) || /^(healthy|well|no significant|no pmhx|no past medical history)$/.test(pmhx);
+}
+
 function hasKeyNegative(values: Record<string, unknown>, phrase: string): boolean {
   const keyNegatives = values.keyNegatives;
   if (!Array.isArray(keyNegatives)) return false;
@@ -81,7 +88,7 @@ export function scoreRequisitionCompleteness(form: ReferralFormState): QualitySc
   const values = form.values ?? {};
   return score('Requisition completeness', [
     { label: 'Age/sex present', complete: hasAny(values, ['age', 'sex']), missingLabel: 'Missing age/sex' },
-    { label: 'Relevant PMHx present', complete: hasValue(values.pmhx), missingLabel: 'Missing relevant PMHx' },
+    { label: 'PMHx addressed', complete: hasPmhxAddressed(values), missingLabel: 'Missing PMHx or “healthy/no PMHx” status' },
     {
       label: 'Symptom/indication present',
       complete: hasAny(values, ['mainSymptom', 'positiveSymptoms', 'symptomType', 'painLocation', 'indication']),

@@ -5,11 +5,11 @@ import { RadRepPilotLogo } from '../branding/RadRepPilotLogo';
 import { RadIcon, type RadIconName } from '../icons/RadIcon';
 
 const navItems: Array<{ key: PageKey; label: string; description: string; iconName: RadIconName }> = [
-  { key: 'dashboard', label: 'Dashboard', description: 'Prototype overview', iconName: 'dashboard' },
+  { key: 'dashboard', label: 'Dashboard', description: 'Overview', iconName: 'dashboard' },
   { key: 'modules', label: 'Radiology Reporting', description: 'Structured workflows', iconName: 'xray' },
-  { key: 'calculators', label: 'Guidelines & Calculators', description: 'Report-ready support', iconName: 'calculator' },
+  { key: 'calculators', label: 'Guidelines & Calculators', description: 'Decision support', iconName: 'calculator' },
   { key: 'builder', label: 'Report Builder', description: 'Assemble final draft', iconName: 'report' },
-  { key: 'referral', label: 'Primary Care Imaging Requests', description: 'Referral quality', iconName: 'primaryCare' },
+  { key: 'referral', label: 'Primary Care Imaging Requests', description: 'Clearer handoffs', iconName: 'primaryCare' },
   { key: 'why', label: 'Why This Matters', description: 'Clinical insight', iconName: 'helper' },
   { key: 'gallery', label: 'Example Outputs', description: 'Reports and requisitions', iconName: 'followUp' },
   { key: 'drafts', label: 'Saved Drafts', description: 'Local browser storage', iconName: 'savedDrafts' },
@@ -44,7 +44,7 @@ export function Sidebar({ activePage, onNavigate }: SidebarProps) {
         <RadRepPilotLogo variant="iconOnly" size={40} />
         <div className="sidebar-brand-copy">
           <strong>RadRepPilot</strong>
-          <small>Radiology cockpit</small>
+          <small>Clinical workflow prototype</small>
         </div>
       </div>
       <nav className="sidebar-nav">
@@ -62,8 +62,8 @@ export function Sidebar({ activePage, onNavigate }: SidebarProps) {
         ))}
       </nav>
       <div className="sidebar-note">
-        <strong>Prototype only.</strong>
-        <span>Do not enter patient-identifying information.</span>
+        <strong>No PHI.</strong>
+        <span>Prototype only. Verify before clinical use.</span>
       </div>
     </aside>
   );
@@ -76,10 +76,10 @@ export function BrandMark({ large = false }: { large?: boolean }) {
 export function SafetyBanner() {
   return (
     <section className="safety-banner" aria-label="Safety disclaimer">
-      <strong>Prototype only. Do not enter patient-identifying information. User must verify all guideline applicability and final wording.</strong>
+      <strong>Prototype only. Do not enter patient-identifying information.</strong>
       <span>
-        RadRepPilot does not interpret images, diagnose, or replace radiologist review. It organizes user-entered findings and
-        produces draft reporting language for clinician verification.
+        User-entered findings only. RadRepPilot does not interpret images, diagnose, or replace radiologist review. Verify all
+        guideline applicability and final wording.
       </span>
     </section>
   );
@@ -91,9 +91,10 @@ interface ModuleCardProps {
   meta: string;
   iconName?: RadIconName;
   onOpen: () => void;
+  ctaLabel?: string;
 }
 
-export function ModuleCard({ title, description, meta, iconName = 'report', onOpen }: ModuleCardProps) {
+export function ModuleCard({ title, description, meta, iconName = 'report', onOpen, ctaLabel = 'Open' }: ModuleCardProps) {
   return (
     <article className="module-card">
       <div className="module-card-topline">
@@ -105,7 +106,7 @@ export function ModuleCard({ title, description, meta, iconName = 'report', onOp
       <h3>{title}</h3>
       <p>{description}</p>
       <button className="secondary-button" onClick={onOpen} type="button">
-        Open module
+        {ctaLabel}
       </button>
     </article>
   );

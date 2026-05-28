@@ -525,15 +525,18 @@ function App() {
         <div className="hero-brand-row">
           <RadRepPilotLogo variant="full" size={56} />
           <div>
-            <span className="eyebrow">Prototype radiology workflow tool</span>
-            <h1>Better requisitions in. Better reports out.</h1>
+            <span className="eyebrow">Built around the referrer-radiologist handoff</span>
+            <h1>A clearer handoff into and out of radiology.</h1>
           </div>
         </div>
         <p>
-          Structured radiology reporting, interactive helpers, incidental finding follow-up support, and concise GP
-          requisition generation.
+          RadRepPilot is a clinical workflow prototype: it helps turn vague imaging requests into radiology-useful
+          questions, then helps organize user-entered findings into clear draft report language, calculators, and
+          follow-up recommendations.
         </p>
-        <div className="inline-note hero-safety">User-entered findings only. Prototype requires clinician/radiologist verification.</div>
+        <div className="inline-note hero-safety">
+          User-entered findings only. No image interpretation. Final wording requires clinician/radiologist verification.
+        </div>
         <div className="hero-actions">
           <button className="primary-button demo-button" onClick={() => setDemoOpen(true)} type="button">
             Run 3-minute demo
@@ -564,62 +567,38 @@ function App() {
 
       <section className="module-grid">
         <ModuleCard
-          title="Radiology reporting workflows"
+          title="From vague request to useful question"
+          meta="Requisitions in"
+          iconName="primaryCare"
+          description="A busy GP can turn “abdo pain, please assess” into a concise question with age, context, duration, red flags, and what radiology needs to answer."
+          onOpen={() => setActivePage('referral')}
+          ctaLabel="Build a requisition"
+        />
+        <ModuleCard
+          title="Structured reporting without pretending to diagnose"
           meta="Reports out"
           iconName="xray"
-          description="Searchable structured reporting modules organized by modality, body system, and implementation status."
+          description="Reporting workflows prompt the radiologist to address key findings, key negatives, complications, and report-ready wording while keeping everything editable."
           onOpen={() => {
             setActivePage('modules');
           }}
+          ctaLabel="Start reporting"
         />
         <ModuleCard
-          title="Guidelines/calculators"
-          meta="Clinical support"
-          iconName="calculator"
-          description="Branching helper cockpit for RV/LV, ASPECTS, Fleischner, RADS previews, RECIST, and more."
-          onOpen={() => setActivePage('calculators')}
-        />
-        <ModuleCard
-          title="Embedded incidental follow-up"
-          meta="Inside workflows"
+          title="Follow-up language GPs can act on"
+          meta="Incidental findings"
           iconName="followUp"
-          description="Add incidental findings directly while reporting, with helper links and report-builder insertion."
+          description="Incidental findings often create ambiguity after the report is read. RadRepPilot keeps follow-up wording inside the reporting workflow so the next step is clearer."
           onOpen={() => setActivePage('modules')}
+          ctaLabel="See workflows"
         />
         <ModuleCard
-          title="Primary care imaging request builder"
-          meta="Requisitions in"
-          iconName="primaryCare"
-          description="Concise age/sex/PMHx requisitions for referrers, with ACR topic verification support."
-          onOpen={() => setActivePage('referral')}
-        />
-        <ModuleCard
-          title="Report Builder"
-          meta="Assemble final draft"
-          iconName="report"
-          description="Collect workflow, helper, incidental, primary care, and appropriateness text in one editable report."
-          onOpen={() => setActivePage('builder')}
-        />
-        <ModuleCard
-          title="Why RadRepPilot matters"
-          meta="Portfolio story"
-          iconName="helper"
-          description="Explain the workflow insight: better requisitions, structured reporting, follow-up safety, and clinical communication."
-          onOpen={() => setActivePage('why')}
-        />
-        <ModuleCard
-          title="Example reports & requisitions"
-          meta="Review quickly"
+          title="Show, don’t explain"
+          meta="3-minute review"
           iconName="normal"
-          description="Sample before/after requisitions, report impressions, calculator language, and incidental follow-up examples."
+          description="A guided demo and sample outputs show the full idea quickly: requisition quality, reporting prompts, calculator language, and follow-up safety."
           onOpen={() => setActivePage('gallery')}
-        />
-        <ModuleCard
-          title="Saved drafts"
-          meta="Local browser storage"
-          iconName="savedDrafts"
-          description="Re-open radiology reports, calculator sentences, requisition paragraphs, and mixed report builder drafts."
-          onOpen={() => setActivePage('drafts')}
+          ctaLabel="View examples"
         />
       </section>
 
@@ -641,8 +620,8 @@ function App() {
       <section className="safety-note-card">
         <strong>Safety note</strong>
         <p>
-          This prototype does not interpret images. It only organizes user-entered findings and generates draft reporting
-          language for clinician review.
+          This is a portfolio prototype, not a clinical device. It organizes user-entered information and draft language only;
+          guideline logic and follow-up wording must be verified against radiology judgment and local protocol.
         </p>
       </section>
     </div>

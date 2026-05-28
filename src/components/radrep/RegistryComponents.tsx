@@ -1127,6 +1127,20 @@ export function PrimaryCareRequestBuilder({ initialForm, onInsertText, onSaveTex
                       onChange={(valueToSet) => updateValue('sex', valueToSet)}
                     />
                     <GenericField
+                      field={{
+                        id: 'pmhxStatus',
+                        label: 'PMHx status',
+                        type: 'select',
+                        options: [
+                          { value: '', label: 'Not specified' },
+                          { value: 'no-significant-pmhx', label: 'Healthy / no significant PMHx' },
+                          { value: 'relevant-pmhx', label: 'Relevant PMHx below' },
+                        ],
+                      }}
+                      value={form.values.pmhxStatus}
+                      onChange={(valueToSet) => updateValue('pmhxStatus', valueToSet)}
+                    />
+                    <GenericField
                       field={{ id: 'pmhx', label: 'Relevant PMHx', type: 'text', placeholder: 'e.g. Crohn disease, AF on anticoagulation' }}
                       value={form.values.pmhx}
                       onChange={(valueToSet) => updateValue('pmhx', valueToSet)}
@@ -1240,10 +1254,16 @@ function GenericField({
   value: string | boolean | undefined;
   onChange: (value: string | boolean) => void;
 }) {
+  const label = field.id === 'clinicalQuestion' ? 'Radiology question / request' : field.label;
+  const hint =
+    field.id === 'clinicalQuestion'
+      ? 'Use natural wording: characterize, compare, evaluate, assess stability, assess for complication, or rule out when appropriate.'
+      : '';
+
   if (field.type === 'select') {
     return (
       <label className={`field ${field.important ? 'important-field' : ''}`}>
-        {field.label}
+        {label}
         <select value={typeof value === 'string' ? value : ''} onChange={(event) => onChange(event.target.value)}>
           {(field.options ?? []).map((option) => (
             <option value={option.value} key={option.value}>
@@ -1258,8 +1278,9 @@ function GenericField({
   if (field.type === 'textarea') {
     return (
       <label className={`field wide-field ${field.important ? 'important-field' : ''}`}>
-        {field.label}
+        {label}
         <textarea value={typeof value === 'string' ? value : ''} onChange={(event) => onChange(event.target.value)} placeholder={field.placeholder} />
+        {hint ? <small className="field-hint">{hint}</small> : null}
       </label>
     );
   }
@@ -1275,7 +1296,7 @@ function GenericField({
 
   return (
     <label className={`field ${field.important ? 'important-field' : ''}`}>
-      {field.label}
+      {label}
       <input value={typeof value === 'string' ? value : ''} onChange={(event) => onChange(event.target.value)} placeholder={field.placeholder} />
     </label>
   );

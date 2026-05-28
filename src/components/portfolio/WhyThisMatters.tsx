@@ -3,10 +3,10 @@ export function WhyThisMatters() {
     <section className="why-matters-panel">
       <div className="section-heading">
         <span className="eyebrow">Why RadRepPilot Matters</span>
-        <h2>A workflow and communication artifact, not just a report generator</h2>
+        <h2>A clinical handoff project, not just a report generator</h2>
         <p>
-          RadRepPilot is designed to make radiology thinking visible: requisition quality, structured reporting, clinical
-          communication, safety, calculators, and follow-up responsibility.
+          RadRepPilot is built around a simple observation: imaging quality depends not only on image interpretation, but on
+          the clarity of the question going in and the clarity of the next step coming out.
         </p>
       </div>
 
@@ -15,17 +15,17 @@ export function WhyThisMatters() {
           <span>01</span>
           <h3>The workflow problem</h3>
           <p>
-            Radiology quality begins before image interpretation. Vague requisitions, incomplete clinical questions, variable
-            report structure, and inconsistent follow-up recommendations can reduce the usefulness and safety of imaging
-            communication.
+            Radiology communication can break down at both ends of the exam. A vague requisition can leave the radiologist
+            guessing what the referrer really needs, while a report without clear follow-up language can leave the GP unsure
+            what should happen next.
           </p>
         </article>
         <article>
           <span>02</span>
           <h3>Better requisitions in</h3>
           <p>
-            Primary care and referring clinicians often have limited time. RadRepPilot helps convert minimal clinical context into
-            concise, radiology-useful requisition language.
+            Primary care clinicians often have very little time to write imaging requests. RadRepPilot helps turn short,
+            incomplete context into a concise radiology-useful question without making it sound like a progress note.
           </p>
           <blockquote>
             Before: “Abdo pain, please assess.” After: “34M, known for Crohn’s disease, presenting with 3 days of RLQ pain and
@@ -36,24 +36,27 @@ export function WhyThisMatters() {
           <span>03</span>
           <h3>Better reports out</h3>
           <p>
-            Radiology reporting workflows can prompt key findings, key negatives, complications, calculators, and follow-up
-            recommendations while keeping all text editable.
+            On the reporting side, the goal is not to interpret images. The goal is to help organize radiologist-entered
+            findings into a report that addresses the clinical question, key negatives, complications, and relevant measurement
+            or calculator language.
           </p>
         </article>
         <article>
           <span>04</span>
-          <h3>Safety and follow-up</h3>
+          <h3>Follow-up that closes the loop</h3>
           <p>
-            Incidental findings are a major communication challenge. RadRepPilot embeds follow-up support directly into reporting
-            workflows so recommendations are easier to generate consistently.
+            Incidental findings are one of the places where communication can become unsafe. A GP may receive a report with an
+            adrenal nodule, renal lesion, thyroid nodule, or pulmonary nodule and need a clear, practical next step. RadRepPilot
+            keeps follow-up wording close to the reporting workflow so recommendations are easier to make explicit and verify.
           </p>
         </article>
         <article>
           <span>05</span>
           <h3>Why Family Medicine matters</h3>
           <p>
-            My Family Medicine background helps me understand the upstream problem: what referrers send, what radiologists need,
-            and where communication can fail. RadRepPilot is designed to bridge that interface.
+            In family medicine, I saw how vague imaging requests can make radiology communication harder. I also saw the other
+            side of the handoff: reports can identify important incidental findings without always making the follow-up plan easy
+            for a GP to operationalize. RadRepPilot is my attempt to bridge that interface in both directions.
           </p>
         </article>
         <article>

@@ -22,11 +22,42 @@ function join(parts: Array<string | undefined | null>, separator = ', '): string
   return parts.filter((part): part is string => Boolean(part?.trim())).join(separator);
 }
 
-function cleanQuestion(question: string): string {
-  return question
-    .replace(/^\s*(please\s+)?(assess\s+for|rule\s+out|assess\s+for\/rule\s+out)\s+/i, '')
-    .replace(/\.$/, '')
-    .trim();
+function isNoSignificantPmhx(value: string): boolean {
+  return /^(healthy|well|none|nil|no|no significant|no pmhx|no past|n\/a|na)$/i.test(value.trim());
+}
+
+function sentenceCaseStart(text: string): string {
+  return text ? `${text.charAt(0).toLowerCase()}${text.slice(1)}` : text;
+}
+
+function upperCaseStart(text: string): string {
+  return text ? `${text.charAt(0).toUpperCase()}${text.slice(1)}` : text;
+}
+
+function ensureSentence(text: string): string {
+  const trimmed = text.trim();
+  if (!trimmed) return '';
+  return /[.!?]$/.test(trimmed) ? trimmed : `${trimmed}.`;
+}
+
+function formatQuestionSentence(question: string, tone: 'polite' | 'direct'): string {
+  const raw = question.trim();
+  if (!raw) return tone === 'polite' ? 'Thank you.' : '';
+
+  const withoutTrailingPeriod = raw.replace(/\.$/, '').trim();
+  const thanks = tone === 'polite' ? ' Thank you.' : '';
+
+  if (/^(please|could you|can you|request|requested|clinical question:)/i.test(withoutTrailingPeriod)) {
+    const directText = withoutTrailingPeriod.replace(/^(please|could you|can you)\s+/i, '').trim();
+    return `${ensureSentence(tone === 'direct' ? upperCaseStart(directText) : withoutTrailingPeriod)}${thanks}`;
+  }
+
+  if (/^(assess|evaluate|characterize|compare|follow|monitor|stage|restage|screen|confirm|exclude|rule out|look for|clarify|localize|determine|check)\b/i.test(withoutTrailingPeriod)) {
+    if (tone === 'direct') return ensureSentence(upperCaseStart(withoutTrailingPeriod));
+    return `Please ${ensureSentence(sentenceCaseStart(withoutTrailingPeriod))}${thanks}`;
+  }
+
+  return `Clinical question: ${ensureSentence(withoutTrailingPeriod)}${thanks}`;
 }
 
 function fallbackSymptom(template: PrimaryCareContentTemplate): string {
@@ -94,12 +125,14 @@ export function generateReferralText(form: ReferralFormState, style: Requisition
   const age = valueFor(form, 'age').replace(/-?year-?old/i, '').trim();
   const sex = valueFor(form, 'sex');
   const patient = age || sex ? `${age}${sex && sex !== 'Prefer not to specify' ? sex : ''}` : 'Patient';
-  const pmhx = valueFor(form, 'pmhx');
+  const pmhxStatus = valueFor(form, 'pmhxStatus');
+  const rawPmhx = valueFor(form, 'pmhx');
+  const noSignificantPmhx = pmhxStatus === 'no-significant-pmhx' || isNoSignificantPmhx(rawPmhx);
+  const pmhx = noSignificantPmhx ? '' : rawPmhx;
   const cancerHistory = valueFor(form, 'cancerHistory');
   const immunosuppression = valueFor(form, 'immunosuppression');
   const surgicalHistory = valueFor(form, 'surgicalHistory');
   const tone = form.tone ?? (typeof form.values.requisitionTone === 'string' ? form.values.requisitionTone : 'polite');
-  const thanks = tone === 'polite' ? ' Thank you.' : '';
   const symptom =
     valueFor(form, 'positiveSymptoms') ||
     valueFor(form, 'mainSymptom') ||
@@ -108,28 +141,29 @@ export function generateReferralText(form: ReferralFormState, style: Requisition
     valueFor(form, 'painLocation') ||
     fallbackSymptom(template);
   const duration = valueFor(form, 'duration');
-  const question = cleanQuestion(valueFor(form, 'clinicalQuestion') || template.defaultQuestion);
+  const question = valueFor(form, 'clinicalQuestion') || template.defaultQuestion;
   const specialty = specialtyPhrases(form);
   const knownFor = join([
     pmhx,
     cancerHistory === 'yes' ? 'cancer history' : cancerHistory && cancerHistory !== 'no' ? cancerHistory : undefined,
     immunosuppression === 'yes' ? 'immunosuppression' : undefined,
   ]);
-  const knownPhrase = knownFor ? `, known for ${knownFor}` : '';
+  const knownPhrase = knownFor ? `, known for ${knownFor}` : noSignificantPmhx ? ', with no significant past medical history' : '';
   const presenting = `presenting with ${duration ? `${duration} of ` : ''}${symptom}`;
-  const questionSentence = `Please assess for/rule out ${question}.${thanks}`;
+  const questionSentence = formatQuestionSentence(question, tone);
 
   if (style === 'ultra') {
     return `${patient}${knownPhrase}, ${presenting}. ${questionSentence}`;
   }
 
   if (style === 'detailed') {
-    return `${patient}${knownPhrase}, ${presenting}. ${join([
+    const details = join([
       valueFor(form, 'negativeSymptoms') ? `Pertinent negatives: ${valueFor(form, 'negativeSymptoms')}` : undefined,
       surgicalHistory ? `Relevant surgical history: ${surgicalHistory}.` : undefined,
       specialty.length ? specialty.join('; ') : undefined,
       valueFor(form, 'redFlags') ? `Red flags: ${valueFor(form, 'redFlags')}` : undefined,
-    ], ' ')} Question for radiology: ${question}.${thanks}`;
+    ], ' ');
+    return `${patient}${knownPhrase}, ${presenting}.${details ? ` ${details}` : ''} ${questionSentence}`;
   }
 
   const objective = join([

@@ -18,7 +18,7 @@ export const anatomyNavigationMap: AnatomyNavigationRegion[] = [
     label: 'Head/Neck',
     iconName: 'headNeck',
     subtitle: 'Neuro, CT head, MRI brain, thyroid/neck incidental findings',
-    description: 'Stroke, trauma, headache, seizure, thyroid, and head/neck surveillance helpers.',
+    description: 'Common head and neck workflows, with quick access to ASPECTS and thyroid follow-up support.',
     reporting: [
       { label: 'CT head trauma', path: 'CT > Neuro/Head', workflowId: 'ct-head-trauma' },
       { label: 'CT head stroke / ASPECTS', path: 'CT > Neuro/Head', workflowId: 'ct-head-stroke-aspects' },
@@ -32,9 +32,9 @@ export const anatomyNavigationMap: AnatomyNavigationRegion[] = [
     incidentalFindings: [
       { label: 'Thyroid nodule', helperId: 'tirads' },
       { label: 'Bone lesion', helperId: 'bonerads' },
-      { label: 'Sinus disease placeholder' },
+      { label: 'Sinus disease' },
     ],
-    incidental: ['Thyroid nodule', 'Bone lesion', 'Sinus disease placeholder'],
+    incidental: ['Thyroid nodule', 'Bone lesion', 'Sinus disease'],
   },
   {
     id: 'chest',
@@ -42,7 +42,7 @@ export const anatomyNavigationMap: AnatomyNavigationRegion[] = [
     label: 'Chest',
     iconName: 'chest',
     subtitle: 'CTPA, CXR, pulmonary nodules, Lung-RADS',
-    description: 'PE, pulmonary nodules, chest X-ray, lung screening, and chest incidental findings.',
+    description: 'Chest workflows for PE, nodules, chest X-ray questions, and common follow-up issues.',
     reporting: [
       { label: 'CTPA pulmonary embolism', path: 'CT > Chest', workflowId: 'ctpa-pe' },
       { label: 'Pulmonary nodule / Fleischner', path: 'CT > Chest', workflowId: 'ct-chest-nodule' },
@@ -67,7 +67,7 @@ export const anatomyNavigationMap: AnatomyNavigationRegion[] = [
     label: 'Abdomen',
     iconName: 'abdomen',
     subtitle: 'Appendicitis, obstruction, liver/adrenal/renal findings',
-    description: 'Acute abdomen workflows, RUQ ultrasound, liver/adrenal/renal/pancreatic follow-up.',
+    description: 'Acute abdomen workflows plus practical liver, adrenal, renal, and pancreatic follow-up support.',
     reporting: [
       { label: 'CT appendicitis', path: 'CT > Abdomen/Pelvis', workflowId: 'ct-ap-appendicitis' },
       { label: 'CT bowel obstruction', path: 'CT > Abdomen/Pelvis', workflowId: 'ct-ap-bowel-obstruction' },
@@ -94,7 +94,7 @@ export const anatomyNavigationMap: AnatomyNavigationRegion[] = [
     label: 'Pelvis/GU',
     iconName: 'pelvisGu',
     subtitle: 'Pelvic US, renal colic, adnexal findings, prostate MRI',
-    description: 'Renal colic, pelvic ultrasound, adnexal lesions, prostate, bladder, and GU helpers.',
+    description: 'GU and pelvic workflows with renal, adnexal, prostate, and bladder-related helpers.',
     reporting: [
       { label: 'CT KUB / renal colic', path: 'CT > GU/Renal', workflowId: 'ct-kub-renal-colic' },
       { label: 'Pelvic ultrasound', path: 'Ultrasound > Pelvic/Gynecology', workflowId: 'us-pelvic-pain' },
@@ -107,9 +107,9 @@ export const anatomyNavigationMap: AnatomyNavigationRegion[] = [
     incidentalFindings: [
       { label: 'Adnexal cyst', helperId: 'orads' },
       { label: 'Renal cyst/mass', helperId: 'bosniak' },
-      { label: 'Endometrial thickening placeholder' },
+      { label: 'Endometrial thickening' },
     ],
-    incidental: ['Adnexal cyst', 'Renal cyst/mass', 'Endometrial thickening placeholder'],
+    incidental: ['Adnexal cyst', 'Renal cyst/mass', 'Endometrial thickening'],
   },
   {
     id: 'spine',

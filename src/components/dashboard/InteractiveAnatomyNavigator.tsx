@@ -20,9 +20,9 @@ export function InteractiveAnatomyNavigator({
   return (
     <section className="anatomy-navigator anatomy-cockpit">
       <div className="section-heading">
-        <span className="eyebrow">Anatomy cockpit</span>
-        <h2>Choose a body system, then jump into the right workflow</h2>
-        <p>Premium navigation for reporting workflows, helpers, and embedded incidental follow-up support.</p>
+        <span className="eyebrow">Body-system shortcuts</span>
+        <h2>Start from the clinical area, then choose the tool</h2>
+        <p>A quieter way to reach common reporting workflows, calculators, and follow-up language without scanning every module.</p>
       </div>
 
       <div className="anatomy-cockpit-layout">
@@ -54,7 +54,7 @@ export function InteractiveAnatomyNavigator({
           <div className="card-topline">
             <span className="icon-label">
               <RadIcon name={selected.iconName} size={16} />
-              Navigation hub
+              Selected area
             </span>
             <span className="status-badge partial">Selected</span>
           </div>
@@ -78,7 +78,7 @@ export function InteractiveAnatomyNavigator({
                 <button className="link-card" onClick={() => onOpenHelper(item.helperId)} type="button" key={item.helperId}>
                   <RadIcon name="calculator" size={18} />
                   <strong>{item.label}</strong>
-                  <small>Open interactive helper</small>
+                  <small>Open helper</small>
                 </button>
               ))}
             </div>
@@ -88,7 +88,7 @@ export function InteractiveAnatomyNavigator({
                 <button className="link-card" onClick={() => onOpenIncidental(item.helperId)} type="button" key={item.label}>
                   <RadIcon name="followUp" size={18} />
                   <strong>{item.label}</strong>
-                  <small>{item.helperId ? 'Open related helper drawer' : 'Open reporting workflows'}</small>
+                  <small>{item.helperId ? 'Open related helper' : 'Open related workflows'}</small>
                 </button>
               ))}
             </div>
