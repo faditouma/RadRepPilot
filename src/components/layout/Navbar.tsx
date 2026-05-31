@@ -1,4 +1,4 @@
-import { NavLink } from 'react-router-dom';
+import { NavLink, useNavigate } from 'react-router-dom';
 import { useSupabaseSession } from '../auth/useSupabaseSession';
 import { RadRepPilotLogo } from '../branding/RadRepPilotLogo';
 
@@ -23,11 +23,13 @@ const appLinks = [
 ];
 
 export function Navbar({ variant = 'public' }: NavbarProps) {
-  const links = variant === 'app' ? appLinks : publicLinks;
+  const navigate = useNavigate();
   const { session, signOut } = useSupabaseSession();
+  const links = variant === 'app' ? appLinks : publicLinks;
 
   async function handleLogout() {
     await signOut();
+    navigate('/login', { replace: true });
   }
 
   return (
@@ -67,7 +69,7 @@ export function Navbar({ variant = 'public' }: NavbarProps) {
           </>
         ) : (
           <NavLink className="ghost-link" to="/">
-            Prototype home
+            Home
           </NavLink>
         )}
       </div>

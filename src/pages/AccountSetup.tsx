@@ -1,34 +1,40 @@
 import { type FormEvent, useEffect, useState } from 'react';
+import { useLocation, useNavigate } from 'react-router-dom';
 import { useSupabaseSession } from '../components/auth/useSupabaseSession';
 import {
   defaultPreferencesForm,
   defaultProfileForm,
   languageOptions,
-  loadPreferences,
-  loadProfile,
   preferencesToForm,
   reportingStyleOptions,
   roleOptions,
   structureOptions,
   type PreferencesFormState,
   type ProfileFormState,
+  loadPreferences,
+  loadProfile,
   profileToForm,
   upsertPreferences,
   upsertProfile,
 } from '../lib/userData';
 import { PageShell } from './PageShell';
 
-export function Preferences() {
+export function AccountSetup() {
+  const navigate = useNavigate();
+  const location = useLocation();
   const { isLoading, session } = useSupabaseSession();
   const [profile, setProfile] = useState<ProfileFormState>(defaultProfileForm);
   const [preferences, setPreferences] = useState<PreferencesFormState>(defaultPreferencesForm);
   const [message, setMessage] = useState('');
   const [isSaving, setIsSaving] = useState(false);
 
+  const state = location.state as { from?: { pathname?: string }; message?: string } | null;
+  const nextPath = state?.from?.pathname && state.from.pathname !== '/account-setup' ? state.from.pathname : '/dashboard';
+
   useEffect(() => {
     let active = true;
 
-    async function loadSettings() {
+    async function loadExistingSetup() {
       if (isLoading || !session) return;
 
       try {
@@ -41,11 +47,12 @@ export function Preferences() {
           setPreferences(preferencesToForm(savedPreferences));
         }
       } catch (error) {
-        if (active) setMessage(error instanceof Error ? error.message : 'Unable to load preferences.');
+        const errorMessage = error instanceof Error ? error.message : 'Unable to load account setup.';
+        if (active) setMessage(errorMessage);
       }
     }
 
-    void loadSettings();
+    void loadExistingSetup();
 
     return () => {
       active = false;
@@ -57,12 +64,12 @@ export function Preferences() {
     setMessage('');
 
     if (!session) {
-      setMessage('Please sign in before saving preferences.');
+      setMessage('Please sign in before setting up your account.');
       return;
     }
 
     if (!profile.full_name.trim()) {
-      setMessage('Please enter your full name before saving.');
+      setMessage('Please enter your full name.');
       return;
     }
 
@@ -70,9 +77,10 @@ export function Preferences() {
     try {
       await upsertProfile(session.user.id, profile);
       await upsertPreferences(session.user.id, preferences);
-      setMessage('Preferences saved.');
+      setMessage('Account setup saved.');
+      navigate(nextPath, { replace: true });
     } catch (error) {
-      setMessage(error instanceof Error ? error.message : 'Unable to save preferences.');
+      setMessage(error instanceof Error ? error.message : 'Unable to save account setup.');
     } finally {
       setIsSaving(false);
     }
@@ -80,10 +88,11 @@ export function Preferences() {
 
   return (
     <PageShell
-      eyebrow="Settings"
-      title="Profile and Preferences"
-      description="Manage your educational profile and default reporting preferences for RadRepPilot."
+      eyebrow="Account setup"
+      title="Set up your RadRepPilot workspace"
+      description="Add your learning profile and default reporting preferences. Do not enter patient-identifying information."
     >
+      {state?.message ? <div className="auth-notice">{state.message}</div> : null}
       {message ? <div className="auth-notice">{message}</div> : null}
 
       <form className="settings-form" onSubmit={handleSubmit}>
@@ -123,7 +132,7 @@ export function Preferences() {
         </section>
 
         <section className="settings-section">
-          <h2>Reporting defaults</h2>
+          <h2>Reporting preferences</h2>
           <div className="settings-grid">
             <label>
               Default language
@@ -190,7 +199,7 @@ export function Preferences() {
         </section>
 
         <button className="auth-submit" disabled={isSaving || isLoading} type="submit">
-          {isSaving ? 'Saving...' : 'Save preferences'}
+          {isSaving ? 'Saving setup...' : 'Save and continue'}
         </button>
       </form>
     </PageShell>

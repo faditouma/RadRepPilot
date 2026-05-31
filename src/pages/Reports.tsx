@@ -6,10 +6,11 @@ export function Reports() {
     <PageShell
       eyebrow="Reports"
       title="Reports"
-      description="Placeholder for a future report list, including saved drafts and finalized user reports."
+      description="Your saved reports will appear here as the database-backed reporting workspace is expanded."
     >
       <p>
-        Report storage is not connected yet. Start a future report from <Link to="/reports/new">New Report</Link>.
+        Report storage is being prepared for the next phase. You can start a new educational draft from{' '}
+        <Link to="/reports/new">New Report</Link>. Do not enter patient-identifying information.
       </p>
     </PageShell>
   );

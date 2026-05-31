@@ -5,9 +5,12 @@ export function NewReport() {
     <PageShell
       eyebrow="Reports"
       title="New Report"
-      description="Placeholder for a future report creation flow connected to user accounts and saved reports."
+      description="Start an educational report-writing draft using your saved preferences."
     >
-      <p>The existing report builder and reporting workflows remain available from the homepage prototype.</p>
+      <p>
+        Database-backed report creation will be added in a later phase. For now, use the prototype reporting workflows from the
+        home workspace and avoid entering patient-identifying information.
+      </p>
     </PageShell>
   );
 }
