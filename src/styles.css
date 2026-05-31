@@ -163,6 +163,16 @@ textarea {
   flex-shrink: 0;
 }
 
+.rad-icon-asset {
+  background-color: currentColor;
+  mask-position: center;
+  mask-repeat: no-repeat;
+  mask-size: contain;
+  -webkit-mask-position: center;
+  -webkit-mask-repeat: no-repeat;
+  -webkit-mask-size: contain;
+}
+
 .radrep-logo-tile {
   flex: 0 0 auto;
   display: inline-grid;
