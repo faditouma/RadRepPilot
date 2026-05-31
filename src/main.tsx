@@ -2,6 +2,7 @@ import React from 'react';
 import ReactDOM from 'react-dom/client';
 import { BrowserRouter, Route, Routes } from 'react-router-dom';
 import App from './App';
+import { ProtectedRoute } from './components/auth/ProtectedRoute';
 import { AppLayout } from './components/layout/AppLayout';
 import { PublicLayout } from './components/layout/PublicLayout';
 import { About } from './pages/About';
@@ -32,11 +33,13 @@ ReactDOM.createRoot(document.getElementById('root') as HTMLElement).render(
         </Route>
         <Route path="/login" element={<Login />} />
         <Route path="/signup" element={<Signup />} />
-        <Route element={<AppLayout />}>
-          <Route path="/dashboard" element={<Dashboard />} />
-          <Route path="/reports" element={<Reports />} />
-          <Route path="/reports/new" element={<NewReport />} />
-          <Route path="/preferences" element={<Preferences />} />
+        <Route element={<ProtectedRoute />}>
+          <Route element={<AppLayout />}>
+            <Route path="/dashboard" element={<Dashboard />} />
+            <Route path="/reports" element={<Reports />} />
+            <Route path="/reports/new" element={<NewReport />} />
+            <Route path="/preferences" element={<Preferences />} />
+          </Route>
         </Route>
       </Routes>
     </BrowserRouter>
