@@ -3109,6 +3109,10 @@ footer {
   border-top: 1px solid var(--line);
 }
 
+.route-panel-body p + p {
+  margin-top: 14px;
+}
+
 .auth-form {
   max-width: 520px;
   display: grid;

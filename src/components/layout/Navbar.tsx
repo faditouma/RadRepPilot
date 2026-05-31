@@ -30,7 +30,7 @@ export function Navbar({ variant = 'public' }: NavbarProps) {
         <RadRepPilotLogo variant="iconOnly" size={36} />
         <span>
           <strong>RadRepPilot</strong>
-          <small>{variant === 'app' ? 'Workspace' : 'Radiology workflow prototype'}</small>
+          <small>{variant === 'app' ? 'Workspace' : 'Radiology reporting education platform'}</small>
         </span>
       </NavLink>
 

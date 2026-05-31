@@ -5,7 +5,7 @@ export function Footer() {
     <footer className="platform-footer">
       <div>
         <strong>RadRepPilot</strong>
-        <span>Educational prototype. User-entered findings only.</span>
+        <span>Free educational platform for radiology reporting practice. User-entered content only.</span>
       </div>
       <nav aria-label="Footer navigation">
         <Link to="/about">About</Link>

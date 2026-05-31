@@ -7,7 +7,8 @@ export function PublicLayout() {
     <div className="platform-layout public-layout">
       <Navbar variant="public" />
       <div className="platform-warning" role="note">
-        <strong>No PHI:</strong> Do not enter patient-identifying information. RadRepPilot is educational and does not interpret images or diagnose.
+        <strong>Privacy reminder:</strong> Please do not enter patient-identifying information. RadRepPilot is an educational
+        reporting-support tool and does not interpret images, provide diagnoses, or replace radiologist review.
       </div>
       <Outlet />
       <Footer />

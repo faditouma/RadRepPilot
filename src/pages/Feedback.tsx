@@ -4,10 +4,18 @@ export function Feedback() {
   return (
     <PageShell
       eyebrow="Feedback"
-      title="Feedback"
-      description="A future feedback form can collect comments from radiologists, residents, referrers, and reviewers."
+      title="Help Improve RadRepPilot"
+      description="RadRepPilot is being developed as a public-good educational project."
     >
-      <p>Feedback submission is not connected yet. Supabase or another backend can be added in a later phase.</p>
+      <p>
+        Feedback from learners, residents, radiologists, referring clinicians, and educators is essential to improving the
+        platform.
+      </p>
+      <p>
+        Use this page to report bugs, suggest features, comment on usability, or share ideas for future reporting templates and
+        educational tools.
+      </p>
+      <p>Please do not include patient-identifying information in feedback messages.</p>
     </PageShell>
   );
 }

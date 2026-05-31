@@ -7,7 +7,8 @@ export function AppLayout() {
     <div className="platform-layout app-layout">
       <Navbar variant="app" />
       <div className="platform-warning" role="note">
-        <strong>Prototype workspace:</strong> Do not enter patient-identifying information. All draft reports and follow-up wording require clinician/radiologist verification.
+        <strong>Privacy reminder:</strong> Please do not enter patient-identifying information. RadRepPilot is an educational
+        reporting-support tool and does not interpret images, provide diagnoses, or replace radiologist review.
       </div>
       <Outlet />
       <Footer />

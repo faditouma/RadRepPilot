@@ -36,7 +36,7 @@ export function RadRepPilotLogo({
         <div className="leading-tight">
           <div className="text-lg font-bold tracking-tight text-slate-950">RadRepPilot</div>
           {showTagline ? (
-            <div className="text-xs font-medium text-slate-500">Better requisitions in. Better reports out.</div>
+            <div className="text-xs font-medium text-slate-500">Radiology reporting education platform</div>
           ) : null}
         </div>
       </div>
