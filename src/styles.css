@@ -3113,6 +3113,107 @@ footer {
   margin-top: 14px;
 }
 
+.public-home {
+  padding: clamp(28px, 6vw, 72px) clamp(18px, 5vw, 56px);
+  background:
+    radial-gradient(circle at 82% 0%, rgba(6, 182, 212, 0.1), transparent 28rem),
+    linear-gradient(180deg, rgba(37, 99, 235, 0.07), rgba(37, 99, 235, 0) 340px),
+    var(--bg);
+  color: var(--ink);
+}
+
+.public-hero {
+  max-width: 920px;
+  margin: 0 auto;
+  padding: clamp(30px, 6vw, 58px);
+  border: 1px solid rgba(216, 224, 234, 0.92);
+  border-radius: 18px;
+  background: rgba(255, 255, 255, 0.9);
+  box-shadow: var(--shadow);
+}
+
+.public-hero h1 {
+  max-width: 780px;
+  margin: 10px 0 16px;
+  color: var(--slate);
+  font-size: clamp(2.4rem, 5vw, 4.6rem);
+  line-height: 1;
+  letter-spacing: 0;
+}
+
+.public-hero p {
+  max-width: 760px;
+  margin: 0;
+  color: var(--muted);
+  font-size: clamp(1.05rem, 2vw, 1.22rem);
+  line-height: 1.6;
+}
+
+.public-safety-line {
+  margin-top: 22px;
+  border: 1px solid rgba(245, 158, 11, 0.24);
+  border-radius: 12px;
+  padding: 12px 14px;
+  background: rgba(255, 251, 235, 0.78);
+  color: #92400E;
+  font-weight: 680;
+  line-height: 1.45;
+}
+
+.public-home-actions {
+  margin-top: 24px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+
+.public-home-actions a {
+  border-radius: 999px;
+  padding: 11px 16px;
+  font-weight: 850;
+  text-decoration: none;
+}
+
+.public-home-actions .button-link {
+  color: #fff;
+  background: linear-gradient(135deg, var(--primary), var(--accent));
+  box-shadow: 0 12px 24px rgba(37, 99, 235, 0.18);
+}
+
+.public-home-actions .secondary-link {
+  border: 1px solid var(--line);
+  color: var(--blue-dark);
+  background: #fff;
+}
+
+.public-feature-grid {
+  max-width: 920px;
+  margin: 18px auto 0;
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 14px;
+}
+
+.public-feature-card {
+  border: 1px solid var(--line);
+  border-radius: 14px;
+  padding: 18px;
+  background: #fff;
+  box-shadow: var(--shadow-tight);
+}
+
+.public-feature-card h2 {
+  margin: 0 0 8px;
+  color: var(--slate);
+  font-size: 1.08rem;
+}
+
+.public-feature-card p {
+  margin: 0;
+  color: var(--muted);
+  line-height: 1.55;
+}
+
 .auth-form {
   max-width: 520px;
   display: grid;
@@ -3517,6 +3618,10 @@ footer {
   .platform-footer {
     align-items: flex-start;
     flex-direction: column;
+  }
+
+  .public-feature-grid {
+    grid-template-columns: 1fr;
   }
 
   .settings-grid,
