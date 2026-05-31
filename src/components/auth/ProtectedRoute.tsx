@@ -1,51 +1,11 @@
-import { useEffect, useState } from 'react';
 import { Navigate, Outlet, useLocation } from 'react-router-dom';
-import { isSupabaseConfigured, supabase } from '../../lib/supabaseClient';
-
-type AuthState = 'checking' | 'authenticated' | 'unauthenticated';
+import { useSupabaseSession } from './useSupabaseSession';
 
 export function ProtectedRoute() {
   const location = useLocation();
-  const [authState, setAuthState] = useState<AuthState>('checking');
+  const { isLoading, session } = useSupabaseSession();
 
-  useEffect(() => {
-    let active = true;
-
-    async function checkSession() {
-      if (!isSupabaseConfigured || !supabase) {
-        setAuthState('unauthenticated');
-        return;
-      }
-
-      const { data } = await supabase.auth.getSession();
-      if (active) {
-        setAuthState(data.session ? 'authenticated' : 'unauthenticated');
-      }
-    }
-
-    void checkSession();
-
-    if (!supabase) {
-      return () => {
-        active = false;
-      };
-    }
-
-    const {
-      data: { subscription },
-    } = supabase.auth.onAuthStateChange((_event, session) => {
-      if (active) {
-        setAuthState(session ? 'authenticated' : 'unauthenticated');
-      }
-    });
-
-    return () => {
-      active = false;
-      subscription.unsubscribe();
-    };
-  }, []);
-
-  if (authState === 'checking') {
+  if (isLoading) {
     return (
       <main className="route-page">
         <section className="route-panel">
@@ -57,10 +17,9 @@ export function ProtectedRoute() {
     );
   }
 
-  if (authState === 'unauthenticated') {
+  if (!session) {
     return <Navigate replace state={{ from: location }} to="/login" />;
   }
 
   return <Outlet />;
 }
-

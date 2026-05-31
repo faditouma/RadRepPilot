@@ -3244,9 +3244,12 @@ footer {
 
 .platform-nav-links a,
 .platform-nav-actions a,
+.platform-nav-actions button,
 .platform-footer a {
   border-radius: 999px;
   padding: 8px 11px;
+  border: 0;
+  background: transparent;
   color: var(--muted);
   font-weight: 760;
   text-decoration: none;
@@ -3255,6 +3258,7 @@ footer {
 .platform-nav-links a:hover,
 .platform-nav-links a.active,
 .platform-nav-actions a:hover,
+.platform-nav-actions button:hover,
 .platform-footer a:hover {
   color: var(--blue-dark);
   background: var(--blue-soft);
@@ -3264,6 +3268,19 @@ footer {
   color: #fff;
   background: linear-gradient(135deg, var(--primary), var(--accent));
   box-shadow: 0 10px 20px rgba(37, 99, 235, 0.16);
+}
+
+.session-pill {
+  max-width: 240px;
+  overflow: hidden;
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  padding: 8px 11px;
+  color: var(--muted);
+  font-size: 0.86rem;
+  font-weight: 720;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 .platform-warning {

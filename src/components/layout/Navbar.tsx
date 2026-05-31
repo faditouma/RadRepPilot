@@ -1,4 +1,5 @@
 import { NavLink } from 'react-router-dom';
+import { useSupabaseSession } from '../auth/useSupabaseSession';
 import { RadRepPilotLogo } from '../branding/RadRepPilotLogo';
 
 type NavbarVariant = 'public' | 'app';
@@ -23,6 +24,11 @@ const appLinks = [
 
 export function Navbar({ variant = 'public' }: NavbarProps) {
   const links = variant === 'app' ? appLinks : publicLinks;
+  const { session, signOut } = useSupabaseSession();
+
+  async function handleLogout() {
+    await signOut();
+  }
 
   return (
     <header className={`platform-navbar ${variant}`}>
@@ -30,7 +36,7 @@ export function Navbar({ variant = 'public' }: NavbarProps) {
         <RadRepPilotLogo variant="iconOnly" size={36} />
         <span>
           <strong>RadRepPilot</strong>
-          <small>{variant === 'app' ? 'Workspace' : 'Radiology reporting education platform'}</small>
+          <small>Radiology reporting education platform</small>
         </span>
       </NavLink>
 
@@ -43,7 +49,14 @@ export function Navbar({ variant = 'public' }: NavbarProps) {
       </nav>
 
       <div className="platform-nav-actions">
-        {variant === 'public' ? (
+        {session ? (
+          <>
+            <span className="session-pill">{session.user.email}</span>
+            <button className="ghost-link nav-button" onClick={handleLogout} type="button">
+              Logout
+            </button>
+          </>
+        ) : variant === 'public' ? (
           <>
             <NavLink className="ghost-link" to="/login">
               Login

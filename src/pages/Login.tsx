@@ -1,5 +1,6 @@
-import { type FormEvent, useState } from 'react';
+import { type FormEvent, useEffect, useState } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
+import { useSupabaseSession } from '../components/auth/useSupabaseSession';
 import { isSupabaseConfigured, supabase } from '../lib/supabaseClient';
 import { PageShell } from './PageShell';
 
@@ -10,8 +11,15 @@ export function Login() {
   const [password, setPassword] = useState('');
   const [message, setMessage] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const { isLoading, session } = useSupabaseSession();
 
   const from = (location.state as { from?: { pathname?: string } } | null)?.from?.pathname ?? '/dashboard';
+
+  useEffect(() => {
+    if (!isLoading && session) {
+      navigate('/dashboard', { replace: true });
+    }
+  }, [isLoading, navigate, session]);
 
   async function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -31,6 +39,7 @@ export function Login() {
       return;
     }
 
+    setMessage('Signed in successfully. Opening your dashboard...');
     navigate(from, { replace: true });
   }
 

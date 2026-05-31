@@ -11,6 +11,7 @@ export function Footer() {
         <Link to="/about">About</Link>
         <Link to="/disclaimer">Disclaimer</Link>
         <Link to="/feedback">Feedback</Link>
+        <a href="mailto:radreppilot@gmail.com">radreppilot@gmail.com</a>
       </nav>
     </footer>
   );

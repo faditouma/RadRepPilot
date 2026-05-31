@@ -1,13 +1,22 @@
-import { type FormEvent, useState } from 'react';
-import { Link } from 'react-router-dom';
+import { type FormEvent, useEffect, useState } from 'react';
+import { Link, useNavigate } from 'react-router-dom';
+import { useSupabaseSession } from '../components/auth/useSupabaseSession';
 import { isSupabaseConfigured, supabase } from '../lib/supabaseClient';
 import { PageShell } from './PageShell';
 
 export function Signup() {
+  const navigate = useNavigate();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [message, setMessage] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const { isLoading, session } = useSupabaseSession();
+
+  useEffect(() => {
+    if (!isLoading && session) {
+      navigate('/dashboard', { replace: true });
+    }
+  }, [isLoading, navigate, session]);
 
   async function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -19,7 +28,7 @@ export function Signup() {
     }
 
     setIsSubmitting(true);
-    const { error } = await supabase.auth.signUp({ email, password });
+    const { data, error } = await supabase.auth.signUp({ email, password });
     setIsSubmitting(false);
 
     if (error) {
@@ -27,7 +36,13 @@ export function Signup() {
       return;
     }
 
-    setMessage('Signup request sent. Check email confirmation settings in Supabase before using this clinically.');
+    if (data.session) {
+      setMessage('Account created successfully. Opening your dashboard...');
+      navigate('/dashboard', { replace: true });
+      return;
+    }
+
+    setMessage('Signup request sent. Check your email if confirmation is enabled for this Supabase project.');
   }
 
   return (
