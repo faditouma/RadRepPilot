@@ -16,6 +16,7 @@ import { GuidedDemo } from './components/demo/GuidedDemo';
 import { SampleOutputsGallery } from './components/gallery/SampleOutputsGallery';
 import { ChangeLogPanel } from './components/changelog/ChangeLogPanel';
 import { RadRepPilotLogo } from './components/branding/RadRepPilotLogo';
+import { RadIcon, type RadIconName } from './components/icons/RadIcon';
 import { HelperDrawer } from './components/helpers/HelperDrawer';
 import { WhyThisMatters } from './components/portfolio/WhyThisMatters';
 import { CompletenessChecklist } from './components/quality/CompletenessChecklist';
@@ -1158,8 +1159,8 @@ function App({ embedded = false, initialPage = 'dashboard' }: AppProps) {
     <div className="page-stack">
       <PageHeader
         eyebrow="Radiology Reporting Modules"
-        title="Branching reporting cockpit"
-        description="Choose modality, body system, then a focused workflow. No report opens until you select one."
+        title="Structured Reporting Modules"
+        description="Select a modality and body system to open a focused educational reporting workflow."
       />
       <BranchingModuleNavigator
         initialWorkflowId={dashboardWorkflowId}
@@ -1182,6 +1183,42 @@ function App({ embedded = false, initialPage = 'dashboard' }: AppProps) {
           return null;
         }}
       />
+    </div>
+  );
+
+  const renderWorkspaceOverview = () => (
+    <div className="page-stack">
+      <PageHeader
+        eyebrow="Workspace overview"
+        title="Choose a workspace tool"
+        description="Use the side navigation to open structured reporting workflows, focused calculators, requisition support, examples, or local drafts."
+      />
+      <section className="module-grid">
+        <ModuleCard
+          title="Structured reporting modules"
+          meta="Reporting"
+          iconName="xray"
+          description="Open a modality and body-system pathway, then draft editable report language from user-entered findings."
+          onOpen={() => setActivePage('modules')}
+          ctaLabel="Open workflows"
+        />
+        <ModuleCard
+          title="Calculators and helpers"
+          meta="Support"
+          iconName="calculator"
+          description="Use focused educational helpers and insert report-ready sentences into the report builder."
+          onOpen={() => setActivePage('calculators')}
+          ctaLabel="Open calculators"
+        />
+        <ModuleCard
+          title="GP requisitions"
+          meta="Requisitions"
+          iconName="primaryCare"
+          description="Practise writing concise imaging requests that communicate the clinical question clearly."
+          onOpen={() => setActivePage('referral')}
+          ctaLabel="Build requisition"
+        />
+      </section>
     </div>
   );
 
@@ -1402,20 +1439,25 @@ function App({ embedded = false, initialPage = 'dashboard' }: AppProps) {
     </div>
   );
 
-  const workspaceTabs: Array<{ key: PageKey; label: string }> = [
-    { key: 'modules', label: 'Reporting workflows' },
-    { key: 'calculators', label: 'Calculators' },
-    { key: 'builder', label: 'Report builder' },
-    { key: 'referral', label: 'GP requisitions' },
-    { key: 'gallery', label: 'Examples' },
-    { key: 'drafts', label: 'Local drafts' },
-    { key: 'safety', label: 'Safety' },
+  const workspaceTabs: Array<{ key: PageKey; label: string; iconName: RadIconName }> = [
+    { key: 'dashboard', label: 'Overview', iconName: 'dashboard' },
+    { key: 'modules', label: 'Reporting workflows', iconName: 'xray' },
+    { key: 'calculators', label: 'Calculators', iconName: 'calculator' },
+    { key: 'builder', label: 'Report builder', iconName: 'report' },
+    { key: 'referral', label: 'GP requisitions', iconName: 'primaryCare' },
+    { key: 'gallery', label: 'Examples', iconName: 'followUp' },
+    { key: 'drafts', label: 'Local drafts', iconName: 'savedDrafts' },
+    { key: 'safety', label: 'Safety', iconName: 'safety' },
   ];
 
   return (
     <div className={embedded ? 'workspace-legacy-shell' : 'app-shell'}>
       {embedded ? (
-        <nav className="workspace-tabbar" aria-label="Workspace tools">
+        <aside className="workspace-side-panel" aria-label="Workspace tools">
+          <div className="workspace-side-panel-header">
+            <span>Workspace</span>
+            <strong>Modules</strong>
+          </div>
           {workspaceTabs.map((tab) => (
             <button
               className={activePage === tab.key ? 'active' : ''}
@@ -1423,15 +1465,17 @@ function App({ embedded = false, initialPage = 'dashboard' }: AppProps) {
               onClick={() => setActivePage(tab.key)}
               type="button"
             >
+              <RadIcon name={tab.iconName} size={20} />
               {tab.label}
             </button>
           ))}
-        </nav>
+        </aside>
       ) : (
         <Sidebar activePage={activePage} onNavigate={setActivePage} />
       )}
       <main className={embedded ? 'workspace-main-shell' : 'main-shell'}>
         <SafetyBanner />
+        {embedded && activePage === 'dashboard' ? renderWorkspaceOverview() : null}
         {!embedded && activePage === 'dashboard' ? renderDashboard() : null}
         {activePage === 'modules' ? renderModules() : null}
         {activePage === 'referral' ? renderReferral() : null}

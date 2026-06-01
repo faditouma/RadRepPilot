@@ -8,15 +8,15 @@ export function Workspace() {
     <main className="workspace-route">
       <section className="workspace-route-header">
         <span className="eyebrow">Workspace</span>
-        <h1>RadRepPilot reporting workspace</h1>
+        <h1>Reporting Workspace</h1>
         <p>
-          Practise structured reporting, draft impressions, use calculators, and build clearer educational requisitions without
-          signing in.
+          Draft structured educational reports, use focused calculators, and build clearer imaging requisitions without entering
+          patient-identifying information.
         </p>
         <div className="workspace-account-note">
           {session
-            ? 'Signed in. Saved reports and preferences are available from the dashboard.'
-            : 'You can use this workspace without an account. Create a free account to save reports and preferences.'}
+            ? 'Signed in. Preferences and saved reports are available from your dashboard.'
+            : 'Use the workspace without an account. Sign in to save reports and preferences.'}
         </div>
       </section>
 
