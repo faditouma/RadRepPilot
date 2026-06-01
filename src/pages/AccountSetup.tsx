@@ -80,7 +80,8 @@ export function AccountSetup() {
       setMessage('Account setup saved.');
       navigate(nextPath, { replace: true });
     } catch (error) {
-      setMessage(error instanceof Error ? error.message : 'Unable to save account setup.');
+      const errorMessage = error instanceof Error ? error.message : 'Unknown Supabase error';
+      setMessage(`Unable to save account setup: ${errorMessage}`);
     } finally {
       setIsSaving(false);
     }
@@ -205,4 +206,3 @@ export function AccountSetup() {
     </PageShell>
   );
 }
-
