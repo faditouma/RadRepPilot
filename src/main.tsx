@@ -15,6 +15,7 @@ import { NewReport } from './pages/NewReport';
 import { Preferences } from './pages/Preferences';
 import { Reports } from './pages/Reports';
 import { Signup } from './pages/Signup';
+import { Workspace } from './pages/Workspace';
 import './styles.css';
 
 ReactDOM.createRoot(document.getElementById('root') as HTMLElement).render(
@@ -23,6 +24,7 @@ ReactDOM.createRoot(document.getElementById('root') as HTMLElement).render(
       <Routes>
         <Route element={<PublicLayout />}>
           <Route path="/" element={<HomeRoute />} />
+          <Route path="/workspace" element={<Workspace />} />
           <Route path="/about" element={<About />} />
           <Route path="/disclaimer" element={<Disclaimer />} />
           <Route path="/feedback" element={<Feedback />} />

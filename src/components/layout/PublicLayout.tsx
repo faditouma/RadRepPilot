@@ -4,7 +4,7 @@ import { Navbar } from './Navbar';
 
 export function PublicLayout() {
   const location = useLocation();
-  const showPageWarning = location.pathname !== '/';
+  const showPageWarning = location.pathname !== '/' && location.pathname !== '/workspace';
 
   return (
     <div className="platform-layout public-layout">

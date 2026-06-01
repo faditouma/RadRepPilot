@@ -65,6 +65,11 @@ import type {
 
 const DRAFT_STORAGE_KEY = 'radreppilot:drafts';
 
+type AppProps = {
+  embedded?: boolean;
+  initialPage?: PageKey;
+};
+
 const moduleLabels: Record<ModuleType, string> = {
   ctpa: 'CTPA Pulmonary Embolism',
   nodule: 'Pulmonary Nodule / Fleischner',
@@ -261,8 +266,8 @@ function getStructuredObject(value: unknown): Record<string, unknown> {
   return value && typeof value === 'object' ? (value as Record<string, unknown>) : {};
 }
 
-function App() {
-  const [activePage, setActivePage] = useState<PageKey>('dashboard');
+function App({ embedded = false, initialPage = 'dashboard' }: AppProps) {
+  const [activePage, setActivePage] = useState<PageKey>(initialPage);
   const [demoOpen, setDemoOpen] = useState(false);
   const [builderSourceModule, setBuilderSourceModule] = useState<ModuleType>('ctpa');
   const [drafts, setDrafts] = useState<SavedDraft[]>(() => loadDrafts());
@@ -1397,12 +1402,37 @@ function App() {
     </div>
   );
 
+  const workspaceTabs: Array<{ key: PageKey; label: string }> = [
+    { key: 'modules', label: 'Reporting workflows' },
+    { key: 'calculators', label: 'Calculators' },
+    { key: 'builder', label: 'Report builder' },
+    { key: 'referral', label: 'GP requisitions' },
+    { key: 'gallery', label: 'Examples' },
+    { key: 'drafts', label: 'Local drafts' },
+    { key: 'safety', label: 'Safety' },
+  ];
+
   return (
-    <div className="app-shell">
-      <Sidebar activePage={activePage} onNavigate={setActivePage} />
-      <main className="main-shell">
+    <div className={embedded ? 'workspace-legacy-shell' : 'app-shell'}>
+      {embedded ? (
+        <nav className="workspace-tabbar" aria-label="Workspace tools">
+          {workspaceTabs.map((tab) => (
+            <button
+              className={activePage === tab.key ? 'active' : ''}
+              key={tab.key}
+              onClick={() => setActivePage(tab.key)}
+              type="button"
+            >
+              {tab.label}
+            </button>
+          ))}
+        </nav>
+      ) : (
+        <Sidebar activePage={activePage} onNavigate={setActivePage} />
+      )}
+      <main className={embedded ? 'workspace-main-shell' : 'main-shell'}>
         <SafetyBanner />
-        {activePage === 'dashboard' ? renderDashboard() : null}
+        {!embedded && activePage === 'dashboard' ? renderDashboard() : null}
         {activePage === 'modules' ? renderModules() : null}
         {activePage === 'referral' ? renderReferral() : null}
         {activePage === 'calculators' ? renderCalculators() : null}

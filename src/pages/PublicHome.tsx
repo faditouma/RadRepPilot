@@ -1,5 +1,4 @@
 import { Link } from 'react-router-dom';
-import { useSupabaseSession } from '../components/auth/useSupabaseSession';
 
 const featureCards = [
   {
@@ -17,9 +16,6 @@ const featureCards = [
 ];
 
 export function PublicHome() {
-  const { session } = useSupabaseSession();
-  const startTarget = session ? '/dashboard' : '/signup';
-
   return (
     <main className="public-home">
       <section className="public-hero">
@@ -34,7 +30,7 @@ export function PublicHome() {
           diagnoses.
         </div>
         <div className="public-home-actions">
-          <Link className="button-link" to={startTarget}>
+          <Link className="button-link" to="/workspace">
             Start using RadRepPilot
           </Link>
           <Link className="button-link" to="/signup">

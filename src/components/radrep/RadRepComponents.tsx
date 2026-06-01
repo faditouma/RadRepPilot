@@ -76,11 +76,8 @@ export function BrandMark({ large = false }: { large?: boolean }) {
 export function SafetyBanner() {
   return (
     <section className="safety-banner" aria-label="Safety disclaimer">
-      <strong>Prototype only. Do not enter patient-identifying information.</strong>
-      <span>
-        User-entered findings only. RadRepPilot does not interpret images, diagnose, or replace radiologist review. Verify all
-        guideline applicability and final wording.
-      </span>
+      <strong>Educational use only.</strong>
+      <span>Do not enter patient-identifying information. RadRepPilot does not interpret images or provide diagnoses.</span>
     </section>
   );
 }
