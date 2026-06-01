@@ -21,7 +21,7 @@ export const demoCases: GuidedDemoCase[] = [
   {
     id: 'gp-appendicitis',
     title: 'From vague requisition to focused CT report',
-    scenario: 'GP requisition to CT abdomen/pelvis appendicitis workflow',
+    scenario: 'Imaging requisition to CT abdomen/pelvis appendicitis workflow',
     workflowId: 'appendicitis',
     copyText:
       'Inflammatory changes in the right lower quadrant suspicious for active ileitis/appendicitis spectrum. No abscess or free intraperitoneal air. Incidental 1.8 cm left adrenal nodule; consider comparison with prior imaging or adrenal protocol characterization if clinically appropriate.',

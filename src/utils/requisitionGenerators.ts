@@ -26,6 +26,11 @@ function isNoSignificantPmhx(value: string): boolean {
   return /^(healthy|well|none|nil|no|no significant|no pmhx|no past|n\/a|na)$/i.test(value.trim());
 }
 
+function hasPmhxAddressed(form: ReferralFormState): boolean {
+  const status = valueFor(form, 'pmhxStatus');
+  return Boolean(status) || Boolean(valueFor(form, 'pmhx'));
+}
+
 function sentenceCaseStart(text: string): string {
   return text ? `${text.charAt(0).toLowerCase()}${text.slice(1)}` : text;
 }
@@ -69,7 +74,10 @@ function fallbackSymptom(template: PrimaryCareContentTemplate): string {
 export function getMissingEssentials(form: ReferralFormState): string[] {
   const template = getPrimaryCareTemplate(form.requestType);
   return template.essentialFields
-    .filter((id) => !valueFor(form, id))
+    .filter((id) => {
+      if (id === 'pmhx' || id === 'pmhxStatus') return !hasPmhxAddressed(form);
+      return !valueFor(form, id);
+    })
     .map(
       (id) =>
         template.quickFields.find((field) => field.id === id)?.conciseLabel ??

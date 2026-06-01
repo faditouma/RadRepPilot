@@ -38,8 +38,8 @@ export const changeLog: ChangeLogEntry[] = [
   },
   {
     version: 'Prototype v0.4',
-    title: 'Added GP requisition builder with age/sex/PMHx format',
-    summary: 'Primary care requisitions now default to concise clinical communication rather than long progress-note style text.',
+    title: 'Added imaging requisition builder with age/sex/PMHx format',
+    summary: 'Imaging requisitions now default to concise clinical communication rather than long progress-note style text.',
     category: 'Primary Care',
   },
   {

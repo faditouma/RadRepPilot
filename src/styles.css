@@ -2656,51 +2656,31 @@ textarea {
 
 .patient-context-grid {
   display: grid;
-  grid-template-columns: minmax(100px, 120px) minmax(150px, 180px) minmax(200px, 240px) repeat(3, minmax(0, 1fr));
-  gap: 9px;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 11px;
   align-items: end;
 }
 
-.patient-context-grid .field:nth-child(4) {
-  grid-column: 4 / -1;
-}
-
-.patient-context-grid .field:nth-child(5) {
-  grid-column: 1 / span 2;
-}
-
-.patient-context-grid .field:nth-child(6) {
-  grid-column: 3 / span 2;
-}
-
-.patient-context-grid .field:nth-child(7) {
-  grid-column: 5 / span 2;
+.patient-context-grid .field,
+.patient-context-grid .check-toggle {
   min-width: 0;
 }
 
-@media (max-width: 1180px) {
+.patient-context-grid .field[data-field-id="age"] {
+  max-width: 140px;
+}
+
+.patient-context-grid .field[data-field-id="pmhx"] {
+  grid-column: span 2;
+}
+
+.patient-context-grid .field[data-field-id="pmhx"] textarea {
+  min-height: 74px;
+}
+
+@media (max-width: 1020px) {
   .patient-context-grid {
-    grid-template-columns: minmax(100px, 120px) minmax(150px, 180px) minmax(0, 1fr);
-  }
-
-  .patient-context-grid .field:nth-child(3) {
-    grid-column: 3 / -1;
-  }
-
-  .patient-context-grid .field:nth-child(4) {
-    grid-column: 1 / -1;
-  }
-
-  .patient-context-grid .field:nth-child(5) {
-    grid-column: 1 / span 2;
-  }
-
-  .patient-context-grid .field:nth-child(6) {
-    grid-column: 3 / -1;
-  }
-
-  .patient-context-grid .field:nth-child(7) {
-    grid-column: 1 / -1;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 }
 
@@ -3014,6 +2994,10 @@ footer {
 
   .patient-context-grid .field:nth-child(n) {
     grid-column: 1 / -1;
+  }
+
+  .patient-context-grid .field[data-field-id="age"] {
+    max-width: none;
   }
 
   .primary-care-topbar {

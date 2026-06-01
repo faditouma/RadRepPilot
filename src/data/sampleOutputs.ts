@@ -11,7 +11,7 @@ export interface SampleOutput {
 export const sampleOutputs: SampleOutput[] = [
   {
     id: 'gp-before-after',
-    title: 'GP requisition before/after',
+    title: 'Imaging requisition before/after',
     clinicalScenario: 'Vague abdominal pain request converted into radiology-useful clinical information.',
     output:
       'Before: “Abdo pain, please assess.”\n\nAfter: “34M, known for Crohn’s disease, presenting with 3 days of right lower quadrant abdominal pain and fever. Please assess for active ileitis, abscess, obstruction, appendicitis, or alternative acute intra-abdominal pathology. Thank you.”',

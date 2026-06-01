@@ -1040,7 +1040,7 @@ export function PrimaryCareRequestBuilder({ initialForm, onInsertText, onSaveTex
     <section className="primary-care-workspace">
       <div className="primary-care-topbar">
         <div>
-          <h2>Primary Care Imaging Requests</h2>
+          <h2>Imaging requisitions</h2>
           <p>Generate concise, radiology-useful requisition text in under 60 seconds.</p>
         </div>
         <div className="primary-care-toggle-stack">
@@ -1129,19 +1129,24 @@ export function PrimaryCareRequestBuilder({ initialForm, onInsertText, onSaveTex
                     <GenericField
                       field={{
                         id: 'pmhxStatus',
-                        label: 'PMHx status',
+                        label: 'PMHx documented?',
                         type: 'select',
                         options: [
                           { value: '', label: 'Not specified' },
-                          { value: 'no-significant-pmhx', label: 'Healthy / no significant PMHx' },
-                          { value: 'relevant-pmhx', label: 'Relevant PMHx below' },
+                          { value: 'no-significant-pmhx', label: 'No relevant PMHx' },
+                          { value: 'relevant-pmhx', label: 'Relevant PMHx present' },
                         ],
                       }}
                       value={form.values.pmhxStatus}
                       onChange={(valueToSet) => updateValue('pmhxStatus', valueToSet)}
                     />
                     <GenericField
-                      field={{ id: 'pmhx', label: 'Relevant PMHx', type: 'text', placeholder: 'e.g. Crohn disease, AF on anticoagulation' }}
+                      field={{
+                        id: 'pmhx',
+                        label: 'Relevant PMHx',
+                        type: 'textarea',
+                        placeholder: 'e.g. cancer, anticoagulation, immunosuppression, recent surgery, CKD, pregnancy…',
+                      }}
                       value={form.values.pmhx}
                       onChange={(valueToSet) => updateValue('pmhx', valueToSet)}
                     />
@@ -1262,7 +1267,7 @@ function GenericField({
 
   if (field.type === 'select') {
     return (
-      <label className={`field ${field.important ? 'important-field' : ''}`}>
+      <label className={`field ${field.important ? 'important-field' : ''}`} data-field-id={field.id}>
         {label}
         <select value={typeof value === 'string' ? value : ''} onChange={(event) => onChange(event.target.value)}>
           {(field.options ?? []).map((option) => (
@@ -1277,7 +1282,7 @@ function GenericField({
 
   if (field.type === 'textarea') {
     return (
-      <label className={`field wide-field ${field.important ? 'important-field' : ''}`}>
+      <label className={`field wide-field ${field.important ? 'important-field' : ''}`} data-field-id={field.id}>
         {label}
         <textarea value={typeof value === 'string' ? value : ''} onChange={(event) => onChange(event.target.value)} placeholder={field.placeholder} />
         {hint ? <small className="field-hint">{hint}</small> : null}
@@ -1295,7 +1300,7 @@ function GenericField({
   }
 
   return (
-    <label className={`field ${field.important ? 'important-field' : ''}`}>
+    <label className={`field ${field.important ? 'important-field' : ''}`} data-field-id={field.id}>
       {label}
       <input value={typeof value === 'string' ? value : ''} onChange={(event) => onChange(event.target.value)} placeholder={field.placeholder} />
     </label>

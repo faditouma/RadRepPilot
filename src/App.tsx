@@ -85,7 +85,7 @@ const moduleLabels: Record<ModuleType, string> = {
 const draftLabels: Record<DraftType, string> = {
   ...moduleLabels,
   builder: 'Report Builder',
-  referral: 'Primary Care Imaging Request',
+  referral: 'Imaging requisition',
   calculator: 'Calculator Sentence',
   incidental: 'Incidental Finding Sentence',
   rads: 'RADS / Classification Preview',
@@ -359,7 +359,7 @@ function App({ embedded = false, initialPage = 'dashboard' }: AppProps) {
           : moduleType === 'calculator'
             ? 'Calculator sentence'
             : moduleType === 'referral'
-              ? 'Primary care requisition'
+              ? 'Imaging requisition'
               : 'Radiology report',
       dateTime: new Date().toISOString(),
       reportText,
@@ -385,7 +385,7 @@ function App({ embedded = false, initialPage = 'dashboard' }: AppProps) {
             : moduleType === 'calculator'
           ? 'Calculator sentence'
           : moduleType === 'referral'
-            ? 'Primary care requisition'
+            ? 'Imaging requisition'
             : moduleType === 'builder'
               ? 'Mixed report builder draft'
               : 'Radiology report',
@@ -437,7 +437,7 @@ function App({ embedded = false, initialPage = 'dashboard' }: AppProps) {
       id: crypto.randomUUID(),
       title: template.title,
       moduleType: 'referral',
-      category: 'Primary care requisition',
+      category: 'Imaging requisition',
       dateTime: new Date().toISOString(),
       reportText: text,
       impression: text,
@@ -560,7 +560,7 @@ function App({ embedded = false, initialPage = 'dashboard' }: AppProps) {
             Open calculators
           </button>
           <button className="secondary-button" onClick={() => setActivePage('referral')} type="button">
-            Build GP requisition
+            Build imaging requisition
           </button>
           <button className="secondary-button" onClick={() => setActivePage('gallery')} type="button">
             View sample outputs
@@ -1211,7 +1211,7 @@ function App({ embedded = false, initialPage = 'dashboard' }: AppProps) {
           ctaLabel="Open calculators"
         />
         <ModuleCard
-          title="GP requisitions"
+          title="Imaging requisitions"
           meta="Requisitions"
           iconName="primaryCare"
           description="Practise writing concise imaging requests that communicate the clinical question clearly."
@@ -1225,8 +1225,8 @@ function App({ embedded = false, initialPage = 'dashboard' }: AppProps) {
   const renderReferral = () => (
     <div className="page-stack">
       <PageHeader
-        eyebrow="Primary Care Imaging Requests"
-        title="Primary Care Imaging Requests"
+        eyebrow="Imaging requisitions"
+        title="Imaging requisitions"
         description="Generate concise, radiology-useful requisition text in under 60 seconds. This does not determine imaging appropriateness."
       />
       <PrimaryCareRequestBuilder initialForm={referralForm} onInsertText={insertTextIntoBuilder} onSaveText={saveTextDraft} />
@@ -1444,7 +1444,7 @@ function App({ embedded = false, initialPage = 'dashboard' }: AppProps) {
     { key: 'modules', label: 'Reporting workflows', iconName: 'xray' },
     { key: 'calculators', label: 'Calculators', iconName: 'calculator' },
     { key: 'builder', label: 'Report builder', iconName: 'report' },
-    { key: 'referral', label: 'GP requisitions', iconName: 'primaryCare' },
+    { key: 'referral', label: 'Imaging requisitions', iconName: 'primaryCare' },
     { key: 'gallery', label: 'Examples', iconName: 'followUp' },
     { key: 'drafts', label: 'Local drafts', iconName: 'savedDrafts' },
     { key: 'safety', label: 'Safety', iconName: 'safety' },

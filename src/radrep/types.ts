@@ -27,7 +27,7 @@ export type DraftCategory =
   | 'Calculator sentence'
   | 'RADS/classification preview sentence'
   | 'Incidental finding sentence'
-  | 'Primary care requisition'
+  | 'Imaging requisition'
   | 'Mixed report builder draft';
 
 export type InsertTarget =
