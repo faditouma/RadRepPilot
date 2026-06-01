@@ -1,7 +1,6 @@
 import React from 'react';
 import ReactDOM from 'react-dom/client';
-import { BrowserRouter, Route, Routes } from 'react-router-dom';
-import { ProfileRequiredRoute } from './components/auth/ProfileRequiredRoute';
+import { HashRouter, Route, Routes } from 'react-router-dom';
 import { ProtectedRoute } from './components/auth/ProtectedRoute';
 import { AppLayout } from './components/layout/AppLayout';
 import { PublicLayout } from './components/layout/PublicLayout';
@@ -18,14 +17,9 @@ import { Reports } from './pages/Reports';
 import { Signup } from './pages/Signup';
 import './styles.css';
 
-function getRouterBasename() {
-  if (typeof window === 'undefined') return '/';
-  return window.location.pathname.startsWith('/RadRepPilot') ? '/RadRepPilot' : '/';
-}
-
 ReactDOM.createRoot(document.getElementById('root') as HTMLElement).render(
   <React.StrictMode>
-    <BrowserRouter basename={getRouterBasename()}>
+    <HashRouter>
       <Routes>
         <Route element={<PublicLayout />}>
           <Route path="/" element={<HomeRoute />} />
@@ -38,15 +32,13 @@ ReactDOM.createRoot(document.getElementById('root') as HTMLElement).render(
         <Route element={<ProtectedRoute />}>
           <Route element={<AppLayout />}>
             <Route path="/account-setup" element={<AccountSetup />} />
+            <Route path="/dashboard" element={<Dashboard />} />
+            <Route path="/reports" element={<Reports />} />
+            <Route path="/reports/new" element={<NewReport />} />
             <Route path="/preferences" element={<Preferences />} />
-            <Route element={<ProfileRequiredRoute />}>
-              <Route path="/dashboard" element={<Dashboard />} />
-              <Route path="/reports" element={<Reports />} />
-              <Route path="/reports/new" element={<NewReport />} />
-            </Route>
           </Route>
         </Route>
       </Routes>
-    </BrowserRouter>
+    </HashRouter>
   </React.StrictMode>,
 );

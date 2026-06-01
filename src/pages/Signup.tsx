@@ -42,7 +42,7 @@ export function Signup() {
       return;
     }
 
-    setMessage('Signup request sent. Check your email if confirmation is enabled for this Supabase project.');
+    setMessage('Signup request sent. Please check your email to confirm your account before signing in.');
   }
 
   return (

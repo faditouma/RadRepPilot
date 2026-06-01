@@ -16,6 +16,7 @@ const publicLinks = [
 ];
 
 const appLinks = [
+  { to: '/', label: 'Home' },
   { to: '/dashboard', label: 'Dashboard' },
   { to: '/reports', label: 'Reports' },
   { to: '/reports/new', label: 'New Report' },
@@ -25,7 +26,7 @@ const appLinks = [
 export function Navbar({ variant = 'public' }: NavbarProps) {
   const navigate = useNavigate();
   const { session, signOut } = useSupabaseSession();
-  const links = variant === 'app' ? appLinks : publicLinks;
+  const links = session ? appLinks : publicLinks;
 
   async function handleLogout() {
     await signOut();
@@ -34,7 +35,7 @@ export function Navbar({ variant = 'public' }: NavbarProps) {
 
   return (
     <header className={`platform-navbar ${variant}`}>
-      <NavLink className="platform-brand" to={variant === 'app' ? '/dashboard' : '/'} aria-label="RadRepPilot home">
+      <NavLink className="platform-brand" to="/" aria-label="RadRepPilot home">
         <RadRepPilotLogo variant="iconOnly" size={36} />
         <span>
           <strong>RadRepPilot</strong>
@@ -58,7 +59,7 @@ export function Navbar({ variant = 'public' }: NavbarProps) {
               Logout
             </button>
           </>
-        ) : variant === 'public' ? (
+        ) : (
           <>
             <NavLink className="ghost-link" to="/login">
               Login
@@ -67,10 +68,6 @@ export function Navbar({ variant = 'public' }: NavbarProps) {
               Signup
             </NavLink>
           </>
-        ) : (
-          <NavLink className="ghost-link" to="/">
-            Home
-          </NavLink>
         )}
       </div>
     </header>

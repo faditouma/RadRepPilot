@@ -45,13 +45,11 @@ export function Dashboard() {
   const firstName = profile?.full_name?.trim().split(/\s+/)[0];
   const hasCompleteProfile = Boolean(profile?.full_name?.trim());
   const hasPreferences = Boolean(preferences);
-  const dashboardTitle = hasCompleteProfile && firstName ? `Welcome back, ${firstName}` : 'Welcome to your RadRepPilot workspace';
+  const dashboardTitle = hasCompleteProfile && firstName ? `Welcome back, ${firstName}.` : 'Welcome to your RadRepPilot workspace';
   const dashboardDescription =
     hasCompleteProfile && profile?.role
       ? `Your workspace is configured for ${profile.role} use. You can create new reports, review saved drafts, and adjust your reporting preferences at any time.`
-      : hasCompleteProfile
-        ? 'Use this workspace to draft educational radiology reports, review saved reports, and manage your reporting preferences.'
-        : 'Use this dashboard to access your saved reports, start a new reporting draft, and manage your reporting preferences. RadRepPilot is intended for educational reporting practice only. Do not enter patient-identifying information.';
+      : 'Use this workspace to draft educational radiology reports, review saved reports, and manage your reporting preferences.';
   const profileLine = [profile?.role, profile?.institution].filter(Boolean).join(' · ');
 
   return (

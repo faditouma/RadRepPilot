@@ -20,7 +20,7 @@ export const structureOptions = [
 export const reportingStyleOptions = ['Concise', 'Standard', 'Detailed'] as const;
 
 export type UserProfile = {
-  id: string;
+  user_id: string;
   full_name: string;
   role: string;
   institution: string | null;
@@ -68,8 +68,8 @@ export async function loadProfile(userId: string) {
 
   const { data, error } = await supabase
     .from('profiles')
-    .select('id, full_name, role, institution')
-    .eq('id', userId)
+    .select('user_id, full_name, role, institution')
+    .eq('user_id', userId)
     .maybeSingle();
 
   if (error) throw error;
@@ -83,14 +83,14 @@ export async function upsertProfile(userId: string, profile: ProfileFormState) {
     .from('profiles')
     .upsert(
       {
-        id: userId,
+        user_id: userId,
         full_name: profile.full_name.trim(),
         role: profile.role,
         institution: profile.institution.trim() || null,
       },
-      { onConflict: 'id' },
+      { onConflict: 'user_id' },
     )
-    .select('id, full_name, role, institution')
+    .select('user_id, full_name, role, institution')
     .single();
 
   if (error) throw error;
@@ -156,4 +156,3 @@ export function preferencesToForm(preferences: UserPreferences | null): Preferen
     include_differential: Boolean(preferences.include_differential),
   };
 }
-
