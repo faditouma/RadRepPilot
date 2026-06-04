@@ -31,7 +31,11 @@ export function searchAppropriatenessTopics(query: string): AppropriatenessTopic
       topic.clinicalArea,
       topic.sourceLabel,
       ...topic.keywords,
-      ...topic.variants.flatMap((variant) => [variant.title, variant.clinicalScenario]),
+      ...topic.variants.flatMap((variant) => [
+        variant.title,
+        variant.clinicalScenario,
+        ...variant.imagingOptions.map((option) => option.procedure),
+      ]),
     ]
       .join(' ')
       .toLowerCase();

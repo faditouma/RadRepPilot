@@ -1,6 +1,7 @@
 import { useMemo, useState } from 'react';
 import { appropriatenessTopics, searchAppropriatenessTopics } from '../../data/appropriateness';
 import type { AppropriatenessCategory, AppropriatenessTopic } from '../../data/appropriateness';
+import { searchClinicalMappings, type ClinicalComplaintMapping } from '../../data/appropriateness/clinicalMappings';
 import { CopyButton } from '../radrep/RadRepComponents';
 
 const radiationLegend = [
@@ -24,10 +25,104 @@ function ReviewBadge({ topic }: { topic: AppropriatenessTopic }) {
   return <span className={`guide-review-badge ${topic.reviewStatus}`}>{topic.reviewStatus === 'reviewed' ? 'Reviewed' : 'Needs review'}</span>;
 }
 
+function humanizeTopicId(topicId: string) {
+  return topicId
+    .split('-')
+    .filter(Boolean)
+    .map((part) => part.charAt(0).toUpperCase() + part.slice(1))
+    .join(' ');
+}
+
+function ComplaintMappingCard({
+  mapping,
+  topicById,
+}: {
+  mapping: ClinicalComplaintMapping;
+  topicById: Map<string, AppropriatenessTopic>;
+}) {
+  const relatedTopics = mapping.relatedTopicIds.map((topicId) => ({
+    topicId,
+    topic: topicById.get(topicId),
+  }));
+
+  return (
+    <article className="guide-complaint-card">
+      <div className="guide-section-heading">
+        <div>
+          <span className="eyebrow">Matching complaint</span>
+          <h3>{mapping.complaint}</h3>
+        </div>
+      </div>
+      <div className="guide-complaint-synonyms">
+        {mapping.synonyms.slice(0, 6).map((synonym) => (
+          <span key={synonym}>{synonym}</span>
+        ))}
+      </div>
+      <div className="guide-two-column">
+        <div>
+          <h4>Missing information prompts</h4>
+          <ul>
+            {mapping.missingInfoPrompts.map((prompt) => (
+              <li key={prompt}>{prompt}</li>
+            ))}
+          </ul>
+        </div>
+        <div>
+          <div className="guide-section-heading">
+            <h4>Requisition wording</h4>
+            <CopyButton text={mapping.commonRequisitionLanguage} label="Copy wording" />
+          </div>
+          <p>{mapping.commonRequisitionLanguage}</p>
+        </div>
+      </div>
+      <div className="guide-related-topics">
+        <h4>Related topics</h4>
+        {relatedTopics.map(({ topicId, topic }) => (
+          <div className="guide-related-topic" key={topicId}>
+            <div>
+              <strong>{topic?.title ?? humanizeTopicId(topicId)}</strong>
+              <span>{topic ? `${topic.sourceLabel} · ${topic.year}` : 'Topic not curated yet'}</span>
+            </div>
+            {topic ? <ReviewBadge topic={topic} /> : <span className="guide-review-badge unreviewed">Topic not curated yet</span>}
+          </div>
+        ))}
+      </div>
+      {relatedTopics.some(({ topic }) => topic) ? (
+        <div className="guide-reviewed-recommendations">
+          <h4>Reviewed ACR-style recommendations</h4>
+          {relatedTopics
+            .filter((item): item is { topicId: string; topic: AppropriatenessTopic } => Boolean(item.topic))
+            .map(({ topic }) => {
+              const candidateVariants = mapping.suggestedVariantIds?.length
+                ? topic.variants.filter((variant) => mapping.suggestedVariantIds?.includes(variant.id))
+                : topic.variants.slice(0, 1);
+              const variantsToShow = candidateVariants.length ? candidateVariants : topic.variants.slice(0, 1);
+
+              return variantsToShow.map((variant) => (
+                <div className="guide-reviewed-variant" key={`${topic.id}-${variant.id}`}>
+                  <strong>{variant.title}</strong>
+                  <div className="guide-mini-option-list">
+                    {variant.imagingOptions.slice(0, 4).map((option) => (
+                      <span key={option.procedure}>
+                        {option.procedure} · {option.appropriatenessCategory} · {option.radiationLevel}
+                      </span>
+                    ))}
+                  </div>
+                </div>
+              ));
+            })}
+        </div>
+      ) : null}
+    </article>
+  );
+}
+
 export function ImagingGuidePanel() {
   const [query, setQuery] = useState('');
   const [selectedTopicId, setSelectedTopicId] = useState(appropriatenessTopics[0]?.id ?? '');
   const visibleTopics = useMemo(() => searchAppropriatenessTopics(query), [query]);
+  const matchingClinicalMappings = useMemo(() => searchClinicalMappings(query), [query]);
+  const topicById = useMemo(() => new Map(appropriatenessTopics.map((topic) => [topic.id, topic])), []);
   const selectedTopic = visibleTopics.find((topic) => topic.id === selectedTopicId) ?? visibleTopics[0];
   const [selectedVariantId, setSelectedVariantId] = useState(selectedTopic?.variants[0]?.id ?? '');
   const selectedVariant =
@@ -84,7 +179,31 @@ export function ImagingGuidePanel() {
           </div>
         </aside>
 
-        {selectedTopic ? (
+        {matchingClinicalMappings.length ? (
+          <div className="guide-content">
+            <div className="guide-topic-header">
+              <div>
+                <span className="eyebrow">Complaint mapping</span>
+                <h2>Clinical complaint matches</h2>
+                <p>
+                  Complaint mappings help translate everyday clinical language into reviewed Imaging Guide topics when available.
+                  If a topic is not curated yet, it is intentionally not shown as a recommendation.
+                </p>
+              </div>
+            </div>
+            <div className="guide-complaint-grid">
+              {matchingClinicalMappings.map((mapping) => (
+                <ComplaintMappingCard mapping={mapping} topicById={topicById} key={mapping.id} />
+              ))}
+            </div>
+            {selectedTopic ? (
+              <details className="guide-section">
+                <summary>Show reviewed topic match</summary>
+                <p>{selectedTopic.title}</p>
+              </details>
+            ) : null}
+          </div>
+        ) : selectedTopic ? (
           <div className="guide-content">
           <div className="guide-topic-header">
             <div>

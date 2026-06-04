@@ -4158,6 +4158,117 @@ footer {
   color: var(--slate);
 }
 
+.guide-complaint-grid {
+  display: grid;
+  gap: 12px;
+}
+
+.guide-complaint-card {
+  display: grid;
+  gap: 14px;
+  border: 1px solid rgba(216, 224, 234, 0.88);
+  border-radius: 16px;
+  padding: 14px;
+  background: linear-gradient(180deg, #fff, rgba(248, 250, 252, 0.72));
+}
+
+.guide-complaint-card h3,
+.guide-complaint-card h4 {
+  margin: 0;
+  color: var(--ink);
+}
+
+.guide-complaint-card h4 {
+  font-size: 0.93rem;
+}
+
+.guide-complaint-card p,
+.guide-complaint-card li {
+  color: var(--muted);
+  line-height: 1.5;
+}
+
+.guide-complaint-card ul {
+  margin: 0;
+  padding-left: 1.1rem;
+}
+
+.guide-complaint-synonyms {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 7px;
+}
+
+.guide-complaint-synonyms span {
+  border: 1px solid rgba(79, 70, 229, 0.14);
+  border-radius: 999px;
+  padding: 6px 9px;
+  background: rgba(238, 242, 255, 0.72);
+  color: #4338CA;
+  font-size: 0.8rem;
+  font-weight: 760;
+}
+
+.guide-related-topics,
+.guide-reviewed-recommendations {
+  display: grid;
+  gap: 8px;
+}
+
+.guide-related-topic {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  align-items: center;
+  border: 1px solid rgba(216, 224, 234, 0.86);
+  border-radius: 12px;
+  padding: 10px;
+  background: #fff;
+}
+
+.guide-related-topic div {
+  display: grid;
+  gap: 2px;
+}
+
+.guide-related-topic strong {
+  color: var(--slate);
+}
+
+.guide-related-topic span {
+  color: var(--muted);
+  font-size: 0.86rem;
+}
+
+.guide-reviewed-variant {
+  display: grid;
+  gap: 7px;
+  border: 1px solid rgba(16, 185, 129, 0.18);
+  border-radius: 12px;
+  padding: 10px;
+  background: rgba(236, 253, 245, 0.58);
+}
+
+.guide-reviewed-variant strong {
+  color: #047857;
+}
+
+.guide-mini-option-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 7px;
+}
+
+.guide-mini-option-list span {
+  border: 1px solid rgba(16, 185, 129, 0.18);
+  border-radius: 999px;
+  padding: 6px 8px;
+  background: #fff;
+  color: var(--muted);
+  font-size: 0.8rem;
+  font-weight: 720;
+}
+
 @media (max-width: 920px) {
   .guide-layout,
   .guide-option-grid,
