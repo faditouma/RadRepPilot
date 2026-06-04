@@ -15,6 +15,16 @@ const categoryPatterns = [
 const categoryPattern = /(May Be Appropriate\s*\(Disagreement\)|Usually Appropriate|May Be Appropriate|Usually Not Appropriate)/i;
 const radiationPattern = /(☢{1,5}|O|Varies)/i;
 const yearPattern = /\b(20\d{2}|19\d{2})\b/;
+const summaryFile = path.join(outputDir, 'extraction-summary.json');
+
+const warningCategories = {
+  noVariantFound: 'noVariantFound',
+  noProcedureRowsFound: 'noProcedureRowsFound',
+  unclearRadiationLevel: 'unclearRadiationLevel',
+  unclearAppropriatenessCategory: 'unclearAppropriatenessCategory',
+  possibleTruncatedProcedure: 'possibleTruncatedProcedure',
+  duplicateTopicTitle: 'duplicateTopicTitle',
+};
 
 function slugify(value) {
   return value
@@ -192,24 +202,73 @@ function extractRowsFromVariant(variantBody) {
   return rows;
 }
 
+function createWarning(category, message, context = {}) {
+  return {
+    category,
+    message,
+    ...context,
+  };
+}
+
 function warningsForExtraction(raw) {
   const warnings = [];
-  if (!raw.variants.length) warnings.push('No Variant blocks were found.');
+  if (!raw.variants.length) {
+    warnings.push(createWarning(warningCategories.noVariantFound, 'No Variant blocks were found.'));
+  }
 
   const allRows = raw.variants.flatMap((variant) => variant.procedureRows);
-  if (!allRows.length) warnings.push('No procedure rows were found.');
+  if (!allRows.length) {
+    warnings.push(createWarning(warningCategories.noProcedureRowsFound, 'No procedure rows were found.'));
+  }
 
   for (const variant of raw.variants) {
-    if (!variant.procedureRows.length) warnings.push(`No procedure rows found for ${variant.variantTitle}.`);
+    if (!variant.procedureRows.length) {
+      warnings.push(
+        createWarning(warningCategories.noProcedureRowsFound, `No procedure rows found for ${variant.variantTitle}.`, {
+          variantTitle: variant.variantTitle,
+        }),
+      );
+    }
 
     for (const row of variant.procedureRows) {
-      if (row.radiationLevel === 'Unknown') warnings.push(`Missing or unclear radiation level: ${row.procedure}.`);
-      if (row.appropriatenessCategory === 'Unknown') warnings.push(`Unclear appropriateness category: ${row.procedure}.`);
-      if (row.procedure.length < 12 || /,$/.test(row.procedure)) warnings.push(`Procedure text may be truncated: ${row.procedure}.`);
+      if (row.radiationLevel === 'Unknown') {
+        warnings.push(
+          createWarning(warningCategories.unclearRadiationLevel, `Missing or unclear radiation level: ${row.procedure}.`, {
+            procedure: row.procedure,
+            variantTitle: variant.variantTitle,
+          }),
+        );
+      }
+      if (row.appropriatenessCategory === 'Unknown') {
+        warnings.push(
+          createWarning(warningCategories.unclearAppropriatenessCategory, `Unclear appropriateness category: ${row.procedure}.`, {
+            procedure: row.procedure,
+            variantTitle: variant.variantTitle,
+          }),
+        );
+      }
+      if (row.procedure.length < 12 || /,$/.test(row.procedure)) {
+        warnings.push(
+          createWarning(warningCategories.possibleTruncatedProcedure, `Procedure text may be truncated: ${row.procedure}.`, {
+            procedure: row.procedure,
+            variantTitle: variant.variantTitle,
+          }),
+        );
+      }
     }
   }
 
   return warnings;
+}
+
+function duplicateTitleWarnings(raw, titleCounts) {
+  if (!raw.extractedTitle || titleCounts.get(raw.extractedTitle) <= 1) return [];
+
+  return [
+    createWarning(warningCategories.duplicateTopicTitle, `Duplicate extracted topic title: ${raw.extractedTitle}.`, {
+      extractedTitle: raw.extractedTitle,
+    }),
+  ];
 }
 
 async function processPdf(filename) {
@@ -252,35 +311,73 @@ async function main() {
   }
 
   const summary = {
-    pdfsProcessed: 0,
-    topicsExtracted: 0,
-    variantsExtracted: 0,
-    rowsExtracted: 0,
-    warningsCount: 0,
+    timestamp: new Date().toISOString(),
+    processedFiles: [],
+    failedFiles: [],
+    totalTopics: 0,
+    totalVariants: 0,
+    totalProcedureRows: 0,
+    totalWarnings: 0,
   };
+  const titleCounts = new Map();
+  const pendingWrites = [];
 
   for (const filename of pdfs) {
-    const raw = await processPdf(filename);
-    const outputName = `${slugify(path.basename(filename, path.extname(filename)))}.raw.json`;
+    try {
+      const raw = await processPdf(filename);
+      titleCounts.set(raw.extractedTitle, (titleCounts.get(raw.extractedTitle) ?? 0) + 1);
+      pendingWrites.push({ filename, raw });
+    } catch (error) {
+      const message = error instanceof Error ? error.message : String(error);
+      summary.failedFiles.push({ sourceFile: filename, error: message });
+      console.error(`Failed ${filename}: ${message}`);
+    }
+  }
+
+  for (const item of pendingWrites) {
+    const raw = {
+      ...item.raw,
+      extractionWarnings: [...item.raw.extractionWarnings, ...duplicateTitleWarnings(item.raw, titleCounts)],
+    };
+    const outputName = `${slugify(path.basename(item.filename, path.extname(item.filename)))}.raw.json`;
     const outputPath = path.join(outputDir, outputName);
     await writeFile(outputPath, `${JSON.stringify(raw, null, 2)}\n`, 'utf8');
 
     const rowCount = raw.variants.reduce((total, variant) => total + variant.procedureRows.length, 0);
-    summary.pdfsProcessed += 1;
-    summary.topicsExtracted += raw.extractedTitle ? 1 : 0;
-    summary.variantsExtracted += raw.variants.length;
-    summary.rowsExtracted += rowCount;
-    summary.warningsCount += raw.extractionWarnings.length;
+    summary.processedFiles.push({
+      sourceFile: item.filename,
+      outputFile: path.relative(process.cwd(), outputPath),
+      extractedTitle: raw.extractedTitle,
+      variants: raw.variants.length,
+      procedureRows: rowCount,
+      warnings: raw.extractionWarnings.length,
+    });
+    summary.totalTopics += raw.extractedTitle ? 1 : 0;
+    summary.totalVariants += raw.variants.length;
+    summary.totalProcedureRows += rowCount;
+    summary.totalWarnings += raw.extractionWarnings.length;
 
     console.log(`Wrote ${path.relative(process.cwd(), outputPath)} (${raw.variants.length} variants, ${rowCount} rows, ${raw.extractionWarnings.length} warnings)`);
   }
 
+  summary.totalWarnings += summary.failedFiles.length;
+  await writeFile(summaryFile, `${JSON.stringify(summary, null, 2)}\n`, 'utf8');
+
   console.log('\nACR extraction summary');
-  console.log(`PDFs processed: ${summary.pdfsProcessed}`);
-  console.log(`Topics extracted: ${summary.topicsExtracted}`);
-  console.log(`Variants extracted: ${summary.variantsExtracted}`);
-  console.log(`Rows extracted: ${summary.rowsExtracted}`);
-  console.log(`Warnings count: ${summary.warningsCount}`);
+  console.log(`Processed files: ${summary.processedFiles.length}`);
+  console.log(`Failed files: ${summary.failedFiles.length}`);
+  console.log(`Topics extracted: ${summary.totalTopics}`);
+  console.log(`Variants extracted: ${summary.totalVariants}`);
+  console.log(`Rows extracted: ${summary.totalProcedureRows}`);
+  console.log(`Warnings count: ${summary.totalWarnings}`);
+  if (summary.failedFiles.length) {
+    console.log('Failed file list:');
+    for (const failedFile of summary.failedFiles) {
+      console.log(`- ${failedFile.sourceFile}: ${failedFile.error}`);
+    }
+  }
+  console.log(`Summary written to ${path.relative(process.cwd(), summaryFile)}`);
+  console.log('Raw extraction complete. Review required before public use.');
 }
 
 main().catch((error) => {

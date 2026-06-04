@@ -17,3 +17,19 @@ Curated content should:
 - Preserve source attribution and review status.
 - Include local protocol/radiologist verification cautions.
 - Be marked reviewed only after human review.
+
+## Draft Conversion
+
+Convert one reviewed raw JSON starting point into a draft topic file:
+
+```bash
+npm run convert:acr -- src/data/appropriateness/raw/example.raw.json
+```
+
+The converter writes:
+
+```text
+src/data/appropriateness/topics/[topic].draft.ts
+```
+
+Draft files are not automatically imported into the registry. Human review and manual editing are required first.
