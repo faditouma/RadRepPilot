@@ -4,8 +4,12 @@ import { reportingWorkflowSchemas, type ReportingWorkflowSchema, type WorkflowVa
 import type { ModuleType, ReportSections } from '../radrep/types';
 import { cleanLines, formatMeasurement, numberOrNull, sentenceList, workflowList, workflowValue, yes } from './impressionGenerators';
 
-function keyNegativeSentence(values: WorkflowValues): string | undefined {
-  const negatives = workflowList(values, 'keyNegatives');
+function keyNegativeSentence(values: WorkflowValues, suppressPhrases: string[] = []): string | undefined {
+  const normalizedSuppressions = suppressPhrases.map((phrase) => phrase.toLowerCase());
+  const negatives = workflowList(values, 'keyNegatives').filter((negative) => {
+    const normalized = negative.toLowerCase();
+    return !normalizedSuppressions.some((phrase) => normalized.includes(phrase));
+  });
   return negatives.length ? `Key negatives: ${negatives.join('; ')}.` : undefined;
 }
 
@@ -34,6 +38,7 @@ function generateChestXrayReport(schema: ReportingWorkflowSchema, values: Workfl
   const lungVolumes = workflowValue(values, 'lungVolumes');
   const consolidation = workflowValue(values, 'consolidation');
   const consolidationLocation = workflowValue(values, 'consolidationLocation');
+  const atelectaticChange = workflowValue(values, 'atelectaticChange');
   const edema = workflowValue(values, 'interstitialEdema');
   const effusion = workflowValue(values, 'pleuralEffusion');
   const effusionLocation = workflowValue(values, 'pleuralEffusionLocation');
@@ -41,16 +46,22 @@ function generateChestXrayReport(schema: ReportingWorkflowSchema, values: Workfl
   const pneumothoraxSideSize = workflowValue(values, 'pneumothoraxSideSize');
   const devices = workflowValue(values, 'linesTubesDevices');
 
-  const consolidationPresent = consolidation !== 'not specified' && consolidation !== 'none';
-  const edemaPresent = edema !== 'not specified' && edema !== 'absent';
-  const effusionPresent = effusion !== 'not specified' && effusion !== 'none';
+  const consolidationPresent = Boolean(consolidation) && consolidation !== 'not specified' && consolidation !== 'none';
+  const consolidationAbsent = consolidation === 'none';
+  const atelectaticChangePresent = atelectaticChange === 'present';
+  const edemaPresent = Boolean(edema) && edema !== 'not specified' && edema !== 'absent';
+  const edemaAbsent = edema === 'absent';
+  const effusionPresent = Boolean(effusion) && effusion !== 'not specified' && effusion !== 'none';
+  const effusionAbsent = effusion === 'none';
   const pneumothoraxPresent = pneumothorax === 'present';
+  const pneumothoraxAbsent = pneumothorax === 'none';
   const normalSilhouette = silhouette === 'normal' || silhouette === 'not specified';
   const noAcutePattern =
-    !consolidationPresent &&
-    !edemaPresent &&
-    !effusionPresent &&
-    !pneumothoraxPresent &&
+    consolidationAbsent &&
+    !atelectaticChangePresent &&
+    edemaAbsent &&
+    effusionAbsent &&
+    pneumothoraxAbsent &&
     normalSilhouette;
 
   const qualitySentence =
@@ -78,6 +89,11 @@ function generateChestXrayReport(schema: ReportingWorkflowSchema, values: Workfl
     : consolidation === 'none'
       ? 'No focal airspace consolidation.'
       : undefined;
+  const atelectaticSentence = atelectaticChangePresent
+    ? 'Low-volume/atelectatic opacity is entered as present.'
+    : atelectaticChange === 'absent'
+      ? 'No low-volume/atelectatic opacity is entered.'
+      : undefined;
   const edemaSentence = edemaPresent
     ? `${edema[0].toUpperCase()}${edema.slice(1)} interstitial pulmonary edema pattern is entered.`
     : edema === 'absent'
@@ -99,6 +115,7 @@ function generateChestXrayReport(schema: ReportingWorkflowSchema, values: Workfl
     silhouetteSentence,
     lungVolumeSentence,
     consolidationSentence,
+    atelectaticSentence,
     edemaSentence,
     effusionSentence,
     pneumothoraxSentence,
@@ -112,6 +129,7 @@ function generateChestXrayReport(schema: ReportingWorkflowSchema, values: Workfl
         ? `Focal airspace consolidation${consolidationLocation ? ` in ${consolidationLocation}` : ''}, compatible with pneumonia in the appropriate clinical context.`
         : `${consolidation[0].toUpperCase()}${consolidation.slice(1)}${consolidationLocation ? ` in ${consolidationLocation}` : ''}; correlate clinically.`
       : undefined,
+    atelectaticChangePresent ? 'Low-volume/atelectatic opacity is present.' : undefined,
     edemaPresent || effusionPresent
       ? cleanLines([
           edemaPresent ? `${edema[0].toUpperCase()}${edema.slice(1)} interstitial edema pattern.` : undefined,
@@ -298,7 +316,12 @@ function generateAppendicitisReport(schema: ReportingWorkflowSchema, values: Wor
       yes(values, 'obstructionIleus') ? 'Associated bowel obstruction/ileus is entered as present.' : undefined,
       yes(values, 'cecalTerminalIlealInflammation') ? 'Cecal/terminal ileal inflammatory change is entered as present.' : undefined,
       alternative ? `Alternative diagnosis: ${alternative}.` : undefined,
-      keyNegativeSentence(values),
+      keyNegativeSentence(values, [
+        abscess ? 'abscess' : '',
+        perforation ? 'perforation' : '',
+        perforation ? 'free air' : '',
+        yes(values, 'obstructionIleus') ? 'bowel obstruction' : '',
+      ].filter(Boolean)),
     ]),
     impression,
     'Verify appendix visualization, diameter, inflammatory changes, and complications on source images. Communicate urgent findings per local policy.',
@@ -350,7 +373,19 @@ function generateBowelObstructionReport(schema: ReportingWorkflowSchema, values:
   return commonReport(
     schema,
     values,
-    cleanLines([findings, ...complicationLines, alternative ? `Alternative diagnosis: ${alternative}.` : undefined, keyNegativeSentence(values)]),
+    cleanLines([
+      findings,
+      ...complicationLines,
+      alternative ? `Alternative diagnosis: ${alternative}.` : undefined,
+      keyNegativeSentence(values, [
+        closedLoop ? 'closed-loop' : '',
+        ischemiaFeatures.length ? 'ischemia' : '',
+        yes(values, 'pneumatosis') ? 'pneumatosis' : '',
+        yes(values, 'portalVenousGas') ? 'portal venous gas' : '',
+        freeAir ? 'free air' : '',
+        freeAir ? 'perforation' : '',
+      ].filter(Boolean)),
+    ]),
     impression,
     closedLoop || ischemiaFeatures.length || freeAir
       ? 'Urgent surgical correlation recommended. Verify transition point, cause, and ischemia/perforation features on source images.'
@@ -388,7 +423,11 @@ function generateRenalColicReport(schema: ReportingWorkflowSchema, values: Workf
     yes(values, 'additionalNonobstructingStones') ? 'Additional nonobstructing renal calculi are entered as present.' : undefined,
     yes(values, 'bilateralObstruction') ? 'Bilateral obstruction is entered as present.' : undefined,
     alternative ? `Alternative diagnosis: ${alternative}.` : undefined,
-    keyNegativeSentence(values),
+    keyNegativeSentence(values, [
+      present ? 'calculus' : '',
+      present ? 'stone' : '',
+      hydro !== 'none' ? 'hydronephrosis' : '',
+    ].filter(Boolean)),
   ];
 
   const impressionAddenda = [

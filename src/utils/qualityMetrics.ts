@@ -51,6 +51,19 @@ function hasMeaningfulText(value: unknown): boolean {
   return Boolean(text) && !['no', 'none', 'nil', 'n/a', 'na', 'not applicable', 'negative'].includes(text);
 }
 
+function addressed(value: unknown): boolean {
+  const text = textValue(value).toLowerCase();
+  return Boolean(text) && !['not specified', 'unknown', 'unspecified', ''].includes(text);
+}
+
+function addressedAny(values: Record<string, unknown>, keys: string[]): boolean {
+  return keys.some((key) => addressed(values[key]));
+}
+
+function hasFreeTextCoverage(values: Record<string, unknown>): boolean {
+  return hasMeaningfulText(values.additionalFindings) || hasMeaningfulText(values.limitationsUncertainty);
+}
+
 function hasPmhxAddressed(values: Record<string, unknown>): boolean {
   const pmhxStatus = textValue(values.pmhxStatus).toLowerCase();
   const pmhx = textValue(values.pmhx).toLowerCase();
@@ -118,6 +131,68 @@ export function scoreRequisitionCompleteness(form: ReferralFormState): QualitySc
 }
 
 export function scoreReportCompleteness(moduleType: ModuleType, values: Record<string, unknown>, report: ReportSections): QualityScore {
+  if (moduleType === 'chestXray') {
+    const airspaceAddressed = addressedAny(values, ['consolidation', 'atelectaticChange', 'interstitialEdema']) || hasFreeTextCoverage(values);
+    const pleuraAddressed = addressedAny(values, ['pleuralEffusion', 'pneumothorax']) || hasFreeTextCoverage(values);
+    return score('Report completeness', [
+      {
+        label: 'Study quality or technique addressed',
+        complete: addressed(values.studyQuality) || hasMeaningfulText(values.technique) || hasFreeTextCoverage(values),
+        missingLabel: 'Study quality/technique not addressed',
+      },
+      {
+        label: 'Cardiomediastinal silhouette addressed',
+        complete: addressed(values.cardiomediastinalSilhouette) || hasFreeTextCoverage(values),
+        missingLabel: 'Cardiomediastinal silhouette not addressed',
+      },
+      {
+        label: 'Lung/airspace findings addressed',
+        complete: airspaceAddressed,
+        missingLabel: 'Airspace/edema findings not addressed',
+      },
+      {
+        label: 'Pleura/pneumothorax addressed',
+        complete: pleuraAddressed,
+        missingLabel: 'Pleural effusion/pneumothorax not addressed',
+      },
+      {
+        label: 'Impression generated',
+        complete: hasMeaningfulText(report.impression),
+        missingLabel: 'Impression incomplete',
+      },
+    ]);
+  }
+
+  if (moduleType === 'mskXrayFracture') {
+    return score('Report completeness', [
+      {
+        label: 'Body part/laterality addressed',
+        complete: hasMeaningfulText(values.bodyPart) && addressed(values.laterality),
+        missingLabel: 'Body part or laterality missing',
+      },
+      {
+        label: 'Fracture status addressed',
+        complete: addressed(values.fracture),
+        missingLabel: 'Fracture status not addressed',
+      },
+      {
+        label: 'Alignment/dislocation addressed',
+        complete: addressed(values.jointAlignment),
+        missingLabel: 'Alignment/dislocation not addressed',
+      },
+      {
+        label: 'Soft tissue/joint effusion addressed',
+        complete: addressed(values.softTissueEffusion) || hasFreeTextCoverage(values),
+        missingLabel: 'Soft tissue/effusion status not addressed',
+      },
+      {
+        label: 'Impression generated',
+        complete: hasMeaningfulText(report.impression),
+        missingLabel: 'Impression incomplete',
+      },
+    ]);
+  }
+
   if (moduleType === 'ctpa') {
     return score('Report completeness', [
       { label: 'PE presence/distribution documented', complete: hasAny(values, ['pePresent', 'proximalLevel', 'laterality']) || hasValue(report.findings) },

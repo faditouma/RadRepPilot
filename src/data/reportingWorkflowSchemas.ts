@@ -176,6 +176,18 @@ const softTissueOptions = [
   { value: 'both swelling and effusion', label: 'Both swelling and effusion' },
 ];
 
+const templateModeOptions = [
+  { value: 'blank', label: 'Blank' },
+  { value: 'normal', label: 'Normal template' },
+  { value: 'positive', label: 'Positive findings' },
+];
+
+const atelectaticChangeOptions = [
+  ...notSpecifiedOptions,
+  { value: 'absent', label: 'Absent' },
+  { value: 'present', label: 'Present' },
+];
+
 function text(id: string, label: string, placeholder?: string, wide = false): WorkflowField {
   return { id, label, type: 'text', placeholder, wide };
 }
@@ -238,11 +250,13 @@ export const reportingWorkflowSchemas: Record<
     defaultValues: {
       indication: '',
       technique: 'Chest radiographs obtained.',
+      templateMode: 'blank',
       studyQuality: 'not specified',
       cardiomediastinalSilhouette: 'not specified',
       lungVolumes: 'not specified',
       consolidation: 'not specified',
       consolidationLocation: '',
+      atelectaticChange: 'not specified',
       interstitialEdema: 'not specified',
       pleuralEffusion: 'not specified',
       pleuralEffusionLocation: '',
@@ -268,6 +282,7 @@ export const reportingWorkflowSchemas: Record<
         title: 'Study quality and overview',
         description: 'Keep this high-level and radiograph-focused.',
         fields: [
+          select('templateMode', 'Template mode', templateModeOptions),
           select('studyQuality', 'Study quality', cxrStudyQualityOptions),
           select('cardiomediastinalSilhouette', 'Cardiomediastinal silhouette', cxrCardiomediastinalOptions),
           select('lungVolumes', 'Lung volumes', cxrLungVolumeOptions),
@@ -280,6 +295,7 @@ export const reportingWorkflowSchemas: Record<
         fields: [
           select('consolidation', 'Consolidation', cxrConsolidationOptions),
           text('consolidationLocation', 'Consolidation location if present', 'e.g. right lower lobe, left perihilar, multifocal', true),
+          select('atelectaticChange', 'Low-volume / atelectatic opacity', atelectaticChangeOptions),
           select('interstitialEdema', 'Interstitial edema', cxrEdemaOptions),
           select('pleuralEffusion', 'Pleural effusion', cxrEffusionOptions),
           text('pleuralEffusionLocation', 'Effusion side/location if present', 'e.g. small right pleural effusion', true),
@@ -289,7 +305,7 @@ export const reportingWorkflowSchemas: Record<
         ],
       },
     ],
-    keyNegatives: ['No focal consolidation', 'No pleural effusion', 'No pneumothorax', 'No pulmonary edema'],
+    keyNegatives: [],
     incidentalOptions: [
       { label: 'Pulmonary nodule', sentence: 'Possible pulmonary nodule. Consider comparison with prior imaging or dedicated follow-up according to size, risk, and local protocol.' },
       { label: 'Aortic atherosclerosis/tortuosity', sentence: 'Aortic atherosclerotic/tortuous change is noted. Correlate with clinical cardiovascular risk context.' },
@@ -302,11 +318,13 @@ export const reportingWorkflowSchemas: Record<
         description: 'Normal silhouette with no consolidation, edema, effusion, or pneumothorax.',
         intent: 'normal',
         values: {
+          templateMode: 'normal',
           studyQuality: 'adequate',
           cardiomediastinalSilhouette: 'normal',
           lungVolumes: 'normal',
           consolidation: 'none',
           consolidationLocation: '',
+          atelectaticChange: 'absent',
           interstitialEdema: 'absent',
           pleuralEffusion: 'none',
           pleuralEffusionLocation: '',
@@ -320,11 +338,13 @@ export const reportingWorkflowSchemas: Record<
         description: 'Focal airspace consolidation with no pleural complication entered.',
         intent: 'positive',
         values: {
+          templateMode: 'positive',
           studyQuality: 'adequate',
           cardiomediastinalSilhouette: 'normal',
           lungVolumes: 'normal',
           consolidation: 'focal consolidation',
           consolidationLocation: 'right lower lobe',
+          atelectaticChange: 'not specified',
           interstitialEdema: 'absent',
           pleuralEffusion: 'none',
           pneumothorax: 'none',
@@ -336,11 +356,13 @@ export const reportingWorkflowSchemas: Record<
         description: 'Interstitial edema with bilateral effusions.',
         intent: 'positive',
         values: {
+          templateMode: 'positive',
           cardiomediastinalSilhouette: 'enlarged',
           interstitialEdema: 'mild',
           pleuralEffusion: 'small bilateral',
           pleuralEffusionLocation: 'small bilateral pleural effusions',
           consolidation: 'none',
+          atelectaticChange: 'not specified',
           pneumothorax: 'none',
         },
       },
@@ -350,9 +372,11 @@ export const reportingWorkflowSchemas: Record<
         description: 'Pneumothorax clearly stated in findings and impression.',
         intent: 'complicated',
         values: {
+          templateMode: 'positive',
           pneumothorax: 'present',
           pneumothoraxSideSize: 'small left apical pneumothorax',
           consolidation: 'none',
+          atelectaticChange: 'not specified',
           pleuralEffusion: 'none',
           interstitialEdema: 'absent',
         },
@@ -374,6 +398,7 @@ export const reportingWorkflowSchemas: Record<
     defaultValues: {
       indication: '',
       technique: 'Radiographs obtained.',
+      templateMode: 'blank',
       bodyPart: '',
       laterality: 'not specified',
       fracture: 'not specified',
@@ -402,6 +427,7 @@ export const reportingWorkflowSchemas: Record<
         title: 'Exam overview',
         description: 'Define the body part and side before generating the draft.',
         fields: [
+          select('templateMode', 'Template mode', templateModeOptions),
           text('bodyPart', 'Body part', 'e.g. wrist, ankle, knee, shoulder, hip, foot', true),
           select('laterality', 'Laterality', lateralityOptions),
         ],
@@ -421,7 +447,7 @@ export const reportingWorkflowSchemas: Record<
         ],
       },
     ],
-    keyNegatives: ['No acute fracture identified', 'Normal alignment', 'No dislocation'],
+    keyNegatives: [],
     incidentalOptions: [
       { label: 'Bone lesion', sentence: 'Incidental osseous lesion. Consider comparison with prior imaging or dedicated characterization if aggressive features, pain, or malignancy history are present.' },
       { label: 'Soft tissue calcification/foreign body', sentence: 'Soft tissue calcification/foreign body is noted. Correlate with clinical history and local symptoms.' },
@@ -434,6 +460,7 @@ export const reportingWorkflowSchemas: Record<
         description: 'No acute osseous abnormality with normal alignment.',
         intent: 'normal',
         values: {
+          templateMode: 'normal',
           fracture: 'no acute fracture identified',
           fractureLocation: '',
           displacementAlignment: 'not specified',
@@ -448,6 +475,7 @@ export const reportingWorkflowSchemas: Record<
         description: 'Acute fracture without displacement or intra-articular extension entered.',
         intent: 'positive',
         values: {
+          templateMode: 'positive',
           fracture: 'acute fracture present',
           displacementAlignment: 'non-displaced',
           intraArticularExtension: 'absent',
@@ -461,6 +489,7 @@ export const reportingWorkflowSchemas: Record<
         description: 'Acute displaced fracture with swelling.',
         intent: 'complicated',
         values: {
+          templateMode: 'positive',
           fracture: 'acute fracture present',
           displacementAlignment: 'displaced',
           intraArticularExtension: 'not specified',
@@ -474,6 +503,7 @@ export const reportingWorkflowSchemas: Record<
         description: 'No fracture selected, but joint malalignment is present.',
         intent: 'complicated',
         values: {
+          templateMode: 'positive',
           fracture: 'not specified',
           jointAlignment: 'dislocation',
           softTissueEffusion: 'soft tissue swelling',

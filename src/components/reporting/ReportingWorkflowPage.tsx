@@ -24,6 +24,70 @@ function cloneValues(values: WorkflowValues): WorkflowValues {
   );
 }
 
+function templateModePatch(moduleType: string, mode: string): WorkflowValues {
+  if (moduleType === 'chestXray') {
+    if (mode === 'blank') {
+      return {
+        templateMode: 'blank',
+        studyQuality: 'not specified',
+        cardiomediastinalSilhouette: 'not specified',
+        lungVolumes: 'not specified',
+        consolidation: 'not specified',
+        consolidationLocation: '',
+        atelectaticChange: 'not specified',
+        interstitialEdema: 'not specified',
+        pleuralEffusion: 'not specified',
+        pleuralEffusionLocation: '',
+        pneumothorax: 'not specified',
+        pneumothoraxSideSize: '',
+      };
+    }
+    if (mode === 'normal') {
+      return {
+        templateMode: 'normal',
+        studyQuality: 'adequate',
+        cardiomediastinalSilhouette: 'normal',
+        lungVolumes: 'normal',
+        consolidation: 'none',
+        consolidationLocation: '',
+        atelectaticChange: 'absent',
+        interstitialEdema: 'absent',
+        pleuralEffusion: 'none',
+        pleuralEffusionLocation: '',
+        pneumothorax: 'none',
+        pneumothoraxSideSize: '',
+      };
+    }
+  }
+
+  if (moduleType === 'mskXrayFracture') {
+    if (mode === 'blank') {
+      return {
+        templateMode: 'blank',
+        fracture: 'not specified',
+        fractureLocation: '',
+        displacementAlignment: 'not specified',
+        intraArticularExtension: 'not specified',
+        jointAlignment: 'not specified',
+        softTissueEffusion: 'not specified',
+      };
+    }
+    if (mode === 'normal') {
+      return {
+        templateMode: 'normal',
+        fracture: 'no acute fracture identified',
+        fractureLocation: '',
+        displacementAlignment: 'not specified',
+        intraArticularExtension: 'not specified',
+        jointAlignment: 'normal alignment',
+        softTissueEffusion: 'none',
+      };
+    }
+  }
+
+  return { templateMode: mode };
+}
+
 const helperLinksByModule: Partial<Record<string, Array<{ id: string; label: string }>>> = {
   appendicitis: [
     { id: 'adrenal-washout', label: 'Adrenal washout' },
@@ -47,6 +111,7 @@ export function ReportingWorkflowPage({ schema, onInsertText, onSaveDraft, onOpe
   const clinicalContextSections = schema.sections.filter((section) => section.id.toLowerCase().includes('context'));
   const imagingSections = schema.sections.filter((section) => !section.id.toLowerCase().includes('context'));
   const reportQuality = scoreReportCompleteness(schema.moduleType, values, report);
+  const usesDerivedNegatives = schema.moduleType === 'chestXray' || schema.moduleType === 'mskXrayFracture';
 
   useEffect(() => {
     setValues(cloneValues(schema.defaultValues));
@@ -60,10 +125,19 @@ export function ReportingWorkflowPage({ schema, onInsertText, onSaveDraft, onOpe
   }, [schema.moduleType, values]);
 
   const updateValue = (fieldId: string, value: string | string[]) => {
-    setValues((existing) => ({
-      ...existing,
-      [fieldId]: value,
-    }));
+    setValues((existing) => {
+      if (fieldId === 'templateMode' && typeof value === 'string') {
+        return {
+          ...existing,
+          ...templateModePatch(schema.moduleType, value),
+        };
+      }
+
+      return {
+        ...existing,
+        [fieldId]: value,
+      };
+    });
   };
 
   const applyQuickFill = (quickFill: WorkflowQuickFill) => {
@@ -125,11 +199,21 @@ export function ReportingWorkflowPage({ schema, onInsertText, onSaveDraft, onOpe
             </details>
           ))}
 
-          <KeyNegativesPanel
-            options={schema.keyNegatives}
-            selected={Array.isArray(values.keyNegatives) ? values.keyNegatives : []}
-            onChange={(selected) => updateValue('keyNegatives', selected)}
-          />
+          {usesDerivedNegatives ? (
+            <section className="workflow-card compact-workflow-card">
+              <div className="section-heading">
+                <span className="eyebrow">Common negatives</span>
+                <h3>Auto-derived from selected states</h3>
+                <p>Absent/normal selections are included in the draft when appropriate. Positive findings suppress contradictory negatives.</p>
+              </div>
+            </section>
+          ) : schema.keyNegatives.length ? (
+            <KeyNegativesPanel
+              options={schema.keyNegatives}
+              selected={Array.isArray(values.keyNegatives) ? values.keyNegatives : []}
+              onChange={(selected) => updateValue('keyNegatives', selected)}
+            />
+          ) : null}
 
           <CompletenessChecklist score={reportQuality} />
 
