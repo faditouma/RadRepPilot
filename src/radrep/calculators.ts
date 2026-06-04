@@ -74,6 +74,7 @@ export function computeFleischner(values: CalculatorValueMap): CalculatorResult 
     priorImagingAvailable: 'no',
     stability: 'unknown',
     additionalFindings: '',
+    limitationsUncertainty: '',
   };
 
   return {

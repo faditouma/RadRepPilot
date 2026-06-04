@@ -20,6 +20,7 @@ const moduleLabels: Record<DraftType, string> = {
   ctpa: 'CTPA Pulmonary Embolism',
   nodule: 'Pulmonary Nodule / Fleischner',
   stroke: 'CT Head Stroke / ASPECTS',
+  chestXray: 'Chest X-ray: Infection / Dyspnea',
   appendicitis: 'CT Abdomen/Pelvis: Appendicitis',
   bowelObstruction: 'CT Abdomen/Pelvis: Bowel Obstruction',
   renalColic: 'CT KUB: Renal Colic',

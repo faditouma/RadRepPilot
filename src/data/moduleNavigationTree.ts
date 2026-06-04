@@ -46,7 +46,13 @@ export const moduleNavigationTree: NavigationModality[] = [
         name: 'Chest',
         description: 'Airspace disease, edema, pleural findings, pneumothorax, and support devices.',
         workflows: [
-          workflow('xray-cxr-pneumonia', 'Pneumonia / Infection', 'Opacity pattern, complications, and follow-up-ready impression.'),
+          workflow(
+            'xray-cxr-infection-dyspnea',
+            'Chest X-ray: Infection / Dyspnea',
+            'Consolidation, edema, effusion, pneumothorax, and support devices.',
+            'implemented',
+            'chestXray',
+          ),
           workflow('xray-cxr-chf', 'CHF / Pulmonary Edema', 'Congestion, edema, effusions, and cardiac size.'),
           workflow('xray-cxr-pneumothorax', 'Pneumothorax', 'Side, size estimate, tension features, and chest tube status.'),
           workflow('xray-cxr-effusion', 'Pleural Effusion', 'Laterality, size, loculation clues, and adjacent opacity.'),

@@ -14,6 +14,7 @@ export type ModuleType =
   | 'ctpa'
   | 'nodule'
   | 'stroke'
+  | 'chestXray'
   | 'appendicitis'
   | 'bowelObstruction'
   | 'renalColic'
@@ -88,6 +89,8 @@ export interface CtpaFormState {
   pleuralEffusion: PleuralEffusion;
   alternativeDiagnosis: string;
   incidentalFindings: string;
+  additionalFindings: string;
+  limitationsUncertainty: string;
 }
 
 export type NoduleType = 'solid' | 'subsolid ground-glass' | 'part-solid';
@@ -109,6 +112,7 @@ export interface NoduleFormState {
   priorImagingAvailable: YesNo;
   stability: Stability;
   additionalFindings: string;
+  limitationsUncertainty: string;
 }
 
 export type StrokeSide = 'left' | 'right' | 'bilateral' | 'none';
@@ -138,6 +142,7 @@ export interface StrokeFormState {
   midlineShiftMm: string;
   chronicFindings: string;
   additionalFindings: string;
+  limitationsUncertainty: string;
 }
 
 export interface CalculatorSentence {

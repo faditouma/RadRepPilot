@@ -54,6 +54,7 @@ function generatePulmonaryNodule(values: IncidentalValueMap): string {
     priorImagingAvailable: stability && stability !== 'unknown' ? 'yes' : 'no',
     stability: (stability || 'unknown') as NoduleFormState['stability'],
     additionalFindings: '',
+    limitationsUncertainty: '',
   };
   const recommendation = generateFleischnerRecommendation(form);
   const applicability = Number.parseFloat(age) < 35 || knownCancer || immunocompromised

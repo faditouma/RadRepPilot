@@ -71,6 +71,63 @@ const absentPresentUnknown = [
   { value: 'present', label: 'Present' },
 ];
 
+const notSpecifiedOptions = [
+  { value: 'not specified', label: 'Not specified' },
+];
+
+const cxrStudyQualityOptions = [
+  ...notSpecifiedOptions,
+  { value: 'adequate', label: 'Adequate' },
+  { value: 'low volume film', label: 'Low volume film' },
+  { value: 'rotated', label: 'Rotated' },
+  { value: 'portable/AP technique', label: 'Portable/AP technique' },
+  { value: 'limited study', label: 'Limited study' },
+];
+
+const cxrCardiomediastinalOptions = [
+  ...notSpecifiedOptions,
+  { value: 'normal', label: 'Normal' },
+  { value: 'mildly enlarged', label: 'Mildly enlarged' },
+  { value: 'enlarged', label: 'Enlarged' },
+  { value: 'postoperative/device-related findings', label: 'Postoperative/device-related findings' },
+];
+
+const cxrLungVolumeOptions = [
+  ...notSpecifiedOptions,
+  { value: 'normal', label: 'Normal' },
+  { value: 'low volume', label: 'Low volume' },
+  { value: 'hyperinflated', label: 'Hyperinflated' },
+];
+
+const cxrConsolidationOptions = [
+  ...notSpecifiedOptions,
+  { value: 'none', label: 'None' },
+  { value: 'focal consolidation', label: 'Focal consolidation' },
+  { value: 'multifocal consolidation', label: 'Multifocal consolidation' },
+  { value: 'bibasal opacity/atelectatic change', label: 'Bibasal opacity/atelectatic change' },
+];
+
+const cxrEdemaOptions = [
+  ...notSpecifiedOptions,
+  { value: 'absent', label: 'Absent' },
+  { value: 'mild', label: 'Mild' },
+  { value: 'moderate/severe', label: 'Moderate/severe' },
+];
+
+const cxrEffusionOptions = [
+  ...notSpecifiedOptions,
+  { value: 'none', label: 'None' },
+  { value: 'small unilateral', label: 'Small unilateral' },
+  { value: 'small bilateral', label: 'Small bilateral' },
+  { value: 'moderate/large', label: 'Moderate/large' },
+];
+
+const cxrPneumothoraxOptions = [
+  ...notSpecifiedOptions,
+  { value: 'none', label: 'None' },
+  { value: 'present', label: 'Present' },
+];
+
 function text(id: string, label: string, placeholder?: string, wide = false): WorkflowField {
   return { id, label, type: 'text', placeholder, wide };
 }
@@ -115,9 +172,145 @@ const prototypeSafety =
   'Prototype reporting workflow only. RadRepPilot organizes user-entered findings and does not interpret images or diagnose. Verify all source imaging findings, measurements, complications, guideline applicability, and final wording.';
 
 export const reportingWorkflowSchemas: Record<
-  'appendicitis' | 'bowelObstruction' | 'renalColic' | 'ruqUltrasound' | 'dvtUltrasound',
+  'chestXray' | 'appendicitis' | 'bowelObstruction' | 'renalColic' | 'ruqUltrasound' | 'dvtUltrasound',
   ReportingWorkflowSchema
 > = {
+  chestXray: {
+    moduleType: 'chestXray',
+    moduleId: 'xray-cxr-infection-dyspnea',
+    title: 'Chest X-ray: Infection / Dyspnea',
+    shortTitle: 'CXR infection/dyspnea',
+    modality: 'X-ray',
+    bodySystem: 'Chest',
+    clinicalQuestion: 'Assess for acute cardiopulmonary abnormality.',
+    techniqueDefault: 'Chest radiographs obtained.',
+    badges: ['Implemented', 'Prototype', 'Primary care / ED'],
+    insertTargets: ['findings', 'impression', 'recommendations'],
+    safetyNote: prototypeSafety,
+    defaultValues: {
+      indication: '',
+      technique: 'Chest radiographs obtained.',
+      studyQuality: 'not specified',
+      cardiomediastinalSilhouette: 'not specified',
+      lungVolumes: 'not specified',
+      consolidation: 'not specified',
+      consolidationLocation: '',
+      interstitialEdema: 'not specified',
+      pleuralEffusion: 'not specified',
+      pleuralEffusionLocation: '',
+      pneumothorax: 'not specified',
+      pneumothoraxSideSize: '',
+      linesTubesDevices: '',
+      incidentalFindings: '',
+      additionalFindings: '',
+      limitationsUncertainty: '',
+    },
+    sections: [
+      {
+        id: 'context',
+        title: 'Clinical context',
+        defaultOpen: true,
+        fields: [
+          area('indication', 'Indication', 'Cough, fever, dyspnea, hypoxia, chest pain, or follow-up question'),
+          text('technique', 'Technique', 'Chest radiographs obtained.', true),
+        ],
+      },
+      {
+        id: 'image-quality',
+        title: 'Study quality and overview',
+        description: 'Keep this high-level and radiograph-focused.',
+        fields: [
+          select('studyQuality', 'Study quality', cxrStudyQualityOptions),
+          select('cardiomediastinalSilhouette', 'Cardiomediastinal silhouette', cxrCardiomediastinalOptions),
+          select('lungVolumes', 'Lung volumes', cxrLungVolumeOptions),
+        ],
+      },
+      {
+        id: 'lungs-pleura',
+        title: 'Lungs and pleura',
+        description: 'Enter only findings verified by the user/radiologist.',
+        fields: [
+          select('consolidation', 'Consolidation', cxrConsolidationOptions),
+          text('consolidationLocation', 'Consolidation location if present', 'e.g. right lower lobe, left perihilar, multifocal', true),
+          select('interstitialEdema', 'Interstitial edema', cxrEdemaOptions),
+          select('pleuralEffusion', 'Pleural effusion', cxrEffusionOptions),
+          text('pleuralEffusionLocation', 'Effusion side/location if present', 'e.g. small right pleural effusion', true),
+          select('pneumothorax', 'Pneumothorax', cxrPneumothoraxOptions),
+          text('pneumothoraxSideSize', 'Pneumothorax side/size if present', 'e.g. small left apical pneumothorax', true),
+          area('linesTubesDevices', 'Lines/tubes/devices', 'e.g. right IJ central line tip overlies the SVC; left chest wall pacemaker'),
+        ],
+      },
+    ],
+    keyNegatives: ['No focal consolidation', 'No pleural effusion', 'No pneumothorax', 'No pulmonary edema'],
+    incidentalOptions: [
+      { label: 'Pulmonary nodule', sentence: 'Possible pulmonary nodule. Consider comparison with prior imaging or dedicated follow-up according to size, risk, and local protocol.' },
+      { label: 'Aortic atherosclerosis/tortuosity', sentence: 'Aortic atherosclerotic/tortuous change is noted. Correlate with clinical cardiovascular risk context.' },
+      { label: 'Hiatal hernia', sentence: 'Hiatal hernia is noted.' },
+    ],
+    quickFills: [
+      {
+        id: 'normal',
+        label: 'No acute cardiopulmonary abnormality',
+        description: 'Normal silhouette with no consolidation, edema, effusion, or pneumothorax.',
+        intent: 'normal',
+        values: {
+          studyQuality: 'adequate',
+          cardiomediastinalSilhouette: 'normal',
+          lungVolumes: 'normal',
+          consolidation: 'none',
+          consolidationLocation: '',
+          interstitialEdema: 'absent',
+          pleuralEffusion: 'none',
+          pleuralEffusionLocation: '',
+          pneumothorax: 'none',
+          pneumothoraxSideSize: '',
+        },
+      },
+      {
+        id: 'focal-pneumonia',
+        label: 'Focal consolidation / pneumonia pattern',
+        description: 'Focal airspace consolidation with no pleural complication entered.',
+        intent: 'positive',
+        values: {
+          studyQuality: 'adequate',
+          cardiomediastinalSilhouette: 'normal',
+          lungVolumes: 'normal',
+          consolidation: 'focal consolidation',
+          consolidationLocation: 'right lower lobe',
+          interstitialEdema: 'absent',
+          pleuralEffusion: 'none',
+          pneumothorax: 'none',
+        },
+      },
+      {
+        id: 'edema',
+        label: 'Pulmonary edema pattern',
+        description: 'Interstitial edema with bilateral effusions.',
+        intent: 'positive',
+        values: {
+          cardiomediastinalSilhouette: 'enlarged',
+          interstitialEdema: 'mild',
+          pleuralEffusion: 'small bilateral',
+          pleuralEffusionLocation: 'small bilateral pleural effusions',
+          consolidation: 'none',
+          pneumothorax: 'none',
+        },
+      },
+      {
+        id: 'pneumothorax',
+        label: 'Pneumothorax present',
+        description: 'Pneumothorax clearly stated in findings and impression.',
+        intent: 'complicated',
+        values: {
+          pneumothorax: 'present',
+          pneumothoraxSideSize: 'small left apical pneumothorax',
+          consolidation: 'none',
+          pleuralEffusion: 'none',
+          interstitialEdema: 'absent',
+        },
+      },
+    ],
+  },
   appendicitis: {
     moduleType: 'appendicitis',
     moduleId: 'ct-ap-appendicitis',
@@ -155,6 +348,7 @@ export const reportingWorkflowSchemas: Record<
       keyNegatives: ['No periappendiceal abscess', 'No free air/perforation', 'No bowel obstruction'],
       incidentalFindings: '',
       additionalFindings: '',
+      limitationsUncertainty: '',
     },
     sections: [
       {
@@ -332,6 +526,7 @@ export const reportingWorkflowSchemas: Record<
       keyNegatives: ['No closed-loop obstruction', 'No CT evidence of ischemia', 'No pneumatosis', 'No portal venous gas', 'No free air/perforation'],
       incidentalFindings: '',
       additionalFindings: '',
+      limitationsUncertainty: '',
     },
     sections: [
       {
@@ -544,6 +739,7 @@ export const reportingWorkflowSchemas: Record<
       keyNegatives: ['No hydronephrosis', 'No obstructing urinary tract calculus', 'No perinephric collection'],
       incidentalFindings: '',
       additionalFindings: '',
+      limitationsUncertainty: '',
     },
     sections: [
       {
@@ -742,6 +938,7 @@ export const reportingWorkflowSchemas: Record<
       keyNegatives: ['No gallstones', 'No gallbladder wall thickening', 'No pericholecystic fluid', 'Negative sonographic Murphy sign', 'No biliary ductal dilation'],
       incidentalFindings: '',
       additionalFindings: '',
+      limitationsUncertainty: '',
     },
     sections: [
       {
@@ -906,6 +1103,7 @@ export const reportingWorkflowSchemas: Record<
       keyNegatives: ['No DVT in assessed veins', 'No extension to common femoral vein', 'No superficial thrombophlebitis', 'No popliteal fossa collection'],
       incidentalFindings: '',
       additionalFindings: '',
+      limitationsUncertainty: '',
     },
     sections: [
       {

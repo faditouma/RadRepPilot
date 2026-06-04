@@ -75,6 +75,7 @@ const moduleLabels: Record<ModuleType, string> = {
   ctpa: 'CTPA Pulmonary Embolism',
   nodule: 'Pulmonary Nodule / Fleischner',
   stroke: 'CT Head Stroke / ASPECTS',
+  chestXray: 'Chest X-ray: Infection / Dyspnea',
   appendicitis: 'CT Abdomen/Pelvis: Appendicitis',
   bowelObstruction: 'CT Abdomen/Pelvis: Bowel Obstruction',
   renalColic: 'CT KUB: Renal Colic',
@@ -118,6 +119,8 @@ const defaultCtpa: CtpaFormState = {
   pleuralEffusion: 'none',
   alternativeDiagnosis: '',
   incidentalFindings: '',
+  additionalFindings: '',
+  limitationsUncertainty: '',
 };
 
 const defaultNodule: NoduleFormState = {
@@ -133,6 +136,7 @@ const defaultNodule: NoduleFormState = {
   priorImagingAvailable: 'no',
   stability: 'unknown',
   additionalFindings: '',
+  limitationsUncertainty: '',
 };
 
 const defaultStroke: StrokeFormState = {
@@ -146,6 +150,7 @@ const defaultStroke: StrokeFormState = {
   midlineShiftMm: '',
   chronicFindings: '',
   additionalFindings: '',
+  limitationsUncertainty: '',
 };
 
 const defaultBuilder: ReportBuilderState = {
@@ -774,6 +779,18 @@ function App({ embedded = false, initialPage = 'dashboard' }: AppProps) {
               onChange={(value) => setCtpaForm({ ...ctpaForm, alternativeDiagnosis: value })}
               placeholder="e.g. Right lower lobe pneumonia"
             />
+            <TextAreaField
+              label="Additional findings / radiologist comment"
+              value={ctpaForm.additionalFindings}
+              onChange={(value) => setCtpaForm({ ...ctpaForm, additionalFindings: value })}
+              placeholder="Add relevant findings not captured above, nuance, comparison, uncertainty, or differential considerations."
+            />
+            <TextAreaField
+              label="Limitations / uncertainty"
+              value={ctpaForm.limitationsUncertainty}
+              onChange={(value) => setCtpaForm({ ...ctpaForm, limitationsUncertainty: value })}
+              placeholder="e.g. motion artifact, incomplete visualization, limited contrast timing, technically limited study."
+            />
           </FormSection>
 
           <WorkflowIncidentalFindingsPanel
@@ -936,9 +953,16 @@ function App({ embedded = false, initialPage = 'dashboard' }: AppProps) {
               options={['unknown', 'new', 'stable', 'increased', 'decreased']}
             />
             <TextAreaField
-              label="Additional findings"
+              label="Additional findings / radiologist comment"
               value={noduleForm.additionalFindings}
               onChange={(value) => setNoduleForm({ ...noduleForm, additionalFindings: value })}
+              placeholder="Add relevant findings not captured above, nuance, comparison, uncertainty, or differential considerations."
+            />
+            <TextAreaField
+              label="Limitations / uncertainty"
+              value={noduleForm.limitationsUncertainty}
+              onChange={(value) => setNoduleForm({ ...noduleForm, limitationsUncertainty: value })}
+              placeholder="e.g. motion artifact, incomplete visualization, limited contrast timing, technically limited study."
             />
           </FormSection>
 
@@ -1094,9 +1118,16 @@ function App({ embedded = false, initialPage = 'dashboard' }: AppProps) {
               onChange={(value) => setStrokeForm({ ...strokeForm, chronicFindings: value })}
             />
             <TextAreaField
-              label="Additional findings"
+              label="Additional findings / radiologist comment"
               value={strokeForm.additionalFindings}
               onChange={(value) => setStrokeForm({ ...strokeForm, additionalFindings: value })}
+              placeholder="Add relevant findings not captured above, nuance, comparison, uncertainty, or differential considerations."
+            />
+            <TextAreaField
+              label="Limitations / uncertainty"
+              value={strokeForm.limitationsUncertainty}
+              onChange={(value) => setStrokeForm({ ...strokeForm, limitationsUncertainty: value })}
+              placeholder="e.g. motion artifact, incomplete visualization, limited contrast timing, technically limited study."
             />
           </FormSection>
 

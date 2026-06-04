@@ -176,11 +176,19 @@ export function ReportingWorkflowPage({ schema, onInsertText, onSaveDraft, onOpe
               <h3>Other findings</h3>
             </div>
             <label className="field">
-              Additional free-text findings
+              Additional findings / radiologist comment
               <textarea
                 value={typeof values.additionalFindings === 'string' ? values.additionalFindings : ''}
                 onChange={(event) => updateValue('additionalFindings', event.target.value)}
-                placeholder="Enter any additional verified imaging findings."
+                placeholder="Add relevant findings not captured above, nuance, comparison, uncertainty, or differential considerations."
+              />
+            </label>
+            <label className="field">
+              Limitations / uncertainty
+              <textarea
+                value={typeof values.limitationsUncertainty === 'string' ? values.limitationsUncertainty : ''}
+                onChange={(event) => updateValue('limitationsUncertainty', event.target.value)}
+                placeholder="e.g. motion artifact, incomplete visualization, limited contrast timing, technically limited study."
               />
             </label>
           </section>

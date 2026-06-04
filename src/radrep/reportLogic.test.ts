@@ -33,6 +33,8 @@ describe('RadRepPilot clinical text helpers', () => {
       pleuralEffusion: 'small',
       alternativeDiagnosis: '',
       incidentalFindings: '',
+      additionalFindings: '',
+      limitationsUncertainty: '',
     };
 
     const report = generateCtpaReport(form);
@@ -54,6 +56,7 @@ describe('RadRepPilot clinical text helpers', () => {
       priorImagingAvailable: 'no',
       stability: 'unknown',
       additionalFindings: '',
+      limitationsUncertainty: '',
     };
 
     expect(generateFleischnerRecommendation(form)).toContain('6-12 months');
@@ -73,6 +76,7 @@ describe('RadRepPilot clinical text helpers', () => {
       midlineShiftMm: '',
       chronicFindings: '',
       additionalFindings: '',
+      limitationsUncertainty: '',
     };
 
     const report = generateStrokeReport(form);

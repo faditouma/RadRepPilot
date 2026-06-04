@@ -15,13 +15,126 @@ function commonReport(schema: ReportingWorkflowSchema, values: WorkflowValues, f
     technique: workflowValue(values, 'technique') || schema.techniqueDefault,
     findings: cleanLines([
       findings,
-      workflowValue(values, 'additionalFindings') ? `Additional findings: ${workflowValue(values, 'additionalFindings')}` : undefined,
+      workflowValue(values, 'additionalFindings')
+        ? `Additional findings/radiologist comment: ${workflowValue(values, 'additionalFindings')}`
+        : undefined,
+      workflowValue(values, 'limitationsUncertainty') ? `Limitations/uncertainty: ${workflowValue(values, 'limitationsUncertainty')}` : undefined,
     ]),
     impression,
     incidentalFindings: workflowValue(values, 'incidentalFindings'),
     recommendations:
       recommendations ??
       'Draft language only. Verify all user-entered findings, measurements, complications, comparisons, and final wording.',
+  };
+}
+
+function generateChestXrayReport(schema: ReportingWorkflowSchema, values: WorkflowValues): ReportSections {
+  const studyQuality = workflowValue(values, 'studyQuality');
+  const silhouette = workflowValue(values, 'cardiomediastinalSilhouette');
+  const lungVolumes = workflowValue(values, 'lungVolumes');
+  const consolidation = workflowValue(values, 'consolidation');
+  const consolidationLocation = workflowValue(values, 'consolidationLocation');
+  const edema = workflowValue(values, 'interstitialEdema');
+  const effusion = workflowValue(values, 'pleuralEffusion');
+  const effusionLocation = workflowValue(values, 'pleuralEffusionLocation');
+  const pneumothorax = workflowValue(values, 'pneumothorax');
+  const pneumothoraxSideSize = workflowValue(values, 'pneumothoraxSideSize');
+  const devices = workflowValue(values, 'linesTubesDevices');
+
+  const consolidationPresent = consolidation !== 'not specified' && consolidation !== 'none';
+  const edemaPresent = edema !== 'not specified' && edema !== 'absent';
+  const effusionPresent = effusion !== 'not specified' && effusion !== 'none';
+  const pneumothoraxPresent = pneumothorax === 'present';
+  const normalSilhouette = silhouette === 'normal' || silhouette === 'not specified';
+  const noAcutePattern =
+    !consolidationPresent &&
+    !edemaPresent &&
+    !effusionPresent &&
+    !pneumothoraxPresent &&
+    normalSilhouette;
+
+  const qualitySentence =
+    studyQuality && studyQuality !== 'not specified'
+      ? studyQuality === 'adequate'
+        ? 'Study quality is adequate.'
+        : `Study quality: ${studyQuality}.`
+      : undefined;
+  const silhouetteSentence =
+    silhouette && silhouette !== 'not specified'
+      ? silhouette === 'normal'
+        ? 'Cardiomediastinal silhouette is within normal size limits.'
+        : `Cardiomediastinal silhouette is ${silhouette}.`
+      : undefined;
+  const lungVolumeSentence =
+    lungVolumes && lungVolumes !== 'not specified'
+      ? lungVolumes === 'normal'
+        ? 'Lung volumes are normal.'
+        : `Lung volumes are ${lungVolumes}.`
+      : undefined;
+  const consolidationSentence = consolidationPresent
+    ? consolidation === 'focal consolidation'
+      ? `Focal airspace consolidation${consolidationLocation ? ` in ${consolidationLocation}` : ''}.`
+      : `${consolidation[0].toUpperCase()}${consolidation.slice(1)}${consolidationLocation ? ` in ${consolidationLocation}` : ''}.`
+    : consolidation === 'none'
+      ? 'No focal airspace consolidation.'
+      : undefined;
+  const edemaSentence = edemaPresent
+    ? `${edema[0].toUpperCase()}${edema.slice(1)} interstitial pulmonary edema pattern is entered.`
+    : edema === 'absent'
+      ? 'No interstitial pulmonary edema.'
+      : undefined;
+  const effusionSentence = effusionPresent
+    ? `${effusion[0].toUpperCase()}${effusion.slice(1)} pleural effusion${effusionLocation ? ` (${effusionLocation})` : ''}.`
+    : effusion === 'none'
+      ? 'No pleural effusion.'
+      : undefined;
+  const pneumothoraxSentence = pneumothoraxPresent
+    ? `Pneumothorax is present${pneumothoraxSideSize ? `: ${pneumothoraxSideSize}` : ''}.`
+    : pneumothorax === 'none'
+      ? 'No pneumothorax.'
+      : undefined;
+
+  const findings = cleanLines([
+    qualitySentence,
+    silhouetteSentence,
+    lungVolumeSentence,
+    consolidationSentence,
+    edemaSentence,
+    effusionSentence,
+    pneumothoraxSentence,
+    devices ? `Lines/tubes/devices: ${devices}.` : undefined,
+  ]);
+
+  const impressionLines = [
+    pneumothoraxPresent ? `Pneumothorax${pneumothoraxSideSize ? `: ${pneumothoraxSideSize}` : ' is present'}.` : undefined,
+    consolidationPresent
+      ? consolidation === 'focal consolidation'
+        ? `Focal airspace consolidation${consolidationLocation ? ` in ${consolidationLocation}` : ''}, compatible with pneumonia in the appropriate clinical context.`
+        : `${consolidation[0].toUpperCase()}${consolidation.slice(1)}${consolidationLocation ? ` in ${consolidationLocation}` : ''}; correlate clinically.`
+      : undefined,
+    edemaPresent || effusionPresent
+      ? cleanLines([
+          edemaPresent ? `${edema[0].toUpperCase()}${edema.slice(1)} interstitial edema pattern.` : undefined,
+          effusionPresent ? `${effusion[0].toUpperCase()}${effusion.slice(1)} pleural effusion${effusionLocation ? ` (${effusionLocation})` : ''}.` : undefined,
+          'Findings may be compatible with pulmonary edema/CHF in the appropriate clinical context.',
+        ]).replace(/\n/g, ' ')
+      : undefined,
+    noAcutePattern ? 'No acute cardiopulmonary abnormality.' : undefined,
+  ];
+
+  return {
+    indication: workflowValue(values, 'indication'),
+    technique: workflowValue(values, 'technique') || schema.techniqueDefault,
+    findings: cleanLines([
+      findings || 'No specific chest radiograph finding has been entered.',
+      workflowValue(values, 'additionalFindings')
+        ? `Additional findings/radiologist comment: ${workflowValue(values, 'additionalFindings')}`
+        : undefined,
+      workflowValue(values, 'limitationsUncertainty') ? `Limitations/uncertainty: ${workflowValue(values, 'limitationsUncertainty')}` : undefined,
+    ]),
+    impression: cleanLines(impressionLines),
+    incidentalFindings: workflowValue(values, 'incidentalFindings'),
+    recommendations: 'Educational draft only. Verify all user-entered radiographic findings and final wording before use.',
   };
 }
 
@@ -306,6 +419,8 @@ export function generateReportingWorkflowReport(moduleType: ModuleType, values: 
   }
 
   switch (moduleType) {
+    case 'chestXray':
+      return generateChestXrayReport(schema, values);
     case 'appendicitis':
       return generateAppendicitisReport(schema, values);
     case 'bowelObstruction':

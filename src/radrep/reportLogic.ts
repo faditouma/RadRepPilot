@@ -36,6 +36,17 @@ function cleanLines(lines: Array<string | undefined | null>): string {
   return lines.filter((line): line is string => Boolean(line?.trim())).join('\n');
 }
 
+function universalFreeTextLines(form: { additionalFindings?: string; limitationsUncertainty?: string }): Array<string | undefined> {
+  return [
+    form.additionalFindings?.trim()
+      ? `Additional findings/radiologist comment: ${form.additionalFindings.trim()}`
+      : undefined,
+    form.limitationsUncertainty?.trim()
+      ? `Limitations/uncertainty: ${form.limitationsUncertainty.trim()}`
+      : undefined,
+  ];
+}
+
 function formatNumber(value: number, digits = 1): string {
   return value.toFixed(digits).replace(/\.0$/, '');
 }
@@ -136,6 +147,7 @@ export function generateCtpaReport(form: CtpaFormState): ReportSections {
       infarctSentence,
       effusionSentence,
       form.alternativeDiagnosis ? `Additional or alternative finding: ${form.alternativeDiagnosis.trim()}` : undefined,
+      ...universalFreeTextLines(form),
       form.incidentalFindings ? `Incidental findings: ${form.incidentalFindings.trim()}` : undefined,
     ]);
 
@@ -157,6 +169,7 @@ export function generateCtpaReport(form: CtpaFormState): ReportSections {
       ratioSentence,
       effusionSentence,
       form.alternativeDiagnosis ? `Alternative finding: ${form.alternativeDiagnosis.trim()}` : undefined,
+      ...universalFreeTextLines(form),
       form.incidentalFindings ? `Incidental findings: ${form.incidentalFindings.trim()}` : undefined,
     ]);
 
@@ -171,6 +184,7 @@ export function generateCtpaReport(form: CtpaFormState): ReportSections {
       ratioSentence,
       effusionSentence,
       form.alternativeDiagnosis ? `Alternative finding: ${form.alternativeDiagnosis.trim()}` : undefined,
+      ...universalFreeTextLines(form),
       form.incidentalFindings ? `Incidental findings: ${form.incidentalFindings.trim()}` : undefined,
     ]);
     report.impression = cleanLines([
@@ -263,7 +277,7 @@ export function generateNoduleReport(form: NoduleFormState): ReportSections {
   report.technique = 'CT chest findings are summarized from user-entered measurements and descriptors.';
   report.findings = cleanLines([
     description,
-    form.additionalFindings ? `Additional findings: ${form.additionalFindings.trim()}` : undefined,
+    ...universalFreeTextLines(form),
   ]);
   report.impression = cleanLines([
     description,
@@ -303,7 +317,7 @@ export function generateStrokeReport(form: StrokeFormState): ReportSections {
       massEffectSentence,
       shiftSentence,
       form.chronicFindings ? `Chronic findings: ${form.chronicFindings.trim()}` : undefined,
-      form.additionalFindings ? `Additional findings: ${form.additionalFindings.trim()}` : undefined,
+      ...universalFreeTextLines(form),
     ]);
     report.impression = cleanLines([
       'Acute intracranial hemorrhage is present.',
@@ -320,7 +334,7 @@ export function generateStrokeReport(form: StrokeFormState): ReportSections {
         ? `Large vessel occlusion suspected: ${form.largeVesselOcclusionSuspected}.`
         : undefined,
       form.chronicFindings ? `Chronic findings: ${form.chronicFindings.trim()}` : undefined,
-      form.additionalFindings ? `Additional findings: ${form.additionalFindings.trim()}` : undefined,
+      ...universalFreeTextLines(form),
     ]);
     report.impression = cleanLines([
       `Early ischemic changes involving the ${involvedRegions} in the ${sidePhrase}.`,
@@ -335,7 +349,7 @@ export function generateStrokeReport(form: StrokeFormState): ReportSections {
       massEffectSentence,
       shiftSentence,
       form.chronicFindings ? `Chronic findings: ${form.chronicFindings.trim()}` : undefined,
-      form.additionalFindings ? `Additional findings: ${form.additionalFindings.trim()}` : undefined,
+      ...universalFreeTextLines(form),
     ]);
     report.impression = cleanLines([
       'No acute intracranial hemorrhage or established territorial infarct identified on non-contrast CT.',
