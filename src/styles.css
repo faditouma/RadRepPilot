@@ -3859,6 +3859,27 @@ footer {
   gap: 8px;
 }
 
+.guide-topic-count {
+  display: flex;
+  align-items: baseline;
+  gap: 6px;
+  border: 1px solid rgba(37, 99, 235, 0.16);
+  border-radius: 12px;
+  padding: 9px 10px;
+  background: rgba(239, 246, 255, 0.72);
+  color: var(--blue-dark);
+}
+
+.guide-topic-count strong {
+  font-size: 1.1rem;
+}
+
+.guide-topic-count span {
+  color: var(--muted);
+  font-size: 0.84rem;
+  font-weight: 780;
+}
+
 .guide-topic-list button {
   display: grid;
   gap: 3px;
@@ -3890,6 +3911,19 @@ footer {
   font-size: 0.98rem;
 }
 
+.guide-topic-meta,
+.guide-source-meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  align-items: center;
+}
+
+.guide-topic-meta .guide-review-badge {
+  padding: 5px 7px;
+  font-size: 0.68rem;
+}
+
 .guide-content {
   display: grid;
   gap: 14px;
@@ -3916,6 +3950,36 @@ footer {
   margin: 0;
   color: var(--muted);
   line-height: 1.55;
+}
+
+.guide-source-meta {
+  margin: -2px 0 8px;
+}
+
+.guide-source-meta span {
+  border: 1px solid rgba(216, 224, 234, 0.82);
+  border-radius: 999px;
+  padding: 6px 9px;
+  background: rgba(248, 250, 252, 0.9);
+  color: var(--muted);
+  font-size: 0.82rem;
+  font-weight: 780;
+}
+
+.guide-empty-state {
+  min-height: 360px;
+  align-content: center;
+}
+
+.guide-empty-state h2 {
+  margin: 4px 0 8px;
+  color: var(--ink);
+  font-size: clamp(1.35rem, 2vw, 1.85rem);
+}
+
+.guide-empty-state code {
+  color: var(--slate);
+  font-weight: 780;
 }
 
 .guide-review-badge,

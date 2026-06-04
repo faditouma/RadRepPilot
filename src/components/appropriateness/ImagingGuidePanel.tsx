@@ -28,7 +28,7 @@ export function ImagingGuidePanel() {
   const [query, setQuery] = useState('');
   const [selectedTopicId, setSelectedTopicId] = useState(appropriatenessTopics[0]?.id ?? '');
   const visibleTopics = useMemo(() => searchAppropriatenessTopics(query), [query]);
-  const selectedTopic = visibleTopics.find((topic) => topic.id === selectedTopicId) ?? visibleTopics[0] ?? appropriatenessTopics[0];
+  const selectedTopic = visibleTopics.find((topic) => topic.id === selectedTopicId) ?? visibleTopics[0];
   const [selectedVariantId, setSelectedVariantId] = useState(selectedTopic?.variants[0]?.id ?? '');
   const selectedVariant =
     selectedTopic?.variants.find((variant) => variant.id === selectedVariantId) ?? selectedTopic?.variants[0];
@@ -59,28 +59,41 @@ export function ImagingGuidePanel() {
             onChange={(event) => setQuery(event.target.value)}
             placeholder="Search clinical scenario, symptom, or diagnosis..."
           />
+          <div className="guide-topic-count" role="status">
+            <strong>{appropriatenessTopics.length}</strong>
+            <span>reviewed topics available</span>
+          </div>
           <div className="guide-topic-list" aria-label="Imaging guide topics">
             {visibleTopics.map((topic) => (
               <button
-                className={topic.id === selectedTopic.id ? 'active' : ''}
+                className={selectedTopic && topic.id === selectedTopic.id ? 'active' : ''}
                 key={topic.id}
                 onClick={() => selectTopic(topic.id)}
                 type="button"
               >
                 <span>{topic.clinicalArea}</span>
                 <strong>{topic.title}</strong>
-                <small>{topic.year}</small>
+                <small>{topic.sourceLabel}</small>
+                <div className="guide-topic-meta">
+                  <small>{topic.year}</small>
+                  <ReviewBadge topic={topic} />
+                </div>
               </button>
             ))}
-            {!visibleTopics.length ? <p>No topics match that search yet.</p> : null}
+            {!visibleTopics.length ? <p>No reviewed topic found. Try a different symptom, diagnosis, or modality.</p> : null}
           </div>
         </aside>
 
-        <div className="guide-content">
+        {selectedTopic ? (
+          <div className="guide-content">
           <div className="guide-topic-header">
             <div>
-              <span className="eyebrow">Imaging Guide seed topic</span>
+              <span className="eyebrow">Imaging Guide reviewed topic</span>
               <h2>{selectedTopic.title}</h2>
+              <div className="guide-source-meta">
+                <span>{selectedTopic.sourceLabel}</span>
+                <span>{selectedTopic.year}</span>
+              </div>
               <p>{selectedTopic.sourceNote}</p>
             </div>
             <ReviewBadge topic={selectedTopic} />
@@ -190,7 +203,20 @@ export function ImagingGuidePanel() {
               </section>
             </>
           ) : null}
-        </div>
+          </div>
+        ) : (
+          <div className="guide-content guide-empty-state">
+            <div>
+              <span className="eyebrow">Imaging Guide</span>
+              <h2>No reviewed topic found</h2>
+              <p>Try a different symptom, diagnosis, or modality.</p>
+            </div>
+            <div className="guide-disclaimer" role="note">
+              Unreviewed raw extractions and draft topics are intentionally excluded from the public Imaging Guide. Add reviewed
+              curated topics in <code>src/data/appropriateness/topics/</code> and import them through the registry.
+            </div>
+          </div>
+        )}
       </div>
     </section>
   );
