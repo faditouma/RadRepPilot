@@ -18,6 +18,7 @@ import { ChangeLogPanel } from './components/changelog/ChangeLogPanel';
 import { RadRepPilotLogo } from './components/branding/RadRepPilotLogo';
 import { RadIcon, type RadIconName } from './components/icons/RadIcon';
 import { HelperDrawer } from './components/helpers/HelperDrawer';
+import { ImagingGuidePanel } from './components/appropriateness/ImagingGuidePanel';
 import { WhyThisMatters } from './components/portfolio/WhyThisMatters';
 import { CompletenessChecklist } from './components/quality/CompletenessChecklist';
 import {
@@ -1243,6 +1244,14 @@ function App({ embedded = false, initialPage = 'dashboard' }: AppProps) {
           ctaLabel="Open calculators"
         />
         <ModuleCard
+          title="Imaging Guide"
+          meta="Appropriateness"
+          iconName="helper"
+          description="Search seed appropriateness-style topics, compare imaging options, and draft requisition-ready wording."
+          onOpen={() => setActivePage('imagingGuide')}
+          ctaLabel="Open guide"
+        />
+        <ModuleCard
           title="Imaging requisitions"
           meta="Requisitions"
           iconName="primaryCare"
@@ -1281,6 +1290,17 @@ function App({ embedded = false, initialPage = 'dashboard' }: AppProps) {
         }}
         onSaveText={saveTextDraft}
       />
+    </div>
+  );
+
+  const renderImagingGuide = () => (
+    <div className="page-stack">
+      <PageHeader
+        eyebrow="Imaging Guide"
+        title="Appropriateness-style imaging guide"
+        description="A seed framework for concise educational summaries of imaging options, missing clinical information, requisition language, and reporting pearls."
+      />
+      <ImagingGuidePanel />
     </div>
   );
 
@@ -1475,6 +1495,7 @@ function App({ embedded = false, initialPage = 'dashboard' }: AppProps) {
     { key: 'dashboard', label: 'Overview', iconName: 'dashboard' },
     { key: 'modules', label: 'Reporting workflows', iconName: 'xray' },
     { key: 'calculators', label: 'Calculators', iconName: 'calculator' },
+    { key: 'imagingGuide', label: 'Imaging Guide', iconName: 'helper' },
     { key: 'builder', label: 'Report builder', iconName: 'report' },
     { key: 'referral', label: 'Imaging requisitions', iconName: 'primaryCare' },
     { key: 'gallery', label: 'Examples', iconName: 'followUp' },
@@ -1512,6 +1533,7 @@ function App({ embedded = false, initialPage = 'dashboard' }: AppProps) {
         {activePage === 'modules' ? renderModules() : null}
         {activePage === 'referral' ? renderReferral() : null}
         {activePage === 'calculators' ? renderCalculators() : null}
+        {activePage === 'imagingGuide' ? renderImagingGuide() : null}
         {activePage === 'incidental' ? renderIncidental() : null}
         {activePage === 'builder' ? renderBuilder() : null}
         {activePage === 'why' ? renderWhy() : null}

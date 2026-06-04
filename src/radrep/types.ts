@@ -2,6 +2,7 @@ export type PageKey =
   | 'dashboard'
   | 'modules'
   | 'calculators'
+  | 'imagingGuide'
   | 'incidental'
   | 'builder'
   | 'referral'
