@@ -21,6 +21,7 @@ const moduleLabels: Record<DraftType, string> = {
   nodule: 'Pulmonary Nodule / Fleischner',
   stroke: 'CT Head Stroke / ASPECTS',
   chestXray: 'Chest X-ray: Infection / Dyspnea',
+  mskXrayFracture: 'MSK X-ray: Acute Fracture',
   appendicitis: 'CT Abdomen/Pelvis: Appendicitis',
   bowelObstruction: 'CT Abdomen/Pelvis: Bowel Obstruction',
   renalColic: 'CT KUB: Renal Colic',

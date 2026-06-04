@@ -138,6 +138,106 @@ function generateChestXrayReport(schema: ReportingWorkflowSchema, values: Workfl
   };
 }
 
+function titleCase(value: string): string {
+  return value ? `${value[0].toUpperCase()}${value.slice(1)}` : value;
+}
+
+function mskExamPhrase(laterality: string, bodyPart: string): string {
+  const side = laterality && laterality !== 'not specified' && laterality !== 'midline/not applicable' ? `${laterality} ` : '';
+  return `${side}${bodyPart || 'specified body part'}`.trim();
+}
+
+function generateMskXrayFractureReport(schema: ReportingWorkflowSchema, values: WorkflowValues): ReportSections {
+  const bodyPart = workflowValue(values, 'bodyPart');
+  const laterality = workflowValue(values, 'laterality');
+  const fracture = workflowValue(values, 'fracture');
+  const fractureLocation = workflowValue(values, 'fractureLocation');
+  const displacement = workflowValue(values, 'displacementAlignment');
+  const intraArticular = workflowValue(values, 'intraArticularExtension');
+  const jointAlignment = workflowValue(values, 'jointAlignment');
+  const softTissue = workflowValue(values, 'softTissueEffusion');
+  const chronicFindings = workflowValue(values, 'chronicFindings');
+  const examPhrase = mskExamPhrase(laterality, bodyPart);
+
+  const fracturePresent = fracture === 'acute fracture present' || fracture === 'age-indeterminate fracture' || fracture === 'healing/subacute fracture';
+  const noFracture = fracture === 'no acute fracture identified';
+  const abnormalAlignment = jointAlignment && jointAlignment !== 'not specified' && jointAlignment !== 'normal alignment';
+  const softTissuePresent = softTissue && softTissue !== 'not specified' && softTissue !== 'none';
+
+  const fractureTypePhrase =
+    fracture === 'acute fracture present'
+      ? 'acute fracture'
+      : fracture === 'age-indeterminate fracture'
+        ? 'age-indeterminate fracture'
+        : fracture === 'healing/subacute fracture'
+          ? 'healing/subacute fracture'
+          : '';
+  const displacementPhrase =
+    displacement && displacement !== 'not specified'
+      ? displacement === 'non-displaced'
+        ? 'non-displaced'
+        : displacement
+      : '';
+  const intraArticularPhrase =
+    intraArticular && intraArticular !== 'not specified'
+      ? intraArticular === 'present'
+        ? 'with intra-articular extension'
+        : intraArticular === 'absent'
+          ? 'without intra-articular extension'
+          : 'intra-articular extension cannot be assessed'
+      : '';
+
+  const fractureSentence = fracturePresent
+    ? cleanLines([
+        `${titleCase(fractureTypePhrase)}${fractureLocation ? ` involving ${fractureLocation}` : ''} is identified on radiographs.`,
+        displacementPhrase ? `Alignment/displacement: ${displacementPhrase}.` : undefined,
+        intraArticularPhrase ? `${titleCase(intraArticularPhrase)}.` : undefined,
+      ]).replace(/\n/g, ' ')
+    : noFracture
+      ? 'No acute fracture is identified on radiographs.'
+      : undefined;
+  const alignmentSentence =
+    jointAlignment && jointAlignment !== 'not specified'
+      ? jointAlignment === 'normal alignment'
+        ? 'Joint alignment is maintained.'
+        : `Joint alignment: ${jointAlignment}.`
+      : undefined;
+  const softTissueSentence = softTissuePresent ? `${titleCase(softTissue)} is present.` : softTissue === 'none' ? 'No focal soft tissue swelling or joint effusion is entered.' : undefined;
+
+  const findings = cleanLines([
+    bodyPart || laterality !== 'not specified' ? `Exam region: ${examPhrase}.` : undefined,
+    fractureSentence,
+    alignmentSentence,
+    softTissueSentence,
+    chronicFindings ? `Degenerative/chronic findings: ${chronicFindings}.` : undefined,
+  ]);
+
+  const impression = fracturePresent
+    ? cleanLines([
+        `${titleCase(examPhrase)} radiographs demonstrate ${fractureTypePhrase}${fractureLocation ? ` involving ${fractureLocation}` : ''}${
+          displacementPhrase ? `, ${displacementPhrase}` : ''
+        }${intraArticularPhrase ? `, ${intraArticularPhrase}` : ''}.`,
+        abnormalAlignment ? `Associated ${jointAlignment}.` : undefined,
+      ])
+    : abnormalAlignment
+      ? `${titleCase(examPhrase)} radiographs demonstrate ${jointAlignment}.`
+      : noFracture && jointAlignment === 'normal alignment'
+        ? softTissuePresent
+          ? 'Soft tissue swelling without acute fracture identified on radiographs.'
+          : 'No acute osseous abnormality identified.'
+        : noFracture
+          ? 'No acute fracture identified on radiographs.'
+          : '';
+
+  return commonReport(
+    schema,
+    values,
+    findings || 'No specific MSK radiographic finding has been entered.',
+    impression,
+    'Educational draft only. Verify all user-entered osseous findings, alignment, joint involvement, and final wording before use.',
+  );
+}
+
 function generateAppendicitisReport(schema: ReportingWorkflowSchema, values: WorkflowValues): ReportSections {
   const visualized = workflowValue(values, 'appendixVisualized') === 'yes';
   const diameter = numberOrNull(values, 'appendixDiameterMm');
@@ -421,6 +521,8 @@ export function generateReportingWorkflowReport(moduleType: ModuleType, values: 
   switch (moduleType) {
     case 'chestXray':
       return generateChestXrayReport(schema, values);
+    case 'mskXrayFracture':
+      return generateMskXrayFractureReport(schema, values);
     case 'appendicitis':
       return generateAppendicitisReport(schema, values);
     case 'bowelObstruction':

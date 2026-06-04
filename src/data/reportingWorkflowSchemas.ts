@@ -128,6 +128,54 @@ const cxrPneumothoraxOptions = [
   { value: 'present', label: 'Present' },
 ];
 
+const lateralityOptions = [
+  ...notSpecifiedOptions,
+  { value: 'right', label: 'Right' },
+  { value: 'left', label: 'Left' },
+  { value: 'bilateral', label: 'Bilateral' },
+  { value: 'midline/not applicable', label: 'Midline/not applicable' },
+];
+
+const fractureOptions = [
+  ...notSpecifiedOptions,
+  { value: 'no acute fracture identified', label: 'No acute fracture identified' },
+  { value: 'acute fracture present', label: 'Acute fracture present' },
+  { value: 'age-indeterminate fracture', label: 'Age-indeterminate fracture' },
+  { value: 'healing/subacute fracture', label: 'Healing/subacute fracture' },
+];
+
+const displacementOptions = [
+  ...notSpecifiedOptions,
+  { value: 'non-displaced', label: 'Non-displaced' },
+  { value: 'minimally displaced', label: 'Minimally displaced' },
+  { value: 'displaced', label: 'Displaced' },
+  { value: 'angulated', label: 'Angulated' },
+  { value: 'comminuted', label: 'Comminuted' },
+];
+
+const intraArticularOptions = [
+  ...notSpecifiedOptions,
+  { value: 'absent', label: 'Absent' },
+  { value: 'present', label: 'Present' },
+  { value: 'cannot assess', label: 'Cannot assess' },
+];
+
+const jointAlignmentOptions = [
+  ...notSpecifiedOptions,
+  { value: 'normal alignment', label: 'Normal alignment' },
+  { value: 'subluxation', label: 'Subluxation' },
+  { value: 'dislocation', label: 'Dislocation' },
+  { value: 'reduced dislocation', label: 'Reduced dislocation' },
+];
+
+const softTissueOptions = [
+  ...notSpecifiedOptions,
+  { value: 'none', label: 'None' },
+  { value: 'soft tissue swelling', label: 'Soft tissue swelling' },
+  { value: 'joint effusion', label: 'Joint effusion' },
+  { value: 'both swelling and effusion', label: 'Both swelling and effusion' },
+];
+
 function text(id: string, label: string, placeholder?: string, wide = false): WorkflowField {
   return { id, label, type: 'text', placeholder, wide };
 }
@@ -172,7 +220,7 @@ const prototypeSafety =
   'Prototype reporting workflow only. RadRepPilot organizes user-entered findings and does not interpret images or diagnose. Verify all source imaging findings, measurements, complications, guideline applicability, and final wording.';
 
 export const reportingWorkflowSchemas: Record<
-  'chestXray' | 'appendicitis' | 'bowelObstruction' | 'renalColic' | 'ruqUltrasound' | 'dvtUltrasound',
+  'chestXray' | 'mskXrayFracture' | 'appendicitis' | 'bowelObstruction' | 'renalColic' | 'ruqUltrasound' | 'dvtUltrasound',
   ReportingWorkflowSchema
 > = {
   chestXray: {
@@ -307,6 +355,128 @@ export const reportingWorkflowSchemas: Record<
           consolidation: 'none',
           pleuralEffusion: 'none',
           interstitialEdema: 'absent',
+        },
+      },
+    ],
+  },
+  mskXrayFracture: {
+    moduleType: 'mskXrayFracture',
+    moduleId: 'xray-msk-acute-fracture',
+    title: 'MSK X-ray: Acute Fracture',
+    shortTitle: 'MSK fracture X-ray',
+    modality: 'X-ray',
+    bodySystem: 'MSK',
+    clinicalQuestion: 'Assess for acute osseous injury or malalignment.',
+    techniqueDefault: 'Radiographs obtained.',
+    badges: ['Implemented', 'Prototype', 'Emergency / Primary care'],
+    insertTargets: ['findings', 'impression', 'recommendations'],
+    safetyNote: prototypeSafety,
+    defaultValues: {
+      indication: '',
+      technique: 'Radiographs obtained.',
+      bodyPart: '',
+      laterality: 'not specified',
+      fracture: 'not specified',
+      fractureLocation: '',
+      displacementAlignment: 'not specified',
+      intraArticularExtension: 'not specified',
+      jointAlignment: 'not specified',
+      softTissueEffusion: 'not specified',
+      chronicFindings: '',
+      incidentalFindings: '',
+      additionalFindings: '',
+      limitationsUncertainty: '',
+    },
+    sections: [
+      {
+        id: 'context',
+        title: 'Clinical context',
+        defaultOpen: true,
+        fields: [
+          area('indication', 'Indication', 'Trauma, pain, swelling, fall, or focal bony tenderness'),
+          text('technique', 'Technique', 'Radiographs obtained.', true),
+        ],
+      },
+      {
+        id: 'exam-overview',
+        title: 'Exam overview',
+        description: 'Define the body part and side before generating the draft.',
+        fields: [
+          text('bodyPart', 'Body part', 'e.g. wrist, ankle, knee, shoulder, hip, foot', true),
+          select('laterality', 'Laterality', lateralityOptions),
+        ],
+      },
+      {
+        id: 'osseous-alignment',
+        title: 'Osseous findings and alignment',
+        description: 'Use radiograph-safe language and avoid overclaiming occult injury.',
+        fields: [
+          select('fracture', 'Fracture', fractureOptions),
+          text('fractureLocation', 'Fracture location', 'e.g. distal radius metaphysis, lateral malleolus, fifth metatarsal base', true),
+          select('displacementAlignment', 'Displacement/alignment', displacementOptions),
+          select('intraArticularExtension', 'Intra-articular extension', intraArticularOptions),
+          select('jointAlignment', 'Joint alignment/dislocation', jointAlignmentOptions),
+          select('softTissueEffusion', 'Joint effusion / soft tissue swelling', softTissueOptions),
+          area('chronicFindings', 'Degenerative/chronic findings', 'e.g. mild osteoarthrosis, chronic enthesopathy, old healed fracture deformity'),
+        ],
+      },
+    ],
+    keyNegatives: ['No acute fracture identified', 'Normal alignment', 'No dislocation'],
+    incidentalOptions: [
+      { label: 'Bone lesion', sentence: 'Incidental osseous lesion. Consider comparison with prior imaging or dedicated characterization if aggressive features, pain, or malignancy history are present.' },
+      { label: 'Soft tissue calcification/foreign body', sentence: 'Soft tissue calcification/foreign body is noted. Correlate with clinical history and local symptoms.' },
+      { label: 'Degenerative change', sentence: 'Degenerative change is present. Correlate with symptoms and clinical context.' },
+    ],
+    quickFills: [
+      {
+        id: 'no-fracture',
+        label: 'No acute fracture',
+        description: 'No acute osseous abnormality with normal alignment.',
+        intent: 'normal',
+        values: {
+          fracture: 'no acute fracture identified',
+          fractureLocation: '',
+          displacementAlignment: 'not specified',
+          intraArticularExtension: 'not specified',
+          jointAlignment: 'normal alignment',
+          softTissueEffusion: 'none',
+        },
+      },
+      {
+        id: 'nondisplaced-fracture',
+        label: 'Non-displaced fracture',
+        description: 'Acute fracture without displacement or intra-articular extension entered.',
+        intent: 'positive',
+        values: {
+          fracture: 'acute fracture present',
+          displacementAlignment: 'non-displaced',
+          intraArticularExtension: 'absent',
+          jointAlignment: 'normal alignment',
+          softTissueEffusion: 'soft tissue swelling',
+        },
+      },
+      {
+        id: 'displaced-fracture',
+        label: 'Displaced fracture',
+        description: 'Acute displaced fracture with swelling.',
+        intent: 'complicated',
+        values: {
+          fracture: 'acute fracture present',
+          displacementAlignment: 'displaced',
+          intraArticularExtension: 'not specified',
+          jointAlignment: 'normal alignment',
+          softTissueEffusion: 'soft tissue swelling',
+        },
+      },
+      {
+        id: 'dislocation',
+        label: 'Dislocation / malalignment',
+        description: 'No fracture selected, but joint malalignment is present.',
+        intent: 'complicated',
+        values: {
+          fracture: 'not specified',
+          jointAlignment: 'dislocation',
+          softTissueEffusion: 'soft tissue swelling',
         },
       },
     ],

@@ -15,6 +15,7 @@ export type ModuleType =
   | 'nodule'
   | 'stroke'
   | 'chestXray'
+  | 'mskXrayFracture'
   | 'appendicitis'
   | 'bowelObstruction'
   | 'renalColic'

@@ -71,7 +71,13 @@ export const moduleNavigationTree: NavigationModality[] = [
         name: 'MSK',
         description: 'Fracture, alignment, arthritis, hardware, and soft tissue checks.',
         workflows: [
-          workflow('xray-msk-trauma', 'Trauma / Fracture', 'Fracture location, displacement, articular extension, and alignment.'),
+          workflow(
+            'xray-msk-acute-fracture',
+            'MSK X-ray: Acute Fracture',
+            'Body part, laterality, fracture location, displacement, articular extension, and alignment.',
+            'implemented',
+            'mskXrayFracture',
+          ),
           workflow('xray-msk-arthritis', 'Arthritis / Degenerative Disease', 'Joint space, osteophytes, erosions, and alignment.'),
         ],
       },
