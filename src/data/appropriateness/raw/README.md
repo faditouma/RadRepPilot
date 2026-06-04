@@ -26,3 +26,15 @@ Each procedure row should include:
 - `confidence`
 
 After review, convert accepted content into curated topic files in `src/data/appropriateness/topics/`.
+
+## Run Extraction
+
+From the project root:
+
+```bash
+npm run extract:acr
+```
+
+The script reads local PDFs from `acr-source-pdfs/` and writes `[slug].raw.json` files here.
+
+Do not import these raw files into the public app. They must be reviewed and curated first.

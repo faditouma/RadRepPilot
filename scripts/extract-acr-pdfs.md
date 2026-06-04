@@ -27,7 +27,12 @@ src/data/appropriateness/topics/
 ## Workflow
 
 1. Put source PDFs in `acr-source-pdfs/`.
-2. Run the optional extraction script.
+2. Run the local extraction script:
+
+```bash
+npm run extract:acr
+```
+
 3. The script outputs one raw JSON file per PDF in `src/data/appropriateness/raw/`.
 4. A human reviewer checks each raw JSON file for topic title, year, variants, rows, categories, radiation levels, and extraction warnings.
 5. Reviewed content is manually converted into curated TypeScript topic files under `src/data/appropriateness/topics/`.
@@ -51,7 +56,7 @@ Each extracted PDF should produce a raw JSON object like:
           "procedure": "MRI abdomen without and with IV contrast with MRCP",
           "appropriatenessCategory": "Usually Appropriate",
           "radiationLevel": "O",
-          "confidence": 0.72
+          "confidence": "high"
         }
       ]
     }
@@ -70,12 +75,26 @@ Each extracted PDF should produce a raw JSON object like:
 - Keep curated rationales concise, educational, and manually written.
 - Confirm against original criteria, current updates, local protocols, and radiologist judgment.
 
-## Optional Dependencies
+## Script Notes
 
-The optional TypeScript script is dependency-light and does not run during app build. For real PDF text extraction, install a parser only when needed, for example:
+The current script is `scripts/extract-acr-pdfs.mjs`. It uses Node built-ins only, including a lightweight text extraction pass over PDF string objects and Flate-compressed streams. This keeps the website build independent from PDF tooling.
+
+PDF table extraction is inherently imperfect. Treat output as raw review material, not curated clinical content.
+
+If the built-in parser is not enough for a future batch, consider testing a dedicated local dependency such as `pdf-parse` or another table-aware extractor, then keep that tooling outside the public app bundle.
+
+## Running Locally
 
 ```bash
-npm install -D pdf-parse
+mkdir -p acr-source-pdfs
+# add local ACR PDFs to acr-source-pdfs/
+npm run extract:acr
 ```
 
-Do not add a dependency until the extraction workflow is actively being tested.
+Raw JSON files appear in:
+
+```text
+src/data/appropriateness/raw/
+```
+
+Each raw JSON file must be reviewed before any content is converted into public curated topic files.
