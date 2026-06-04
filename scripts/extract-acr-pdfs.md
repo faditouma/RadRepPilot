@@ -97,4 +97,35 @@ Raw JSON files appear in:
 src/data/appropriateness/raw/
 ```
 
+The batch summary appears at:
+
+```text
+src/data/appropriateness/raw/extraction-summary.json
+```
+
 Each raw JSON file must be reviewed before any content is converted into public curated topic files.
+
+## Batch Behavior
+
+The extractor is designed for large local folders. If one PDF fails, the script logs the failure, continues with the remaining files, and includes failed files in `extraction-summary.json`.
+
+The summary includes:
+
+- `processedFiles`
+- `failedFiles`
+- `totalTopics`
+- `totalVariants`
+- `totalProcedureRows`
+- `totalWarnings`
+- `timestamp`
+
+## Warning Categories
+
+Raw extraction warnings use these categories:
+
+- `noVariantFound`
+- `noProcedureRowsFound`
+- `unclearRadiationLevel`
+- `unclearAppropriatenessCategory`
+- `possibleTruncatedProcedure`
+- `duplicateTopicTitle`

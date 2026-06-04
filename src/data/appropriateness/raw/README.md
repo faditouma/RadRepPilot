@@ -37,4 +37,12 @@ npm run extract:acr
 
 The script reads local PDFs from `acr-source-pdfs/` and writes `[slug].raw.json` files here.
 
+It also writes:
+
+```text
+extraction-summary.json
+```
+
+The summary includes processed files, failed files, total topics, variants, procedure rows, warnings, and timestamp.
+
 Do not import these raw files into the public app. They must be reviewed and curated first.
