@@ -1,9 +1,28 @@
 import { useMemo, useState } from 'react';
-import { appropriatenessTopics, searchAppropriatenessTopics } from '../../data/appropriateness';
+import { appropriatenessTopics } from '../../data/appropriateness';
 import type { AppropriatenessCategory, AppropriatenessTopic, RadiationLevel, ReviewStatus } from '../../data/appropriateness';
 import { searchClinicalMappings, type ClinicalComplaintMapping } from '../../data/appropriateness/clinicalMappings';
-import { radiationLegend, reviewStatusLabel, reviewStatusSummary } from '../../utils/appropriatenessSearch';
+import { radiationLegend, reviewStatusLabel, reviewStatusSummary, searchAppropriatenessLayer } from '../../utils/appropriatenessSearch';
 import { CopyButton } from '../radrep/RadRepComponents';
+
+type ProcedureType = 'CT' | 'MRI' | 'Ultrasound' | 'X-ray' | 'Mammography' | 'Nuclear/PET' | 'Fluoroscopy/IR' | 'Other';
+
+interface TopicResultGroup {
+  id: string;
+  title: string;
+  helper: string;
+  topics: AppropriatenessTopic[];
+}
+
+const radiationRank: Record<RadiationLevel, number> = {
+  O: 0,
+  '☢': 1,
+  '☢☢': 2,
+  '☢☢☢': 3,
+  '☢☢☢☢': 4,
+  '☢☢☢☢☢': 5,
+  Varies: 6,
+};
 
 function categoryClass(category: AppropriatenessCategory) {
   if (category === 'Usually Appropriate') return 'usually';
@@ -22,6 +41,166 @@ function humanizeTopicId(topicId: string) {
     .filter(Boolean)
     .map((part) => part.charAt(0).toUpperCase() + part.slice(1))
     .join(' ');
+}
+
+function topicOptions(topic: AppropriatenessTopic) {
+  return topic.variants.flatMap((variant) => variant.imagingOptions);
+}
+
+function inferProcedureType(procedure: string): ProcedureType {
+  const normalized = procedure.toLowerCase();
+  if (/\bpet\b|pet\/ct|spect|scintigraphy|nuclear/.test(normalized)) return 'Nuclear/PET';
+  if (/mammography|mammogram|tomosynthesis|breast us/.test(normalized)) return 'Mammography';
+  if (/\bus\b|ultrasound|sonography/.test(normalized)) return 'Ultrasound';
+  if (/\bmri?\b|magnetic resonance/.test(normalized)) return 'MRI';
+  if (/\bct\b|cta|ctpa|computed tomography/.test(normalized)) return 'CT';
+  if (/radiograph|x-ray|xray|xr\b/.test(normalized)) return 'X-ray';
+  if (/fluoro|fluoroscopy|angiography|venography|arteriography|catheter|intervention/.test(normalized)) return 'Fluoroscopy/IR';
+  return 'Other';
+}
+
+function procedureTypesForTopic(topic: AppropriatenessTopic): ProcedureType[] {
+  return Array.from(new Set(topicOptions(topic).map((option) => inferProcedureType(option.procedure)))).sort();
+}
+
+function topicRadiationSummary(topic: AppropriatenessTopic) {
+  const levels = Array.from(new Set(topicOptions(topic).map((option) => option.radiationLevel))).filter(Boolean) as RadiationLevel[];
+  if (!levels.length) return 'Radiation not listed';
+  if (levels.length === 1) return `Radiation ${levels[0]}`;
+
+  const nonVariableLevels = levels.filter((level) => level !== 'Varies').sort((a, b) => radiationRank[a] - radiationRank[b]);
+  if (!nonVariableLevels.length) return 'Radiation varies';
+
+  const min = nonVariableLevels[0];
+  const max = nonVariableLevels[nonVariableLevels.length - 1];
+  const range = min === max ? min : `${min} to ${max}`;
+  return levels.includes('Varies') ? `Radiation ${range}; varies` : `Radiation ${range}`;
+}
+
+function statusNoteForTopic(topic: AppropriatenessTopic) {
+  if (topic.reviewStatus === 'manually_curated') return 'Curated clinical summary available.';
+  if (topic.reviewStatus === 'reviewed') return 'Reviewed appropriateness table available.';
+  return 'Appropriateness table extracted. Clinical summary pending.';
+}
+
+function topicSearchText(topic: AppropriatenessTopic) {
+  return [
+    topic.id,
+    topic.title,
+    topic.year,
+    topic.clinicalArea,
+    topic.sourceLabel,
+    topic.sourceNote,
+    ...topic.keywords,
+    ...procedureTypesForTopic(topic),
+    ...topic.variants.flatMap((variant) => [
+      variant.id,
+      variant.title,
+      variant.clinicalScenario,
+      ...variant.imagingOptions.flatMap((option) => [
+        option.procedure,
+        option.appropriatenessCategory,
+        option.radiationLevel,
+        option.shortRationale,
+      ]),
+    ]),
+  ]
+    .join(' ')
+    .toLowerCase();
+}
+
+function scoreTopic(topic: AppropriatenessTopic, query: string, mappedTopicIds: Set<string>) {
+  const normalized = query.trim().toLowerCase();
+  if (!normalized) return mappedTopicIds.has(topic.id) ? 20 : 0;
+
+  const haystack = topicSearchText(topic);
+  const terms = normalized.split(/\s+/).filter(Boolean);
+  let score = mappedTopicIds.has(topic.id) ? 80 : 0;
+
+  if (topic.title.toLowerCase().includes(normalized)) score += 90;
+  if (topic.keywords.some((keyword) => keyword.toLowerCase().includes(normalized))) score += 55;
+  if (topic.clinicalArea.toLowerCase().includes(normalized)) score += 25;
+  if (topic.variants.some((variant) => variant.title.toLowerCase().includes(normalized))) score += 45;
+  if (topic.variants.some((variant) => variant.clinicalScenario.toLowerCase().includes(normalized))) score += 45;
+  if (topicOptions(topic).some((option) => option.procedure.toLowerCase().includes(normalized))) score += 40;
+  if (terms.length && terms.every((term) => haystack.includes(term))) score += 25;
+
+  return score;
+}
+
+function uniqueTopics(topics: AppropriatenessTopic[]) {
+  const seen = new Set<string>();
+  return topics.filter((topic) => {
+    if (seen.has(topic.id)) return false;
+    seen.add(topic.id);
+    return true;
+  });
+}
+
+function topicMatchesFilters(
+  topic: AppropriatenessTopic,
+  clinicalAreaFilter: string,
+  procedureTypeFilter: string,
+  categoryFilter: 'All' | AppropriatenessCategory,
+  radiationFilter: 'All' | RadiationLevel,
+  reviewStatusFilter: 'All' | ReviewStatus,
+) {
+  const options = topicOptions(topic);
+  const matchesArea = clinicalAreaFilter === 'All' || topic.clinicalArea === clinicalAreaFilter;
+  const matchesProcedureType = procedureTypeFilter === 'All' || procedureTypesForTopic(topic).includes(procedureTypeFilter as ProcedureType);
+  const matchesCategory = categoryFilter === 'All' || options.some((option) => option.appropriatenessCategory === categoryFilter);
+  const matchesRadiation = radiationFilter === 'All' || options.some((option) => option.radiationLevel === radiationFilter);
+  const matchesReviewStatus = reviewStatusFilter === 'All' || topic.reviewStatus === reviewStatusFilter;
+
+  return matchesArea && matchesProcedureType && matchesCategory && matchesRadiation && matchesReviewStatus;
+}
+
+function buildTopicGroups(
+  topics: AppropriatenessTopic[],
+  query: string,
+  mappedTopicIds: Set<string>,
+): TopicResultGroup[] {
+  const groups: TopicResultGroup[] = [];
+  const usedTopicIds = new Set<string>();
+  const sortedTopics = [...topics].sort((a, b) => scoreTopic(b, query, mappedTopicIds) - scoreTopic(a, query, mappedTopicIds));
+
+  function addGroup(id: string, title: string, helper: string, groupTopics: AppropriatenessTopic[]) {
+    const uniqueGroupTopics = groupTopics.filter((topic) => !usedTopicIds.has(topic.id));
+    if (!uniqueGroupTopics.length) return;
+    uniqueGroupTopics.forEach((topic) => usedTopicIds.add(topic.id));
+    groups.push({ id, title, helper, topics: uniqueGroupTopics });
+  }
+
+  if (query.trim()) {
+    addGroup(
+      'best',
+      'Best matches',
+      'Ranked by title, variant, procedure, keyword, and complaint mapping matches.',
+      sortedTopics.filter((topic) => scoreTopic(topic, query, mappedTopicIds) > 0).slice(0, 10),
+    );
+  }
+
+  addGroup(
+    'related',
+    'Related topics',
+    'Topics connected through clinical complaint mappings.',
+    sortedTopics.filter((topic) => mappedTopicIds.has(topic.id)),
+  );
+  addGroup(
+    'curated',
+    'Curated clinical summaries',
+    'Reviewed or manually curated topics with clinical summary content.',
+    sortedTopics.filter((topic) => topic.reviewStatus === 'reviewed' || topic.reviewStatus === 'manually_curated'),
+  );
+  addGroup(
+    'extracted',
+    'Extracted table summaries',
+    'App-readable table summaries awaiting clinical summary validation.',
+    sortedTopics.filter((topic) => topic.reviewStatus === 'extracted' || topic.reviewStatus === 'needs_validation'),
+  );
+  addGroup('other', 'Other matches', 'Additional topics matching the current filters.', sortedTopics);
+
+  return groups;
 }
 
 function ComplaintMappingCard({
@@ -63,7 +242,7 @@ function ComplaintMappingCard({
             <h4>Requisition wording</h4>
             <CopyButton text={mapping.commonRequisitionLanguage} label="Copy wording" />
           </div>
-          <p>{mapping.commonRequisitionLanguage}</p>
+          <p>{mapping.commonRequisitionLanguage || 'Requisition wording pending for this topic.'}</p>
         </div>
       </div>
       <div className="guide-related-topics">
@@ -108,30 +287,119 @@ function ComplaintMappingCard({
   );
 }
 
+function TopicResultCard({
+  topic,
+  active,
+  onSelect,
+}: {
+  topic: AppropriatenessTopic;
+  active: boolean;
+  onSelect: (topicId: string) => void;
+}) {
+  const procedureTypes = procedureTypesForTopic(topic);
+
+  return (
+    <button className={`guide-topic-card ${active ? 'active' : ''}`} onClick={() => onSelect(topic.id)} type="button">
+      <div className="guide-topic-card-topline">
+        <span>{topic.clinicalArea}</span>
+        <ReviewBadge topic={topic} />
+      </div>
+      <strong>{topic.title}</strong>
+      <small>{topic.sourceLabel}</small>
+      <div className="guide-topic-card-stats">
+        {topic.year && topic.year !== 'unknown' ? <span>{topic.year}</span> : null}
+        <span>{topic.variants.length} variants</span>
+        <span>{procedureTypes.slice(0, 3).join(', ') || 'Procedure type pending'}</span>
+      </div>
+      <div className="guide-topic-card-summary">
+        <span>{topicRadiationSummary(topic)}</span>
+        <span>{statusNoteForTopic(topic)}</span>
+      </div>
+    </button>
+  );
+}
+
+function TopicResultGroups({
+  groups,
+  selectedTopic,
+  onSelectTopic,
+}: {
+  groups: TopicResultGroup[];
+  selectedTopic?: AppropriatenessTopic;
+  onSelectTopic: (topicId: string) => void;
+}) {
+  if (!groups.length) {
+    return <p className="guide-no-results">No reviewed or extracted topic found. Try a different symptom, diagnosis, or modality.</p>;
+  }
+
+  return (
+    <>
+      {groups.map((group) => (
+        <section className="guide-result-group" key={group.id}>
+          <div className="guide-result-group-header">
+            <div>
+              <h3>{group.title}</h3>
+              <p>{group.helper}</p>
+            </div>
+            <span>{group.topics.length}</span>
+          </div>
+          <div className="guide-topic-list" aria-label={`${group.title} imaging guide topics`}>
+            {group.topics.map((topic) => (
+              <TopicResultCard
+                active={Boolean(selectedTopic && topic.id === selectedTopic.id)}
+                key={`${group.id}-${topic.id}`}
+                onSelect={onSelectTopic}
+                topic={topic}
+              />
+            ))}
+          </div>
+        </section>
+      ))}
+    </>
+  );
+}
+
 export function ImagingGuidePanel() {
   const [query, setQuery] = useState('');
   const [clinicalAreaFilter, setClinicalAreaFilter] = useState('All');
+  const [procedureTypeFilter, setProcedureTypeFilter] = useState('All');
   const [categoryFilter, setCategoryFilter] = useState<'All' | AppropriatenessCategory>('All');
   const [radiationFilter, setRadiationFilter] = useState<'All' | RadiationLevel>('All');
   const [reviewStatusFilter, setReviewStatusFilter] = useState<'All' | ReviewStatus>('All');
   const [selectedTopicId, setSelectedTopicId] = useState(appropriatenessTopics[0]?.id ?? '');
-  const visibleTopics = useMemo(() => {
-    return searchAppropriatenessTopics(query).filter((topic) => {
-      const options = topic.variants.flatMap((variant) => variant.imagingOptions);
-      const matchesArea = clinicalAreaFilter === 'All' || topic.clinicalArea === clinicalAreaFilter;
-      const matchesCategory = categoryFilter === 'All' || options.some((option) => option.appropriatenessCategory === categoryFilter);
-      const matchesRadiation = radiationFilter === 'All' || options.some((option) => option.radiationLevel === radiationFilter);
-      const matchesReviewStatus = reviewStatusFilter === 'All' || topic.reviewStatus === reviewStatusFilter;
-      return matchesArea && matchesCategory && matchesRadiation && matchesReviewStatus;
-    });
-  }, [categoryFilter, clinicalAreaFilter, query, radiationFilter, reviewStatusFilter]);
+  const [selectedVariantId, setSelectedVariantId] = useState('');
+
   const matchingClinicalMappings = useMemo(() => searchClinicalMappings(query), [query]);
+  const mappedTopicIds = useMemo(
+    () => new Set(matchingClinicalMappings.flatMap((mapping) => mapping.relatedTopicIds)),
+    [matchingClinicalMappings],
+  );
   const topicById = useMemo(() => new Map(appropriatenessTopics.map((topic) => [topic.id, topic])), []);
+  const clinicalAreas = useMemo(() => Array.from(new Set(appropriatenessTopics.map((topic) => topic.clinicalArea))).sort(), []);
+  const procedureTypes = useMemo(
+    () => Array.from(new Set(appropriatenessTopics.flatMap((topic) => procedureTypesForTopic(topic)))).sort(),
+    [],
+  );
+
+  const visibleTopics = useMemo(() => {
+    const searchResults = searchAppropriatenessLayer(query).topics;
+    const candidateTopics = query.trim()
+      ? uniqueTopics([
+          ...searchResults,
+          ...appropriatenessTopics.filter((topic) => mappedTopicIds.has(topic.id)),
+        ])
+      : appropriatenessTopics;
+
+    return candidateTopics.filter((topic) =>
+      topicMatchesFilters(topic, clinicalAreaFilter, procedureTypeFilter, categoryFilter, radiationFilter, reviewStatusFilter),
+    );
+  }, [categoryFilter, clinicalAreaFilter, mappedTopicIds, procedureTypeFilter, query, radiationFilter, reviewStatusFilter]);
+
+  const groupedTopics = useMemo(() => buildTopicGroups(visibleTopics, query, mappedTopicIds), [mappedTopicIds, query, visibleTopics]);
   const selectedTopic = visibleTopics.find((topic) => topic.id === selectedTopicId) ?? visibleTopics[0];
-  const [selectedVariantId, setSelectedVariantId] = useState(selectedTopic?.variants[0]?.id ?? '');
   const selectedVariant =
     selectedTopic?.variants.find((variant) => variant.id === selectedVariantId) ?? selectedTopic?.variants[0];
-  const requisitionText = selectedVariant?.requisitionSuggestions.join('\n\n') ?? '';
+  const requisitionText = selectedVariant?.requisitionSuggestions.join('\n\n') ?? 'Requisition wording pending for this topic.';
 
   function selectTopic(topicId: string) {
     const topic = appropriatenessTopics.find((item) => item.id === topicId);
@@ -142,34 +410,44 @@ export function ImagingGuidePanel() {
   return (
     <section className="imaging-guide-panel">
       <div className="guide-disclaimer" role="note">
-        Summarized appropriateness-style data for educational use. Not a substitute for original criteria, local protocol, or
-        radiologist judgment.
+        Educational summary. Confirm with original criteria, local protocols, and radiologist judgment.
       </div>
 
       <div className="guide-layout">
         <aside className="guide-topic-panel">
           <label className="guide-search-label" htmlFor="imaging-guide-search">
-            Search clinical scenario, symptom, or diagnosis
+            Search topic, complaint, variant, procedure, or keyword
           </label>
           <input
             id="imaging-guide-search"
             type="search"
             value={query}
             onChange={(event) => setQuery(event.target.value)}
-            placeholder="Search clinical scenario, symptom, or diagnosis..."
+            placeholder="e.g. headache, CT, suspected PE, ultrasound, low back pain..."
           />
           <div className="guide-topic-count" role="status">
-            <strong>{appropriatenessTopics.length}</strong>
-            <span>topics available with status labels</span>
+            <strong>{visibleTopics.length}</strong>
+            <span>of {appropriatenessTopics.length} topics shown</span>
           </div>
           <div className="guide-filter-grid">
             <label>
               Clinical area
               <select value={clinicalAreaFilter} onChange={(event) => setClinicalAreaFilter(event.target.value)}>
                 <option value="All">All</option>
-                {Array.from(new Set(appropriatenessTopics.map((topic) => topic.clinicalArea))).map((area) => (
+                {clinicalAreas.map((area) => (
                   <option value={area} key={area}>
                     {area}
+                  </option>
+                ))}
+              </select>
+            </label>
+            <label>
+              Modality/procedure
+              <select value={procedureTypeFilter} onChange={(event) => setProcedureTypeFilter(event.target.value)}>
+                <option value="All">All</option>
+                {procedureTypes.map((type) => (
+                  <option value={type} key={type}>
+                    {type}
                   </option>
                 ))}
               </select>
@@ -206,198 +484,208 @@ export function ImagingGuidePanel() {
               </select>
             </label>
           </div>
-          <div className="guide-topic-list" aria-label="Imaging guide topics">
-            {visibleTopics.map((topic) => (
-              <button
-                className={selectedTopic && topic.id === selectedTopic.id ? 'active' : ''}
-                key={topic.id}
-                onClick={() => selectTopic(topic.id)}
-                type="button"
-              >
-                <span>{topic.clinicalArea}</span>
-                <strong>{topic.title}</strong>
-                <small>{topic.sourceLabel}</small>
-                <div className="guide-topic-meta">
-                  <small>{topic.year}</small>
-                  <ReviewBadge topic={topic} />
-                </div>
-              </button>
-            ))}
-            {!visibleTopics.length ? <p>No reviewed or extracted topic found. Try a different symptom, diagnosis, or modality.</p> : null}
+          <div className="guide-result-list" aria-label="Grouped Imaging Guide results">
+            <TopicResultGroups groups={groupedTopics} onSelectTopic={selectTopic} selectedTopic={selectedTopic} />
           </div>
         </aside>
 
-        {matchingClinicalMappings.length ? (
-          <div className="guide-content">
-            <div className="guide-topic-header">
-              <div>
-                <span className="eyebrow">Complaint mapping</span>
-                <h2>Clinical complaint matches</h2>
-                <p>
-                  Complaint mappings help translate everyday clinical language into Imaging Guide topics when available. Extracted
-                  table-only topics are labeled clearly as clinical summary pending.
-                </p>
+        <div className="guide-content">
+          {matchingClinicalMappings.length ? (
+            <section className="guide-section">
+              <div className="guide-topic-header compact">
+                <div>
+                  <span className="eyebrow">Complaint mapping</span>
+                  <h2>Clinical complaint matches</h2>
+                  <p>
+                    Complaint mappings connect everyday clinical language to extracted or curated Imaging Guide topics when available.
+                  </p>
+                </div>
               </div>
-            </div>
-            <div className="guide-complaint-grid">
-              {matchingClinicalMappings.map((mapping) => (
-                <ComplaintMappingCard mapping={mapping} topicById={topicById} key={mapping.id} />
-              ))}
-            </div>
-            {selectedTopic ? (
-              <details className="guide-section">
-                <summary>Show topic match</summary>
-                <p>{selectedTopic.title}</p>
-              </details>
-            ) : null}
-          </div>
-        ) : selectedTopic ? (
-          <div className="guide-content">
-          <div className="guide-topic-header">
-            <div>
-                <span className="eyebrow">Imaging Guide topic</span>
-                <h2>{selectedTopic.title}</h2>
-              <div className="guide-source-meta">
-                <span>{selectedTopic.sourceLabel}</span>
-                <span>{selectedTopic.year}</span>
+              <div className="guide-complaint-grid">
+                {matchingClinicalMappings.map((mapping) => (
+                  <ComplaintMappingCard mapping={mapping} topicById={topicById} key={mapping.id} />
+                ))}
               </div>
-              <p>{reviewStatusSummary(selectedTopic.reviewStatus)} {selectedTopic.sourceNote}</p>
-            </div>
-            <ReviewBadge topic={selectedTopic} />
-          </div>
-
-          {selectedTopic.sourceUrl ? (
-            <a className="guide-source-link" href={selectedTopic.sourceUrl} target="_blank" rel="noreferrer">
-              Verify against official ACR Appropriateness Criteria
-            </a>
+            </section>
           ) : null}
 
-          <section className="guide-section">
-            <label className="guide-search-label" htmlFor="imaging-guide-variant">
-              Clinical variant
-            </label>
-            <select
-              id="imaging-guide-variant"
-              value={selectedVariant?.id ?? ''}
-              onChange={(event) => setSelectedVariantId(event.target.value)}
-            >
-              {selectedTopic.variants.map((variant) => (
-                <option key={variant.id} value={variant.id}>
-                  {variant.title}
-                </option>
-              ))}
-            </select>
-            {selectedVariant ? <p>{selectedVariant.clinicalScenario}</p> : null}
-          </section>
-
-          {selectedVariant ? (
+          {selectedTopic ? (
             <>
-              <section className="guide-section">
-                <div className="guide-section-heading">
-                  <h3>Imaging options</h3>
-                  <span>Procedure, category, radiation, rationale</span>
-                </div>
-                <div className="guide-option-grid">
-                  {selectedVariant.imagingOptions.map((option) => (
-                    <article className="guide-option-card" key={option.procedure}>
-                      <div className="guide-option-topline">
-                        <span className={`guide-category-badge ${categoryClass(option.appropriatenessCategory)}`}>
-                          {option.appropriatenessCategory}
-                        </span>
-                        <span className="guide-radiation-badge">{option.radiationLevel}</span>
-                      </div>
-                      <h4>{option.procedure}</h4>
-                      <p>{option.shortRationale}</p>
-                    </article>
-                  ))}
-                </div>
-              </section>
-
-              <section className="guide-section">
-                <div className="guide-section-heading">
-                  <h3>Missing clinical information</h3>
-                  <span>Useful details before choosing or protocoling imaging</span>
-                </div>
-                <ul className="guide-chip-list">
-                  {selectedVariant.missingInformationPrompts.map((prompt) => (
-                    <li key={prompt}>{prompt}</li>
-                  ))}
-                </ul>
-              </section>
-
-              <section className="guide-section guide-requisition">
-                <div className="guide-section-heading">
-                  <h3>Requisition-ready wording</h3>
-                  <CopyButton text={requisitionText} label="Copy wording" />
-                </div>
-                <p>{requisitionText}</p>
-              </section>
-
-              <section className="guide-two-column">
-                <div className="guide-section">
-                  <div className="guide-section-heading">
-                    <h3>Reporting pearls</h3>
+              <div className="guide-topic-header">
+                <div>
+                  <span className="eyebrow">Imaging Guide topic</span>
+                  <h2>{selectedTopic.title}</h2>
+                  <div className="guide-source-meta">
+                    <span>{selectedTopic.sourceLabel}</span>
+                    {selectedTopic.year && selectedTopic.year !== 'unknown' ? <span>{selectedTopic.year}</span> : null}
+                    <span>{selectedTopic.variants.length} variants</span>
+                    <span>{topicRadiationSummary(selectedTopic)}</span>
                   </div>
-                  <ul>
-                    {selectedVariant.reportingPearls.map((pearl) => (
-                      <li key={pearl}>{pearl}</li>
-                    ))}
-                  </ul>
+                  <p>
+                    {statusNoteForTopic(selectedTopic)} {reviewStatusSummary(selectedTopic.reviewStatus)} {selectedTopic.sourceNote}
+                  </p>
                 </div>
-                <div className="guide-section caution">
-                  <div className="guide-section-heading">
-                    <h3>Cautions</h3>
-                  </div>
-                  <ul>
-                    {selectedVariant.cautions.map((caution) => (
-                      <li key={caution}>{caution}</li>
-                    ))}
-                  </ul>
-                </div>
-              </section>
+                <ReviewBadge topic={selectedTopic} />
+              </div>
 
-              {selectedVariant.followUpPearls?.length ? (
-                <section className="guide-section">
-                  <div className="guide-section-heading">
-                    <h3>Follow-up pearls</h3>
-                    <span>Educational only; verify local protocol</span>
-                  </div>
-                  <ul>
-                    {selectedVariant.followUpPearls.map((pearl) => (
-                      <li key={pearl}>{pearl}</li>
-                    ))}
-                  </ul>
-                </section>
+              {selectedTopic.sourceUrl ? (
+                <a className="guide-source-link" href={selectedTopic.sourceUrl} target="_blank" rel="noreferrer">
+                  Verify against official ACR Appropriateness Criteria
+                </a>
               ) : null}
 
               <section className="guide-section">
-                <div className="guide-section-heading">
-                  <h3>Radiation legend</h3>
-                </div>
-                <div className="guide-radiation-legend">
-                  {radiationLegend.map((item) => (
-                    <span key={item.level}>
-                      <strong>{item.level}</strong> = {item.label}
-                    </span>
+                <label className="guide-search-label" htmlFor="imaging-guide-variant">
+                  Clinical variant
+                </label>
+                <select
+                  id="imaging-guide-variant"
+                  value={selectedVariant?.id ?? ''}
+                  onChange={(event) => setSelectedVariantId(event.target.value)}
+                >
+                  {selectedTopic.variants.map((variant) => (
+                    <option key={variant.id} value={variant.id}>
+                      {variant.title}
+                    </option>
                   ))}
-                </div>
+                </select>
+                {selectedVariant ? <p>{selectedVariant.clinicalScenario}</p> : null}
               </section>
+
+              {selectedVariant ? (
+                <>
+                  <section className="guide-section">
+                    <div className="guide-section-heading">
+                      <h3>Recommendation table</h3>
+                      <span>Procedure, category, radiation, rationale</span>
+                    </div>
+                    {selectedVariant.imagingOptions.length ? (
+                      <div className="guide-table-wrap">
+                        <table className="guide-recommendation-table">
+                          <thead>
+                            <tr>
+                              <th>Procedure</th>
+                              <th>Appropriateness</th>
+                              <th>Radiation</th>
+                              <th>Short rationale</th>
+                            </tr>
+                          </thead>
+                          <tbody>
+                            {selectedVariant.imagingOptions.map((option) => (
+                              <tr key={option.procedure}>
+                                <td>{option.procedure}</td>
+                                <td>
+                                  <span className={`guide-category-badge ${categoryClass(option.appropriatenessCategory)}`}>
+                                    {option.appropriatenessCategory}
+                                  </span>
+                                </td>
+                                <td>
+                                  <span className="guide-radiation-badge">{option.radiationLevel}</span>
+                                </td>
+                                <td>{option.shortRationale}</td>
+                              </tr>
+                            ))}
+                          </tbody>
+                        </table>
+                      </div>
+                    ) : (
+                      <p>Recommendation table pending for this variant.</p>
+                    )}
+                    <p className="guide-status-note">
+                      {statusNoteForTopic(selectedTopic)} Source/status note: {selectedTopic.sourceNote}
+                    </p>
+                  </section>
+
+                  {selectedVariant.missingInformationPrompts.length ? (
+                    <section className="guide-section">
+                      <div className="guide-section-heading">
+                        <h3>Missing clinical information</h3>
+                        <span>Useful details before choosing or protocoling imaging</span>
+                      </div>
+                      <ul className="guide-chip-list">
+                        {selectedVariant.missingInformationPrompts.map((prompt) => (
+                          <li key={prompt}>{prompt}</li>
+                        ))}
+                      </ul>
+                    </section>
+                  ) : null}
+
+                  <section className="guide-section guide-requisition">
+                    <div className="guide-section-heading">
+                      <h3>Requisition-ready wording</h3>
+                      <CopyButton text={requisitionText} label="Copy wording" />
+                    </div>
+                    <p>{requisitionText}</p>
+                  </section>
+
+                  {(selectedVariant.reportingPearls.length || selectedVariant.cautions.length) ? (
+                    <section className="guide-two-column">
+                      {selectedVariant.reportingPearls.length ? (
+                        <div className="guide-section">
+                          <div className="guide-section-heading">
+                            <h3>Reporting pearls</h3>
+                          </div>
+                          <ul>
+                            {selectedVariant.reportingPearls.map((pearl) => (
+                              <li key={pearl}>{pearl}</li>
+                            ))}
+                          </ul>
+                        </div>
+                      ) : null}
+                      {selectedVariant.cautions.length ? (
+                        <div className="guide-section caution">
+                          <div className="guide-section-heading">
+                            <h3>Cautions</h3>
+                          </div>
+                          <ul>
+                            {selectedVariant.cautions.map((caution) => (
+                              <li key={caution}>{caution}</li>
+                            ))}
+                          </ul>
+                        </div>
+                      ) : null}
+                    </section>
+                  ) : null}
+
+                  {selectedVariant.followUpPearls?.length ? (
+                    <section className="guide-section">
+                      <div className="guide-section-heading">
+                        <h3>Follow-up pearls</h3>
+                        <span>Educational only; verify local protocol</span>
+                      </div>
+                      <ul>
+                        {selectedVariant.followUpPearls.map((pearl) => (
+                          <li key={pearl}>{pearl}</li>
+                        ))}
+                      </ul>
+                    </section>
+                  ) : null}
+
+                  <section className="guide-section">
+                    <div className="guide-section-heading">
+                      <h3>Radiation legend</h3>
+                    </div>
+                    <div className="guide-radiation-legend">
+                      {radiationLegend.map((item) => (
+                        <span key={item.level}>
+                          <strong>{item.level}</strong> = {item.label}
+                        </span>
+                      ))}
+                    </div>
+                  </section>
+                </>
+              ) : null}
             </>
-          ) : null}
-          </div>
-        ) : (
-          <div className="guide-content guide-empty-state">
-            <div>
-              <span className="eyebrow">Imaging Guide</span>
-              <h2>No reviewed topic found</h2>
-              <p>Try a different symptom, diagnosis, or modality.</p>
+          ) : (
+            <div className="guide-empty-state">
+              <div>
+                <span className="eyebrow">Imaging Guide</span>
+                <h2>No reviewed or extracted topic found</h2>
+                <p>Try a different symptom, diagnosis, modality, or review-status filter.</p>
+              </div>
             </div>
-            <div className="guide-disclaimer" role="note">
-              Extracted tables, validated summaries, and manually curated topics can all appear here with clear status labels. Add
-              structured topics in <code>src/data/appropriateness/topics/</code> and import them through the registry.
-            </div>
-          </div>
-        )}
+          )}
+        </div>
       </div>
     </section>
   );

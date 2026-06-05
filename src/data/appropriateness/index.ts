@@ -1,4 +1,5 @@
 import { generatedAppropriatenessTopics } from './generated';
+import { clinicalComplaintMappings } from './clinicalMappings';
 import { chronicPancreatitisTopic } from './topics/chronicPancreatitis';
 import type { AppropriatenessTopic } from './types';
 
@@ -42,6 +43,25 @@ export function searchAppropriatenessTopics(query: string): AppropriatenessTopic
 
   if (!normalized) return appropriatenessTopics;
 
+  const mappedTopicIds = new Set(
+    clinicalComplaintMappings
+      .filter((mapping) => {
+        const mappingHaystack = [
+          mapping.complaint,
+          ...mapping.synonyms,
+          ...mapping.relatedTopicIds,
+          ...(mapping.suggestedVariantIds ?? []),
+          ...mapping.missingInfoPrompts,
+          mapping.commonRequisitionLanguage,
+        ]
+          .join(' ')
+          .toLowerCase();
+
+        return mappingHaystack.includes(normalized);
+      })
+      .flatMap((mapping) => mapping.relatedTopicIds),
+  );
+
   return appropriatenessTopics.filter((topic) => {
     const haystack = [
       topic.title,
@@ -57,7 +77,7 @@ export function searchAppropriatenessTopics(query: string): AppropriatenessTopic
       .join(' ')
       .toLowerCase();
 
-    return haystack.includes(normalized);
+    return haystack.includes(normalized) || mappedTopicIds.has(topic.id);
   });
 }
 

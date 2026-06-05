@@ -35,9 +35,9 @@ export function reviewStatusLabel(status: ReviewStatus): string {
 }
 
 export function reviewStatusSummary(status?: ReviewStatus): string {
-  if (status === 'manually_curated') return 'Reviewed table with curated clinical summary.';
+  if (status === 'manually_curated') return 'Curated clinical summary available.';
   if (status === 'reviewed') return 'Reviewed appropriateness table available.';
-  if (status === 'needs_validation') return 'Extracted from appropriateness criteria. Validate against source before clinical use.';
+  if (status === 'needs_validation') return 'Appropriateness table extracted. Clinical summary pending. Validate against source before clinical use.';
   if (status === 'extracted') return 'Appropriateness table extracted. Clinical summary pending.';
   return 'Appropriateness table pending. Curated clinical notes not yet added.';
 }
