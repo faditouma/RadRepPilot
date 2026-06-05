@@ -362,7 +362,7 @@ function TopicResultGroups({
 }
 
 interface ImagingGuidePanelProps {
-  onUseInRequisition?: (topicId: string, variantId?: string) => void;
+  onUseInRequisition?: (topicId: string, variantId?: string, handoff?: { scenarioTitle?: string; procedure?: string }) => void;
 }
 
 export function ImagingGuidePanel({ onUseInRequisition }: ImagingGuidePanelProps = {}) {
@@ -566,7 +566,13 @@ export function ImagingGuidePanel({ onUseInRequisition }: ImagingGuidePanelProps
               <div className="guide-action-row">
                 <button
                   className="primary-button"
-                  onClick={() => onUseInRequisition?.(selectedTopic.id, selectedVariant?.id)}
+                  onClick={() => {
+                    const usuallyAppropriate = selectedVariant?.imagingOptions.find((option) => option.appropriatenessCategory === 'Usually Appropriate');
+                    onUseInRequisition?.(selectedTopic.id, selectedVariant?.id, {
+                      scenarioTitle: selectedVariant?.title || selectedVariant?.clinicalScenario,
+                      procedure: usuallyAppropriate?.procedure,
+                    });
+                  }}
                   type="button"
                 >
                   Use in requisition

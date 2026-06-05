@@ -5080,6 +5080,62 @@ footer {
   gap: 7px;
 }
 
+.appropriateness-check-card {
+  display: grid;
+  gap: 8px;
+  border: 1px solid rgba(216, 224, 234, 0.9);
+  border-radius: 14px;
+  padding: 12px;
+  background: #fff;
+}
+
+.appropriateness-check-card > div:first-child {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+}
+
+.appropriateness-check-card strong {
+  color: var(--ink);
+}
+
+.appropriateness-check-card p,
+.appropriateness-check-card small {
+  margin: 0;
+  color: var(--muted);
+  line-height: 1.45;
+}
+
+.appropriateness-check-card.appropriate {
+  border-color: rgba(16, 185, 129, 0.26);
+  background: linear-gradient(180deg, rgba(236, 253, 245, 0.86), #fff);
+}
+
+.appropriateness-check-card.conditional,
+.appropriateness-check-card.unknown {
+  border-color: rgba(245, 158, 11, 0.3);
+  background: linear-gradient(180deg, rgba(255, 251, 235, 0.9), #fff);
+}
+
+.appropriateness-check-card.not_appropriate {
+  border-color: rgba(239, 68, 68, 0.28);
+  background: linear-gradient(180deg, rgba(254, 242, 242, 0.92), #fff);
+}
+
+.appropriateness-alternative-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 7px;
+  align-items: center;
+}
+
+.appropriateness-alternative-list span {
+  color: var(--muted);
+  font-size: 0.78rem;
+  font-weight: 850;
+}
+
 .guide-source-topic-detail {
   display: grid;
   gap: 10px;

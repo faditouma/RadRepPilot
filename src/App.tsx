@@ -327,8 +327,12 @@ function App({ embedded = false, initialPage = 'dashboard' }: AppProps) {
     if (activePage !== 'referral') setRequisitionSidebar(null);
   }, [activePage]);
 
-  const useTopicInRequisition = (topicId: string, variantId?: string) => {
-    window.localStorage.setItem(ACR_REQUISITION_SELECTION_KEY, JSON.stringify({ topicId, variantId }));
+  const useTopicInRequisition = (
+    topicId: string,
+    variantId?: string,
+    handoff?: { scenarioTitle?: string; procedure?: string },
+  ) => {
+    window.localStorage.setItem(ACR_REQUISITION_SELECTION_KEY, JSON.stringify({ topicId, variantId, ...handoff }));
     setActivePage('referral');
     setToastMessage('Opened in Imaging requisitions');
   };

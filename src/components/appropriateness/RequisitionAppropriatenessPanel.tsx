@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useState } from 'react';
 import type { PrimaryCareContentTemplate, ReferralFormState } from '../../radrep/types';
-import type { AppropriatenessCategory, AppropriatenessTopic } from '../../data/appropriateness';
+import type { AppropriatenessCategory, AppropriatenessTopic, AppropriatenessVariant } from '../../data/appropriateness';
 import type { ClinicalComplaintMapping } from '../../data/appropriateness/clinicalMappings';
 import {
   radiationLegend,
@@ -10,11 +10,12 @@ import {
 import {
   generateAppropriatenessAwareRequisitionSentence,
   getComplaintMappingById,
-  getDefaultComplaintId,
   getGroupedRecommendationOptions,
   resolveAppropriatenessForComplaint,
   resolveAppropriatenessForTopic,
 } from '../../utils/requisitionAppropriateness';
+import { deriveClinicalPrompts, type DerivedClinicalPrompt } from '../../utils/acrPromptDerivation';
+import { classifyRequestedImaging, type RequestedImagingCheck } from '../../utils/appropriatenessValidation';
 import { CopyButton } from '../radrep/RadRepComponents';
 
 interface RequisitionAppropriatenessPanelProps {
@@ -27,7 +28,18 @@ interface RequisitionAppropriatenessPanelProps {
   onToggleClinicalPrompt?: (prompt: string, checked: boolean) => void;
   onApplyWording: (text: string) => void;
   onSelectImagingOption: (procedure: string, suggestedQuestion: string) => void;
+  onAppropriatenessCheckChange?: (check: RequestedImagingCheck | null) => void;
   onOpenGuide?: (topicId: string, variantId?: string) => void;
+}
+
+interface VariantChoice {
+  key: string;
+  topicId: string;
+  topicTitle: string;
+  topic?: AppropriatenessTopic;
+  variant: AppropriatenessVariant;
+  sourceComplaintId?: string;
+  sourceComplaint?: string;
 }
 
 const categoryOrder: AppropriatenessCategory[] = [
@@ -79,6 +91,33 @@ function topOptionsForTopic(topic: AppropriatenessTopic): string {
   return options.map((option) => option.procedure).join(' · ');
 }
 
+function topOptionsForVariant(variant: AppropriatenessVariant): string {
+  const options = variant.imagingOptions.filter((option) => option.appropriatenessCategory === 'Usually Appropriate').slice(0, 3);
+  if (!options.length) return 'Usually Appropriate options pending';
+  return options.map((option) => option.procedure).join(' · ');
+}
+
+function uniqueVariantChoices(choices: VariantChoice[], limit = 8): VariantChoice[] {
+  const seen = new Set<string>();
+  const unique: VariantChoice[] = [];
+  choices.forEach((choice) => {
+    if (seen.has(choice.key)) return;
+    seen.add(choice.key);
+    unique.push(choice);
+  });
+  return unique.slice(0, limit);
+}
+
+function promptFromSupportText(prompt: string): DerivedClinicalPrompt {
+  return {
+    id: prompt.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, ''),
+    label: prompt,
+    type: 'context',
+    relevanceReason: 'Added from curated complaint or scenario support.',
+    requisitionPhrase: prompt,
+  };
+}
+
 export function RequisitionAppropriatenessPanel({
   template,
   form,
@@ -89,6 +128,7 @@ export function RequisitionAppropriatenessPanel({
   onToggleClinicalPrompt,
   onApplyWording,
   onSelectImagingOption,
+  onAppropriatenessCheckChange,
   onOpenGuide,
 }: RequisitionAppropriatenessPanelProps) {
   const [searchTerm, setSearchTerm] = useState('');
@@ -98,9 +138,9 @@ export function RequisitionAppropriatenessPanel({
   const directTopicId = selectedTopicId(effectiveComplaintId);
   const mapping = directTopicId ? undefined : getComplaintMappingById(effectiveComplaintId);
   const support = directTopicId ? resolveAppropriatenessForTopic(directTopicId) : resolveAppropriatenessForComplaint(mapping);
-  const variantChoices = useMemo(
+  const variantChoices = useMemo<VariantChoice[]>(
     () =>
-      support.relatedTopics.flatMap((item) =>
+      uniqueVariantChoices(support.relatedTopics.flatMap((item) =>
         item.suggestedVariants.map((variant) => ({
           key: `${item.topicId}:${variant.id}`,
           topicId: item.topicId,
@@ -108,14 +148,12 @@ export function RequisitionAppropriatenessPanel({
           topic: item.topic,
           variant,
         })),
-      ),
+      )),
     [support],
   );
   const activeVariantChoice =
     variantChoices.find((item) => item.key === selectedVariantKey) ??
-    variantChoices.find((item) => preferredVariantId && item.variant.id === preferredVariantId) ??
-    variantChoices.find((item) => item.variant.imagingOptions.length) ??
-    variantChoices[0];
+    variantChoices.find((item) => preferredVariantId && item.variant.id === preferredVariantId);
   const scenarioSupport = useMemo(() => {
     if (!activeVariantChoice) return support;
 
@@ -135,7 +173,8 @@ export function RequisitionAppropriatenessPanel({
     };
   }, [activeVariantChoice, support]);
   const groupedOptions = useMemo(() => getGroupedRecommendationOptions(scenarioSupport), [scenarioSupport]);
-  const firstProcedure = support.relatedTopics.flatMap((topic) => topic.topOptions)[0]?.procedure;
+  const firstProcedure = activeVariantChoice?.variant.imagingOptions.find((option) => option.appropriatenessCategory === 'Usually Appropriate')?.procedure
+    ?? support.relatedTopics.flatMap((topic) => topic.topOptions)[0]?.procedure;
   const draftWording = generateAppropriatenessAwareRequisitionSentence(form, template, firstProcedure);
   const searched = useMemo(() => {
     const query = searchTerm.trim();
@@ -148,16 +187,57 @@ export function RequisitionAppropriatenessPanel({
 
     return searchAppropriatenessLayer(query);
   }, [searchTerm]);
-  const complaintMatches = searched.complaintMappings.slice(0, 3);
-  const topicMatches = searched.topics.slice(0, Math.max(0, 5 - complaintMatches.length));
+  const scenarioMatches = useMemo<VariantChoice[]>(() => {
+    const fromComplaints = searched.complaintMappings.flatMap((complaint) => {
+      const complaintSupport = resolveAppropriatenessForComplaint(complaint);
+      return complaintSupport.relatedTopics.flatMap((item) =>
+        item.suggestedVariants.map((variant) => ({
+          key: `${item.topicId}:${variant.id}`,
+          topicId: item.topicId,
+          topicTitle: item.topic?.title ?? item.topicId.replace(/-/g, ' '),
+          topic: item.topic,
+          variant,
+          sourceComplaintId: complaint.id,
+          sourceComplaint: complaint.complaint,
+        })),
+      );
+    });
+    const fromTopics = searched.topics.flatMap((topic) =>
+      topic.variants.map((variant) => ({
+        key: `${topic.id}:${variant.id}`,
+        topicId: topic.id,
+        topicTitle: topic.title,
+        topic,
+        variant,
+      })),
+    );
+    return uniqueVariantChoices([...fromComplaints, ...fromTopics], 8);
+  }, [searched]);
   const selectedLabel =
     mapping?.complaint ??
+    activeVariantChoice?.variant.title ??
     support.relatedTopics.find((item) => item.topic)?.topic?.title ??
     (effectiveComplaintId ? effectiveComplaintId.replace(/^topic:/, '').replace(/-/g, ' ') : '');
   const hasSupport = Boolean(mapping || directTopicId || support.relatedTopics.length);
+  const clinicalPrompts = useMemo(() => {
+    if (!activeVariantChoice) return [];
+    const derived = deriveClinicalPrompts(activeVariantChoice.topic, activeVariantChoice.variant, selectedLabel);
+    const supportPrompts = support.missingInfoPrompts.map(promptFromSupportText);
+    return [...derived, ...supportPrompts].filter((prompt, index, all) => all.findIndex((item) => item.id === prompt.id) === index).slice(0, 12);
+  }, [activeVariantChoice, selectedLabel, support.missingInfoPrompts]);
+  const appropriatenessCheck = useMemo(
+    () =>
+      activeVariantChoice
+        ? classifyRequestedImaging(String(form.values.requestedProcedure ?? ''), activeVariantChoice.variant.imagingOptions)
+        : null,
+    [activeVariantChoice, form.values.requestedProcedure],
+  );
 
   useEffect(() => {
-    setSelectedVariantKey('');
+    onAppropriatenessCheckChange?.(appropriatenessCheck);
+  }, [appropriatenessCheck, onAppropriatenessCheckChange]);
+
+  useEffect(() => {
     setSelectedPromptChips([]);
   }, [effectiveComplaintId]);
 
@@ -167,11 +247,11 @@ export function RequisitionAppropriatenessPanel({
     if (match) setSelectedVariantKey(match.key);
   }, [preferredVariantId, selectedVariantKey, variantChoices]);
 
-  const togglePromptChip = (prompt: string) => {
+  const togglePromptChip = (prompt: DerivedClinicalPrompt) => {
     setSelectedPromptChips((existing) => {
-      const checked = !existing.includes(prompt);
-      onToggleClinicalPrompt?.(prompt, checked);
-      return checked ? [...existing, prompt] : existing.filter((item) => item !== prompt);
+      const checked = !existing.includes(prompt.id);
+      onToggleClinicalPrompt?.(prompt.requisitionPhrase, checked);
+      return checked ? [...existing, prompt.id] : existing.filter((item) => item !== prompt.id);
     });
   };
 
@@ -218,41 +298,33 @@ export function RequisitionAppropriatenessPanel({
       ) : null}
 
       <div className="requisition-match-list" aria-label="Top matching clinical scenarios">
-        {complaintMatches.map((item) => (
-          <button
-            className={`requisition-match-card ${effectiveComplaintId === item.id ? 'active' : ''}`}
-            onClick={() => onSelectComplaint(item.id)}
-            type="button"
-            key={item.id}
-          >
-            <span>Clinical scenario</span>
-            <strong>{item.complaint}</strong>
-            <small>{complaintSummary(item)}</small>
-            <em>{topOptionsForMapping(item)}</em>
-            <b>Use this scenario</b>
-          </button>
-        ))}
-        {topicMatches.map((topic) => (
-          <button
-            className={`requisition-match-card ${effectiveComplaintId === selectionKeyForTopic(topic.id) ? 'active' : ''}`}
-            onClick={() => onSelectComplaint(selectionKeyForTopic(topic.id))}
-            type="button"
-            key={topic.id}
-          >
-            <span>Clinical scenario</span>
-            <strong>{topic.title}</strong>
-            <small>{topicSummary(topic)}</small>
-            <em>{topOptionsForTopic(topic)}</em>
-            <b>Use this scenario</b>
-          </button>
-        ))}
+        {scenarioMatches.map((item) => {
+          const active = activeVariantChoice?.key === item.key;
+          return (
+            <button
+              className={`requisition-match-card ${active ? 'active' : ''}`}
+              onClick={() => {
+                onSelectComplaint(item.sourceComplaintId ?? selectionKeyForTopic(item.topicId));
+                setSelectedVariantKey(item.key);
+              }}
+              type="button"
+              key={item.key}
+            >
+              <span>{item.sourceComplaint ? `Clinical problem: ${item.sourceComplaint}` : 'Clinical scenario'}</span>
+              <strong>{item.variant.title || item.variant.clinicalScenario}</strong>
+              <small>{item.topicTitle}{item.topic ? ` · ${topicSummary(item.topic)}` : ''}</small>
+              <em>{topOptionsForVariant(item.variant)}</em>
+              <b>Select scenario</b>
+            </button>
+          );
+        })}
       </div>
 
       {hasSupport ? (
         <>
           {selectedLabel ? (
             <div className="requisition-selected-context">
-              <span>Selected support path</span>
+              <span>Clinical problem</span>
               <strong>{selectedLabel}</strong>
             </div>
           ) : null}
@@ -268,7 +340,7 @@ export function RequisitionAppropriatenessPanel({
           {variantChoices.length ? (
             <div className="guide-section-heading">
               <div>
-                <h4>Selected clinical scenario</h4>
+                <h4>Select clinical scenario</h4>
                 <p>Choose the closest scenario before selecting a requested imaging option.</p>
               </div>
             </div>
@@ -282,6 +354,7 @@ export function RequisitionAppropriatenessPanel({
                   value={activeVariantChoice?.key ?? ''}
                   onChange={(event) => setSelectedVariantKey(event.target.value)}
                 >
+                  <option value="">Choose closest clinical scenario...</option>
                   {variantChoices.map((item) => (
                     <option value={item.key} key={item.key}>
                       {item.topicTitle} - {item.variant.title}
@@ -312,27 +385,28 @@ export function RequisitionAppropriatenessPanel({
             </section>
           ) : null}
 
-          {support.missingInfoPrompts.length ? (
+          {clinicalPrompts.length && activeVariantChoice ? (
             <section className="guide-section compact requisition-prompt-card">
               <div className="guide-section-heading">
                 <div>
-                  <h4>Short clinical prompts</h4>
+                  <h4>Scenario-specific history prompts</h4>
                   <p>Select relevant context to add it to the requisition draft.</p>
                 </div>
               </div>
               <div className="requisition-prompt-chip-grid">
-                {support.missingInfoPrompts.slice(0, 10).map((prompt) => {
-                  const checked = selectedPromptChips.includes(prompt);
+                {clinicalPrompts.map((prompt) => {
+                  const checked = selectedPromptChips.includes(prompt.id);
                   return (
                     <button
                       className={`prompt-chip ${checked ? 'active' : ''}`}
                       onClick={() => togglePromptChip(prompt)}
                       type="button"
                       aria-pressed={checked}
-                      key={prompt}
+                      title={prompt.relevanceReason}
+                      key={prompt.id}
                     >
                       {checked ? 'Added: ' : ''}
-                      {prompt}
+                      {prompt.label}
                     </button>
                   );
                 })}
@@ -340,6 +414,7 @@ export function RequisitionAppropriatenessPanel({
             </section>
           ) : null}
 
+          {activeVariantChoice ? (
           <section className="guide-section compact">
             <div className="guide-section-heading">
               <div>
@@ -398,16 +473,22 @@ export function RequisitionAppropriatenessPanel({
               })}
             </div>
           </section>
+          ) : (
+            <p className="guide-status-note">Select a clinical scenario to view recommended imaging options and appropriateness checks.</p>
+          )}
 
+          {activeVariantChoice ? (
           <details className="guide-section compact" open={false}>
             <summary>Missing information checklist</summary>
             <ul className="guide-chip-list">
-              {support.missingInfoPrompts.slice(0, 12).map((prompt) => (
-                <li key={prompt}>{prompt}</li>
+              {clinicalPrompts.map((prompt) => (
+                <li key={prompt.id}>{prompt.label}</li>
               ))}
             </ul>
           </details>
+          ) : null}
 
+          {activeVariantChoice ? (
           <details className="guide-section compact guide-requisition" open={false}>
             <summary>Requisition wording support</summary>
             <div className="guide-section-heading">
@@ -424,9 +505,10 @@ export function RequisitionAppropriatenessPanel({
               </button>
             </div>
           </details>
+          ) : null}
 
           <details className="guide-section compact" open={false}>
-            <summary>View full extracted ACR table and source details</summary>
+            <summary>Source details</summary>
             {support.relatedTopics.map((item) => (
               <section className="guide-source-topic-detail" key={item.topicId}>
                 <div className="guide-section-heading">

@@ -8,6 +8,7 @@ import { radsSystemsRegistry } from '../../data/radsSystemsRegistry';
 import { bodySystems, modalities, reportingModules } from '../../data/reportingModules';
 import { generateIncidentalFindingSentence, type IncidentalValueMap } from '../../utils/incidentalFindingGenerators';
 import { getTopicById } from '../../utils/appropriatenessSearch';
+import type { RequestedImagingCheck } from '../../utils/appropriatenessValidation';
 import { scoreRequisitionCompleteness } from '../../utils/qualityMetrics';
 import { generateReferralText, getMissingEssentials, getPrimaryCareTemplate } from '../../utils/requisitionGenerators';
 import { generateRadsPreviewSentence } from '../../utils/radsPreviewGenerators';
@@ -838,6 +839,14 @@ const secondaryQuickFieldIds = new Set([
   'redFlags',
 ]);
 
+function appropriatenessSeverityLabel(check: RequestedImagingCheck) {
+  if (check.severity === 'appropriate') return 'Usually Appropriate';
+  if (check.severity === 'conditional') return check.appropriatenessCategory ?? 'May be appropriate';
+  if (check.severity === 'not_appropriate') return 'Usually Not Appropriate';
+  if (check.severity === 'unknown') return 'Not found in selected scenario';
+  return 'Select requested imaging';
+}
+
 export function PrimaryCareRequestBuilder({ initialForm, onInsertText, onSaveText, onOpenImagingGuide, onSidebarStateChange }: PrimaryCareRequestBuilderProps) {
   const [mode, setMode] = useState<'quick' | 'detailed'>('quick');
   const [viewMode, setViewMode] = useState<PrimaryCareViewMode>(() => {
@@ -852,6 +861,7 @@ export function PrimaryCareRequestBuilder({ initialForm, onInsertText, onSaveTex
   const [selectedComplaintId, setSelectedComplaintId] = useState('');
   const [preferredVariantId, setPreferredVariantId] = useState('');
   const [draftStatus, setDraftStatus] = useState('Local requisition draft ready');
+  const [appropriatenessCheck, setAppropriatenessCheck] = useState<RequestedImagingCheck | null>(null);
   const [form, setForm] = useState<ReferralFormState>(
     initialForm ?? {
       requestType: primaryCareContentRegistry[0].id,
@@ -868,9 +878,15 @@ export function PrimaryCareRequestBuilder({ initialForm, onInsertText, onSaveTex
   const activeRequisitionTitle = selectedTopicForTitle?.title ?? template.title;
   const outputStyle = form.outputStyle ?? 'standard';
   const missing = useMemo(() => getMissingEssentials(form), [form]);
+  const pathwayMissing = useMemo(() => {
+    const additions: string[] = [];
+    if (!form.values.acrScenario && !selectedComplaintId) additions.push('Clinical scenario');
+    if (!form.values.requestedProcedure) additions.push('Selected requested imaging');
+    return Array.from(new Set([...missing, ...additions]));
+  }, [form.values.acrScenario, form.values.requestedProcedure, missing, selectedComplaintId]);
   const requisitionQuality = useMemo(() => scoreRequisitionCompleteness(form), [form]);
   const readinessPercent = Math.round((requisitionQuality.complete / Math.max(requisitionQuality.total, 1)) * 100);
-  const readinessLabel = missing.length ? 'Requisition readiness: needs key details' : 'Requisition readiness: ready for review';
+  const readinessLabel = pathwayMissing.length ? 'Requisition readiness: needs key details' : 'Requisition readiness: ready for review';
   const generated = form.generatedText || generateReferralText(form, outputStyle);
   const modalityOptions = useMemo(() => ['All', ...Array.from(new Set(primaryCareContentRegistry.map((item) => item.modality))).sort()], []);
 
@@ -898,12 +914,12 @@ export function PrimaryCareRequestBuilder({ initialForm, onInsertText, onSaveTex
   useEffect(() => {
     onSidebarStateChange?.({
       readiness: requisitionQuality,
-      missing,
+      missing: pathwayMissing,
       draftStatus,
     });
 
     return () => onSidebarStateChange?.(null);
-  }, [draftStatus, missing, onSidebarStateChange, requisitionQuality]);
+  }, [draftStatus, onSidebarStateChange, pathwayMissing, requisitionQuality]);
 
   useEffect(() => {
     if (typeof window === 'undefined') return;
@@ -911,7 +927,7 @@ export function PrimaryCareRequestBuilder({ initialForm, onInsertText, onSaveTex
     if (!pending) return;
 
     try {
-      const parsed = JSON.parse(pending) as { topicId?: string; variantId?: string };
+      const parsed = JSON.parse(pending) as { topicId?: string; variantId?: string; scenarioTitle?: string; procedure?: string };
       if (parsed.topicId) {
         const topic = getTopicById(parsed.topicId);
         const variant = topic?.variants.find((item) => item.id === parsed.variantId) ?? topic?.variants[0];
@@ -924,6 +940,10 @@ export function PrimaryCareRequestBuilder({ initialForm, onInsertText, onSaveTex
               values: {
                 ...existing.values,
                 positiveSymptoms: topic.title,
+                mainSymptom: parsed.scenarioTitle ?? variant?.clinicalScenario ?? topic.title,
+                indication: parsed.scenarioTitle ?? variant?.clinicalScenario ?? topic.title,
+                acrScenario: `${topic.title}${variant ? ` - ${variant.title}` : ''}`,
+                requestedProcedure: parsed.procedure ?? existing.values.requestedProcedure,
                 clinicalQuestion:
                   variant?.requisitionSuggestions[0] ??
                   variant?.clinicalScenario ??
@@ -992,6 +1012,7 @@ export function PrimaryCareRequestBuilder({ initialForm, onInsertText, onSaveTex
     };
     setSelectedComplaintId('');
     setPreferredVariantId('');
+    setAppropriatenessCheck(null);
     setForm(regenerate(next));
     setDraftStatus('Template reset');
   };
@@ -1006,6 +1027,7 @@ export function PrimaryCareRequestBuilder({ initialForm, onInsertText, onSaveTex
     };
     setSelectedComplaintId('');
     setPreferredVariantId('');
+    setAppropriatenessCheck(null);
     setForm(regenerate(next));
     setDraftStatus('Local requisition draft cleared');
   };
@@ -1151,6 +1173,40 @@ export function PrimaryCareRequestBuilder({ initialForm, onInsertText, onSaveTex
           />
         </div>
       </div>
+      {appropriatenessCheck && appropriatenessCheck.severity !== 'not_selected' && form.values.requestedProcedure ? (
+        <section className={`appropriateness-check-card ${appropriatenessCheck.severity}`} aria-label="Appropriateness check">
+          <div>
+            <span className="eyebrow">Appropriateness check</span>
+            <strong>{appropriatenessSeverityLabel(appropriatenessCheck)}</strong>
+          </div>
+          <p>{appropriatenessCheck.message}</p>
+          {appropriatenessCheck.radiationLevel ? (
+            <small>Relative radiation: {appropriatenessCheck.radiationLevel}</small>
+          ) : null}
+          {appropriatenessCheck.suggestedAlternatives.length ? (
+            <div className="appropriateness-alternative-list">
+              <span>Listed alternatives:</span>
+              {appropriatenessCheck.suggestedAlternatives.map((option) => (
+                <button
+                  className="ghost-button chip-button"
+                  onClick={() =>
+                    selectRequestedImagingOption(
+                      option.procedure,
+                      typeof form.values.clinicalQuestion === 'string' && form.values.clinicalQuestion
+                        ? form.values.clinicalQuestion
+                        : template.defaultQuestion,
+                    )
+                  }
+                  type="button"
+                  key={option.procedure}
+                >
+                  {option.procedure}
+                </button>
+              ))}
+            </div>
+          ) : null}
+        </section>
+      ) : null}
       <GeneratedTextPanel
         title={activeRequisitionTitle}
         subtitle="Editable requisition"
@@ -1204,11 +1260,13 @@ export function PrimaryCareRequestBuilder({ initialForm, onInsertText, onSaveTex
                   onSelectComplaint={(complaintId) => {
                     setSelectedComplaintId(complaintId);
                     setPreferredVariantId('');
+                    setAppropriatenessCheck(null);
                   }}
                   onSelectScenario={applyScenario}
                   onToggleClinicalPrompt={toggleClinicalPrompt}
                   onApplyWording={(text) => updateValue('clinicalQuestion', text)}
                   onSelectImagingOption={selectRequestedImagingOption}
+                  onAppropriatenessCheckChange={setAppropriatenessCheck}
                   onOpenGuide={onOpenImagingGuide}
                 />
 
@@ -1345,10 +1403,10 @@ export function PrimaryCareRequestBuilder({ initialForm, onInsertText, onSaveTex
                 </section>
 
                 <details className="readiness-details inline-readiness-details">
-                  <summary>{missing.length ? 'Show missing details' : 'Show readiness details'}</summary>
-                  {missing.length ? (
+                  <summary>{pathwayMissing.length ? 'Show missing details' : 'Show readiness details'}</summary>
+                  {pathwayMissing.length ? (
                     <div className="missing-chip-row">
-                      {missing.slice(0, 8).map((item) => (
+                      {pathwayMissing.slice(0, 8).map((item) => (
                         <span key={item}>{item}</span>
                       ))}
                     </div>
