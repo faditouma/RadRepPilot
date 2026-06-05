@@ -144,6 +144,9 @@ function templateModePatch(moduleType: string, mode: string): WorkflowValues {
 }
 
 const helperLinksByModule: Partial<Record<string, Array<{ id: string; label: string }>>> = {
+  ctpa: [{ id: 'rv-lv-ratio', label: 'RV/LV ratio' }],
+  nodule: [{ id: 'fleischner', label: 'Fleischner nodule helper' }],
+  stroke: [{ id: 'aspects', label: 'ASPECTS helper' }],
   appendicitis: [
     { id: 'adrenal-washout', label: 'Adrenal washout' },
     { id: 'bosniak', label: 'Bosniak' },

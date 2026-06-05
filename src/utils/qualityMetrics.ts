@@ -204,6 +204,66 @@ export function scoreReportCompleteness(moduleType: ModuleType, values: Record<s
     ]);
   }
 
+  if (moduleType === 'nodule') {
+    return score('Report completeness', [
+      {
+        label: 'Guideline applicability context addressed',
+        complete: hasAny(values, ['patientAge', 'knownMalignancy', 'immunocompromised', 'patientRisk']),
+        missingLabel: 'Applicability context not addressed',
+      },
+      {
+        label: 'Nodule type/count addressed',
+        complete: addressed(values.noduleType) && addressed(values.numberOfNodules),
+        missingLabel: 'Nodule type/count not addressed',
+      },
+      {
+        label: 'Size/location addressed',
+        complete: hasAny(values, ['sizeMm', 'location']) || hasFreeTextCoverage(values),
+        missingLabel: 'Nodule size/location not addressed',
+      },
+      {
+        label: 'Morphology or stability addressed',
+        complete: addressed(values.morphology) || addressed(values.stability) || hasFreeTextCoverage(values),
+        missingLabel: 'Morphology/stability not addressed',
+      },
+      {
+        label: 'Follow-up language generated',
+        complete: hasMeaningfulText(report.impression) || hasMeaningfulText(report.recommendations),
+        missingLabel: 'Follow-up language incomplete',
+      },
+    ]);
+  }
+
+  if (moduleType === 'stroke') {
+    return score('Report completeness', [
+      {
+        label: 'Hemorrhage addressed',
+        complete: addressed(values.hemorrhagePresent) || hasReportText(report, /hemorrhage/i),
+        missingLabel: 'Hemorrhage not addressed',
+      },
+      {
+        label: 'Early ischemic change/ASPECTS addressed',
+        complete: addressed(values.earlyIschemicChangePresent) || hasValue(values.aspectsRegions) || hasReportText(report, /ASPECTS|ischemic|infarct/i),
+        missingLabel: 'ASPECTS/ischemic change not addressed',
+      },
+      {
+        label: 'Mass effect/shift addressed',
+        complete: addressed(values.massEffect) || hasAny(values, ['midlineShiftMm']) || hasReportText(report, /mass effect|midline shift/i),
+        missingLabel: 'Mass effect/shift not addressed',
+      },
+      {
+        label: 'LVO/clinical context addressed',
+        complete: addressed(values.largeVesselOcclusionSuspected) || hasAny(values, ['clinicalIndication']) || hasFreeTextCoverage(values),
+        missingLabel: 'LVO/context not addressed',
+      },
+      {
+        label: 'Impression generated',
+        complete: hasMeaningfulText(report.impression),
+        missingLabel: 'Impression incomplete',
+      },
+    ]);
+  }
+
   if (moduleType === 'appendicitis') {
     const combinedReportText = [report.findings, report.impression].filter(Boolean).join(' ');
     const alternativeReportMention =

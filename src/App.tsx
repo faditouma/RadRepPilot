@@ -1223,9 +1223,6 @@ function App({ embedded = false, initialPage = 'dashboard' }: AppProps) {
         onInitialWorkflowOpened={() => setDashboardWorkflowId('')}
         onOpenCalculators={() => setActivePage('calculators')}
         renderWorkflow={(moduleType) => {
-          if (moduleType === 'ctpa') return renderCtpaModule();
-          if (moduleType === 'nodule') return renderNoduleModule();
-          if (moduleType === 'stroke') return renderStrokeModule();
           if (schemaDrivenModuleTypes.includes(moduleType as keyof typeof reportingWorkflowSchemas)) {
             return (
               <ReportingWorkflowPage

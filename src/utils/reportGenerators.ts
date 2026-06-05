@@ -1,6 +1,11 @@
 export * from '../radrep/reportGenerators';
 
 import { reportingWorkflowSchemas, type ReportingWorkflowSchema, type WorkflowValues } from '../data/reportingWorkflowSchemas';
+import {
+  generateCtpaReport as generateLegacyCtpaReport,
+  generateNoduleReport as generateLegacyNoduleReport,
+  generateStrokeReport as generateLegacyStrokeReport,
+} from '../radrep/reportGenerators';
 import type { ModuleType, ReportSections } from '../radrep/types';
 import { cleanLines, formatMeasurement, numberOrNull, sentenceList, workflowList, workflowValue, yes } from './impressionGenerators';
 
@@ -558,6 +563,12 @@ export function generateReportingWorkflowReport(moduleType: ModuleType, values: 
   }
 
   switch (moduleType) {
+    case 'ctpa':
+      return generateLegacyCtpaReport(values as unknown as Parameters<typeof generateLegacyCtpaReport>[0]);
+    case 'nodule':
+      return generateLegacyNoduleReport(values as unknown as Parameters<typeof generateLegacyNoduleReport>[0]);
+    case 'stroke':
+      return generateLegacyStrokeReport(values as unknown as Parameters<typeof generateLegacyStrokeReport>[0]);
     case 'chestXray':
       return generateChestXrayReport(schema, values);
     case 'mskXrayFracture':

@@ -1,6 +1,6 @@
 import type { InsertTarget, ModuleType, ReferralOption } from '../radrep/types';
 
-export type WorkflowFieldType = 'text' | 'textarea' | 'number' | 'select';
+export type WorkflowFieldType = 'text' | 'textarea' | 'number' | 'select' | 'checkbox-group';
 export type WorkflowValue = string | string[];
 export type WorkflowValues = Record<string, WorkflowValue>;
 
@@ -204,6 +204,10 @@ function select(id: string, label: string, options: ReferralOption[]): WorkflowF
   return { id, label, type: 'select', options };
 }
 
+function multi(id: string, label: string, options: ReferralOption[]): WorkflowField {
+  return { id, label, type: 'checkbox-group', options, wide: true };
+}
+
 function yn(id: string, label: string): WorkflowField {
   return select(id, label, yesNo);
 }
@@ -228,13 +232,441 @@ const incidentalDvt = [
   { label: 'Soft tissue edema/fluid collection', sentence: 'Soft tissue edema/fluid collection is present. Correlate clinically; consider follow-up imaging if symptoms persist or infection/hematoma is a concern.' },
 ];
 
+const incidentalChest = [
+  { label: 'Pulmonary nodule', sentence: 'Incidental pulmonary nodule. Follow-up depends on nodule size, type, risk factors, and guideline applicability.' },
+  { label: 'Thyroid nodule', sentence: 'Incidental thyroid nodule. Consider thyroid ultrasound only if size, imaging features, age, and local protocol support follow-up.' },
+  { label: 'Adrenal nodule', sentence: 'Incidental adrenal nodule. Consider comparison with prior imaging or adrenal protocol CT/MRI if incompletely characterized and clinically appropriate.' },
+  { label: 'Aortic aneurysm', sentence: 'Aortic aneurysm. Recommend comparison with prior imaging and follow-up/referral according to size, growth rate, symptoms, and local vascular protocol.' },
+  { label: 'Coronary calcification placeholder', sentence: 'Coronary artery calcification is noted. Correlate with cardiovascular risk factors and local reporting practice.' },
+  { label: 'Bone lesion', sentence: 'Incidental bone lesion. Consider comparison with prior imaging or dedicated characterization if aggressive features, pain, or malignancy history are present.' },
+];
+
+const incidentalHeadNeck = [
+  { label: 'Thyroid nodule', sentence: 'Incidental thyroid nodule. Consider thyroid ultrasound only if size, imaging features, age, and local protocol support follow-up.' },
+  { label: 'Sinus disease placeholder', sentence: 'Incidental paranasal sinus disease is present. Correlate clinically if symptoms are present.' },
+  { label: 'Bone lesion', sentence: 'Incidental osseous lesion. Consider comparison with prior imaging or dedicated characterization if aggressive features, pain, or malignancy history are present.' },
+  { label: 'Incidental intracranial cyst/mass placeholder', sentence: 'Incidental intracranial lesion/cystic finding. Consider comparison with prior imaging or MRI characterization if not previously evaluated and clinically appropriate.' },
+];
+
+const pePresenceOptions = [
+  { value: 'no', label: 'No PE identified' },
+  { value: 'yes', label: 'PE present' },
+  { value: 'indeterminate', label: 'Indeterminate' },
+];
+
+const lateralityPeOptions = [
+  { value: 'right', label: 'Right' },
+  { value: 'left', label: 'Left' },
+  { value: 'bilateral', label: 'Bilateral' },
+];
+
+const proximalLevelOptions = [
+  { value: 'main pulmonary artery', label: 'Main pulmonary artery' },
+  { value: 'lobar', label: 'Lobar' },
+  { value: 'segmental', label: 'Segmental' },
+  { value: 'subsegmental', label: 'Subsegmental' },
+];
+
+const clotBurdenOptions = [
+  { value: 'low', label: 'Low' },
+  { value: 'moderate', label: 'Moderate' },
+  { value: 'high', label: 'High' },
+];
+
+const pleuralEffusionSimpleOptions = [
+  { value: 'none', label: 'None' },
+  { value: 'small', label: 'Small' },
+  { value: 'moderate', label: 'Moderate' },
+  { value: 'large', label: 'Large' },
+];
+
+const noduleTypeOptions = [
+  { value: 'solid', label: 'Solid' },
+  { value: 'subsolid ground-glass', label: 'Subsolid ground-glass' },
+  { value: 'part-solid', label: 'Part-solid' },
+];
+
+const noduleCountOptions = [
+  { value: 'solitary', label: 'Solitary' },
+  { value: 'multiple', label: 'Multiple' },
+];
+
+const noduleMorphologyOptions = [
+  { value: 'smooth', label: 'Smooth' },
+  { value: 'irregular', label: 'Irregular' },
+  { value: 'spiculated', label: 'Spiculated' },
+  { value: 'calcified benign pattern', label: 'Calcified benign pattern' },
+];
+
+const patientRiskOptions = [
+  { value: 'low risk', label: 'Low risk' },
+  { value: 'high risk', label: 'High risk' },
+];
+
+const stabilityOptions = [
+  { value: 'unknown', label: 'Unknown' },
+  { value: 'new', label: 'New' },
+  { value: 'stable', label: 'Stable' },
+  { value: 'increased', label: 'Increased' },
+  { value: 'decreased', label: 'Decreased' },
+];
+
+const strokeSideOptions = [
+  { value: 'right', label: 'Right' },
+  { value: 'left', label: 'Left' },
+  { value: 'bilateral', label: 'Bilateral' },
+  { value: 'none', label: 'None/not applicable' },
+];
+
+const lvoOptions = [
+  { value: 'unknown', label: 'Unknown' },
+  { value: 'no', label: 'No' },
+  { value: 'yes', label: 'Yes' },
+];
+
+const massEffectOptions = [
+  { value: 'none', label: 'None' },
+  { value: 'mild', label: 'Mild' },
+  { value: 'moderate', label: 'Moderate' },
+  { value: 'severe', label: 'Severe' },
+];
+
+const aspectsRegionOptions = [
+  'Caudate',
+  'Lentiform',
+  'Internal capsule',
+  'Insula',
+  'M1',
+  'M2',
+  'M3',
+  'M4',
+  'M5',
+  'M6',
+].map((region) => ({ value: region, label: region }));
+
 const prototypeSafety =
   'Educational reporting workflow. RadRepPilot organizes user-entered findings and does not interpret images or diagnose. Verify all source imaging findings, measurements, complications, guideline applicability, and final wording.';
 
 export const reportingWorkflowSchemas: Record<
-  'chestXray' | 'mskXrayFracture' | 'appendicitis' | 'bowelObstruction' | 'renalColic' | 'ruqUltrasound' | 'dvtUltrasound',
+  | 'ctpa'
+  | 'nodule'
+  | 'stroke'
+  | 'chestXray'
+  | 'mskXrayFracture'
+  | 'appendicitis'
+  | 'bowelObstruction'
+  | 'renalColic'
+  | 'ruqUltrasound'
+  | 'dvtUltrasound',
   ReportingWorkflowSchema
 > = {
+  ctpa: {
+    moduleType: 'ctpa',
+    moduleId: 'ctpa-pe',
+    title: 'CTPA: Pulmonary Embolism',
+    shortTitle: 'CTPA PE',
+    modality: 'CT',
+    bodySystem: 'Chest',
+    clinicalQuestion: 'Assess for pulmonary embolism, right heart strain, and associated thoracic findings.',
+    techniqueDefault: 'CT pulmonary angiogram was performed after intravenous contrast administration. Multiplanar reformats were reviewed.',
+    badges: ['Implemented', 'Educational draft', 'RV/LV helper'],
+    insertTargets: ['findings', 'impression', 'incidentalFindings', 'recommendations'],
+    safetyNote: prototypeSafety,
+    defaultValues: {
+      clinicalIndication: '',
+      examType: 'CT pulmonary angiogram',
+      pePresent: 'no',
+      laterality: 'right',
+      proximalLevel: 'segmental',
+      clotBurden: 'low',
+      saddleEmbolus: 'no',
+      rvDiameterMm: '',
+      lvDiameterMm: '',
+      pulmonaryInfarct: 'no',
+      pleuralEffusion: 'none',
+      alternativeDiagnosis: '',
+      incidentalFindings: '',
+      additionalFindings: '',
+      limitationsUncertainty: '',
+    },
+    sections: [
+      {
+        id: 'context',
+        title: 'Clinical context',
+        defaultOpen: true,
+        fields: [
+          area('clinicalIndication', 'Indication', 'Chest pain, dyspnea, elevated D-dimer, clinical concern for PE'),
+        ],
+      },
+      {
+        id: 'pe-findings',
+        title: 'Pulmonary embolism findings',
+        defaultOpen: true,
+        fields: [
+          select('pePresent', 'Pulmonary embolism', pePresenceOptions),
+          select('laterality', 'Laterality', lateralityPeOptions),
+          select('proximalLevel', 'Most proximal level', proximalLevelOptions),
+          select('clotBurden', 'Clot burden', clotBurdenOptions),
+          yn('saddleEmbolus', 'Saddle embolus'),
+          number('rvDiameterMm', 'RV diameter', 'mm'),
+          number('lvDiameterMm', 'LV diameter', 'mm'),
+          yn('pulmonaryInfarct', 'Pulmonary infarct'),
+          select('pleuralEffusion', 'Pleural effusion', pleuralEffusionSimpleOptions),
+          area('alternativeDiagnosis', 'Alternative/additional diagnosis', 'e.g. pneumonia, edema, malignancy, aortic finding'),
+        ],
+      },
+    ],
+    keyNegatives: [],
+    incidentalOptions: incidentalChest,
+    quickFills: [
+      {
+        id: 'no-pe',
+        label: 'No PE',
+        description: 'No pulmonary embolism or acute right heart strain entered.',
+        intent: 'normal',
+        values: {
+          pePresent: 'no',
+          rvDiameterMm: '',
+          lvDiameterMm: '',
+          pulmonaryInfarct: 'no',
+          pleuralEffusion: 'none',
+          saddleEmbolus: 'no',
+        },
+      },
+      {
+        id: 'segmental-pe-strain',
+        label: 'Segmental PE with RV/LV strain',
+        description: 'Bilateral segmental PE with elevated RV/LV measurements.',
+        intent: 'positive',
+        values: {
+          pePresent: 'yes',
+          laterality: 'bilateral',
+          proximalLevel: 'segmental',
+          clotBurden: 'moderate',
+          saddleEmbolus: 'no',
+          rvDiameterMm: '48',
+          lvDiameterMm: '36',
+          pulmonaryInfarct: 'no',
+          pleuralEffusion: 'small',
+        },
+      },
+      {
+        id: 'saddle-pe',
+        label: 'Saddle PE',
+        description: 'High clot burden PE with saddle embolus entered.',
+        intent: 'complicated',
+        values: {
+          pePresent: 'yes',
+          laterality: 'bilateral',
+          proximalLevel: 'main pulmonary artery',
+          clotBurden: 'high',
+          saddleEmbolus: 'yes',
+          pulmonaryInfarct: 'no',
+          pleuralEffusion: 'none',
+        },
+      },
+    ],
+  },
+  nodule: {
+    moduleType: 'nodule',
+    moduleId: 'ct-chest-nodule',
+    title: 'Pulmonary Nodule / Fleischner',
+    shortTitle: 'Pulmonary nodule',
+    modality: 'CT',
+    bodySystem: 'Chest',
+    clinicalQuestion: 'Summarize pulmonary nodule features and draft cautious follow-up language.',
+    techniqueDefault: 'CT chest findings are summarized from user-entered measurements and descriptors.',
+    badges: ['Implemented', 'Educational draft', 'Fleischner helper'],
+    insertTargets: ['findings', 'impression', 'recommendations'],
+    safetyNote: prototypeSafety,
+    defaultValues: {
+      patientAge: '',
+      knownMalignancy: 'no',
+      immunocompromised: 'no',
+      noduleType: 'solid',
+      numberOfNodules: 'solitary',
+      sizeMm: '',
+      location: '',
+      morphology: 'smooth',
+      patientRisk: 'low risk',
+      priorImagingAvailable: 'no',
+      stability: 'unknown',
+      incidentalFindings: '',
+      additionalFindings: '',
+      limitationsUncertainty: '',
+    },
+    sections: [
+      {
+        id: 'context',
+        title: 'Clinical context',
+        defaultOpen: true,
+        fields: [
+          text('patientAge', 'Patient age', 'e.g. 67'),
+          yn('knownMalignancy', 'Known malignancy'),
+          yn('immunocompromised', 'Immunocompromised'),
+          select('patientRisk', 'Patient risk', patientRiskOptions),
+        ],
+      },
+      {
+        id: 'nodule-features',
+        title: 'Nodule features',
+        defaultOpen: true,
+        fields: [
+          select('noduleType', 'Nodule type', noduleTypeOptions),
+          select('numberOfNodules', 'Number of nodules', noduleCountOptions),
+          number('sizeMm', 'Size', 'mm'),
+          text('location', 'Location', 'e.g. right upper lobe', true),
+          select('morphology', 'Morphology', noduleMorphologyOptions),
+          yn('priorImagingAvailable', 'Prior imaging available'),
+          select('stability', 'Stability vs prior', stabilityOptions),
+        ],
+      },
+    ],
+    keyNegatives: [],
+    incidentalOptions: incidentalChest,
+    quickFills: [
+      {
+        id: 'small-solid-low-risk',
+        label: 'Small solid nodule, low risk',
+        description: 'Solitary solid nodule under 6 mm in a low-risk patient.',
+        intent: 'normal',
+        values: {
+          noduleType: 'solid',
+          numberOfNodules: 'solitary',
+          sizeMm: '5',
+          location: 'right upper lobe',
+          morphology: 'smooth',
+          patientRisk: 'low risk',
+          knownMalignancy: 'no',
+          immunocompromised: 'no',
+        },
+      },
+      {
+        id: 'seven-mm-high-risk',
+        label: '7 mm solid nodule, high risk',
+        description: 'Solitary 7 mm solid nodule with higher-risk context entered.',
+        intent: 'positive',
+        values: {
+          noduleType: 'solid',
+          numberOfNodules: 'solitary',
+          sizeMm: '7',
+          location: 'right upper lobe',
+          morphology: 'smooth',
+          patientRisk: 'high risk',
+          knownMalignancy: 'no',
+          immunocompromised: 'no',
+        },
+      },
+      {
+        id: 'part-solid',
+        label: 'Part-solid nodule',
+        description: 'Part-solid nodule follow-up pathway requiring verification.',
+        intent: 'complicated',
+        values: {
+          noduleType: 'part-solid',
+          numberOfNodules: 'solitary',
+          sizeMm: '8',
+          location: 'left upper lobe',
+          morphology: 'irregular',
+          patientRisk: 'high risk',
+        },
+      },
+    ],
+  },
+  stroke: {
+    moduleType: 'stroke',
+    moduleId: 'ct-head-stroke-aspects',
+    title: 'CT Head Stroke / ASPECTS',
+    shortTitle: 'CT head ASPECTS',
+    modality: 'CT',
+    bodySystem: 'Neuro',
+    clinicalQuestion: 'Assess for hemorrhage, early ischemic change, mass effect, and ASPECTS where applicable.',
+    techniqueDefault: 'Non-contrast CT head was reviewed using user-entered findings.',
+    badges: ['Implemented', 'Educational draft', 'ASPECTS helper'],
+    insertTargets: ['findings', 'impression', 'incidentalFindings', 'recommendations'],
+    safetyNote: prototypeSafety,
+    defaultValues: {
+      clinicalIndication: '',
+      side: 'right',
+      hemorrhagePresent: 'no',
+      largeVesselOcclusionSuspected: 'unknown',
+      earlyIschemicChangePresent: 'no',
+      aspectsRegions: [],
+      massEffect: 'none',
+      midlineShiftMm: '',
+      chronicFindings: '',
+      incidentalFindings: '',
+      additionalFindings: '',
+      limitationsUncertainty: '',
+    },
+    sections: [
+      {
+        id: 'context',
+        title: 'Clinical context',
+        defaultOpen: true,
+        fields: [
+          area('clinicalIndication', 'Indication', 'Acute neurologic deficit, stroke code, aphasia, weakness, or altered mental status'),
+        ],
+      },
+      {
+        id: 'stroke-findings',
+        title: 'Stroke findings',
+        defaultOpen: true,
+        fields: [
+          select('side', 'Side / territory', strokeSideOptions),
+          yn('hemorrhagePresent', 'Acute hemorrhage'),
+          select('largeVesselOcclusionSuspected', 'LVO suspected', lvoOptions),
+          yn('earlyIschemicChangePresent', 'Early ischemic change'),
+          multi('aspectsRegions', 'ASPECTS regions involved', aspectsRegionOptions),
+          select('massEffect', 'Mass effect', massEffectOptions),
+          number('midlineShiftMm', 'Midline shift', 'mm'),
+          area('chronicFindings', 'Chronic/background findings', 'e.g. chronic microangiopathy, old infarct, volume loss'),
+        ],
+      },
+    ],
+    keyNegatives: [],
+    incidentalOptions: incidentalHeadNeck,
+    quickFills: [
+      {
+        id: 'no-acute',
+        label: 'No acute CT finding',
+        description: 'No hemorrhage, no established infarct, no mass effect.',
+        intent: 'normal',
+        values: {
+          hemorrhagePresent: 'no',
+          earlyIschemicChangePresent: 'no',
+          aspectsRegions: [],
+          massEffect: 'none',
+          midlineShiftMm: '',
+        },
+      },
+      {
+        id: 'aspects-8',
+        label: 'Early ischemia, ASPECTS 8',
+        description: 'Early ischemic change in two ASPECTS regions.',
+        intent: 'positive',
+        values: {
+          hemorrhagePresent: 'no',
+          earlyIschemicChangePresent: 'yes',
+          aspectsRegions: ['Insula', 'M2'],
+          massEffect: 'none',
+          midlineShiftMm: '',
+        },
+      },
+      {
+        id: 'hemorrhage',
+        label: 'Hemorrhage present',
+        description: 'Acute hemorrhage pathway where ASPECTS may not apply.',
+        intent: 'complicated',
+        values: {
+          hemorrhagePresent: 'yes',
+          earlyIschemicChangePresent: 'no',
+          aspectsRegions: [],
+          massEffect: 'mild',
+        },
+      },
+    ],
+  },
   chestXray: {
     moduleType: 'chestXray',
     moduleId: 'xray-cxr-infection-dyspnea',

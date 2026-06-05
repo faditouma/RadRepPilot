@@ -3,7 +3,6 @@ import type { PrimaryCareContentTemplate, ReferralFormState } from '../../radrep
 import type { AppropriatenessCategory, AppropriatenessTopic } from '../../data/appropriateness';
 import type { ClinicalComplaintMapping } from '../../data/appropriateness/clinicalMappings';
 import {
-  allClinicalMappings,
   radiationLegend,
   reviewStatusLabel,
   searchAppropriatenessLayer,
@@ -142,13 +141,15 @@ export function RequisitionAppropriatenessPanel({
     const query = searchTerm.trim();
     if (!query) {
       return {
-        complaintMappings: allClinicalMappings().slice(0, 8),
+        complaintMappings: [],
         topics: [],
       };
     }
 
     return searchAppropriatenessLayer(query);
   }, [searchTerm]);
+  const complaintMatches = searched.complaintMappings.slice(0, 3);
+  const topicMatches = searched.topics.slice(0, Math.max(0, 5 - complaintMatches.length));
   const selectedLabel =
     mapping?.complaint ??
     support.relatedTopics.find((item) => item.topic)?.topic?.title ??
@@ -216,29 +217,29 @@ export function RequisitionAppropriatenessPanel({
         </div>
       ) : null}
 
-      <div className="requisition-match-list" aria-label="Top matching complaint and topic options">
-        {searched.complaintMappings.slice(0, 5).map((item) => (
+      <div className="requisition-match-list" aria-label="Top matching clinical scenarios">
+        {complaintMatches.map((item) => (
           <button
             className={`requisition-match-card ${effectiveComplaintId === item.id ? 'active' : ''}`}
             onClick={() => onSelectComplaint(item.id)}
             type="button"
             key={item.id}
           >
-            <span>Complaint</span>
+            <span>Clinical scenario</span>
             <strong>{item.complaint}</strong>
             <small>{complaintSummary(item)}</small>
             <em>{topOptionsForMapping(item)}</em>
             <b>Use this scenario</b>
           </button>
         ))}
-        {searched.topics.slice(0, 5).map((topic) => (
+        {topicMatches.map((topic) => (
           <button
             className={`requisition-match-card ${effectiveComplaintId === selectionKeyForTopic(topic.id) ? 'active' : ''}`}
             onClick={() => onSelectComplaint(selectionKeyForTopic(topic.id))}
             type="button"
             key={topic.id}
           >
-            <span>ACR topic</span>
+            <span>Clinical scenario</span>
             <strong>{topic.title}</strong>
             <small>{topicSummary(topic)}</small>
             <em>{topOptionsForTopic(topic)}</em>
@@ -267,8 +268,8 @@ export function RequisitionAppropriatenessPanel({
           {variantChoices.length ? (
             <div className="guide-section-heading">
               <div>
-                <h4>Selected ACR scenario</h4>
-                <p>Choose the closest extracted variant before selecting a requested imaging option.</p>
+                <h4>Selected clinical scenario</h4>
+                <p>Choose the closest scenario before selecting a requested imaging option.</p>
               </div>
             </div>
           ) : null}
@@ -276,7 +277,7 @@ export function RequisitionAppropriatenessPanel({
           {variantChoices.length ? (
             <section className="guide-section compact requisition-scenario-card">
               <label className="field">
-                Clinical scenario / variant
+                Clinical scenario
                 <select
                   value={activeVariantChoice?.key ?? ''}
                   onChange={(event) => setSelectedVariantKey(event.target.value)}

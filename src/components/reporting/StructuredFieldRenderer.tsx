@@ -3,7 +3,7 @@ import type { WorkflowField, WorkflowValue } from '../../data/reportingWorkflowS
 interface StructuredFieldRendererProps {
   field: WorkflowField;
   value: WorkflowValue | undefined;
-  onChange: (value: string) => void;
+  onChange: (value: WorkflowValue) => void;
 }
 
 export function StructuredFieldRenderer({ field, value, onChange }: StructuredFieldRendererProps) {
@@ -31,6 +31,28 @@ export function StructuredFieldRenderer({ field, value, onChange }: StructuredFi
           ))}
         </select>
       </label>
+    );
+  }
+
+  if (field.type === 'checkbox-group') {
+    const selected = Array.isArray(value) ? value : [];
+
+    const toggle = (optionValue: string) => {
+      onChange(selected.includes(optionValue) ? selected.filter((item) => item !== optionValue) : [...selected, optionValue]);
+    };
+
+    return (
+      <fieldset className={className}>
+        <legend>{field.label}</legend>
+        <div className="negative-chip-grid compact-checkbox-grid">
+          {(field.options ?? []).map((option) => (
+            <label className={selected.includes(option.value) ? 'negative-chip active' : 'negative-chip'} key={option.value}>
+              <input checked={selected.includes(option.value)} onChange={() => toggle(option.value)} type="checkbox" />
+              <span>{option.label}</span>
+            </label>
+          ))}
+        </div>
+      </fieldset>
     );
   }
 

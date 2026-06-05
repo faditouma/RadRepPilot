@@ -1057,6 +1057,19 @@ textarea {
   font-size: 0.92rem;
 }
 
+fieldset.field {
+  border: 0;
+  margin: 0;
+  padding: 0;
+}
+
+.field legend {
+  padding: 0;
+  color: #26364a;
+  font-weight: 740;
+  font-size: 0.92rem;
+}
+
 .field input,
 .field select,
 .field textarea,
@@ -2427,6 +2440,10 @@ textarea {
   display: flex;
   flex-wrap: wrap;
   gap: 7px;
+}
+
+.compact-checkbox-grid {
+  margin-top: 4px;
 }
 
 .negative-chip {

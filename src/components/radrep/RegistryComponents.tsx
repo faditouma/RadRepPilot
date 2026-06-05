@@ -7,6 +7,7 @@ import { primaryCareContentRegistry } from '../../data/primaryCareContentRegistr
 import { radsSystemsRegistry } from '../../data/radsSystemsRegistry';
 import { bodySystems, modalities, reportingModules } from '../../data/reportingModules';
 import { generateIncidentalFindingSentence, type IncidentalValueMap } from '../../utils/incidentalFindingGenerators';
+import { getTopicById } from '../../utils/appropriatenessSearch';
 import { scoreRequisitionCompleteness } from '../../utils/qualityMetrics';
 import { generateReferralText, getMissingEssentials, getPrimaryCareTemplate } from '../../utils/requisitionGenerators';
 import { generateRadsPreviewSentence } from '../../utils/radsPreviewGenerators';
@@ -861,6 +862,10 @@ export function PrimaryCareRequestBuilder({ initialForm, onInsertText, onSaveTex
   );
 
   const template = getPrimaryCareTemplate(form.requestType);
+  const selectedTopicForTitle = selectedComplaintId.startsWith('topic:')
+    ? getTopicById(selectedComplaintId.replace(/^topic:/, ''))
+    : undefined;
+  const activeRequisitionTitle = selectedTopicForTitle?.title ?? template.title;
   const outputStyle = form.outputStyle ?? 'standard';
   const missing = useMemo(() => getMissingEssentials(form), [form]);
   const requisitionQuality = useMemo(() => scoreRequisitionCompleteness(form), [form]);
@@ -908,8 +913,30 @@ export function PrimaryCareRequestBuilder({ initialForm, onInsertText, onSaveTex
     try {
       const parsed = JSON.parse(pending) as { topicId?: string; variantId?: string };
       if (parsed.topicId) {
+        const topic = getTopicById(parsed.topicId);
+        const variant = topic?.variants.find((item) => item.id === parsed.variantId) ?? topic?.variants[0];
         setSelectedComplaintId(`topic:${parsed.topicId}`);
         setPreferredVariantId(parsed.variantId ?? '');
+        if (topic) {
+          setForm((existing) => {
+            const next = {
+              ...existing,
+              values: {
+                ...existing.values,
+                positiveSymptoms: topic.title,
+                clinicalQuestion:
+                  variant?.requisitionSuggestions[0] ??
+                  variant?.clinicalScenario ??
+                  `Please advise on appropriate imaging for ${topic.title}.`,
+              },
+            };
+
+            return {
+              ...next,
+              generatedText: generateReferralText(next, next.outputStyle ?? 'standard'),
+            };
+          });
+        }
       }
     } catch {
       // Ignore malformed handoff state.
@@ -1125,11 +1152,11 @@ export function PrimaryCareRequestBuilder({ initialForm, onInsertText, onSaveTex
         </div>
       </div>
       <GeneratedTextPanel
-        title={template.title}
+        title={activeRequisitionTitle}
         subtitle="Editable requisition"
         text={generated}
         onTextChange={(text) => setForm((existing) => ({ ...existing, generatedText: text }))}
-        onSave={() => onSaveText(template.title, 'referral', generated, { referralForm: { ...form, generatedText: generated }, requisitionText: generated })}
+        onSave={() => onSaveText(activeRequisitionTitle, 'referral', generated, { referralForm: { ...form, generatedText: generated }, requisitionText: generated })}
         copyLabel="Copy requisition"
       />
       <button className="secondary-button full-width-action" onClick={resetRequisition} type="button">
