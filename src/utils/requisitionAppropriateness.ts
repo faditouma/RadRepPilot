@@ -1,5 +1,5 @@
 import type { PrimaryCareContentTemplate, ReferralFormState } from '../radrep/types';
-import type { AppropriatenessTopic, AppropriatenessVariant, ImagingOption } from '../data/appropriateness';
+import type { AppropriatenessCategory, AppropriatenessTopic, AppropriatenessVariant, ImagingOption } from '../data/appropriateness';
 import type { ClinicalComplaintMapping } from '../data/appropriateness/clinicalMappings';
 import { allClinicalMappings, getTopicById, sortImagingOptions } from './appropriatenessSearch';
 import { valueFor } from './requisitionGenerators';
@@ -19,6 +19,16 @@ export interface RequisitionAppropriatenessResult {
   requisitionLanguage: string;
 }
 
+export interface RequisitionRecommendationOption {
+  topicId: string;
+  topicTitle: string;
+  variantId: string;
+  variantTitle: string;
+  reviewStatus?: AppropriatenessTopic['reviewStatus'];
+  sourceLabel?: string;
+  option: ImagingOption;
+}
+
 const templateComplaintMap: Record<string, string> = {
   'ct-head-headache': 'headache',
   'ct-head-trauma-request': 'headache',
@@ -36,6 +46,56 @@ const templateComplaintMap: Record<string, string> = {
 
 function textMatches(text: string, query: string) {
   return text.toLowerCase().includes(query.toLowerCase());
+}
+
+function uniqueStrings(items: string[]): string[] {
+  return Array.from(new Set(items.map((item) => item.trim()).filter(Boolean)));
+}
+
+function genericMissingInfoPrompts(context: string): string[] {
+  const normalized = context.toLowerCase();
+  const prompts = [
+    'Onset/duration',
+    'Location',
+    'Severity/progression',
+    'Relevant PMHx',
+    'Prior imaging',
+  ];
+
+  if (/(abdomen|pelvis|renal|flank|hematuria|pregnan|x-ray|ct|radiograph|stone|appendicitis|biliary)/i.test(normalized)) {
+    prompts.push('Pregnancy status where relevant');
+  }
+
+  if (/(ct|contrast|renal|kidney|pe|pulmonary embol|pancrea|abdomen|pelvis|hematuria|aorta)/i.test(normalized)) {
+    prompts.push('Renal function/contrast contraindication where relevant');
+  }
+
+  if (/(head|trauma|stroke|hematuria|dvt|pe|embol|bleed|anticoag)/i.test(normalized)) {
+    prompts.push('Anticoagulation where relevant');
+  }
+
+  if (/(cancer|immunosupp|infection|pancrea|lung|nodule|back|spine|fever|weight loss)/i.test(normalized)) {
+    prompts.push('Cancer/immunosuppression where relevant');
+  }
+
+  return prompts;
+}
+
+function topicContext(topic?: AppropriatenessTopic, mapping?: ClinicalComplaintMapping): string {
+  return [
+    mapping?.complaint,
+    ...(mapping?.synonyms ?? []),
+    topic?.title,
+    topic?.clinicalArea,
+    ...(topic?.keywords ?? []),
+    ...(topic?.variants.flatMap((variant) => [
+      variant.title,
+      variant.clinicalScenario,
+      ...variant.imagingOptions.map((option) => option.procedure),
+    ]) ?? []),
+  ]
+    .filter(Boolean)
+    .join(' ');
 }
 
 export function getDefaultComplaintId(template: PrimaryCareContentTemplate): string {
@@ -83,7 +143,8 @@ export function resolveAppropriatenessForComplaint(mapping?: ClinicalComplaintMa
   });
 
   const curatedPrompts = relatedTopics.flatMap((item) => item.suggestedVariants.flatMap((variant) => variant.missingInformationPrompts));
-  const missingInfoPrompts = Array.from(new Set([...mapping.missingInfoPrompts, ...curatedPrompts])).slice(0, 12);
+  const fallbackPrompts = relatedTopics.flatMap((item) => genericMissingInfoPrompts(topicContext(item.topic, mapping)));
+  const missingInfoPrompts = uniqueStrings([...mapping.missingInfoPrompts, ...curatedPrompts, ...fallbackPrompts]).slice(0, 12);
 
   return {
     mapping,
@@ -91,6 +152,81 @@ export function resolveAppropriatenessForComplaint(mapping?: ClinicalComplaintMa
     missingInfoPrompts,
     requisitionLanguage: mapping.commonRequisitionLanguage || 'Requisition wording pending for this topic.',
   };
+}
+
+export function resolveAppropriatenessForTopic(topicId: string): RequisitionAppropriatenessResult {
+  const topic = getTopicById(topicId);
+
+  if (!topic) {
+    return {
+      relatedTopics: [
+        {
+          topicId,
+          statusMessage: 'Appropriateness table not extracted yet. Clinical summary pending.',
+          suggestedVariants: [],
+          topOptions: [],
+        },
+      ],
+      missingInfoPrompts: genericMissingInfoPrompts(topicId),
+      requisitionLanguage: 'Requisition wording pending for this topic.',
+    };
+  }
+
+  const variantsToUse = topic.variants;
+  const relatedTopics = [
+    {
+      topicId,
+      topic,
+      statusMessage:
+        topic.reviewStatus === 'manually_curated' || topic.reviewStatus === 'reviewed'
+          ? 'Curated requisition support available.'
+          : 'Appropriateness table extracted. Requisition wording may require local adaptation.',
+      suggestedVariants: variantsToUse,
+      topOptions: sortImagingOptions(variantsToUse.flatMap((variant) => variant.imagingOptions)).slice(0, 6),
+    },
+  ];
+  const curatedPrompts = variantsToUse.flatMap((variant) => variant.missingInformationPrompts);
+  const fallbackPrompts = genericMissingInfoPrompts(topicContext(topic));
+  const requisitionSuggestion = variantsToUse.flatMap((variant) => variant.requisitionSuggestions).find(Boolean);
+
+  return {
+    relatedTopics,
+    missingInfoPrompts: uniqueStrings([...curatedPrompts, ...fallbackPrompts]).slice(0, 12),
+    requisitionLanguage: requisitionSuggestion || 'Requisition wording pending for this topic.',
+  };
+}
+
+export function getGroupedRecommendationOptions(
+  result: RequisitionAppropriatenessResult,
+): Record<AppropriatenessCategory, RequisitionRecommendationOption[]> {
+  const grouped: Record<AppropriatenessCategory, RequisitionRecommendationOption[]> = {
+    'Usually Appropriate': [],
+    'May Be Appropriate': [],
+    'May Be Appropriate (Disagreement)': [],
+    'Usually Not Appropriate': [],
+  };
+  const seen = new Set<string>();
+
+  result.relatedTopics.forEach((item) => {
+    item.suggestedVariants.forEach((variant) => {
+      sortImagingOptions(variant.imagingOptions).forEach((option) => {
+        const key = `${item.topicId}:${variant.id}:${option.procedure}:${option.appropriatenessCategory}`;
+        if (seen.has(key)) return;
+        seen.add(key);
+        grouped[option.appropriatenessCategory].push({
+          topicId: item.topicId,
+          topicTitle: item.topic?.title ?? item.topicId.replace(/-/g, ' '),
+          variantId: variant.id,
+          variantTitle: variant.title,
+          reviewStatus: item.topic?.reviewStatus,
+          sourceLabel: item.topic?.sourceLabel,
+          option,
+        });
+      });
+    });
+  });
+
+  return grouped;
 }
 
 export function generateAppropriatenessAwareRequisitionSentence(
@@ -117,7 +253,8 @@ export function generateAppropriatenessAwareRequisitionSentence(
     .filter(Boolean)
     .join(', ');
   const question = valueFor(form, 'clinicalQuestion') || template.defaultQuestion;
-  const modalityPhrase = selectedProcedure ? ` Requested study: ${selectedProcedure}.` : '';
+  const requestedProcedure = selectedProcedure || valueFor(form, 'requestedProcedure');
+  const modalityPhrase = requestedProcedure ? ` Requested study: ${requestedProcedure}.` : '';
 
   return `${patient}${context ? `, ${context}` : ''}, presenting with ${symptom}. ${question}.${modalityPhrase}`.replace(/\s+/g, ' ').trim();
 }

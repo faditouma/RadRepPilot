@@ -151,6 +151,7 @@ export function generateReferralText(form: ReferralFormState, style: Requisition
     fallbackSymptom(template);
   const duration = valueFor(form, 'duration');
   const question = valueFor(form, 'clinicalQuestion') || template.defaultQuestion;
+  const requestedProcedure = valueFor(form, 'requestedProcedure');
   const specialty = specialtyPhrases(form);
   const knownFor = join([
     pmhx,
@@ -159,10 +160,11 @@ export function generateReferralText(form: ReferralFormState, style: Requisition
   ]);
   const knownPhrase = knownFor ? `, known for ${knownFor}` : noSignificantPmhx ? ', with no significant past medical history' : '';
   const presenting = `presenting with ${duration ? `${duration} of ` : ''}${symptom}`;
+  const requestedProcedureSentence = requestedProcedure ? `Requested imaging: ${requestedProcedure}.` : '';
   const questionSentence = formatQuestionSentence(question, tone);
 
   if (style === 'ultra') {
-    return `${patient}${knownPhrase}, ${presenting}. ${questionSentence}`;
+    return `${patient}${knownPhrase}, ${presenting}. ${requestedProcedureSentence ? `${requestedProcedureSentence} ` : ''}${questionSentence}`;
   }
 
   if (style === 'detailed') {
@@ -172,7 +174,7 @@ export function generateReferralText(form: ReferralFormState, style: Requisition
       specialty.length ? specialty.join('; ') : undefined,
       valueFor(form, 'redFlags') ? `Red flags: ${valueFor(form, 'redFlags')}` : undefined,
     ], ' ');
-    return `${patient}${knownPhrase}, ${presenting}.${details ? ` ${details}` : ''} ${questionSentence}`;
+    return `${patient}${knownPhrase}, ${presenting}.${details ? ` ${details}` : ''} ${requestedProcedureSentence ? `${requestedProcedureSentence} ` : ''}${questionSentence}`;
   }
 
   const objective = join([
@@ -182,7 +184,7 @@ export function generateReferralText(form: ReferralFormState, style: Requisition
     valueFor(form, 'contrastSafety') ? `Contrast/safety: ${valueFor(form, 'contrastSafety')}` : undefined,
   ]);
 
-  return `${patient}${knownPhrase}, ${presenting}.${objective ? ` ${objective}.` : ''} ${questionSentence}`;
+  return `${patient}${knownPhrase}, ${presenting}.${objective ? ` ${objective}.` : ''} ${requestedProcedureSentence ? `${requestedProcedureSentence} ` : ''}${questionSentence}`;
 }
 
 export function generateConciseRequisition(

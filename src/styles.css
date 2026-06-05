@@ -4467,6 +4467,135 @@ footer {
   line-height: 1.5;
 }
 
+.requisition-match-list {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(190px, 1fr));
+  gap: 10px;
+}
+
+.requisition-match-card {
+  display: grid;
+  gap: 5px;
+  text-align: left;
+  border: 1px solid rgba(216, 224, 234, 0.92);
+  border-radius: 14px;
+  padding: 11px 12px;
+  background: rgba(255, 255, 255, 0.88);
+  color: var(--slate);
+  cursor: pointer;
+  transition: border-color 0.16s ease, box-shadow 0.16s ease, transform 0.16s ease;
+}
+
+.requisition-match-card:hover,
+.requisition-match-card.active {
+  border-color: rgba(37, 99, 235, 0.36);
+  box-shadow: 0 12px 28px rgba(37, 99, 235, 0.1);
+  transform: translateY(-1px);
+}
+
+.requisition-match-card span {
+  color: var(--primary);
+  font-size: 0.72rem;
+  font-weight: 900;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.requisition-match-card strong {
+  color: var(--ink);
+  font-size: 0.95rem;
+}
+
+.requisition-match-card small {
+  color: var(--muted);
+  line-height: 1.35;
+}
+
+.requisition-selected-context {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  align-items: center;
+  border: 1px solid rgba(6, 182, 212, 0.2);
+  border-radius: 999px;
+  padding: 8px 11px;
+  background: rgba(236, 254, 255, 0.7);
+  width: fit-content;
+}
+
+.requisition-selected-context span {
+  color: #0E7490;
+  font-size: 0.74rem;
+  font-weight: 900;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.requisition-selected-context strong {
+  color: var(--ink);
+}
+
+.requisition-recommendation-groups {
+  display: grid;
+  gap: 10px;
+}
+
+.requisition-recommendation-group {
+  border: 1px solid rgba(216, 224, 234, 0.9);
+  border-radius: 14px;
+  background: rgba(255, 255, 255, 0.82);
+  overflow: hidden;
+}
+
+.requisition-recommendation-group summary {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 10px 12px;
+  cursor: pointer;
+}
+
+.requisition-recommendation-group summary small {
+  color: var(--muted);
+  font-weight: 800;
+}
+
+.requisition-option-list {
+  display: grid;
+  gap: 10px;
+  padding: 0 12px 12px;
+}
+
+.requisition-option-card {
+  display: grid;
+  gap: 9px;
+  border: 1px solid rgba(216, 224, 234, 0.8);
+  border-radius: 13px;
+  padding: 11px;
+  background: linear-gradient(180deg, #fff, rgba(248, 250, 252, 0.78));
+}
+
+.requisition-option-card > div:first-child {
+  display: grid;
+  gap: 3px;
+}
+
+.requisition-option-card strong {
+  color: var(--ink);
+}
+
+.requisition-option-card span {
+  color: var(--muted);
+  font-size: 0.86rem;
+}
+
+.requisition-option-badges {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 7px;
+}
+
 .guide-mini-option-list.stacked {
   display: grid;
 }

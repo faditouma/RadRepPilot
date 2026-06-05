@@ -899,6 +899,19 @@ export function PrimaryCareRequestBuilder({ initialForm, onInsertText, onSaveTex
     setForm((existing) => regenerate({ ...existing, outputStyle: style }));
   };
 
+  const selectRequestedImagingOption = (procedure: string, suggestedQuestion: string) => {
+    setForm((existing) =>
+      regenerate({
+        ...existing,
+        values: {
+          ...existing.values,
+          requestedProcedure: procedure,
+          clinicalQuestion: suggestedQuestion || existing.values.clinicalQuestion || template.defaultQuestion,
+        },
+      }),
+    );
+  };
+
   const selectTemplate = (item: PrimaryCareContentTemplate) => {
     const next: ReferralFormState = {
       requestType: item.id,
@@ -1195,6 +1208,7 @@ export function PrimaryCareRequestBuilder({ initialForm, onInsertText, onSaveTex
                   selectedComplaintId={selectedComplaintId}
                   onSelectComplaint={setSelectedComplaintId}
                   onApplyWording={(text) => updateValue('clinicalQuestion', text)}
+                  onSelectImagingOption={selectRequestedImagingOption}
                 />
 
                 {template.oneClickNegatives.length ? (
