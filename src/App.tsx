@@ -8,8 +8,9 @@ import {
   SavedDraftList,
   Sidebar,
 } from './components/radrep/RadRepComponents';
-import { ReportingWorkflowPage } from './components/reporting/ReportingWorkflowPage';
+import { ReportingWorkflowPage, type WorkflowSidebarState } from './components/reporting/ReportingWorkflowPage';
 import { IncidentalFindingsPanel as WorkflowIncidentalFindingsPanel } from './components/reporting/IncidentalFindingsPanel';
+import { CompletenessMiniPanel } from './components/reporting/CompletenessMiniPanel';
 import { BranchingModuleNavigator } from './components/navigation/BranchingModuleNavigator';
 import { InteractiveAnatomyNavigator } from './components/dashboard/InteractiveAnatomyNavigator';
 import { GuidedDemo } from './components/demo/GuidedDemo';
@@ -283,6 +284,7 @@ function App({ embedded = false, initialPage = 'dashboard' }: AppProps) {
   const [pendingHelperId, setPendingHelperId] = useState('');
   const [helperDrawerId, setHelperDrawerId] = useState('');
   const [dashboardWorkflowId, setDashboardWorkflowId] = useState('');
+  const [workflowSidebar, setWorkflowSidebar] = useState<WorkflowSidebarState | null>(null);
 
   const [ctpaForm, setCtpaForm] = useState<CtpaFormState>(defaultCtpa);
   const [noduleForm, setNoduleForm] = useState<NoduleFormState>(defaultNodule);
@@ -315,6 +317,10 @@ function App({ embedded = false, initialPage = 'dashboard' }: AppProps) {
     window.addEventListener('radreppilot-toast', listener);
     return () => window.removeEventListener('radreppilot-toast', listener);
   }, []);
+
+  useEffect(() => {
+    if (activePage !== 'modules') setWorkflowSidebar(null);
+  }, [activePage]);
 
   const generateReportForModule = (moduleType: ModuleType): ReportSections => {
     if (moduleType in reportingWorkflowSchemas) {
@@ -1210,6 +1216,7 @@ function App({ embedded = false, initialPage = 'dashboard' }: AppProps) {
                 onInsertText={insertTextIntoBuilder}
                 onSaveDraft={(report, structuredData, title) => saveDraft(moduleType, report, structuredData, title)}
                 onOpenHelper={openHelperDrawer}
+                onSidebarStateChange={setWorkflowSidebar}
               />
             );
           }
@@ -1522,6 +1529,27 @@ function App({ embedded = false, initialPage = 'dashboard' }: AppProps) {
               {tab.label}
             </button>
           ))}
+          {activePage === 'modules' && workflowSidebar ? (
+            <div className="workspace-sidebar-widgets" aria-label="Current workflow status">
+              <section className="workflow-side-card workflow-module-map">
+                <span className="eyebrow">Current workflow</span>
+                <h3>{workflowSidebar.workflowTitle}</h3>
+                <p>
+                  {workflowSidebar.modality} · {workflowSidebar.bodySystem}
+                </p>
+                <ol>
+                  <li>Quick start</li>
+                  <li>Core findings</li>
+                  <li>Report draft</li>
+                </ol>
+              </section>
+              <CompletenessMiniPanel score={workflowSidebar.completeness} />
+              <section className="workflow-side-card draft-status-card">
+                <span className="eyebrow">Local progress</span>
+                <strong>{workflowSidebar.draftStatus}</strong>
+              </section>
+            </div>
+          ) : null}
         </aside>
       ) : (
         <Sidebar activePage={activePage} onNavigate={setActivePage} />

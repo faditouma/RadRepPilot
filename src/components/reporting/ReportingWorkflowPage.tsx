@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useRef, useState } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import type {
   ReportingWorkflowSchema,
   WorkflowQuickFill,
@@ -6,9 +6,8 @@ import type {
   WorkflowValues,
 } from '../../data/reportingWorkflowSchemas';
 import { generateReportingWorkflowReport } from '../../utils/reportGenerators';
-import { scoreReportCompleteness } from '../../utils/qualityMetrics';
+import { scoreReportCompleteness, type QualityScore } from '../../utils/qualityMetrics';
 import type { InsertTarget, ReportSections } from '../../radrep/types';
-import { CompletenessMiniPanel } from './CompletenessMiniPanel';
 import { IncidentalFindingsPanel } from './IncidentalFindingsPanel';
 import { KeyNegativesPanel } from './KeyNegativesPanel';
 import { QuickFillButtons } from './QuickFillButtons';
@@ -21,6 +20,15 @@ interface ReportingWorkflowPageProps {
   onInsertText: (text: string, label: string, target?: InsertTarget) => void;
   onSaveDraft: (report: ReportSections, structuredData: unknown, title?: string) => void;
   onOpenHelper?: (helperId: string) => void;
+  onSidebarStateChange?: (state: WorkflowSidebarState | null) => void;
+}
+
+export interface WorkflowSidebarState {
+  workflowTitle: string;
+  modality: string;
+  bodySystem: string;
+  completeness: QualityScore;
+  draftStatus: string;
 }
 
 interface StoredWorkflowDraft {
@@ -150,10 +158,16 @@ const helperLinksByModule: Partial<Record<string, Array<{ id: string; label: str
 };
 
 function statusTimestamp(status: string, date: Date): string {
-  return `${status} · ${date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}`;
+  return `${status} at ${date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}`;
 }
 
-export function ReportingWorkflowPage({ schema, onInsertText, onSaveDraft, onOpenHelper }: ReportingWorkflowPageProps) {
+export function ReportingWorkflowPage({
+  schema,
+  onInsertText,
+  onSaveDraft,
+  onOpenHelper,
+  onSidebarStateChange,
+}: ReportingWorkflowPageProps) {
   const initialStoredDraft = readStoredDraft(schema);
   const [values, setValues] = useState<WorkflowValues>(() => initialStoredDraft?.values ?? cloneValues(schema.defaultValues));
   const [report, setReport] = useState<WorkflowDraftReport>(() => initialStoredDraft?.report ?? createDraftReport(schema, schema.defaultValues));
@@ -165,10 +179,24 @@ export function ReportingWorkflowPage({ schema, onInsertText, onSaveDraft, onOpe
 
   const clinicalContextSections = schema.sections.filter((section) => section.id.toLowerCase().includes('context'));
   const imagingSections = schema.sections.filter((section) => !section.id.toLowerCase().includes('context'));
-  const reportQuality = scoreReportCompleteness(schema.moduleType, values, report);
+  const reportQuality = useMemo(() => scoreReportCompleteness(schema.moduleType, values, report), [report, schema.moduleType, values]);
   const usesDerivedNegatives = schema.moduleType === 'chestXray' || schema.moduleType === 'mskXrayFracture';
   const helperLinks = helperLinksByModule[schema.moduleType] ?? [];
   const hasAdditionalTools = clinicalContextSections.length > 0 || schema.incidentalOptions.length > 0 || helperLinks.length > 0;
+
+  useEffect(() => {
+    return () => onSidebarStateChange?.(null);
+  }, [onSidebarStateChange]);
+
+  useEffect(() => {
+    onSidebarStateChange?.({
+      workflowTitle: schema.shortTitle,
+      modality: schema.modality,
+      bodySystem: schema.bodySystem,
+      completeness: reportQuality,
+      draftStatus,
+    });
+  }, [draftStatus, onSidebarStateChange, reportQuality, schema.bodySystem, schema.modality, schema.shortTitle]);
 
   const persistLocalDraft = useCallback(
     (statusMessage = 'Draft saved locally') => {
@@ -459,27 +487,6 @@ export function ReportingWorkflowPage({ schema, onInsertText, onSaveDraft, onOpe
   return (
     <div className="reporting-workflow">
       <div className="reporting-workflow-layout">
-        <aside className="workflow-left-panel" aria-label="Workflow overview">
-          <section className="workflow-side-card workflow-module-map">
-            <span className="eyebrow">Workspace modules</span>
-            <h3>{schema.shortTitle}</h3>
-            <p>
-              {schema.modality} · {schema.bodySystem}
-            </p>
-            <ol>
-              <li>Quick start</li>
-              <li>Core findings</li>
-              <li>Report draft</li>
-            </ol>
-          </section>
-          <CompletenessMiniPanel score={reportQuality} />
-          <section className="workflow-side-card draft-status-card">
-            <span className="eyebrow">Local progress</span>
-            <strong>{draftStatus}</strong>
-            <p>No sign-in required for this local draft.</p>
-          </section>
-        </aside>
-
         <main className="workflow-center-panel">
           <section className="workflow-title-card">
             <div>

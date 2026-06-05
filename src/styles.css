@@ -2135,21 +2135,15 @@ textarea {
 
 .reporting-workflow-layout {
   display: grid;
-  grid-template-columns: minmax(210px, 250px) minmax(0, 1fr) minmax(360px, 0.88fr);
+  grid-template-columns: minmax(0, 1fr) minmax(360px, 0.88fr);
   gap: 16px;
   align-items: start;
 }
 
-.workflow-left-panel,
 .workflow-center-panel {
   display: grid;
   gap: 12px;
   min-width: 0;
-}
-
-.workflow-left-panel {
-  position: sticky;
-  top: 18px;
 }
 
 .workflow-side-card {
@@ -2221,6 +2215,54 @@ textarea {
 .draft-status-card strong {
   color: var(--blue-dark);
   font-size: 0.92rem;
+}
+
+.workspace-sidebar-widgets {
+  border-top: 1px solid rgba(216, 224, 234, 0.74);
+  margin-top: 5px;
+  padding-top: 10px;
+  display: grid;
+  gap: 8px;
+}
+
+.workspace-sidebar-widgets .workflow-side-card {
+  border-radius: 12px;
+  padding: 10px;
+  box-shadow: none;
+  background: rgba(248, 251, 253, 0.86);
+}
+
+.workspace-sidebar-widgets .workflow-module-map h3 {
+  font-size: 0.94rem;
+}
+
+.workspace-sidebar-widgets .workflow-module-map ol {
+  margin-top: 2px;
+  font-size: 0.78rem;
+  line-height: 1.55;
+}
+
+.workspace-sidebar-widgets .mini-panel-heading {
+  gap: 1px;
+}
+
+.workspace-sidebar-widgets .mini-panel-heading strong,
+.workspace-sidebar-widgets .draft-status-card strong {
+  font-size: 0.84rem;
+}
+
+.workspace-sidebar-widgets .mini-progress-row {
+  font-size: 0.78rem;
+}
+
+.workspace-sidebar-widgets .mini-missing-list {
+  padding-top: 7px;
+  gap: 4px;
+}
+
+.workspace-sidebar-widgets .mini-missing-list ul {
+  font-size: 0.78rem;
+  line-height: 1.35;
 }
 
 .workflow-input-stack {
@@ -2413,6 +2455,13 @@ textarea {
 .generated-report-fields {
   display: grid;
   gap: 10px;
+}
+
+.report-draft-heading-actions {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  gap: 6px;
 }
 
 .generated-report-fields label {
@@ -3116,7 +3165,6 @@ footer {
   .output-panel,
   .report-preview,
   .generated-report-panel,
-  .workflow-left-panel,
   .request-output-panel,
   .navigation-hub-card {
     position: static;
@@ -3179,6 +3227,14 @@ footer {
   .workspace-side-panel button {
     flex: 0 0 auto;
     width: auto;
+  }
+
+  .workspace-sidebar-widgets {
+    flex: 0 0 280px;
+    border-top: 0;
+    border-left: 1px solid rgba(216, 224, 234, 0.74);
+    margin: 0 0 0 4px;
+    padding: 0 0 0 10px;
   }
 
   .workspace-side-panel button.active {

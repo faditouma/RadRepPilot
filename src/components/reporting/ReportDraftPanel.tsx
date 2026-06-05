@@ -45,6 +45,7 @@ export function ReportDraftPanel({
   const [activeTab, setActiveTab] = useState<'preview' | 'edit'>('preview');
   const [advancedOpen, setAdvancedOpen] = useState(false);
   const [internalNotesOpen, setInternalNotesOpen] = useState(false);
+  const [collapsed, setCollapsed] = useState(false);
   const fullReport = buildWorkflowReport(report);
   const insertTargets: Array<{ target: InsertTarget; label: string; text: string }> = [
     { target: 'indication', label: 'Indication', text: report.indication },
@@ -76,79 +77,90 @@ export function ReportDraftPanel({
           <span>Report draft</span>
           <h3>{title}</h3>
         </div>
-        <button className="ghost-button compact-panel-toggle" type="button" onClick={onSaveLocalDraft}>
-          Save local draft
-        </button>
-      </div>
-
-      <div className="draft-tab-row" role="tablist" aria-label="Report draft view">
-        <button className={activeTab === 'preview' ? 'active' : ''} onClick={() => setActiveTab('preview')} type="button">
-          Preview
-        </button>
-        <button className={activeTab === 'edit' ? 'active' : ''} onClick={() => setActiveTab('edit')} type="button">
-          Edit
-        </button>
-      </div>
-
-      {activeTab === 'preview' ? (
-        <div className="report-preview-sections">
-          {previewSections.length ? (
-            previewSections.map((section) => (
-              <section key={section.label}>
-                <h4>{section.label}</h4>
-                <p>{section.value}</p>
-              </section>
-            ))
-          ) : (
-            <div className="inline-note">Start entering structured findings to generate a draft.</div>
-          )}
+        <div className="report-draft-heading-actions">
+          <button className="ghost-button compact-panel-toggle" type="button" onClick={onSaveLocalDraft}>
+            Save local draft
+          </button>
+          <button className="ghost-button compact-panel-toggle" type="button" onClick={() => setCollapsed((value) => !value)}>
+            {collapsed ? 'Expand' : 'Collapse'}
+          </button>
         </div>
+      </div>
+
+      {collapsed ? (
+        <div className="inline-note">Report draft panel collapsed. Expand to preview, edit, copy, or save the draft.</div>
       ) : (
-        <div className="generated-report-fields">
-          {editableSections.map((section) => (
-            <label key={section.field}>
-              {section.label}
-              <textarea
-                className={section.large ? 'large' : undefined}
-                value={String(report[section.field] ?? '')}
-                onChange={(event) => update(section.field, event.target.value)}
-              />
-            </label>
-          ))}
-          <details className="internal-notes-details" open={internalNotesOpen} onToggle={(event) => setInternalNotesOpen(event.currentTarget.open)}>
-            <summary>Internal notes</summary>
-            <label>
-              Internal notes
-              <textarea value={report.internalNotes ?? ''} onChange={(event) => update('internalNotes', event.target.value)} />
-            </label>
-          </details>
-        </div>
-      )}
-
-      <div className="button-row generated-report-actions primary-draft-actions">
-        <button className="primary-button" onClick={onRegenerate} type="button">
-          Regenerate from structured fields
-        </button>
-        <CopyButton text={fullReport} label="Copy full report" />
-        <CopyButton text={report.impression} label="Copy impression" />
-        <button className="secondary-button" onClick={onSaveDraft} type="button">
-          Save draft
-        </button>
-        <button className="ghost-button" onClick={onClear} type="button">
-          Reset
-        </button>
-      </div>
-
-      <details className="advanced-insert-options" open={advancedOpen} onToggle={(event) => setAdvancedOpen(event.currentTarget.open)}>
-        <summary>Advanced insert options</summary>
-        <div className="button-row">
-          {insertTargets.map((item) => (
-            <button className="secondary-button" onClick={() => onInsert(item.target, item.text)} type="button" key={item.target}>
-              Insert {item.label}
+        <>
+          <div className="draft-tab-row" role="tablist" aria-label="Report draft view">
+            <button className={activeTab === 'preview' ? 'active' : ''} onClick={() => setActiveTab('preview')} type="button">
+              Preview
             </button>
-          ))}
-        </div>
-      </details>
+            <button className={activeTab === 'edit' ? 'active' : ''} onClick={() => setActiveTab('edit')} type="button">
+              Edit
+            </button>
+          </div>
+
+          {activeTab === 'preview' ? (
+            <div className="report-preview-sections">
+              {previewSections.length ? (
+                previewSections.map((section) => (
+                  <section key={section.label}>
+                    <h4>{section.label}</h4>
+                    <p>{section.value}</p>
+                  </section>
+                ))
+              ) : (
+                <div className="inline-note">Start entering structured findings to generate a draft.</div>
+              )}
+            </div>
+          ) : (
+            <div className="generated-report-fields">
+              {editableSections.map((section) => (
+                <label key={section.field}>
+                  {section.label}
+                  <textarea
+                    className={section.large ? 'large' : undefined}
+                    value={String(report[section.field] ?? '')}
+                    onChange={(event) => update(section.field, event.target.value)}
+                  />
+                </label>
+              ))}
+              <details className="internal-notes-details" open={internalNotesOpen} onToggle={(event) => setInternalNotesOpen(event.currentTarget.open)}>
+                <summary>Internal notes</summary>
+                <label>
+                  Internal notes
+                  <textarea value={report.internalNotes ?? ''} onChange={(event) => update('internalNotes', event.target.value)} />
+                </label>
+              </details>
+            </div>
+          )}
+
+          <div className="button-row generated-report-actions primary-draft-actions">
+            <button className="primary-button" onClick={onRegenerate} type="button">
+              Regenerate from structured fields
+            </button>
+            <CopyButton text={fullReport} label="Copy full report" />
+            <CopyButton text={report.impression} label="Copy impression" />
+            <button className="secondary-button" onClick={onSaveDraft} type="button">
+              Save draft
+            </button>
+            <button className="ghost-button" onClick={onClear} type="button">
+              Reset
+            </button>
+          </div>
+
+          <details className="advanced-insert-options" open={advancedOpen} onToggle={(event) => setAdvancedOpen(event.currentTarget.open)}>
+            <summary>Advanced insert options</summary>
+            <div className="button-row">
+              {insertTargets.map((item) => (
+                <button className="secondary-button" onClick={() => onInsert(item.target, item.text)} type="button" key={item.target}>
+                  Insert {item.label}
+                </button>
+              ))}
+            </div>
+          </details>
+        </>
+      )}
     </aside>
   );
 }
