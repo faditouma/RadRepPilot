@@ -26,6 +26,7 @@ import {
   CalculatorRegistry,
   IncidentalFindingsPanel as StandaloneIncidentalFindingsPanel,
   PrimaryCareRequestBuilder,
+  type RequisitionSidebarState,
 } from './components/radrep/RegistryComponents';
 import {
   buildFullReport,
@@ -67,7 +68,7 @@ import type {
 } from './radrep/types';
 
 const DRAFT_STORAGE_KEY = 'radreppilot:drafts';
-const ACR_REQUISITION_SELECTION_KEY = 'radreppilot.pendingAcrRequisitionSelection';
+const ACR_REQUISITION_SELECTION_KEY = 'radreppilot.selectedAppropriatenessScenario';
 const GUIDE_SELECTION_KEY = 'radreppilot.pendingImagingGuideSelection';
 
 type AppProps = {
@@ -287,6 +288,7 @@ function App({ embedded = false, initialPage = 'dashboard' }: AppProps) {
   const [helperDrawerId, setHelperDrawerId] = useState('');
   const [dashboardWorkflowId, setDashboardWorkflowId] = useState('');
   const [workflowSidebar, setWorkflowSidebar] = useState<WorkflowSidebarState | null>(null);
+  const [requisitionSidebar, setRequisitionSidebar] = useState<RequisitionSidebarState | null>(null);
 
   const [ctpaForm, setCtpaForm] = useState<CtpaFormState>(defaultCtpa);
   const [noduleForm, setNoduleForm] = useState<NoduleFormState>(defaultNodule);
@@ -322,6 +324,7 @@ function App({ embedded = false, initialPage = 'dashboard' }: AppProps) {
 
   useEffect(() => {
     if (activePage !== 'modules') setWorkflowSidebar(null);
+    if (activePage !== 'referral') setRequisitionSidebar(null);
   }, [activePage]);
 
   const useTopicInRequisition = (topicId: string, variantId?: string) => {
@@ -1296,6 +1299,7 @@ function App({ embedded = false, initialPage = 'dashboard' }: AppProps) {
         onInsertText={insertTextIntoBuilder}
         onSaveText={saveTextDraft}
         onOpenImagingGuide={openGuideTopic}
+        onSidebarStateChange={setRequisitionSidebar}
       />
     </div>
   );
@@ -1566,6 +1570,49 @@ function App({ embedded = false, initialPage = 'dashboard' }: AppProps) {
               <section className="workflow-side-card draft-status-card">
                 <span className="eyebrow">Local progress</span>
                 <strong>{workflowSidebar.draftStatus}</strong>
+              </section>
+            </div>
+          ) : null}
+          {activePage === 'referral' && requisitionSidebar ? (
+            <div className="workspace-sidebar-widgets" aria-label="Current requisition status">
+              <section className="workflow-side-card workflow-module-map">
+                <span className="eyebrow">Imaging requisition</span>
+                <h3>Search-first request</h3>
+                <p>Clinical problem → scenario → imaging → requisition</p>
+                <ol>
+                  <li>Search problem</li>
+                  <li>Select scenario</li>
+                  <li>Choose imaging</li>
+                  <li>Review draft</li>
+                </ol>
+              </section>
+              <section className="workflow-side-card completeness-mini-panel" aria-label="Requisition readiness">
+                <div className="mini-panel-heading">
+                  <span className="eyebrow">Requisition readiness</span>
+                  <strong>{requisitionSidebar.readiness.complete}/{requisitionSidebar.readiness.total} complete</strong>
+                </div>
+                <div className="mini-progress-row">
+                  <div className="quality-progress-bar" role="progressbar" aria-valuemin={0} aria-valuemax={100} aria-valuenow={requisitionSidebar.readiness.percent}>
+                    <i style={{ width: `${requisitionSidebar.readiness.percent}%` }} />
+                  </div>
+                  <span>{requisitionSidebar.readiness.percent}%</span>
+                </div>
+                {requisitionSidebar.missing.length ? (
+                  <div className="mini-missing-list">
+                    <span>Still useful</span>
+                    <ul>
+                      {requisitionSidebar.missing.slice(0, 5).map((item) => (
+                        <li key={item}>{item}</li>
+                      ))}
+                    </ul>
+                  </div>
+                ) : (
+                  <p>Ready for educational review.</p>
+                )}
+              </section>
+              <section className="workflow-side-card draft-status-card">
+                <span className="eyebrow">Local progress</span>
+                <strong>{requisitionSidebar.draftStatus}</strong>
               </section>
             </div>
           ) : null}

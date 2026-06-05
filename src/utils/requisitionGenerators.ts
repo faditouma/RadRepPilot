@@ -160,7 +160,7 @@ export function generateReferralText(form: ReferralFormState, style: Requisition
   ]);
   const knownPhrase = knownFor ? `, known for ${knownFor}` : noSignificantPmhx ? ', with no significant past medical history' : '';
   const presenting = `presenting with ${duration ? `${duration} of ` : ''}${symptom}`;
-  const requestedProcedureSentence = requestedProcedure ? `Requested imaging: ${requestedProcedure}.` : '';
+  const requestedProcedureSentence = requestedProcedure ? `Requested imaging: ${requestedProcedure}.` : 'Requested imaging not selected.';
   const questionSentence = formatQuestionSentence(question, tone);
 
   if (style === 'ultra') {
@@ -178,6 +178,7 @@ export function generateReferralText(form: ReferralFormState, style: Requisition
   }
 
   const objective = join([
+    valueFor(form, 'redFlags') ? `Clinical context: ${valueFor(form, 'redFlags')}` : undefined,
     valueFor(form, 'examFindings') ? `Exam: ${valueFor(form, 'examFindings')}` : undefined,
     valueFor(form, 'labs') ? `Labs: ${valueFor(form, 'labs')}` : undefined,
     valueFor(form, 'pregnancyStatus') ? `Pregnancy status: ${valueFor(form, 'pregnancyStatus')}` : undefined,

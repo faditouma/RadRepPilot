@@ -20,12 +20,17 @@ export interface AppropriatenessVariant {
   id: string;
   title: string;
   clinicalScenario: string;
+  clinicalSummary?: string;
+  keyClinicalConsiderations?: string[];
+  missingClinicalInfoPrompts?: string[];
   missingInformationPrompts: string[];
   imagingOptions: ImagingOption[];
   requisitionSuggestions: string[];
+  requisitionPearls?: string[];
   reportingPearls: string[];
   followUpPearls?: string[];
   cautions: string[];
+  sourceExcerptPreview?: string;
   extractionConfidence?: 'high' | 'medium' | 'low';
 }
 
@@ -38,6 +43,13 @@ export interface AppropriatenessTopic {
   sourceLabel: string;
   sourceUrl?: string;
   sourceNote: string;
+  clinicalSummary?: string;
+  keyClinicalConsiderations?: string[];
+  missingClinicalInfoPrompts?: string[];
+  requisitionPearls?: string[];
+  reportingPearls?: string[];
+  followUpPearls?: string[];
+  sourceExcerptPreview?: string;
   reviewStatus: ReviewStatus;
   extractionConfidence?: 'high' | 'medium' | 'low';
   variants: AppropriatenessVariant[];

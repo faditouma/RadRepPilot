@@ -462,61 +462,64 @@ export function ImagingGuidePanel({ onUseInRequisition }: ImagingGuidePanelProps
             <span>extracted ACR table topics available</span>
             {curatedTopicCount ? <small>{curatedTopicCount} curated/validated summary topic{curatedTopicCount === 1 ? '' : 's'}</small> : null}
           </div>
-          <div className="guide-filter-grid">
-            <label>
-              Clinical area
-              <select value={clinicalAreaFilter} onChange={(event) => setClinicalAreaFilter(event.target.value)}>
-                <option value="All">All</option>
-                {clinicalAreas.map((area) => (
-                  <option value={area} key={area}>
-                    {area}
-                  </option>
-                ))}
-              </select>
-            </label>
-            <label>
-              Modality/procedure
-              <select value={procedureTypeFilter} onChange={(event) => setProcedureTypeFilter(event.target.value)}>
-                <option value="All">All</option>
-                {procedureTypes.map((type) => (
-                  <option value={type} key={type}>
-                    {type}
-                  </option>
-                ))}
-              </select>
-            </label>
-            <label>
-              Category
-              <select value={categoryFilter} onChange={(event) => setCategoryFilter(event.target.value as never)}>
-                <option value="All">All</option>
-                <option value="Usually Appropriate">Usually Appropriate</option>
-                <option value="May Be Appropriate">May Be Appropriate</option>
-                <option value="May Be Appropriate (Disagreement)">May Be Appropriate (Disagreement)</option>
-                <option value="Usually Not Appropriate">Usually Not Appropriate</option>
-              </select>
-            </label>
-            <label>
-              Radiation
-              <select value={radiationFilter} onChange={(event) => setRadiationFilter(event.target.value as never)}>
-                <option value="All">All</option>
-                {radiationLegend.map((item) => (
-                  <option value={item.level} key={item.level}>
-                    {item.level}
-                  </option>
-                ))}
-              </select>
-            </label>
-            <label>
-              Review status
-              <select value={reviewStatusFilter} onChange={(event) => setReviewStatusFilter(event.target.value as never)}>
-                <option value="All">All</option>
-                <option value="extracted">Extracted</option>
-                <option value="needs_validation">Needs validation</option>
-                <option value="reviewed">Reviewed</option>
-                <option value="manually_curated">Manually curated</option>
-              </select>
-            </label>
-          </div>
+          <details className="guide-filter-disclosure">
+            <summary>Filters</summary>
+            <div className="guide-filter-grid">
+              <label>
+                Clinical area
+                <select value={clinicalAreaFilter} onChange={(event) => setClinicalAreaFilter(event.target.value)}>
+                  <option value="All">All</option>
+                  {clinicalAreas.map((area) => (
+                    <option value={area} key={area}>
+                      {area}
+                    </option>
+                  ))}
+                </select>
+              </label>
+              <label>
+                Modality/procedure
+                <select value={procedureTypeFilter} onChange={(event) => setProcedureTypeFilter(event.target.value)}>
+                  <option value="All">All</option>
+                  {procedureTypes.map((type) => (
+                    <option value={type} key={type}>
+                      {type}
+                    </option>
+                  ))}
+                </select>
+              </label>
+              <label>
+                Category
+                <select value={categoryFilter} onChange={(event) => setCategoryFilter(event.target.value as never)}>
+                  <option value="All">All</option>
+                  <option value="Usually Appropriate">Usually Appropriate</option>
+                  <option value="May Be Appropriate">May Be Appropriate</option>
+                  <option value="May Be Appropriate (Disagreement)">May Be Appropriate (Disagreement)</option>
+                  <option value="Usually Not Appropriate">Usually Not Appropriate</option>
+                </select>
+              </label>
+              <label>
+                Radiation
+                <select value={radiationFilter} onChange={(event) => setRadiationFilter(event.target.value as never)}>
+                  <option value="All">All</option>
+                  {radiationLegend.map((item) => (
+                    <option value={item.level} key={item.level}>
+                      {item.level}
+                    </option>
+                  ))}
+                </select>
+              </label>
+              <label>
+                Review status
+                <select value={reviewStatusFilter} onChange={(event) => setReviewStatusFilter(event.target.value as never)}>
+                  <option value="All">All</option>
+                  <option value="extracted">Extracted table</option>
+                  <option value="needs_validation">Needs validation</option>
+                  <option value="reviewed">Reviewed</option>
+                  <option value="manually_curated">Manually curated summary</option>
+                </select>
+              </label>
+            </div>
+          </details>
           <div className="guide-result-list" aria-label="Grouped Imaging Guide results">
             <TopicResultGroups groups={groupedTopics} onSelectTopic={selectTopic} selectedTopic={selectedTopic} />
           </div>
@@ -555,7 +558,7 @@ export function ImagingGuidePanel({ onUseInRequisition }: ImagingGuidePanelProps
                     <span>{topicRadiationSummary(selectedTopic)}</span>
                   </div>
                   <p>
-                    {statusNoteForTopic(selectedTopic)} {reviewStatusSummary(selectedTopic.reviewStatus)} {selectedTopic.sourceNote}
+                    {statusNoteForTopic(selectedTopic)} {reviewStatusSummary(selectedTopic.reviewStatus)}
                   </p>
                 </div>
                 <ReviewBadge topic={selectedTopic} />
@@ -638,9 +641,10 @@ export function ImagingGuidePanel({ onUseInRequisition }: ImagingGuidePanelProps
                     ) : (
                       <p>Recommendation table pending for this variant.</p>
                     )}
-                    <p className="guide-status-note">
-                      {statusNoteForTopic(selectedTopic)} Source/status note: {selectedTopic.sourceNote}
-                    </p>
+                    <details className="guide-status-note source-detail-disclosure">
+                      <summary>Source and extraction details</summary>
+                      <p>{statusNoteForTopic(selectedTopic)} Source/status note: {selectedTopic.sourceNote}</p>
+                    </details>
                   </section>
 
                   {selectedVariant.missingInformationPrompts.length ? (
