@@ -6,7 +6,12 @@
 node_modules/
 dist/
 .vite/
-acr-source-pdfs/
+# Local ACR PDF ingestion inputs and raw extraction outputs.
+acr-source-pdfs/*
+!acr-source-pdfs/README.md
+src/data/appropriateness/raw/*
+!src/data/appropriateness/raw/README.md
+*.pdf
 Website GitHub Pages/
 guidelines/
 extracted-guidelines/

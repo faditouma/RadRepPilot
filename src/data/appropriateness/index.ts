@@ -7,13 +7,14 @@ function isPublicUsableTopic(topic: AppropriatenessTopic) {
 
 // Curated topic import workflow:
 // 1. Import a topic from ./topics/[topicName].
+//    Future reviewed generated summaries may also be imported from ./generated/[topicName].
 // 2. Add it to allAppropriatenessTopicCandidates below.
 // 3. Use reviewStatus to label the topic honestly:
 //    extracted -> source table extracted only
 //    needs_validation -> usable table/summary but source validation pending
 //    reviewed -> reviewed against source
 //    manually_curated -> reviewed and enriched with local educational summaries
-// 4. Do not import raw JSON directly. Convert/review first.
+// 4. Do not import raw JSON or full PDF text directly. Convert/review first.
 const allAppropriatenessTopicCandidates: AppropriatenessTopic[] = [
   chronicPancreatitisTopic,
 ];

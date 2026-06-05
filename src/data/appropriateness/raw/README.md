@@ -1,8 +1,10 @@
 # Raw ACR Extraction Output
 
-This folder is for local, unreviewed JSON files produced from source PDFs.
+Raw extracted JSON lives here.
 
-Raw files should not be imported into the public app or treated as clinical content. They are extraction drafts for human review.
+Raw extraction requires validation before public use. Raw JSON should not be imported directly into the public registry unless intentionally reviewed or transformed into app-readable structured summaries.
+
+Raw files should not be treated as clinical content. They are extraction drafts for human review.
 
 Expected raw JSON fields:
 
@@ -26,7 +28,7 @@ Each procedure row should include:
 - `radiationLevel`
 - `confidence`
 
-After review, convert accepted content into curated topic files in `src/data/appropriateness/topics/`.
+After review, convert accepted content into app-readable generated summaries or curated topic files.
 
 ## Run Extraction
 
@@ -46,4 +48,4 @@ extraction-summary.json
 
 The summary includes processed files, failed files, total topics, variants, procedure rows, warnings, and timestamp.
 
-Do not import these raw files into the public app. They must be reviewed and curated first.
+Do not import these raw files into the public app. They must be reviewed, transformed, and intentionally imported first.
