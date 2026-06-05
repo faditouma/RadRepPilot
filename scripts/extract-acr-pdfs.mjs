@@ -1,6 +1,7 @@
 import { inflateSync } from 'node:zlib';
 import { mkdir, readFile, readdir, writeFile } from 'node:fs/promises';
 import path from 'node:path';
+import { pathToFileURL } from 'node:url';
 
 const inputDir = path.resolve(process.cwd(), 'acr-source-pdfs');
 const outputDir = path.resolve(process.cwd(), 'src/data/appropriateness/raw');
@@ -16,6 +17,11 @@ const categoryPattern = /(May Be Appropriate\s*\(Disagreement\)|Usually Appropri
 const radiationPattern = /(☢{1,5}|\bO\b|\bVaries\b)/i;
 const yearPattern = /\b(20\d{2}|19\d{2})\b/;
 const summaryFile = path.join(outputDir, 'extraction-summary.json');
+const bundledPdfJsPath = path.join(
+  process.env.HOME ?? '',
+  '.cache/codex-runtimes/codex-primary-runtime/dependencies/node/node_modules/pdfjs-dist/legacy/build/pdf.mjs',
+);
+let pdfJsModulePromise;
 
 const warningCategories = {
   noVariantFound: 'noVariantFound',
@@ -77,6 +83,45 @@ function extractStringsFromTextLayer(text) {
   return fragments.join('\n');
 }
 
+async function loadPdfJs() {
+  if (!pdfJsModulePromise) {
+    pdfJsModulePromise = (async () => {
+      try {
+        return await import('pdfjs-dist/legacy/build/pdf.mjs');
+      } catch {
+        try {
+          return await import(pathToFileURL(bundledPdfJsPath).href);
+        } catch {
+          return null;
+        }
+      }
+    })();
+  }
+
+  return pdfJsModulePromise;
+}
+
+async function extractTextWithPdfJs(buffer) {
+  const pdfjs = await loadPdfJs();
+  if (!pdfjs) return '';
+
+  const document = await pdfjs.getDocument({
+    data: new Uint8Array(buffer),
+    disableWorker: true,
+    verbosity: pdfjs.VerbosityLevel?.ERRORS,
+  }).promise;
+  const pages = [];
+
+  for (let pageNumber = 1; pageNumber <= document.numPages; pageNumber += 1) {
+    const page = await document.getPage(pageNumber);
+    const content = await page.getTextContent();
+    pages.push(content.items.map((item) => item.str).join('\n'));
+  }
+
+  await document.destroy();
+  return normalizeWhitespace(pages.join('\n'));
+}
+
 function extractTextFromPdfBuffer(buffer) {
   const latin = buffer.toString('latin1');
   const fragments = [extractStringsFromTextLayer(latin)];
@@ -99,6 +144,19 @@ function extractTextFromPdfBuffer(buffer) {
   return normalizeWhitespace(fragments.filter(Boolean).join('\n'));
 }
 
+async function extractText(buffer) {
+  try {
+    const pdfJsText = await extractTextWithPdfJs(buffer);
+    if (pdfJsText && /Variant\s+\d+/i.test(pdfJsText)) {
+      return pdfJsText;
+    }
+  } catch {
+    // Fall through to the lightweight parser so one difficult PDF does not stop the batch.
+  }
+
+  return extractTextFromPdfBuffer(buffer);
+}
+
 function extractTitle(text, filename) {
   const lines = text
     .split('\n')
@@ -106,13 +164,21 @@ function extractTitle(text, filename) {
     .filter(Boolean)
     .filter((line) => !/^Variant[:\s]/i.test(line));
 
-  const criteriaLine = lines.find((line) => /Appropriateness Criteria/i.test(line));
-  if (criteriaLine) {
-    const cleaned = criteriaLine
-      .replace(/ACR\s+Appropriateness\s+Criteria\s*[:\-]?/i, '')
-      .replace(/Appropriateness\s+Criteria\s*[:\-]?/i, '')
-      .trim();
-    if (cleaned.length >= 4) return cleaned;
+  const criteriaIndex = lines.findIndex((line) => /ACR\s+Appropriateness\s+Criteria/i.test(line));
+  if (criteriaIndex >= 0) {
+    const titleLine = lines.slice(criteriaIndex + 1).find((line) => {
+      if (/American College of Radiology/i.test(line)) return false;
+      if (/Appropriateness Criteria/i.test(line)) return false;
+      if (/^Revised\s+\d{4}/i.test(line)) return false;
+      if (/^Procedure$/i.test(line)) return false;
+      if (/^Appropriateness Category$/i.test(line)) return false;
+      if (/^Relative Radiation Level$/i.test(line)) return false;
+      return line.length >= 4 && line.length <= 120 && /[A-Za-z]/.test(line);
+    });
+
+    if (titleLine) {
+      return titleLine.replace(/[®©]/g, '').trim();
+    }
   }
 
   const titleLike = lines.find((line) => line.length >= 8 && line.length <= 90 && /[A-Za-z]/.test(line));
@@ -127,21 +193,41 @@ function extractYear(text) {
 }
 
 function splitVariants(text) {
-  const matches = [...text.matchAll(/(?:^|\n)\s*(Variant\s+\d+[:.\s][^\n]+)/gi)];
+  const matches = [...text.matchAll(/(?:^|\n)\s*Variant:\s*(\d+)\s*/gi)];
   if (!matches.length) return [];
 
   return matches.map((match, index) => {
     const start = match.index ?? 0;
-    const end = matches[index + 1]?.index ?? text.length;
-    const variantTitle = normalizeWhitespace(match[1]);
+    const nextStart = matches[index + 1]?.index ?? text.length;
+    const trailingSection = text.slice(start, nextStart).search(/\n\s*(Summary of Recommendations|Supporting Documents|Discussion|Literature Search|References)\b/i);
+    const end = trailingSection >= 0 ? start + trailingSection : nextStart;
+    const body = text.slice(start, end);
+    const variantNumber = match[1];
+    const scenario = extractClinicalScenarioFromTableBlock(body);
+    const variantTitle = scenario ? `Variant ${variantNumber}: ${scenario}` : `Variant ${variantNumber}`;
     const clinicalScenario = extractClinicalScenario(variantTitle);
     return {
       id: createVariantId(variantTitle, index),
       variantTitle,
       clinicalScenario,
-      body: text.slice(start, end),
+      body,
     };
   });
+}
+
+function extractClinicalScenarioFromTableBlock(variantBody) {
+  const procedureIndex = variantBody.search(/\n\s*Procedure\s*\n/i);
+  const headingBlock = procedureIndex >= 0 ? variantBody.slice(0, procedureIndex) : variantBody.slice(0, 1000);
+  const lines = headingBlock
+    .split('\n')
+    .map((line) => line.trim())
+    .filter(Boolean)
+    .filter((line) => !/^Variant:\s*\d+/i.test(line))
+    .filter((line) => !/^Revised\s+\d{4}/i.test(line))
+    .filter((line) => !/^ACR Appropriateness Criteria/i.test(line))
+    .filter((line) => !/^American College of Radiology/i.test(line));
+
+  return normalizeWhitespace(lines.join(' '));
 }
 
 function createVariantId(variantTitle, index) {
@@ -189,7 +275,86 @@ function cleanProcedure(value) {
     .trim();
 }
 
-function extractRowsFromVariant(variantBody) {
+function isTableHeaderLine(line) {
+  return /^(Procedure|Appropriateness Category|Relative Radiation Level|Revised\s+\d{4})$/i.test(line);
+}
+
+function isLikelyNonProcedureLine(line) {
+  return (
+    isTableHeaderLine(line) ||
+    /^ACR Appropriateness Criteria/i.test(line) ||
+    /^American College of Radiology/i.test(line) ||
+    /^Variant:\s*\d+/i.test(line) ||
+    /^(Summary of Recommendations|Supporting Documents|Discussion|Literature Search|References)\b/i.test(line)
+  );
+}
+
+function extractRowsFromTableLines(variantBody) {
+  const rows = [];
+  const lines = variantBody
+    .split('\n')
+    .map((line) => line.trim())
+    .filter(Boolean);
+  const procedureStart = lines.findIndex((line) => /^Procedure$/i.test(line));
+  const tableLines = procedureStart >= 0 ? lines.slice(procedureStart + 1) : lines;
+  let procedureParts = [];
+
+  for (let index = 0; index < tableLines.length; index += 1) {
+    const line = tableLines[index];
+    if (isLikelyNonProcedureLine(line)) continue;
+
+    const categoryMatch = line.match(categoryPattern);
+    if (categoryMatch) {
+      const procedurePrefix = line.slice(0, categoryMatch.index).trim();
+      if (procedurePrefix) procedureParts.push(procedurePrefix);
+
+      let radiationLevel = 'Unknown';
+      let radiationIndex = -1;
+      const afterCategory = line.slice((categoryMatch.index ?? 0) + categoryMatch[0].length);
+      const sameLineRadiation = afterCategory.match(radiationPattern);
+
+      if (sameLineRadiation) {
+        radiationLevel = normalizeRadiation(sameLineRadiation[1]);
+      } else {
+        for (let lookahead = index + 1; lookahead < Math.min(index + 4, tableLines.length); lookahead += 1) {
+          const candidate = tableLines[lookahead].trim();
+          if (!candidate || isTableHeaderLine(candidate)) continue;
+          const radiationMatch = candidate.match(radiationPattern);
+          if (radiationMatch && candidate.replace(radiationMatch[0], '').trim().length <= 8) {
+            radiationLevel = normalizeRadiation(radiationMatch[1]);
+            radiationIndex = lookahead;
+            break;
+          }
+        }
+      }
+
+      const procedure = cleanProcedure(procedureParts.join(' '));
+      const appropriatenessCategory = normalizeCategory(categoryMatch[0]);
+
+      if (procedure.length >= 5 && !rows.some((row) => row.procedure === procedure && row.appropriatenessCategory === appropriatenessCategory)) {
+        rows.push({
+          procedure,
+          appropriatenessCategory,
+          radiationLevel,
+          confidence: confidenceForRow(procedure, appropriatenessCategory, radiationLevel),
+          rawLine: [procedure, categoryMatch[0], radiationLevel].filter(Boolean).join(' | '),
+        });
+      }
+
+      procedureParts = [];
+      if (radiationIndex > index) index = radiationIndex;
+      continue;
+    }
+
+    if (!radiationPattern.test(line)) {
+      procedureParts.push(line);
+    }
+  }
+
+  return rows;
+}
+
+function extractRowsFromTextWindows(variantBody) {
   const rows = [];
   const lines = variantBody
     .split('\n')
@@ -225,6 +390,11 @@ function extractRowsFromVariant(variantBody) {
   }
 
   return rows;
+}
+
+function extractRowsFromVariant(variantBody) {
+  const tableRows = extractRowsFromTableLines(variantBody);
+  return tableRows.length ? tableRows : extractRowsFromTextWindows(variantBody);
 }
 
 function createWarning(category, message, context = {}) {
@@ -380,7 +550,7 @@ function logSummary(summary, discoveredPdfCount) {
 async function processPdf(filename) {
   const sourcePath = path.join(inputDir, filename);
   const buffer = await readFile(sourcePath);
-  const text = extractTextFromPdfBuffer(buffer);
+  const text = await extractText(buffer);
   const variantBlocks = splitVariants(text);
   const variants = variantBlocks.map((variant) => ({
     id: variant.id,
@@ -425,6 +595,7 @@ async function main() {
 
   const titleCounts = new Map();
   const pendingWrites = [];
+  const outputNameCounts = new Map();
 
   for (const filename of pdfs) {
     try {
@@ -444,7 +615,10 @@ async function main() {
       extractionWarnings: [...item.raw.extractionWarnings, ...duplicateTitleWarnings(item.raw, titleCounts)],
     };
     const warningCountsByType = countWarningsByType(raw.extractionWarnings);
-    const outputName = `${slugify(path.basename(item.filename, path.extname(item.filename)))}.raw.json`;
+    const baseOutputName = slugify(path.basename(item.filename, path.extname(item.filename))) || 'acr-topic';
+    const outputNameCount = outputNameCounts.get(baseOutputName) ?? 0;
+    outputNameCounts.set(baseOutputName, outputNameCount + 1);
+    const outputName = `${outputNameCount === 0 ? baseOutputName : `${baseOutputName}-${outputNameCount + 1}`}.raw.json`;
     const outputPath = path.join(outputDir, outputName);
     await writeFile(outputPath, `${JSON.stringify(raw, null, 2)}\n`, 'utf8');
 
