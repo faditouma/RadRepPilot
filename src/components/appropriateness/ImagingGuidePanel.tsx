@@ -1,9 +1,11 @@
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { appropriatenessTopics } from '../../data/appropriateness';
 import type { AppropriatenessCategory, AppropriatenessTopic, RadiationLevel, ReviewStatus } from '../../data/appropriateness';
 import { searchClinicalMappings, type ClinicalComplaintMapping } from '../../data/appropriateness/clinicalMappings';
 import { radiationLegend, reviewStatusLabel, reviewStatusSummary, searchAppropriatenessLayer } from '../../utils/appropriatenessSearch';
 import { CopyButton } from '../radrep/RadRepComponents';
+
+const GUIDE_SELECTION_KEY = 'radreppilot.pendingImagingGuideSelection';
 
 type ProcedureType = 'CT' | 'MRI' | 'Ultrasound' | 'X-ray' | 'Mammography' | 'Nuclear/PET' | 'Fluoroscopy/IR' | 'Other';
 
@@ -359,7 +361,11 @@ function TopicResultGroups({
   );
 }
 
-export function ImagingGuidePanel() {
+interface ImagingGuidePanelProps {
+  onUseInRequisition?: (topicId: string, variantId?: string) => void;
+}
+
+export function ImagingGuidePanel({ onUseInRequisition }: ImagingGuidePanelProps = {}) {
   const [query, setQuery] = useState('');
   const [clinicalAreaFilter, setClinicalAreaFilter] = useState('All');
   const [procedureTypeFilter, setProcedureTypeFilter] = useState('All');
@@ -400,6 +406,28 @@ export function ImagingGuidePanel() {
   const selectedVariant =
     selectedTopic?.variants.find((variant) => variant.id === selectedVariantId) ?? selectedTopic?.variants[0];
   const requisitionText = selectedVariant?.requisitionSuggestions.join('\n\n') ?? 'Requisition wording pending for this topic.';
+  const extractedTopicCount = appropriatenessTopics.filter(
+    (topic) => topic.reviewStatus === 'extracted' || topic.reviewStatus === 'needs_validation',
+  ).length;
+  const curatedTopicCount = appropriatenessTopics.length - extractedTopicCount;
+
+  useEffect(() => {
+    if (typeof window === 'undefined') return;
+    const pending = window.localStorage.getItem(GUIDE_SELECTION_KEY);
+    if (!pending) return;
+
+    try {
+      const parsed = JSON.parse(pending) as { topicId?: string; variantId?: string };
+      if (parsed.topicId && appropriatenessTopics.some((topic) => topic.id === parsed.topicId)) {
+        setSelectedTopicId(parsed.topicId);
+        setSelectedVariantId(parsed.variantId ?? '');
+      }
+    } catch {
+      // Ignore malformed handoff state.
+    } finally {
+      window.localStorage.removeItem(GUIDE_SELECTION_KEY);
+    }
+  }, []);
 
   function selectTopic(topicId: string) {
     const topic = appropriatenessTopics.find((item) => item.id === topicId);
@@ -428,6 +456,11 @@ export function ImagingGuidePanel() {
           <div className="guide-topic-count" role="status">
             <strong>{visibleTopics.length}</strong>
             <span>of {appropriatenessTopics.length} topics shown</span>
+          </div>
+          <div className="guide-library-count" role="status">
+            <strong>{extractedTopicCount}</strong>
+            <span>extracted ACR table topics available</span>
+            {curatedTopicCount ? <small>{curatedTopicCount} curated/validated summary topic{curatedTopicCount === 1 ? '' : 's'}</small> : null}
           </div>
           <div className="guide-filter-grid">
             <label>
@@ -526,6 +559,20 @@ export function ImagingGuidePanel() {
                   </p>
                 </div>
                 <ReviewBadge topic={selectedTopic} />
+              </div>
+              <div className="guide-action-row">
+                <button
+                  className="primary-button"
+                  onClick={() => onUseInRequisition?.(selectedTopic.id, selectedVariant?.id)}
+                  type="button"
+                >
+                  Use in requisition
+                </button>
+                <CopyButton
+                  text={`${selectedTopic.title}${selectedVariant ? ` - ${selectedVariant.title}` : ''}`}
+                  label="Copy topic/variant"
+                  className="secondary-button"
+                />
               </div>
 
               {selectedTopic.sourceUrl ? (

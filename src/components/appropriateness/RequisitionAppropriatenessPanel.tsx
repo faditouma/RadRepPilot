@@ -1,4 +1,4 @@
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import type { PrimaryCareContentTemplate, ReferralFormState } from '../../radrep/types';
 import type { AppropriatenessCategory, AppropriatenessTopic } from '../../data/appropriateness';
 import type { ClinicalComplaintMapping } from '../../data/appropriateness/clinicalMappings';
@@ -25,6 +25,7 @@ interface RequisitionAppropriatenessPanelProps {
   onSelectComplaint: (complaintId: string) => void;
   onApplyWording: (text: string) => void;
   onSelectImagingOption: (procedure: string, suggestedQuestion: string) => void;
+  onOpenGuide?: (topicId: string, variantId?: string) => void;
 }
 
 const categoryOrder: AppropriatenessCategory[] = [
@@ -70,14 +71,49 @@ export function RequisitionAppropriatenessPanel({
   onSelectComplaint,
   onApplyWording,
   onSelectImagingOption,
+  onOpenGuide,
 }: RequisitionAppropriatenessPanelProps) {
   const [searchTerm, setSearchTerm] = useState('');
+  const [selectedVariantKey, setSelectedVariantKey] = useState('');
   const defaultComplaintId = useMemo(() => getDefaultComplaintId(template), [template]);
   const effectiveComplaintId = selectedComplaintId || defaultComplaintId;
   const directTopicId = selectedTopicId(effectiveComplaintId);
   const mapping = directTopicId ? undefined : getComplaintMappingById(effectiveComplaintId);
   const support = directTopicId ? resolveAppropriatenessForTopic(directTopicId) : resolveAppropriatenessForComplaint(mapping);
-  const groupedOptions = useMemo(() => getGroupedRecommendationOptions(support), [support]);
+  const variantChoices = useMemo(
+    () =>
+      support.relatedTopics.flatMap((item) =>
+        item.suggestedVariants.map((variant) => ({
+          key: `${item.topicId}:${variant.id}`,
+          topicId: item.topicId,
+          topicTitle: item.topic?.title ?? item.topicId.replace(/-/g, ' '),
+          topic: item.topic,
+          variant,
+        })),
+      ),
+    [support],
+  );
+  const activeVariantChoice =
+    variantChoices.find((item) => item.key === selectedVariantKey) ?? variantChoices.find((item) => item.variant.imagingOptions.length) ?? variantChoices[0];
+  const scenarioSupport = useMemo(() => {
+    if (!activeVariantChoice) return support;
+
+    return {
+      ...support,
+      relatedTopics: support.relatedTopics.map((topic) =>
+        topic.topicId === activeVariantChoice.topicId
+          ? {
+              ...topic,
+              suggestedVariants: topic.suggestedVariants.filter((variant) => variant.id === activeVariantChoice.variant.id),
+            }
+          : {
+              ...topic,
+              suggestedVariants: [],
+            },
+      ),
+    };
+  }, [activeVariantChoice, support]);
+  const groupedOptions = useMemo(() => getGroupedRecommendationOptions(scenarioSupport), [scenarioSupport]);
   const firstProcedure = support.relatedTopics.flatMap((topic) => topic.topOptions)[0]?.procedure;
   const draftWording = generateAppropriatenessAwareRequisitionSentence(form, template, firstProcedure);
   const searched = useMemo(() => {
@@ -97,6 +133,10 @@ export function RequisitionAppropriatenessPanel({
     (effectiveComplaintId ? effectiveComplaintId.replace(/^topic:/, '').replace(/-/g, ' ') : '');
   const hasSupport = Boolean(mapping || directTopicId || support.relatedTopics.length);
 
+  useEffect(() => {
+    setSelectedVariantKey('');
+  }, [effectiveComplaintId]);
+
   return (
     <section className="requisition-appropriateness-panel">
       <div className="guide-disclaimer" role="note">
@@ -105,8 +145,8 @@ export function RequisitionAppropriatenessPanel({
 
       <div className="guide-section-heading">
         <div>
-          <span className="eyebrow">Appropriateness support</span>
-          <h3>Clinical complaint to imaging options</h3>
+          <span className="eyebrow">Educational appropriateness summary</span>
+          <h3>Clinical complaint to ACR imaging options</h3>
         </div>
       </div>
 
@@ -163,43 +203,60 @@ export function RequisitionAppropriatenessPanel({
             </div>
           ) : null}
 
-          <section className="guide-section compact">
+          {variantChoices.length ? (
             <div className="guide-section-heading">
-              <h4>Missing clinical details to include</h4>
+              <div>
+                <h4>Selected ACR scenario</h4>
+                <p>Choose the closest extracted variant before selecting a requested imaging option.</p>
+              </div>
             </div>
-            <ul className="guide-chip-list">
-              {support.missingInfoPrompts.slice(0, 10).map((prompt) => (
-                <li key={prompt}>{prompt}</li>
-              ))}
-            </ul>
-          </section>
+          ) : null}
 
-          <section className="guide-section compact guide-requisition">
-            <div className="guide-section-heading">
-              <h4>Requisition-ready wording</h4>
-              <CopyButton text={support.requisitionLanguage} label="Copy wording" />
-            </div>
-            <p>{support.requisitionLanguage}</p>
-            <div className="button-row">
-              <button className="secondary-button" onClick={() => onApplyWording(support.requisitionLanguage)} type="button">
-                Use as radiology question
-              </button>
-              <button className="secondary-button" onClick={() => onApplyWording(draftWording)} type="button">
-                Use personalized draft
-              </button>
-            </div>
-          </section>
+          {variantChoices.length ? (
+            <section className="guide-section compact requisition-scenario-card">
+              <label className="field">
+                Clinical scenario / variant
+                <select
+                  value={activeVariantChoice?.key ?? ''}
+                  onChange={(event) => setSelectedVariantKey(event.target.value)}
+                >
+                  {variantChoices.map((item) => (
+                    <option value={item.key} key={item.key}>
+                      {item.topicTitle} - {item.variant.title}
+                    </option>
+                  ))}
+                </select>
+              </label>
+              {activeVariantChoice ? (
+                <>
+                  <p>{activeVariantChoice.variant.clinicalScenario}</p>
+                  <div className="guide-action-row">
+                    <button
+                      className="secondary-button"
+                      onClick={() => onOpenGuide?.(activeVariantChoice.topicId, activeVariantChoice.variant.id)}
+                      type="button"
+                    >
+                      Open in Imaging Guide
+                    </button>
+                    <span className={`guide-review-badge ${activeVariantChoice.topic?.reviewStatus ?? 'pending'}`}>
+                      {activeVariantChoice.topic ? reviewStatusLabel(activeVariantChoice.topic.reviewStatus) : 'Clinical summary pending'}
+                    </span>
+                  </div>
+                </>
+              ) : null}
+            </section>
+          ) : null}
 
           <section className="guide-section compact">
             <div className="guide-section-heading">
               <div>
                 <h4>Recommended imaging options</h4>
-                <p>Grouped by extracted/curated appropriateness category. Select one to populate the requested modality/procedure.</p>
+                <p>Usually Appropriate options are expanded by default. Other categories are available when you need context.</p>
               </div>
             </div>
             <div className="requisition-recommendation-groups">
               {categoryOrder.map((category) => {
-                const options = groupedOptions[category].slice(0, 8);
+                const options = groupedOptions[category].slice(0, category === 'Usually Not Appropriate' ? 20 : 10);
                 if (!options.length) return null;
 
                 return (
@@ -226,6 +283,11 @@ export function RequisitionAppropriatenessPanel({
                               <span className="guide-radiation-badge">{item.option.radiationLevel}</span>
                             </div>
                             <p>{item.option.shortRationale}</p>
+                            <small className="guide-status-note">
+                              {item.reviewStatus === 'manually_curated' || item.reviewStatus === 'reviewed'
+                                ? 'Curated requisition support available.'
+                                : 'Extracted ACR table. Validate against source before clinical use.'}
+                            </small>
                             <button
                               className="secondary-button"
                               onClick={() => onSelectImagingOption(item.option.procedure, suggestedQuestion)}
@@ -243,10 +305,38 @@ export function RequisitionAppropriatenessPanel({
             </div>
           </section>
 
-          {support.relatedTopics.map((item) => (
-            <section className="guide-section compact" key={item.topicId}>
-              <div className="guide-section-heading">
-                <div>
+          <details className="guide-section compact" open={false}>
+            <summary>Missing information checklist</summary>
+            <ul className="guide-chip-list">
+              {support.missingInfoPrompts.slice(0, 12).map((prompt) => (
+                <li key={prompt}>{prompt}</li>
+              ))}
+            </ul>
+          </details>
+
+          <details className="guide-section compact guide-requisition" open={false}>
+            <summary>Requisition wording support</summary>
+            <div className="guide-section-heading">
+              <h4>Suggested wording</h4>
+              <CopyButton text={support.requisitionLanguage} label="Copy wording" />
+            </div>
+            <p>{support.requisitionLanguage}</p>
+            <div className="button-row">
+              <button className="secondary-button" onClick={() => onApplyWording(support.requisitionLanguage)} type="button">
+                Use as radiology question
+              </button>
+              <button className="secondary-button" onClick={() => onApplyWording(draftWording)} type="button">
+                Use personalized draft
+              </button>
+            </div>
+          </details>
+
+          <details className="guide-section compact" open={false}>
+            <summary>Source and topic details</summary>
+            {support.relatedTopics.map((item) => (
+              <section className="guide-source-topic-detail" key={item.topicId}>
+                <div className="guide-section-heading">
+                  <div>
                   <h4>{item.topic?.title ?? item.topicId.replace(/-/g, ' ')}</h4>
                   <p>
                     {item.topic
@@ -279,13 +369,12 @@ export function RequisitionAppropriatenessPanel({
                   ))}
                 </div>
               ) : null}
-            </section>
-          ))}
+              </section>
+            ))}
+          </details>
 
-          <section className="guide-section compact">
-            <div className="guide-section-heading">
-              <h4>Radiation legend</h4>
-            </div>
+          <details className="guide-section compact" open={false}>
+            <summary>Radiation legend</summary>
             <div className="guide-radiation-legend">
               {radiationLegend.map((item) => (
                 <span key={item.level}>
@@ -293,7 +382,7 @@ export function RequisitionAppropriatenessPanel({
                 </span>
               ))}
             </div>
-          </section>
+          </details>
         </>
       ) : (
         <p>Choose a complaint to see missing information prompts, appropriateness tables where available, and requisition wording.</p>

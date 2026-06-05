@@ -3,7 +3,7 @@ import type { AppropriatenessTopic } from '../types';
 export const chronicPancreatitisTopic: AppropriatenessTopic = {
   id: 'chronic-pancreatitis',
   title: 'Chronic Pancreatitis',
-  year: 'Seed prototype',
+  year: 'Needs validation',
   clinicalArea: 'Abdomen',
   keywords: [
     'chronic pancreatitis',
@@ -16,7 +16,7 @@ export const chronicPancreatitisTopic: AppropriatenessTopic = {
   sourceLabel: 'ACR Appropriateness Criteria: Chronic Pancreatitis',
   sourceUrl: 'https://www.acr.org/clinical-resources/acr-appropriateness-criteria',
   sourceNote:
-    'Concise educational seed data manually structured for prototype navigation. Confirm against the original ACR criteria, current updates, local protocol, and radiologist judgment.',
+    'Concise educational table summary. Confirm against the original ACR criteria, current updates, local protocol, and radiologist judgment.',
   reviewStatus: 'needs_validation',
   extractionConfidence: 'high',
   variants: [

@@ -67,6 +67,8 @@ import type {
 } from './radrep/types';
 
 const DRAFT_STORAGE_KEY = 'radreppilot:drafts';
+const ACR_REQUISITION_SELECTION_KEY = 'radreppilot.pendingAcrRequisitionSelection';
+const GUIDE_SELECTION_KEY = 'radreppilot.pendingImagingGuideSelection';
 
 type AppProps = {
   embedded?: boolean;
@@ -321,6 +323,18 @@ function App({ embedded = false, initialPage = 'dashboard' }: AppProps) {
   useEffect(() => {
     if (activePage !== 'modules') setWorkflowSidebar(null);
   }, [activePage]);
+
+  const useTopicInRequisition = (topicId: string, variantId?: string) => {
+    window.localStorage.setItem(ACR_REQUISITION_SELECTION_KEY, JSON.stringify({ topicId, variantId }));
+    setActivePage('referral');
+    setToastMessage('Opened in Imaging requisitions');
+  };
+
+  const openGuideTopic = (topicId: string, variantId?: string) => {
+    window.localStorage.setItem(GUIDE_SELECTION_KEY, JSON.stringify({ topicId, variantId }));
+    setActivePage('imagingGuide');
+    setToastMessage('Opened in Imaging Guide');
+  };
 
   const generateReportForModule = (moduleType: ModuleType): ReportSections => {
     if (moduleType in reportingWorkflowSchemas) {
@@ -1254,7 +1268,7 @@ function App({ embedded = false, initialPage = 'dashboard' }: AppProps) {
           title="Imaging Guide"
           meta="Appropriateness"
           iconName="helper"
-          description="Search seed appropriateness-style topics, compare imaging options, and draft requisition-ready wording."
+          description="Search extracted ACR table summaries and curated educational notes, then compare imaging options."
           onOpen={() => setActivePage('imagingGuide')}
           ctaLabel="Open guide"
         />
@@ -1275,9 +1289,14 @@ function App({ embedded = false, initialPage = 'dashboard' }: AppProps) {
       <PageHeader
         eyebrow="Imaging requisitions"
         title="Imaging requisitions"
-        description="Generate concise, radiology-useful requisition text in under 60 seconds. This does not determine imaging appropriateness."
+        description="Search clinical complaints, review educational ACR-style imaging options, and draft concise requisition wording."
       />
-      <PrimaryCareRequestBuilder initialForm={referralForm} onInsertText={insertTextIntoBuilder} onSaveText={saveTextDraft} />
+      <PrimaryCareRequestBuilder
+        initialForm={referralForm}
+        onInsertText={insertTextIntoBuilder}
+        onSaveText={saveTextDraft}
+        onOpenImagingGuide={openGuideTopic}
+      />
     </div>
   );
 
@@ -1305,9 +1324,9 @@ function App({ embedded = false, initialPage = 'dashboard' }: AppProps) {
       <PageHeader
         eyebrow="Imaging Guide"
         title="Appropriateness-style imaging guide"
-        description="A seed framework for concise educational summaries of imaging options, missing clinical information, requisition language, and reporting pearls."
+        description="Search extracted ACR table summaries and curated educational notes. Confirm recommendations against source criteria, local protocols, and radiologist judgment."
       />
-      <ImagingGuidePanel />
+      <ImagingGuidePanel onUseInRequisition={useTopicInRequisition} />
     </div>
   );
 

@@ -268,11 +268,22 @@ async function readRawTopics() {
 
   const rawFiles = entries.filter((entry) => entry.endsWith('.raw.json')).sort();
   const topics = [];
+  const seenTopicIds = new Map();
 
   for (const rawFile of rawFiles) {
     const inputFile = path.join(rawDir, rawFile);
     const raw = JSON.parse(await readFile(inputFile, 'utf8'));
     const topic = topicFromRaw(raw, inputFile);
+    const baseTopicId = topic.id;
+    const duplicateCount = seenTopicIds.get(baseTopicId) ?? 0;
+    seenTopicIds.set(baseTopicId, duplicateCount + 1);
+
+    if (duplicateCount > 0) {
+      topic.id = `${baseTopicId}-${duplicateCount + 1}`;
+      topic.keywords = Array.from(new Set([...(topic.keywords ?? []), baseTopicId]));
+      topic.sourceNote = `${topic.sourceNote} Duplicate extracted title disambiguated for registry import.`;
+    }
+
     const fileBaseName = `${topic.id}.generated`;
     topics.push({
       topic,

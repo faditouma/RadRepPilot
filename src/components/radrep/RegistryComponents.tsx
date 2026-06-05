@@ -10,8 +10,6 @@ import { generateIncidentalFindingSentence, type IncidentalValueMap } from '../.
 import { scoreRequisitionCompleteness } from '../../utils/qualityMetrics';
 import { generateReferralText, getMissingEssentials, getPrimaryCareTemplate } from '../../utils/requisitionGenerators';
 import { generateRadsPreviewSentence } from '../../utils/radsPreviewGenerators';
-import { CompletenessChecklist } from '../quality/CompletenessChecklist';
-import { QualityMetricBadge } from '../quality/QualityMetricBadge';
 import { RadIcon } from '../icons/RadIcon';
 import type {
   BodySystem,
@@ -808,11 +806,13 @@ interface PrimaryCareRequestBuilderProps {
   initialForm?: ReferralFormState;
   onInsertText: (text: string, label: string, target?: InsertTarget) => void;
   onSaveText: (title: string, type: DraftType, text: string, structuredData?: unknown) => void;
+  onOpenImagingGuide?: (topicId: string, variantId?: string) => void;
 }
 
 type PrimaryCareViewMode = 'form' | 'preview' | 'split';
 
 const PRIMARY_CARE_VIEW_KEY = 'radreppilot:primary-care-view';
+const ACR_REQUISITION_SELECTION_KEY = 'radreppilot.pendingAcrRequisitionSelection';
 const secondaryQuickFieldIds = new Set([
   'feverMeningismus',
   'cancerImmunosuppression',
@@ -829,7 +829,7 @@ const secondaryQuickFieldIds = new Set([
   'redFlags',
 ]);
 
-export function PrimaryCareRequestBuilder({ initialForm, onInsertText, onSaveText }: PrimaryCareRequestBuilderProps) {
+export function PrimaryCareRequestBuilder({ initialForm, onInsertText, onSaveText, onOpenImagingGuide }: PrimaryCareRequestBuilderProps) {
   const [mode, setMode] = useState<'quick' | 'detailed'>('quick');
   const [viewMode, setViewMode] = useState<PrimaryCareViewMode>(() => {
     if (typeof window === 'undefined') return 'form';
@@ -854,6 +854,8 @@ export function PrimaryCareRequestBuilder({ initialForm, onInsertText, onSaveTex
   const outputStyle = form.outputStyle ?? 'standard';
   const missing = getMissingEssentials(form);
   const requisitionQuality = scoreRequisitionCompleteness(form);
+  const readinessPercent = Math.round((requisitionQuality.complete / Math.max(requisitionQuality.total, 1)) * 100);
+  const readinessLabel = missing.length ? 'Requisition readiness: needs key details' : 'Requisition readiness: ready for review';
   const generated = form.generatedText || generateReferralText(form, outputStyle);
   const modalityOptions = useMemo(() => ['All', ...Array.from(new Set(primaryCareContentRegistry.map((item) => item.modality))).sort()], []);
 
@@ -877,6 +879,23 @@ export function PrimaryCareRequestBuilder({ initialForm, onInsertText, onSaveTex
   useEffect(() => {
     window.localStorage.setItem(PRIMARY_CARE_VIEW_KEY, viewMode);
   }, [viewMode]);
+
+  useEffect(() => {
+    if (typeof window === 'undefined') return;
+    const pending = window.localStorage.getItem(ACR_REQUISITION_SELECTION_KEY);
+    if (!pending) return;
+
+    try {
+      const parsed = JSON.parse(pending) as { topicId?: string };
+      if (parsed.topicId) {
+        setSelectedComplaintId(`topic:${parsed.topicId}`);
+      }
+    } catch {
+      // Ignore malformed handoff state.
+    } finally {
+      window.localStorage.removeItem(ACR_REQUISITION_SELECTION_KEY);
+    }
+  }, []);
 
   const regenerate = (next: ReferralFormState) => ({
     ...next,
@@ -919,6 +938,18 @@ export function PrimaryCareRequestBuilder({ initialForm, onInsertText, onSaveTex
       generatedText: '',
       outputStyle,
       tone: form.tone ?? (typeof form.values.requisitionTone === 'string' ? form.values.requisitionTone as ReferralFormState['tone'] : 'polite'),
+    };
+    setSelectedComplaintId('');
+    setForm(regenerate(next));
+  };
+
+  const resetRequisition = () => {
+    const next: ReferralFormState = {
+      requestType: form.requestType,
+      values: {},
+      generatedText: '',
+      outputStyle,
+      tone: form.tone ?? 'polite',
     };
     setSelectedComplaintId('');
     setForm(regenerate(next));
@@ -1026,16 +1057,17 @@ export function PrimaryCareRequestBuilder({ initialForm, onInsertText, onSaveTex
           />
         </div>
       </div>
-      <QualityMetricBadge score={requisitionQuality} />
       <GeneratedTextPanel
         title={template.title}
         subtitle="Editable requisition"
         text={generated}
         onTextChange={(text) => setForm((existing) => ({ ...existing, generatedText: text }))}
-        onInsertTarget={(target) => onInsertText(generated, template.title, target)}
         onSave={() => onSaveText(template.title, 'referral', generated, { referralForm: { ...form, generatedText: generated }, requisitionText: generated })}
         copyLabel="Copy requisition"
       />
+      <button className="secondary-button full-width-action" onClick={resetRequisition} type="button">
+        Clear/reset
+      </button>
     </aside>
   );
 
@@ -1131,76 +1163,91 @@ export function PrimaryCareRequestBuilder({ initialForm, onInsertText, onSaveTex
                     />
                     <GenericField
                       field={{
-                        id: 'pmhxStatus',
-                        label: 'PMHx documented?',
-                        type: 'select',
-                        options: [
-                          { value: '', label: 'Not specified' },
-                          { value: 'no-significant-pmhx', label: 'No relevant PMHx' },
-                          { value: 'relevant-pmhx', label: 'Relevant PMHx present' },
-                        ],
+                        id: 'requestedProcedure',
+                        label: 'Selected requested imaging',
+                        type: 'text',
+                        placeholder: 'Select from ACR options or type requested study',
                       }}
-                      value={form.values.pmhxStatus}
-                      onChange={(valueToSet) => updateValue('pmhxStatus', valueToSet)}
-                    />
-                    <GenericField
-                      field={{
-                        id: 'pmhx',
-                        label: 'Relevant PMHx',
-                        type: 'textarea',
-                        placeholder: 'e.g. cancer, anticoagulation, immunosuppression, recent surgery, CKD, pregnancy…',
-                      }}
-                      value={form.values.pmhx}
-                      onChange={(valueToSet) => updateValue('pmhx', valueToSet)}
-                    />
-                    <GenericField
-                      field={{ id: 'surgicalHistory', label: 'Relevant surgery', type: 'text', placeholder: 'Optional' }}
-                      value={form.values.surgicalHistory}
-                      onChange={(valueToSet) => updateValue('surgicalHistory', valueToSet)}
-                    />
-                    <GenericField
-                      field={{ id: 'cancerHistory', label: 'Cancer history', type: 'text', placeholder: 'Optional' }}
-                      value={form.values.cancerHistory}
-                      onChange={(valueToSet) => updateValue('cancerHistory', valueToSet)}
-                    />
-                    <GenericField
-                      field={{
-                        id: 'immunosuppression',
-                        label: 'Immunosuppression',
-                        type: 'select',
-                        options: [
-                          { value: '', label: 'Not specified' },
-                          { value: 'no', label: 'No' },
-                          { value: 'yes', label: 'Yes' },
-                        ],
-                      }}
-                      value={form.values.immunosuppression}
-                      onChange={(valueToSet) => updateValue('immunosuppression', valueToSet)}
+                      value={form.values.requestedProcedure}
+                      onChange={(valueToSet) => updateValue('requestedProcedure', valueToSet)}
                     />
                   </div>
+                  <details className="accordion-card advanced-context-card">
+                    <summary>Advanced patient context</summary>
+                    <div className="patient-context-grid">
+                      <GenericField
+                        field={{
+                          id: 'pmhxStatus',
+                          label: 'PMHx documented?',
+                          type: 'select',
+                          options: [
+                            { value: '', label: 'Not specified' },
+                            { value: 'no-significant-pmhx', label: 'No relevant PMHx' },
+                            { value: 'relevant-pmhx', label: 'Relevant PMHx present' },
+                          ],
+                        }}
+                        value={form.values.pmhxStatus}
+                        onChange={(valueToSet) => updateValue('pmhxStatus', valueToSet)}
+                      />
+                      <GenericField
+                        field={{
+                          id: 'pmhx',
+                          label: 'Relevant PMHx',
+                          type: 'textarea',
+                          placeholder: 'e.g. cancer, anticoagulation, immunosuppression, recent surgery, CKD, pregnancy…',
+                        }}
+                        value={form.values.pmhx}
+                        onChange={(valueToSet) => updateValue('pmhx', valueToSet)}
+                      />
+                      <GenericField
+                        field={{ id: 'surgicalHistory', label: 'Relevant surgery', type: 'text', placeholder: 'Optional' }}
+                        value={form.values.surgicalHistory}
+                        onChange={(valueToSet) => updateValue('surgicalHistory', valueToSet)}
+                      />
+                      <GenericField
+                        field={{ id: 'cancerHistory', label: 'Cancer history', type: 'text', placeholder: 'Optional' }}
+                        value={form.values.cancerHistory}
+                        onChange={(valueToSet) => updateValue('cancerHistory', valueToSet)}
+                      />
+                      <GenericField
+                        field={{
+                          id: 'immunosuppression',
+                          label: 'Immunosuppression',
+                          type: 'select',
+                          options: [
+                            { value: '', label: 'Not specified' },
+                            { value: 'no', label: 'No' },
+                            { value: 'yes', label: 'Yes' },
+                          ],
+                        }}
+                        value={form.values.immunosuppression}
+                        onChange={(valueToSet) => updateValue('immunosuppression', valueToSet)}
+                      />
+                    </div>
+                  </details>
                 </section>
 
-                <div className="mini-panel missing-essentials">
+                <div className="requisition-readiness-card">
                   <div className="missing-heading">
-                    <strong>{missing.length ? 'Missing essentials' : 'Essentials complete'}</strong>
-                    {missing.length ? (
-                      <button className="ghost-button chip-button" onClick={() => setViewMode('form')} type="button">
-                        Jump to missing fields
-                      </button>
-                    ) : null}
+                    <strong>{readinessLabel}</strong>
+                    <span>{requisitionQuality.complete}/{requisitionQuality.total} complete</span>
                   </div>
-                  {missing.length ? (
-                    <div className="missing-chip-row">
-                      {missing.slice(0, 6).map((item) => (
-                        <span key={item}>{item}</span>
-                      ))}
-                    </div>
-                  ) : (
-                    <p>Verify the generated wording before using it clinically.</p>
-                  )}
+                  <div className="readiness-progress-track" aria-label={`${readinessPercent}% complete`} role="progressbar" aria-valuemin={0} aria-valuemax={100} aria-valuenow={readinessPercent}>
+                    <span style={{ width: `${readinessPercent}%` }} />
+                  </div>
+                  <details className="readiness-details">
+                    <summary>{missing.length ? 'Show missing details' : 'Show readiness details'}</summary>
+                    {missing.length ? (
+                      <div className="missing-chip-row">
+                        {missing.slice(0, 8).map((item) => (
+                          <span key={item}>{item}</span>
+                        ))}
+                      </div>
+                    ) : (
+                      <p>Verify the generated wording before using it clinically.</p>
+                    )}
+                  </details>
                 </div>
-
-                <CompletenessChecklist score={requisitionQuality} />
 
                 <RequisitionAppropriatenessPanel
                   template={template}
@@ -1209,6 +1256,7 @@ export function PrimaryCareRequestBuilder({ initialForm, onInsertText, onSaveTex
                   onSelectComplaint={setSelectedComplaintId}
                   onApplyWording={(text) => updateValue('clinicalQuestion', text)}
                   onSelectImagingOption={selectRequestedImagingOption}
+                  onOpenGuide={onOpenImagingGuide}
                 />
 
                 {template.oneClickNegatives.length ? (

@@ -1671,6 +1671,52 @@ textarea {
   font-weight: 780;
 }
 
+.requisition-readiness-card {
+  display: grid;
+  gap: 9px;
+  border: 1px solid rgba(37, 99, 235, 0.16);
+  border-radius: 12px;
+  padding: 11px 12px;
+  background: linear-gradient(135deg, rgba(239, 246, 255, 0.78), rgba(255, 255, 255, 0.94));
+}
+
+.requisition-readiness-card .missing-heading span {
+  color: var(--muted);
+  font-size: 0.84rem;
+  font-weight: 820;
+}
+
+.readiness-progress-track {
+  height: 8px;
+  overflow: hidden;
+  border-radius: 999px;
+  background: rgba(216, 224, 234, 0.72);
+}
+
+.readiness-progress-track span {
+  display: block;
+  height: 100%;
+  border-radius: inherit;
+  background: linear-gradient(90deg, var(--primary), var(--accent));
+}
+
+.readiness-details summary,
+.advanced-context-card summary {
+  cursor: pointer;
+  color: var(--slate);
+  font-weight: 850;
+}
+
+.readiness-details p {
+  margin: 8px 0 0;
+  color: var(--muted);
+  line-height: 1.45;
+}
+
+.full-width-action {
+  width: 100%;
+}
+
 .one-click-row {
   display: flex;
   gap: 7px;
@@ -4206,6 +4252,28 @@ footer {
   font-weight: 780;
 }
 
+.guide-library-count {
+  display: grid;
+  gap: 3px;
+  border: 1px solid rgba(6, 182, 212, 0.18);
+  border-radius: 12px;
+  padding: 10px;
+  background: linear-gradient(135deg, rgba(236, 254, 255, 0.72), rgba(255, 255, 255, 0.92));
+  color: var(--slate);
+}
+
+.guide-library-count strong {
+  color: var(--blue-dark);
+  font-size: 1.2rem;
+}
+
+.guide-library-count span,
+.guide-library-count small {
+  color: var(--muted);
+  font-size: 0.82rem;
+  font-weight: 760;
+}
+
 .guide-filter-grid {
   display: grid;
   gap: 8px;
@@ -4339,6 +4407,13 @@ footer {
   font-size: clamp(1.35rem, 2vw, 1.85rem);
 }
 
+.guide-action-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  align-items: center;
+}
+
 .guide-topic-header p,
 .guide-section p {
   margin: 0;
@@ -4442,6 +4517,16 @@ footer {
   gap: 12px;
   padding: 14px;
   box-shadow: none;
+}
+
+.guide-section summary {
+  cursor: pointer;
+  color: var(--slate);
+  font-weight: 850;
+}
+
+.guide-section[open] summary {
+  margin-bottom: 6px;
 }
 
 .guide-section.compact {
@@ -4817,6 +4902,15 @@ footer {
   color: var(--ink);
 }
 
+.requisition-scenario-card {
+  border-color: rgba(79, 70, 229, 0.18);
+  background: linear-gradient(135deg, rgba(238, 242, 255, 0.74), rgba(255, 255, 255, 0.95));
+}
+
+.requisition-scenario-card .field {
+  margin: 0;
+}
+
 .requisition-recommendation-groups {
   display: grid;
   gap: 10px;
@@ -4872,10 +4966,26 @@ footer {
   font-size: 0.86rem;
 }
 
+.requisition-option-card .guide-status-note {
+  display: block;
+  width: fit-content;
+  padding: 7px 9px;
+  font-size: 0.78rem;
+}
+
 .requisition-option-badges {
   display: flex;
   flex-wrap: wrap;
   gap: 7px;
+}
+
+.guide-source-topic-detail {
+  display: grid;
+  gap: 10px;
+  border: 1px solid rgba(216, 224, 234, 0.8);
+  border-radius: 12px;
+  padding: 10px;
+  background: rgba(248, 250, 252, 0.62);
 }
 
 .guide-mini-option-list.stacked {
