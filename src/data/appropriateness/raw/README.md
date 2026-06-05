@@ -9,7 +9,8 @@ Expected raw JSON fields:
 - `sourceFile`
 - `extractedTitle`
 - `extractedYear`
-- `reviewStatus: "unreviewed"`
+- `reviewStatus: "extracted"`
+- `extractionConfidence`
 - `variants`
 - `extractionWarnings`
 

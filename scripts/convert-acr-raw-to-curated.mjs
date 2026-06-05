@@ -138,7 +138,7 @@ ${warningComments(raw)}export const ${variableName}: AppropriatenessTopic = {
   sourceUrl: 'https://www.acr.org/clinical-resources/acr-appropriateness-criteria',
   sourceNote:
     'Draft converted from local raw extraction. Requires human review against the original source before public use.',
-  reviewStatus: 'unreviewed',
+  reviewStatus: 'needs_validation',
   variants: [
 ${variants.map(renderVariant).join(',\n')}
   ],

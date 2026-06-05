@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useState } from 'react';
 import { calculatorRegistry } from '../../data/calculatorRegistry';
 import { calculatorNavigationTree } from '../../data/calculatorNavigationTree';
-import { AppropriatenessSupportPanel } from '../appropriateness/AppropriatenessSupportPanel';
+import { RequisitionAppropriatenessPanel } from '../appropriateness/RequisitionAppropriatenessPanel';
 import { incidentalFindingsRegistry } from '../../data/incidentalFindingsRegistry';
 import { primaryCareContentRegistry } from '../../data/primaryCareContentRegistry';
 import { radsSystemsRegistry } from '../../data/radsSystemsRegistry';
@@ -840,6 +840,7 @@ export function PrimaryCareRequestBuilder({ initialForm, onInsertText, onSaveTex
   const [bodySystemFilter, setBodySystemFilter] = useState<'All' | BodySystem>('All');
   const [modalityFilter, setModalityFilter] = useState('All');
   const [commonOnly, setCommonOnly] = useState(false);
+  const [selectedComplaintId, setSelectedComplaintId] = useState('');
   const [form, setForm] = useState<ReferralFormState>(
     initialForm ?? {
       requestType: primaryCareContentRegistry[0].id,
@@ -906,6 +907,7 @@ export function PrimaryCareRequestBuilder({ initialForm, onInsertText, onSaveTex
       outputStyle,
       tone: form.tone ?? (typeof form.values.requisitionTone === 'string' ? form.values.requisitionTone as ReferralFormState['tone'] : 'polite'),
     };
+    setSelectedComplaintId('');
     setForm(regenerate(next));
   };
 
@@ -1021,18 +1023,6 @@ export function PrimaryCareRequestBuilder({ initialForm, onInsertText, onSaveTex
         onSave={() => onSaveText(template.title, 'referral', generated, { referralForm: { ...form, generatedText: generated }, requisitionText: generated })}
         copyLabel="Copy requisition"
       />
-      <details className="accordion-card">
-        <summary>Appropriateness support</summary>
-        <section className="appropriateness-card">
-          <StatusBadge status="placeholder" />
-          <h3>Future: ACR Appropriateness Criteria integration</h3>
-          <p>
-            This future module may help referrers identify the most appropriate imaging study based on clinical scenario, while
-            still requiring clinician judgment and local protocol verification.
-          </p>
-        </section>
-        <AppropriatenessSupportPanel form={form} onInsertText={onInsertText} onSaveText={onSaveText} />
-      </details>
     </aside>
   );
 
@@ -1198,6 +1188,14 @@ export function PrimaryCareRequestBuilder({ initialForm, onInsertText, onSaveTex
                 </div>
 
                 <CompletenessChecklist score={requisitionQuality} />
+
+                <RequisitionAppropriatenessPanel
+                  template={template}
+                  form={form}
+                  selectedComplaintId={selectedComplaintId}
+                  onSelectComplaint={setSelectedComplaintId}
+                  onApplyWording={(text) => updateValue('clinicalQuestion', text)}
+                />
 
                 {template.oneClickNegatives.length ? (
                   <div className="one-click-row">

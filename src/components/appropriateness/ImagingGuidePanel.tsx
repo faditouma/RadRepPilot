@@ -1,18 +1,9 @@
 import { useMemo, useState } from 'react';
 import { appropriatenessTopics, searchAppropriatenessTopics } from '../../data/appropriateness';
-import type { AppropriatenessCategory, AppropriatenessTopic } from '../../data/appropriateness';
+import type { AppropriatenessCategory, AppropriatenessTopic, RadiationLevel, ReviewStatus } from '../../data/appropriateness';
 import { searchClinicalMappings, type ClinicalComplaintMapping } from '../../data/appropriateness/clinicalMappings';
+import { radiationLegend, reviewStatusLabel, reviewStatusSummary } from '../../utils/appropriatenessSearch';
 import { CopyButton } from '../radrep/RadRepComponents';
-
-const radiationLegend = [
-  ['O', 'no ionizing radiation'],
-  ['☢', 'very low'],
-  ['☢☢', 'low'],
-  ['☢☢☢', 'moderate'],
-  ['☢☢☢☢', 'higher'],
-  ['☢☢☢☢☢', 'highest relative range'],
-  ['Varies', 'depends on technique/procedure'],
-];
 
 function categoryClass(category: AppropriatenessCategory) {
   if (category === 'Usually Appropriate') return 'usually';
@@ -22,7 +13,7 @@ function categoryClass(category: AppropriatenessCategory) {
 }
 
 function ReviewBadge({ topic }: { topic: AppropriatenessTopic }) {
-  return <span className={`guide-review-badge ${topic.reviewStatus}`}>{topic.reviewStatus === 'reviewed' ? 'Reviewed' : 'Needs review'}</span>;
+  return <span className={`guide-review-badge ${topic.reviewStatus}`}>{reviewStatusLabel(topic.reviewStatus)}</span>;
 }
 
 function humanizeTopicId(topicId: string) {
@@ -81,9 +72,9 @@ function ComplaintMappingCard({
           <div className="guide-related-topic" key={topicId}>
             <div>
               <strong>{topic?.title ?? humanizeTopicId(topicId)}</strong>
-              <span>{topic ? `${topic.sourceLabel} · ${topic.year}` : 'Topic not curated yet'}</span>
+              <span>{topic ? `${topic.sourceLabel} · ${topic.year}` : 'Appropriateness table pending. Clinical summary pending.'}</span>
             </div>
-            {topic ? <ReviewBadge topic={topic} /> : <span className="guide-review-badge unreviewed">Topic not curated yet</span>}
+            {topic ? <ReviewBadge topic={topic} /> : <span className="guide-review-badge pending">Summary pending</span>}
           </div>
         ))}
       </div>
@@ -119,8 +110,21 @@ function ComplaintMappingCard({
 
 export function ImagingGuidePanel() {
   const [query, setQuery] = useState('');
+  const [clinicalAreaFilter, setClinicalAreaFilter] = useState('All');
+  const [categoryFilter, setCategoryFilter] = useState<'All' | AppropriatenessCategory>('All');
+  const [radiationFilter, setRadiationFilter] = useState<'All' | RadiationLevel>('All');
+  const [reviewStatusFilter, setReviewStatusFilter] = useState<'All' | ReviewStatus>('All');
   const [selectedTopicId, setSelectedTopicId] = useState(appropriatenessTopics[0]?.id ?? '');
-  const visibleTopics = useMemo(() => searchAppropriatenessTopics(query), [query]);
+  const visibleTopics = useMemo(() => {
+    return searchAppropriatenessTopics(query).filter((topic) => {
+      const options = topic.variants.flatMap((variant) => variant.imagingOptions);
+      const matchesArea = clinicalAreaFilter === 'All' || topic.clinicalArea === clinicalAreaFilter;
+      const matchesCategory = categoryFilter === 'All' || options.some((option) => option.appropriatenessCategory === categoryFilter);
+      const matchesRadiation = radiationFilter === 'All' || options.some((option) => option.radiationLevel === radiationFilter);
+      const matchesReviewStatus = reviewStatusFilter === 'All' || topic.reviewStatus === reviewStatusFilter;
+      return matchesArea && matchesCategory && matchesRadiation && matchesReviewStatus;
+    });
+  }, [categoryFilter, clinicalAreaFilter, query, radiationFilter, reviewStatusFilter]);
   const matchingClinicalMappings = useMemo(() => searchClinicalMappings(query), [query]);
   const topicById = useMemo(() => new Map(appropriatenessTopics.map((topic) => [topic.id, topic])), []);
   const selectedTopic = visibleTopics.find((topic) => topic.id === selectedTopicId) ?? visibleTopics[0];
@@ -138,7 +142,7 @@ export function ImagingGuidePanel() {
   return (
     <section className="imaging-guide-panel">
       <div className="guide-disclaimer" role="note">
-        Educational summary inspired by appropriateness-style criteria. Confirm with original criteria, local protocols, and
+        Summarized appropriateness-style data for educational use. Not a substitute for original criteria, local protocol, or
         radiologist judgment.
       </div>
 
@@ -156,7 +160,51 @@ export function ImagingGuidePanel() {
           />
           <div className="guide-topic-count" role="status">
             <strong>{appropriatenessTopics.length}</strong>
-            <span>reviewed topics available</span>
+            <span>topics available with status labels</span>
+          </div>
+          <div className="guide-filter-grid">
+            <label>
+              Clinical area
+              <select value={clinicalAreaFilter} onChange={(event) => setClinicalAreaFilter(event.target.value)}>
+                <option value="All">All</option>
+                {Array.from(new Set(appropriatenessTopics.map((topic) => topic.clinicalArea))).map((area) => (
+                  <option value={area} key={area}>
+                    {area}
+                  </option>
+                ))}
+              </select>
+            </label>
+            <label>
+              Category
+              <select value={categoryFilter} onChange={(event) => setCategoryFilter(event.target.value as never)}>
+                <option value="All">All</option>
+                <option value="Usually Appropriate">Usually Appropriate</option>
+                <option value="May Be Appropriate">May Be Appropriate</option>
+                <option value="May Be Appropriate (Disagreement)">May Be Appropriate (Disagreement)</option>
+                <option value="Usually Not Appropriate">Usually Not Appropriate</option>
+              </select>
+            </label>
+            <label>
+              Radiation
+              <select value={radiationFilter} onChange={(event) => setRadiationFilter(event.target.value as never)}>
+                <option value="All">All</option>
+                {radiationLegend.map((item) => (
+                  <option value={item.level} key={item.level}>
+                    {item.level}
+                  </option>
+                ))}
+              </select>
+            </label>
+            <label>
+              Review status
+              <select value={reviewStatusFilter} onChange={(event) => setReviewStatusFilter(event.target.value as never)}>
+                <option value="All">All</option>
+                <option value="extracted">Extracted</option>
+                <option value="needs_validation">Needs validation</option>
+                <option value="reviewed">Reviewed</option>
+                <option value="manually_curated">Manually curated</option>
+              </select>
+            </label>
           </div>
           <div className="guide-topic-list" aria-label="Imaging guide topics">
             {visibleTopics.map((topic) => (
@@ -175,7 +223,7 @@ export function ImagingGuidePanel() {
                 </div>
               </button>
             ))}
-            {!visibleTopics.length ? <p>No reviewed topic found. Try a different symptom, diagnosis, or modality.</p> : null}
+            {!visibleTopics.length ? <p>No matching appropriateness topic found. Try a different symptom, diagnosis, or modality.</p> : null}
           </div>
         </aside>
 
@@ -207,13 +255,13 @@ export function ImagingGuidePanel() {
           <div className="guide-content">
           <div className="guide-topic-header">
             <div>
-              <span className="eyebrow">Imaging Guide reviewed topic</span>
-              <h2>{selectedTopic.title}</h2>
+                <span className="eyebrow">Imaging Guide reviewed topic</span>
+                <h2>{selectedTopic.title}</h2>
               <div className="guide-source-meta">
                 <span>{selectedTopic.sourceLabel}</span>
                 <span>{selectedTopic.year}</span>
               </div>
-              <p>{selectedTopic.sourceNote}</p>
+              <p>{reviewStatusSummary(selectedTopic.reviewStatus)} {selectedTopic.sourceNote}</p>
             </div>
             <ReviewBadge topic={selectedTopic} />
           </div>
@@ -308,14 +356,28 @@ export function ImagingGuidePanel() {
                 </div>
               </section>
 
+              {selectedVariant.followUpPearls?.length ? (
+                <section className="guide-section">
+                  <div className="guide-section-heading">
+                    <h3>Follow-up pearls</h3>
+                    <span>Educational only; verify local protocol</span>
+                  </div>
+                  <ul>
+                    {selectedVariant.followUpPearls.map((pearl) => (
+                      <li key={pearl}>{pearl}</li>
+                    ))}
+                  </ul>
+                </section>
+              ) : null}
+
               <section className="guide-section">
                 <div className="guide-section-heading">
                   <h3>Radiation legend</h3>
                 </div>
                 <div className="guide-radiation-legend">
-                  {radiationLegend.map(([level, label]) => (
-                    <span key={level}>
-                      <strong>{level}</strong> = {label}
+                  {radiationLegend.map((item) => (
+                    <span key={item.level}>
+                      <strong>{item.level}</strong> = {item.label}
                     </span>
                   ))}
                 </div>
@@ -331,8 +393,8 @@ export function ImagingGuidePanel() {
               <p>Try a different symptom, diagnosis, or modality.</p>
             </div>
             <div className="guide-disclaimer" role="note">
-              Unreviewed raw extractions and draft topics are intentionally excluded from the public Imaging Guide. Add reviewed
-              curated topics in <code>src/data/appropriateness/topics/</code> and import them through the registry.
+              Extracted tables, validated summaries, and manually curated topics can all appear here with clear status labels. Add
+              structured topics in <code>src/data/appropriateness/topics/</code> and import them through the registry.
             </div>
           </div>
         )}

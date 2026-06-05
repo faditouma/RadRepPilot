@@ -102,7 +102,7 @@ describe('RadRepPilot clinical text helpers', () => {
     };
 
     expect(getMissingReferralFields(form)).toHaveLength(0);
-    expect(generateReferralText(form)).toContain('Please assess for/rule out acute intracranial abnormality');
+    expect(generateReferralText(form)).toContain('Please assess for acute intracranial abnormality');
     expect(generateReferralText(form)).not.toContain('Please assess for/rule out assess for');
   });
 

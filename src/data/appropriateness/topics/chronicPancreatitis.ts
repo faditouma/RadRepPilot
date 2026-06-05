@@ -17,7 +17,8 @@ export const chronicPancreatitisTopic: AppropriatenessTopic = {
   sourceUrl: 'https://www.acr.org/clinical-resources/acr-appropriateness-criteria',
   sourceNote:
     'Concise educational seed data manually structured for prototype navigation. Confirm against the original ACR criteria, current updates, local protocol, and radiologist judgment.',
-  reviewStatus: 'unreviewed',
+  reviewStatus: 'needs_validation',
+  extractionConfidence: 'high',
   variants: [
     {
       id: 'suspected-initial-imaging',
@@ -83,6 +84,9 @@ export const chronicPancreatitisTopic: AppropriatenessTopic = {
       reportingPearls: [
         'Comment on calcifications, pancreatic atrophy, main duct dilation/irregularity, side branch changes, pseudocyst/fluid collections, biliary obstruction, vascular complications, and suspicious mass.',
         'If CT is negative but suspicion remains high, MRI/MRCP or EUS may be considered depending on local practice.',
+      ],
+      followUpPearls: [
+        'Follow-up imaging should be individualized to symptoms, suspected complications, and local pancreatic imaging pathways.',
       ],
       cautions: [
         'This is an educational summary, not an imaging-ordering rule.',
@@ -154,6 +158,9 @@ export const chronicPancreatitisTopic: AppropriatenessTopic = {
         'Compare to prior imaging if available.',
         'Distinguish chronic baseline changes from new acute inflammatory change.',
         'Comment on necrosis, peripancreatic inflammation, new/enlarging fluid collections, biliary obstruction, vascular complications, and alternative diagnosis.',
+      ],
+      followUpPearls: [
+        'Follow-up depends on severity, complications, clinical course, and local protocol.',
       ],
       cautions: [
         'Acute abdominal presentations may require local emergency imaging pathways.',

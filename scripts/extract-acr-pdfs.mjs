@@ -144,6 +144,14 @@ function confidenceForRow(procedure, category, radiationLevel) {
   return 'high';
 }
 
+function confidenceForExtraction(variants) {
+  const rows = variants.flatMap((variant) => variant.procedureRows);
+  if (!variants.length || !rows.length) return 'low';
+  if (rows.some((row) => row.confidence === 'low')) return 'medium';
+  if (rows.some((row) => row.confidence === 'medium')) return 'medium';
+  return 'high';
+}
+
 function normalizeCategory(value) {
   const match = categoryPatterns.find((category) => category.toLowerCase() === value.toLowerCase().replace(/\s+/g, ' ').trim());
   return match ?? 'Unknown';
@@ -284,7 +292,8 @@ async function processPdf(filename) {
     sourceFile: filename,
     extractedTitle: extractTitle(text, filename),
     extractedYear: extractYear(text),
-    reviewStatus: 'unreviewed',
+    reviewStatus: 'extracted',
+    extractionConfidence: confidenceForExtraction(variants),
     variants,
     extractionWarnings: [],
   };

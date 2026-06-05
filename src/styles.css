@@ -3880,6 +3880,29 @@ footer {
   font-weight: 780;
 }
 
+.guide-filter-grid {
+  display: grid;
+  gap: 8px;
+}
+
+.guide-filter-grid label {
+  display: grid;
+  gap: 5px;
+  color: var(--slate);
+  font-size: 0.78rem;
+  font-weight: 820;
+}
+
+.guide-filter-grid select {
+  width: 100%;
+  min-width: 0;
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  padding: 9px 10px;
+  background: #fff;
+  color: var(--ink);
+}
+
 .guide-topic-list button {
   display: grid;
   gap: 3px;
@@ -3995,13 +4018,17 @@ footer {
   line-height: 1;
 }
 
-.guide-review-badge.unreviewed {
+.guide-review-badge.unreviewed,
+.guide-review-badge.needs_validation,
+.guide-review-badge.extracted,
+.guide-review-badge.pending {
   border: 1px solid rgba(245, 158, 11, 0.28);
   background: var(--amber-soft);
   color: #92400E;
 }
 
 .guide-review-badge.reviewed,
+.guide-review-badge.manually_curated,
 .guide-category-badge.usually {
   border: 1px solid rgba(16, 185, 129, 0.28);
   background: var(--success-soft);
@@ -4044,6 +4071,11 @@ footer {
   gap: 12px;
   padding: 14px;
   box-shadow: none;
+}
+
+.guide-section.compact {
+  padding: 12px;
+  border-radius: 14px;
 }
 
 .guide-section-heading {
@@ -4267,6 +4299,44 @@ footer {
   color: var(--muted);
   font-size: 0.8rem;
   font-weight: 720;
+}
+
+.requisition-appropriateness-panel {
+  display: grid;
+  gap: 12px;
+  border: 1px solid rgba(37, 99, 235, 0.16);
+  border-radius: 16px;
+  padding: 14px;
+  background:
+    radial-gradient(circle at 96% 0%, rgba(6, 182, 212, 0.1), transparent 18rem),
+    linear-gradient(180deg, #fff, rgba(239, 246, 255, 0.5));
+  box-shadow: var(--shadow-tight);
+}
+
+.requisition-appropriateness-panel h3,
+.requisition-appropriateness-panel h4 {
+  margin: 0;
+  color: var(--ink);
+}
+
+.requisition-appropriateness-panel p {
+  margin: 0;
+  color: var(--muted);
+  line-height: 1.5;
+}
+
+.guide-mini-option-list.stacked {
+  display: grid;
+}
+
+.guide-mini-option-list.stacked span {
+  display: grid;
+  gap: 3px;
+  border-radius: 12px;
+}
+
+.guide-mini-option-list.stacked strong {
+  color: var(--slate);
 }
 
 @media (max-width: 920px) {

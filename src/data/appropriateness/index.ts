@@ -1,24 +1,32 @@
 import { chronicPancreatitisTopic } from './topics/chronicPancreatitis';
 import type { AppropriatenessTopic } from './types';
 
-function isReviewedTopic(topic: AppropriatenessTopic) {
-  return topic.reviewStatus === 'reviewed';
+function isPublicUsableTopic(topic: AppropriatenessTopic) {
+  return ['extracted', 'needs_validation', 'reviewed', 'manually_curated'].includes(topic.reviewStatus);
 }
 
 // Curated topic import workflow:
-// 1. Import a reviewed topic from ./topics/[topicName].
+// 1. Import a topic from ./topics/[topicName].
 // 2. Add it to allAppropriatenessTopicCandidates below.
-// 3. Keep reviewStatus: "reviewed" only after source/radiologist/local review.
-// 4. The public appropriatenessTopics export automatically excludes unreviewed drafts.
+// 3. Use reviewStatus to label the topic honestly:
+//    extracted -> source table extracted only
+//    needs_validation -> usable table/summary but source validation pending
+//    reviewed -> reviewed against source
+//    manually_curated -> reviewed and enriched with local educational summaries
+// 4. Do not import raw JSON directly. Convert/review first.
 const allAppropriatenessTopicCandidates: AppropriatenessTopic[] = [
   chronicPancreatitisTopic,
 ];
 
-export const unreviewedAppropriatenessTopics: AppropriatenessTopic[] = allAppropriatenessTopicCandidates.filter(
-  (topic) => !isReviewedTopic(topic),
+export const pendingValidationAppropriatenessTopics: AppropriatenessTopic[] = allAppropriatenessTopicCandidates.filter(
+  (topic) => topic.reviewStatus === 'extracted' || topic.reviewStatus === 'needs_validation',
 );
 
-export const appropriatenessTopics: AppropriatenessTopic[] = allAppropriatenessTopicCandidates.filter(isReviewedTopic);
+export const appropriatenessTopics: AppropriatenessTopic[] = allAppropriatenessTopicCandidates.filter(isPublicUsableTopic);
+
+export function getAppropriatenessTopicById(topicId: string): AppropriatenessTopic | undefined {
+  return appropriatenessTopics.find((topic) => topic.id === topicId);
+}
 
 export function searchAppropriatenessTopics(query: string): AppropriatenessTopic[] {
   const normalized = query.trim().toLowerCase();

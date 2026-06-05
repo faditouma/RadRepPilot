@@ -102,7 +102,7 @@ export const clinicalComplaintMappings: ClinicalComplaintMapping[] = [
   {
     id: 'chronic-pancreatitis',
     complaint: 'Chronic pancreatitis',
-    synonyms: ['pancreatic calcifications', 'pancreatic duct dilation', 'steatorrhea', 'exocrine insufficiency', 'recurrent pancreatitis'],
+    synonyms: ['pancreas', 'pancreatic calcifications', 'pancreatic duct dilation', 'steatorrhea', 'exocrine insufficiency', 'recurrent pancreatitis'],
     relatedTopicIds: ['chronic-pancreatitis'],
     suggestedVariantIds: ['suspected-initial-imaging'],
     missingInfoPrompts: [

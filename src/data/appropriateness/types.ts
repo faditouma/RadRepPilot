@@ -6,13 +6,14 @@ export type AppropriatenessCategory =
 
 export type RadiationLevel = 'O' | '☢' | '☢☢' | '☢☢☢' | '☢☢☢☢' | '☢☢☢☢☢' | 'Varies';
 
-export type ReviewStatus = 'unreviewed' | 'reviewed';
+export type ReviewStatus = 'extracted' | 'needs_validation' | 'reviewed' | 'manually_curated';
 
 export interface ImagingOption {
   procedure: string;
   appropriatenessCategory: AppropriatenessCategory;
   radiationLevel: RadiationLevel;
   shortRationale: string;
+  extractionConfidence?: 'high' | 'medium' | 'low';
 }
 
 export interface AppropriatenessVariant {
@@ -23,7 +24,9 @@ export interface AppropriatenessVariant {
   imagingOptions: ImagingOption[];
   requisitionSuggestions: string[];
   reportingPearls: string[];
+  followUpPearls?: string[];
   cautions: string[];
+  extractionConfidence?: 'high' | 'medium' | 'low';
 }
 
 export interface AppropriatenessTopic {
@@ -36,5 +39,6 @@ export interface AppropriatenessTopic {
   sourceUrl?: string;
   sourceNote: string;
   reviewStatus: ReviewStatus;
+  extractionConfidence?: 'high' | 'medium' | 'low';
   variants: AppropriatenessVariant[];
 }

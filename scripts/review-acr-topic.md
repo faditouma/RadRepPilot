@@ -51,7 +51,7 @@ npm run convert:acr -- src/data/appropriateness/raw/example.raw.json
 - Add cautions and applicability notes.
 - Replace placeholder rationales with manually reviewed, concise educational summaries.
 
-6. Keep `reviewStatus: "unreviewed"` until content has been checked against the source and reviewed.
+6. Keep `reviewStatus: "needs_validation"` until content has been checked against the source and reviewed.
 
 7. After review, rename or copy the draft to a final topic file, set `reviewStatus: "reviewed"`, and import it into `src/data/appropriateness/index.ts`.
 

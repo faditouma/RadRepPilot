@@ -32,4 +32,4 @@ The converter writes:
 src/data/appropriateness/topics/[topic].draft.ts
 ```
 
-Draft files are not automatically imported into the registry. Human review and manual editing are required first.
+Draft files are marked `reviewStatus: "needs_validation"` and are not automatically imported into the registry. Human review and manual editing are required first.
