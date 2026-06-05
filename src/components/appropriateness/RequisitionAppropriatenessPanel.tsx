@@ -112,7 +112,7 @@ export function RequisitionAppropriatenessPanel({
                   ))}
                 </div>
               ) : (
-                <p>Appropriateness table available when this topic is extracted/reviewed. Curated clinical summary pending.</p>
+                <p>Appropriateness table not extracted yet for this topic. Clinical summary pending.</p>
               )}
             </section>
           ))}

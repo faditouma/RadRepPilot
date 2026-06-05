@@ -72,7 +72,7 @@ function ComplaintMappingCard({
           <div className="guide-related-topic" key={topicId}>
             <div>
               <strong>{topic?.title ?? humanizeTopicId(topicId)}</strong>
-              <span>{topic ? `${topic.sourceLabel} · ${topic.year}` : 'Appropriateness table pending. Clinical summary pending.'}</span>
+              <span>{topic ? `${topic.sourceLabel} · ${topic.year}` : 'Appropriateness table not extracted yet. Clinical summary pending.'}</span>
             </div>
             {topic ? <ReviewBadge topic={topic} /> : <span className="guide-review-badge pending">Summary pending</span>}
           </div>
@@ -80,7 +80,7 @@ function ComplaintMappingCard({
       </div>
       {relatedTopics.some(({ topic }) => topic) ? (
         <div className="guide-reviewed-recommendations">
-          <h4>Reviewed ACR-style recommendations</h4>
+          <h4>ACR-style recommendations</h4>
           {relatedTopics
             .filter((item): item is { topicId: string; topic: AppropriatenessTopic } => Boolean(item.topic))
             .map(({ topic }) => {
@@ -223,7 +223,7 @@ export function ImagingGuidePanel() {
                 </div>
               </button>
             ))}
-            {!visibleTopics.length ? <p>No matching appropriateness topic found. Try a different symptom, diagnosis, or modality.</p> : null}
+            {!visibleTopics.length ? <p>No reviewed or extracted topic found. Try a different symptom, diagnosis, or modality.</p> : null}
           </div>
         </aside>
 
@@ -234,8 +234,8 @@ export function ImagingGuidePanel() {
                 <span className="eyebrow">Complaint mapping</span>
                 <h2>Clinical complaint matches</h2>
                 <p>
-                  Complaint mappings help translate everyday clinical language into reviewed Imaging Guide topics when available.
-                  If a topic is not curated yet, it is intentionally not shown as a recommendation.
+                  Complaint mappings help translate everyday clinical language into Imaging Guide topics when available. Extracted
+                  table-only topics are labeled clearly as clinical summary pending.
                 </p>
               </div>
             </div>
@@ -246,7 +246,7 @@ export function ImagingGuidePanel() {
             </div>
             {selectedTopic ? (
               <details className="guide-section">
-                <summary>Show reviewed topic match</summary>
+                <summary>Show topic match</summary>
                 <p>{selectedTopic.title}</p>
               </details>
             ) : null}
@@ -255,7 +255,7 @@ export function ImagingGuidePanel() {
           <div className="guide-content">
           <div className="guide-topic-header">
             <div>
-                <span className="eyebrow">Imaging Guide reviewed topic</span>
+                <span className="eyebrow">Imaging Guide topic</span>
                 <h2>{selectedTopic.title}</h2>
               <div className="guide-source-meta">
                 <span>{selectedTopic.sourceLabel}</span>

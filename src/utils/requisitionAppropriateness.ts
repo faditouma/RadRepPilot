@@ -75,8 +75,8 @@ export function resolveAppropriatenessForComplaint(mapping?: ClinicalComplaintMa
       topicId,
       topic,
       statusMessage: topic
-        ? 'Appropriateness table available. Curated clinical notes may still require local validation.'
-        : 'Appropriateness table pending. Curated clinical summary pending.',
+        ? 'Appropriateness table available. Clinical summary may still require validation.'
+        : 'Appropriateness table not extracted yet. Clinical summary pending.',
       suggestedVariants: variantsToUse,
       topOptions,
     };
@@ -89,7 +89,7 @@ export function resolveAppropriatenessForComplaint(mapping?: ClinicalComplaintMa
     mapping,
     relatedTopics,
     missingInfoPrompts,
-    requisitionLanguage: mapping.commonRequisitionLanguage,
+    requisitionLanguage: mapping.commonRequisitionLanguage || 'Requisition wording pending for this topic.',
   };
 }
 
