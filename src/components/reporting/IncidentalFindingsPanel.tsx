@@ -47,13 +47,6 @@ const helperIdsByOptionLabel: Record<string, string[]> = {
   'Coronary calcification': ['cadrads'],
 };
 
-const insertTargets: Array<{ target: InsertTarget; label: string }> = [
-  { target: 'findings', label: 'Findings' },
-  { target: 'impression', label: 'Impression' },
-  { target: 'incidentalFindings', label: 'Incidental follow-up' },
-  { target: 'recommendations', label: 'Recommendations' },
-];
-
 const followUpActions = [
   { value: '', label: 'Select follow-up plan' },
   { value: 'none', label: 'No follow-up needed' },
@@ -122,7 +115,7 @@ function followUpPlanSentence(values: IncidentalValueMap): string {
 
 function applyFollowUpPlan(baseSentence: string, values: IncidentalValueMap): string {
   const plan = followUpPlanSentence(values);
-  const note = 'Follow-up recommendation is simplified prototype language and requires radiologist verification against current guidelines and local protocol.';
+  const note = 'Follow-up recommendation is simplified educational language and requires radiologist verification against current guidelines and local protocol.';
   return [baseSentence, plan, note].filter((part) => part.trim()).join(' ');
 }
 
@@ -181,7 +174,7 @@ function FieldRenderer({
   );
 }
 
-export function IncidentalFindingsPanel({ options, value, onChange, onInsert, onOpenHelper }: IncidentalFindingsPanelProps) {
+export function IncidentalFindingsPanel({ options, value, onChange, onOpenHelper }: IncidentalFindingsPanelProps) {
   const [isAdding, setIsAdding] = useState(false);
   const [selectedLabel, setSelectedLabel] = useState('');
   const [valuesByLabel, setValuesByLabel] = useState<Record<string, IncidentalValueMap>>({});
@@ -247,7 +240,7 @@ export function IncidentalFindingsPanel({ options, value, onChange, onInsert, on
             <div className="incidental-mini-form">
               <div className="card-topline">
                 <span>{selectedRegistryFinding?.organSystem ?? 'Context-aware helper'}</span>
-                <span className="status-badge partial">Prototype</span>
+                <span className="status-badge partial">Educational draft</span>
               </div>
               <h4>{selectedRegistryFinding?.name ?? selectedOption.label}</h4>
               {selectedRegistryFinding ? (
@@ -262,7 +255,7 @@ export function IncidentalFindingsPanel({ options, value, onChange, onInsert, on
                   ))}
                 </div>
               ) : (
-                <div className="inline-note">This workflow uses a simple prototype sentence for this incidental finding.</div>
+                <div className="inline-note">This workflow uses a simple educational sentence for this incidental finding.</div>
               )}
               {selectedRegistryFinding ? (
                 <div className="inline-note">
@@ -325,22 +318,13 @@ export function IncidentalFindingsPanel({ options, value, onChange, onInsert, on
               </label>
               {followUpQuality ? <QualityMetricBadge score={followUpQuality} /> : null}
               <div className="button-row generated-actions">
-                <button
-                  className="primary-button"
-                  onClick={() => window.dispatchEvent(new CustomEvent('radreppilot-toast', { detail: 'Sentence generated' }))}
-                  type="button"
-                >
-                  Generate sentence
+                <button className="primary-button" onClick={() => onChange(appendText(value, generatedSentence))} type="button">
+                  Add to draft
                 </button>
-                <CopyButton text={generatedSentence} label="Copy" />
-                <button className="secondary-button" onClick={() => onChange(appendText(value, generatedSentence))} type="button">
-                  Add to workflow follow-up
+                <button className="secondary-button" onClick={() => onChange(generatedSentence)} type="button">
+                  Replace draft text
                 </button>
-                {insertTargets.map((target) => (
-                  <button className="secondary-button" onClick={() => onInsert?.(target.target, generatedSentence)} type="button" key={target.target}>
-                    Insert: {target.label}
-                  </button>
-                ))}
+                <CopyButton text={generatedSentence} label="Copy sentence" />
                 {associatedHelperIds.map((helperId) => (
                   <button className="secondary-button" onClick={() => onOpenHelper?.(helperId)} type="button" key={helperId}>
                     Open {getHelperRouteLabel(helperId)}

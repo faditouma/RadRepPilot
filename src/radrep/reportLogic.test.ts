@@ -10,6 +10,7 @@ import { generateReferralText, getMissingReferralFields } from './referralLogic'
 import type { CtpaFormState, NoduleFormState, ReferralFormState, StrokeFormState } from './types';
 import { reportingWorkflowSchemas } from '../data/reportingWorkflowSchemas';
 import { generateReportingWorkflowReport } from '../utils/reportGenerators';
+import { scoreReportCompleteness } from '../utils/qualityMetrics';
 
 describe('RadRepPilot clinical text helpers', () => {
   it('calculates RV/LV ratio safely', () => {
@@ -40,6 +41,7 @@ describe('RadRepPilot clinical text helpers', () => {
     const report = generateCtpaReport(form);
     expect(report.impression).toContain('Acute pulmonary embolism involving the lobar pulmonary arteries bilaterally.');
     expect(report.impression).toContain('with CT evidence of right heart strain');
+    expect(report.impression).not.toContain('No pulmonary embolism');
   });
 
   it('applies simplified solid nodule follow-up logic', () => {
@@ -82,6 +84,26 @@ describe('RadRepPilot clinical text helpers', () => {
     const report = generateStrokeReport(form);
     expect(report.impression).toContain('ASPECTS score is 8');
     expect(report.impression).toContain('No acute intracranial hemorrhage identified');
+  });
+
+  it('does not include a negative hemorrhage statement when CT head hemorrhage is present', () => {
+    const form: StrokeFormState = {
+      clinicalIndication: 'Acute neurologic deficit.',
+      side: 'none',
+      hemorrhagePresent: 'yes',
+      largeVesselOcclusionSuspected: 'unknown',
+      earlyIschemicChangePresent: 'no',
+      aspectsRegions: [],
+      massEffect: 'none',
+      midlineShiftMm: '',
+      chronicFindings: '',
+      additionalFindings: '',
+      limitationsUncertainty: '',
+    };
+
+    const report = generateStrokeReport(form);
+    expect(report.impression).toContain('Acute intracranial hemorrhage is present');
+    expect(report.impression).not.toContain('No acute intracranial hemorrhage');
   });
 
   it('generates referral optimization text and missing-field warnings', () => {
@@ -136,5 +158,41 @@ describe('RadRepPilot clinical text helpers', () => {
       ...reportingWorkflowSchemas.dvtUltrasound.quickFills.find((item) => item.id === 'femoropopliteal')?.values,
     });
     expect(dvt.impression).toContain('DVT involving');
+  });
+
+  it('generates coherent Chest X-ray normal and positive drafts', () => {
+    const normalValues = {
+      ...reportingWorkflowSchemas.chestXray.defaultValues,
+      ...reportingWorkflowSchemas.chestXray.quickFills.find((item) => item.id === 'normal')?.values,
+    };
+    const normalReport = generateReportingWorkflowReport('chestXray', normalValues);
+    expect(normalReport.impression).toContain('No acute cardiopulmonary abnormality');
+    expect(normalReport.findings).toContain('No pneumothorax');
+
+    const consolidationReport = generateReportingWorkflowReport('chestXray', {
+      ...reportingWorkflowSchemas.chestXray.defaultValues,
+      consolidation: 'focal consolidation',
+      consolidationLocation: 'right lower lobe',
+      pneumothorax: 'none',
+      pleuralEffusion: 'none',
+    });
+    expect(consolidationReport.impression).toContain('Focal airspace consolidation in right lower lobe');
+  });
+
+  it('suppresses no pneumothorax language when Chest X-ray pneumothorax is present', () => {
+    const report = generateReportingWorkflowReport('chestXray', {
+      ...reportingWorkflowSchemas.chestXray.defaultValues,
+      pneumothorax: 'present',
+      pneumothoraxSideSize: 'small right apical',
+    });
+    expect(report.impression).toContain('Pneumothorax: small right apical');
+    expect(report.findings).not.toContain('No pneumothorax');
+  });
+
+  it('keeps blank Chest X-ray workflows incomplete until key findings are addressed', () => {
+    const blankReport = generateReportingWorkflowReport('chestXray', reportingWorkflowSchemas.chestXray.defaultValues);
+    const score = scoreReportCompleteness('chestXray', reportingWorkflowSchemas.chestXray.defaultValues, blankReport);
+    expect(score.percent).toBeLessThan(100);
+    expect(score.checks.some((check) => !check.complete)).toBe(true);
   });
 });

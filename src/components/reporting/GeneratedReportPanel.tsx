@@ -40,7 +40,7 @@ export function GeneratedReportPanel({
     <aside className="generated-report-panel">
       <div className="output-heading">
         <div>
-          <span>Live editable output</span>
+          <span>Report draft</span>
           <h3>{title}</h3>
         </div>
         <div className="button-row">

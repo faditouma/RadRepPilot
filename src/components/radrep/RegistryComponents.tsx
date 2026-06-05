@@ -403,7 +403,7 @@ function HelperChoiceCard({ calculator, onOpen }: { calculator: CalculatorDefini
         </span>
         <div className="badge-row">
           <StatusBadge status={calculator.status} />
-          <span className="content-status-badge small">{calculator.contentStatus ?? 'Needs radiology review'}</span>
+          <span className="content-status-badge small">{calculator.contentStatus ?? 'Educational draft'}</span>
         </div>
       </div>
       <h3>{calculator.name}</h3>

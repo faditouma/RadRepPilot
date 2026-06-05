@@ -211,7 +211,7 @@ function WorkflowChoiceCard({ workflow, onOpen }: { workflow: NavigationWorkflow
         <span>{workflow.toolBadges?.[0] ?? 'Reporting workflow'}</span>
         <div className="badge-row">
           <StatusBadge status={workflow.status} />
-          <span className="content-status-badge small">Needs radiology review</span>
+          <span className="content-status-badge small">Educational draft</span>
         </div>
       </div>
       <h3>{workflow.title}</h3>

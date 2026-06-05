@@ -229,7 +229,7 @@ const incidentalDvt = [
 ];
 
 const prototypeSafety =
-  'Prototype reporting workflow only. RadRepPilot organizes user-entered findings and does not interpret images or diagnose. Verify all source imaging findings, measurements, complications, guideline applicability, and final wording.';
+  'Educational reporting workflow. RadRepPilot organizes user-entered findings and does not interpret images or diagnose. Verify all source imaging findings, measurements, complications, guideline applicability, and final wording.';
 
 export const reportingWorkflowSchemas: Record<
   'chestXray' | 'mskXrayFracture' | 'appendicitis' | 'bowelObstruction' | 'renalColic' | 'ruqUltrasound' | 'dvtUltrasound',
@@ -244,7 +244,7 @@ export const reportingWorkflowSchemas: Record<
     bodySystem: 'Chest',
     clinicalQuestion: 'Assess for acute cardiopulmonary abnormality.',
     techniqueDefault: 'Chest radiographs obtained.',
-    badges: ['Implemented', 'Prototype', 'Primary care / ED'],
+    badges: ['Implemented', 'Educational draft', 'Primary care / ED'],
     insertTargets: ['findings', 'impression', 'recommendations'],
     safetyNote: prototypeSafety,
     defaultValues: {
@@ -392,7 +392,7 @@ export const reportingWorkflowSchemas: Record<
     bodySystem: 'MSK',
     clinicalQuestion: 'Assess for acute osseous injury or malalignment.',
     techniqueDefault: 'Radiographs obtained.',
-    badges: ['Implemented', 'Prototype', 'Emergency / Primary care'],
+    badges: ['Implemented', 'Educational draft', 'Emergency / Primary care'],
     insertTargets: ['findings', 'impression', 'recommendations'],
     safetyNote: prototypeSafety,
     defaultValues: {
@@ -520,7 +520,7 @@ export const reportingWorkflowSchemas: Record<
     bodySystem: 'Abdomen/Pelvis',
     clinicalQuestion: 'Assess for appendicitis, complication, or alternative acute intra-abdominal pathology.',
     techniqueDefault: 'CT abdomen and pelvis performed with IV contrast, unless otherwise specified.',
-    badges: ['Implemented', 'Prototype', 'Incidental support'],
+    badges: ['Implemented', 'Educational draft', 'Incidental support'],
     insertTargets: ['findings', 'impression', 'incidentalFindings', 'recommendations'],
     safetyNote: prototypeSafety,
     defaultValues: {
@@ -695,7 +695,7 @@ export const reportingWorkflowSchemas: Record<
     bodySystem: 'Abdomen/Pelvis',
     clinicalQuestion: 'Assess for bowel obstruction, transition point, cause, and complications.',
     techniqueDefault: 'CT abdomen and pelvis performed with IV contrast, unless otherwise specified.',
-    badges: ['Implemented', 'Prototype', 'Surgical red flags'],
+    badges: ['Implemented', 'Educational draft', 'Surgical red flags'],
     insertTargets: ['findings', 'impression', 'incidentalFindings', 'recommendations'],
     safetyNote: prototypeSafety,
     defaultValues: {
@@ -912,7 +912,7 @@ export const reportingWorkflowSchemas: Record<
     bodySystem: 'GU',
     clinicalQuestion: 'Assess for urinary tract calculus, obstruction, and alternative cause of flank pain.',
     techniqueDefault: 'Non-contrast CT KUB performed, unless otherwise specified.',
-    badges: ['Implemented', 'Prototype', 'Incidental support'],
+    badges: ['Implemented', 'Educational draft', 'Incidental support'],
     insertTargets: ['findings', 'impression', 'incidentalFindings', 'recommendations'],
     safetyNote: prototypeSafety,
     defaultValues: {
@@ -1107,7 +1107,7 @@ export const reportingWorkflowSchemas: Record<
     bodySystem: 'Abdomen/Pelvis',
     clinicalQuestion: 'Assess for cholelithiasis, acute cholecystitis, and biliary obstruction.',
     techniqueDefault: 'Right upper quadrant ultrasound performed.',
-    badges: ['Implemented', 'Prototype', 'Incidental support'],
+    badges: ['Implemented', 'Educational draft', 'Incidental support'],
     insertTargets: ['findings', 'impression', 'incidentalFindings', 'recommendations'],
     safetyNote: prototypeSafety,
     defaultValues: {
@@ -1278,7 +1278,7 @@ export const reportingWorkflowSchemas: Record<
     bodySystem: 'Vascular',
     clinicalQuestion: 'Assess for deep venous thrombosis.',
     techniqueDefault: 'Grayscale compression and Doppler ultrasound of the lower-limb deep venous system performed.',
-    badges: ['Implemented', 'Prototype', 'Vascular workflow'],
+    badges: ['Implemented', 'Educational draft', 'Vascular workflow'],
     insertTargets: ['findings', 'impression', 'recommendations'],
     safetyNote: prototypeSafety,
     defaultValues: {

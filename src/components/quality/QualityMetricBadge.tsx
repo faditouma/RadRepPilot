@@ -4,7 +4,7 @@ export function QualityMetricBadge({ score, compact = false }: { score: QualityS
   const tone = score.percent >= 85 ? 'good' : score.percent >= 60 ? 'caution' : 'attention';
   return (
     <div className={`quality-metric-badge ${tone} ${compact ? 'compact' : ''}`}>
-      <span>Prototype quality support</span>
+      <span>Report completeness</span>
       <strong>
         {score.label}: {score.complete}/{score.total}
       </strong>

@@ -10,7 +10,8 @@
     "generate:acr-topics": "node scripts/generate-acr-topics.mjs",
     "convert:acr": "node scripts/convert-acr-raw-to-curated.mjs",
     "preview": "vite preview",
-    "test": "vitest run"
+    "test": "vitest run",
+    "report:acr-quality": "node scripts/generate-acr-quality-reports.mjs"
   },
   "dependencies": {
     "@supabase/supabase-js": "^2.106.2",

@@ -9,11 +9,11 @@ export function CompletenessChecklist({ score }: { score: QualityScore }) {
       <div className="quality-check-grid">
         {score.checks.map((check) => (
           <span className={check.complete ? 'complete' : 'missing'} key={check.label}>
-            {check.complete ? 'OK' : 'Missing'}: {check.complete ? check.completeLabel ?? check.label : check.missingLabel ?? check.label}
+            {check.complete ? 'Complete' : 'Still needed'}: {check.complete ? check.completeLabel ?? check.label : check.missingLabel ?? check.label}
           </span>
         ))}
       </div>
-      {missing.length ? <p>{missing.map((check) => check.missingLabel ?? check.label).join(' · ')}</p> : <p>Completeness checklist satisfied for this prototype.</p>}
+      {missing.length ? <p>{missing.map((check) => check.missingLabel ?? check.label).join(' · ')}</p> : <p>Completeness checklist satisfied.</p>}
     </section>
   );
 }
