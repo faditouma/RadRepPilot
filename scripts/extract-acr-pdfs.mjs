@@ -13,7 +13,7 @@ const categoryPatterns = [
 ];
 
 const categoryPattern = /(May Be Appropriate\s*\(Disagreement\)|Usually Appropriate|May Be Appropriate|Usually Not Appropriate)/i;
-const radiationPattern = /(☢{1,5}|O|Varies)/i;
+const radiationPattern = /(☢{1,5}|\bO\b|\bVaries\b)/i;
 const yearPattern = /\b(20\d{2}|19\d{2})\b/;
 const summaryFile = path.join(outputDir, 'extraction-summary.json');
 
@@ -23,6 +23,8 @@ const warningCategories = {
   unclearRadiationLevel: 'unclearRadiationLevel',
   unclearAppropriatenessCategory: 'unclearAppropriatenessCategory',
   possibleTruncatedProcedure: 'possibleTruncatedProcedure',
+  duplicateVariant: 'duplicateVariant',
+  suspiciouslyFewRows: 'suspiciouslyFewRows',
   duplicateTopicTitle: 'duplicateTopicTitle',
 };
 
@@ -131,11 +133,25 @@ function splitVariants(text) {
   return matches.map((match, index) => {
     const start = match.index ?? 0;
     const end = matches[index + 1]?.index ?? text.length;
+    const variantTitle = normalizeWhitespace(match[1]);
+    const clinicalScenario = extractClinicalScenario(variantTitle);
     return {
-      variantTitle: normalizeWhitespace(match[1]),
+      id: createVariantId(variantTitle, index),
+      variantTitle,
+      clinicalScenario,
       body: text.slice(start, end),
     };
   });
+}
+
+function createVariantId(variantTitle, index) {
+  const scenario = extractClinicalScenario(variantTitle);
+  const slug = slugify(scenario || variantTitle);
+  return slug ? `variant-${index + 1}-${slug}` : `variant-${index + 1}`;
+}
+
+function extractClinicalScenario(variantTitle) {
+  return normalizeWhitespace(variantTitle.replace(/^Variant\s+\d+[:.\s]*/i, '')).trim();
 }
 
 function confidenceForRow(procedure, category, radiationLevel) {
@@ -204,6 +220,7 @@ function extractRowsFromVariant(variantBody) {
       appropriatenessCategory,
       radiationLevel,
       confidence: confidenceForRow(procedure, appropriatenessCategory, radiationLevel),
+      rawLine: window,
     });
   }
 
@@ -228,12 +245,45 @@ function warningsForExtraction(raw) {
   if (!allRows.length) {
     warnings.push(createWarning(warningCategories.noProcedureRowsFound, 'No procedure rows were found.'));
   }
+  if (allRows.length > 0 && allRows.length < 3) {
+    warnings.push(
+      createWarning(warningCategories.suspiciouslyFewRows, `Only ${allRows.length} procedure row(s) found for this topic.`, {
+        procedureRows: allRows.length,
+      }),
+    );
+  }
+
+  const variantCounts = new Map();
+  for (const variant of raw.variants) {
+    const key = slugify(variant.clinicalScenario || variant.variantTitle);
+    variantCounts.set(key, (variantCounts.get(key) ?? 0) + 1);
+  }
+  for (const variant of raw.variants) {
+    const key = slugify(variant.clinicalScenario || variant.variantTitle);
+    if (variantCounts.get(key) > 1) {
+      warnings.push(
+        createWarning(warningCategories.duplicateVariant, `Duplicate variant detected: ${variant.variantTitle}.`, {
+          variantId: variant.id,
+          variantTitle: variant.variantTitle,
+        }),
+      );
+    }
+  }
 
   for (const variant of raw.variants) {
     if (!variant.procedureRows.length) {
       warnings.push(
         createWarning(warningCategories.noProcedureRowsFound, `No procedure rows found for ${variant.variantTitle}.`, {
           variantTitle: variant.variantTitle,
+        }),
+      );
+    }
+    if (variant.procedureRows.length > 0 && variant.procedureRows.length < 3) {
+      warnings.push(
+        createWarning(warningCategories.suspiciouslyFewRows, `Only ${variant.procedureRows.length} row(s) found for ${variant.variantTitle}.`, {
+          variantId: variant.id,
+          variantTitle: variant.variantTitle,
+          procedureRows: variant.procedureRows.length,
         }),
       );
     }
@@ -279,13 +329,63 @@ function duplicateTitleWarnings(raw, titleCounts) {
   ];
 }
 
+function createExtractionSummary() {
+  return {
+    timestamp: new Date().toISOString(),
+    processedFiles: [],
+    failedFiles: [],
+    totalTopics: 0,
+    totalVariants: 0,
+    totalProcedureRows: 0,
+    totalWarnings: 0,
+    warningCountsByType: {},
+    lowConfidenceFiles: [],
+  };
+}
+
+function countWarningsByType(warnings) {
+  return warnings.reduce((counts, warning) => {
+    const category = warning.category ?? 'unknown';
+    counts[category] = (counts[category] ?? 0) + 1;
+    return counts;
+  }, {});
+}
+
+function mergeWarningCounts(target, warnings) {
+  for (const warning of warnings) {
+    const category = warning.category ?? 'unknown';
+    target[category] = (target[category] ?? 0) + 1;
+  }
+}
+
+function logSummary(summary, discoveredPdfCount) {
+  console.log('\nACR extraction summary');
+  console.log(`PDFs processed: ${discoveredPdfCount}`);
+  console.log(`Successful extractions: ${summary.processedFiles.length}`);
+  console.log(`Failed extractions: ${summary.failedFiles.length}`);
+  console.log(`Topics extracted: ${summary.totalTopics}`);
+  console.log(`Variants extracted: ${summary.totalVariants}`);
+  console.log(`Rows extracted: ${summary.totalProcedureRows}`);
+  console.log(`Warnings count: ${summary.totalWarnings}`);
+  if (summary.failedFiles.length) {
+    console.log('Failed file list:');
+    for (const failedFile of summary.failedFiles) {
+      console.log(`- ${failedFile.sourceFile}: ${failedFile.error}`);
+    }
+  }
+  console.log(`Summary file: ${path.relative(process.cwd(), summaryFile)}`);
+  console.log('Raw extraction complete. Review required before public use.');
+}
+
 async function processPdf(filename) {
   const sourcePath = path.join(inputDir, filename);
   const buffer = await readFile(sourcePath);
   const text = extractTextFromPdfBuffer(buffer);
   const variantBlocks = splitVariants(text);
   const variants = variantBlocks.map((variant) => ({
+    id: variant.id,
     variantTitle: variant.variantTitle,
+    clinicalScenario: variant.clinicalScenario,
     procedureRows: extractRowsFromVariant(variant.body),
   }));
   const raw = {
@@ -314,20 +414,15 @@ async function main() {
   }
 
   const pdfs = entries.filter((entry) => entry.toLowerCase().endsWith('.pdf')).sort();
+  const summary = createExtractionSummary();
+
   if (!pdfs.length) {
     console.log('No PDF files found in acr-source-pdfs/. Nothing to extract.');
+    await writeFile(summaryFile, `${JSON.stringify(summary, null, 2)}\n`, 'utf8');
+    logSummary(summary, 0);
     return;
   }
 
-  const summary = {
-    timestamp: new Date().toISOString(),
-    processedFiles: [],
-    failedFiles: [],
-    totalTopics: 0,
-    totalVariants: 0,
-    totalProcedureRows: 0,
-    totalWarnings: 0,
-  };
   const titleCounts = new Map();
   const pendingWrites = [];
 
@@ -348,6 +443,7 @@ async function main() {
       ...item.raw,
       extractionWarnings: [...item.raw.extractionWarnings, ...duplicateTitleWarnings(item.raw, titleCounts)],
     };
+    const warningCountsByType = countWarningsByType(raw.extractionWarnings);
     const outputName = `${slugify(path.basename(item.filename, path.extname(item.filename)))}.raw.json`;
     const outputPath = path.join(outputDir, outputName);
     await writeFile(outputPath, `${JSON.stringify(raw, null, 2)}\n`, 'utf8');
@@ -360,33 +456,28 @@ async function main() {
       variants: raw.variants.length,
       procedureRows: rowCount,
       warnings: raw.extractionWarnings.length,
+      extractionConfidence: raw.extractionConfidence,
+      warningCountsByType,
     });
+    if (raw.extractionConfidence !== 'high') {
+      summary.lowConfidenceFiles.push({
+        sourceFile: item.filename,
+        outputFile: path.relative(process.cwd(), outputPath),
+        extractionConfidence: raw.extractionConfidence,
+        warnings: raw.extractionWarnings.length,
+      });
+    }
     summary.totalTopics += raw.extractedTitle ? 1 : 0;
     summary.totalVariants += raw.variants.length;
     summary.totalProcedureRows += rowCount;
     summary.totalWarnings += raw.extractionWarnings.length;
+    mergeWarningCounts(summary.warningCountsByType, raw.extractionWarnings);
 
     console.log(`Wrote ${path.relative(process.cwd(), outputPath)} (${raw.variants.length} variants, ${rowCount} rows, ${raw.extractionWarnings.length} warnings)`);
   }
 
-  summary.totalWarnings += summary.failedFiles.length;
   await writeFile(summaryFile, `${JSON.stringify(summary, null, 2)}\n`, 'utf8');
-
-  console.log('\nACR extraction summary');
-  console.log(`Processed files: ${summary.processedFiles.length}`);
-  console.log(`Failed files: ${summary.failedFiles.length}`);
-  console.log(`Topics extracted: ${summary.totalTopics}`);
-  console.log(`Variants extracted: ${summary.totalVariants}`);
-  console.log(`Rows extracted: ${summary.totalProcedureRows}`);
-  console.log(`Warnings count: ${summary.totalWarnings}`);
-  if (summary.failedFiles.length) {
-    console.log('Failed file list:');
-    for (const failedFile of summary.failedFiles) {
-      console.log(`- ${failedFile.sourceFile}: ${failedFile.error}`);
-    }
-  }
-  console.log(`Summary written to ${path.relative(process.cwd(), summaryFile)}`);
-  console.log('Raw extraction complete. Review required before public use.');
+  logSummary(summary, pdfs.length);
 }
 
 main().catch((error) => {
