@@ -491,24 +491,6 @@ export function ReportingWorkflowPage({
     <div className="reporting-workflow">
       <div className="reporting-workflow-layout">
         <main className="workflow-center-panel">
-          <section className="workflow-title-card">
-            <div>
-              <span className="eyebrow">
-                {schema.modality} · {schema.bodySystem}
-              </span>
-              <h2>{schema.title}</h2>
-              <p>{schema.clinicalQuestion}</p>
-            </div>
-            <div className="workflow-badges">
-              {schema.badges
-                .filter((badge) => badge !== 'Prototype')
-                .map((badge) => (
-                  <span key={badge}>{badge}</span>
-                ))}
-              <span className="content-status-badge">Educational draft</span>
-            </div>
-          </section>
-
           <QuickFillButtons quickFills={schema.quickFills} onApply={applyQuickFill} activeQuickFillId={activeQuickFillId} />
 
           <WorkflowToolDock tools={toolItems} activeTool={activeTool} onSelect={(toolId) => setActiveTool((current) => (current === toolId ? null : toolId))} />
@@ -563,7 +545,7 @@ export function ReportingWorkflowPage({
         </main>
 
         <ReportDraftPanel
-          title={`${schema.shortTitle} draft`}
+          title={schema.shortTitle}
           report={report}
           onChange={handleReportChange}
           onRegenerate={regenerateReport}

@@ -12,6 +12,7 @@ interface BranchingModuleNavigatorProps {
   onOpenCalculators?: () => void;
   initialWorkflowId?: string;
   onInitialWorkflowOpened?: () => void;
+  onWorkflowSelectionChange?: (selected: boolean) => void;
 }
 
 function PreviewList({ title, items }: { title: string; items: string[] }) {
@@ -51,6 +52,7 @@ export function BranchingModuleNavigator({
   onOpenCalculators,
   initialWorkflowId = '',
   onInitialWorkflowOpened,
+  onWorkflowSelectionChange,
 }: BranchingModuleNavigatorProps) {
   const [selectedModalityName, setSelectedModalityName] = useState('');
   const [selectedBodySystemName, setSelectedBodySystemName] = useState('');
@@ -75,6 +77,10 @@ export function BranchingModuleNavigator({
   const selectedModality = moduleNavigationTree.find((item) => item.name === selectedModalityName);
   const selectedBodySystem = selectedModality?.bodySystems.find((item) => item.name === selectedBodySystemName);
   const selectedWorkflow = selectedBodySystem?.workflows.find((item) => item.id === selectedWorkflowId);
+
+  useEffect(() => {
+    onWorkflowSelectionChange?.(Boolean(selectedWorkflow));
+  }, [onWorkflowSelectionChange, selectedWorkflow]);
 
   const reset = () => {
     setSelectedModalityName('');
@@ -105,50 +111,65 @@ export function BranchingModuleNavigator({
 
   return (
     <section className="branching-navigator">
-      <div className="branching-topbar">
-        <div>
-          <Breadcrumbs items={breadcrumbs} />
-          <h2>{selectedWorkflow ? selectedWorkflow.title : selectedBodySystem ? 'Select a workflow' : selectedModality ? 'Select a body system' : 'Select a modality to begin.'}</h2>
-          <p>
-            {selectedWorkflow
-              ? 'Only the selected workflow is open. Change selection or reset to move elsewhere.'
-              : 'Use the branching path to reach a focused reporting workflow in a few clicks.'}
-          </p>
-        </div>
-        <div className="button-row">
-          {selectedWorkflow ? (
+      {selectedWorkflow ? (
+        <div className="selected-workflow-bar">
+          <div>
+            <Breadcrumbs items={breadcrumbs} />
+            <h2>{selectedWorkflow.title}</h2>
+            <p>
+              {selectedModalityName} · {selectedBodySystemName} · Educational workflow
+            </p>
+          </div>
+          <div className="button-row">
             <button className="secondary-button" onClick={() => setSelectedWorkflowId('')} type="button">
               Back one step
             </button>
-          ) : selectedBodySystem ? (
             <button className="secondary-button" onClick={() => setSelectedBodySystemName('')} type="button">
-              Back one step
+              Change workflow
             </button>
-          ) : selectedModality ? (
-            <button className="secondary-button" onClick={() => setSelectedModalityName('')} type="button">
-              Back one step
-            </button>
-          ) : null}
-          {(selectedModality || selectedBodySystem || selectedWorkflow) ? (
-            <button
-              className="secondary-button"
-              onClick={() => {
-                setSelectedModalityName('');
-                setSelectedBodySystemName('');
-                setSelectedWorkflowId('');
-              }}
-              type="button"
-            >
-              Back to imaging modalities
-            </button>
-          ) : null}
-          {(selectedModality || selectedBodySystem || selectedWorkflow) ? (
             <button className="ghost-button" onClick={reset} type="button">
               Reset selection
             </button>
-          ) : null}
+          </div>
         </div>
-      </div>
+      ) : (
+        <div className="branching-topbar">
+          <div>
+            <Breadcrumbs items={breadcrumbs} />
+            <h2>{selectedBodySystem ? 'Select a workflow' : selectedModality ? 'Select a body system' : 'Select a modality to begin.'}</h2>
+            <p>Use the branching path to reach a focused reporting workflow in a few clicks.</p>
+          </div>
+          <div className="button-row">
+            {selectedBodySystem ? (
+              <button className="secondary-button" onClick={() => setSelectedBodySystemName('')} type="button">
+                Back one step
+              </button>
+            ) : selectedModality ? (
+              <button className="secondary-button" onClick={() => setSelectedModalityName('')} type="button">
+                Back one step
+              </button>
+            ) : null}
+            {(selectedModality || selectedBodySystem) ? (
+              <button
+                className="secondary-button"
+                onClick={() => {
+                  setSelectedModalityName('');
+                  setSelectedBodySystemName('');
+                  setSelectedWorkflowId('');
+                }}
+                type="button"
+              >
+                Back to imaging modalities
+              </button>
+            ) : null}
+            {(selectedModality || selectedBodySystem) ? (
+              <button className="ghost-button" onClick={reset} type="button">
+                Reset selection
+              </button>
+            ) : null}
+          </div>
+        </div>
+      )}
 
       {!selectedModality ? (
         <div className="branch-grid modality-grid">

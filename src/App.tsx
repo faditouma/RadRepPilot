@@ -288,6 +288,7 @@ function App({ embedded = false, initialPage = 'dashboard' }: AppProps) {
   const [helperDrawerId, setHelperDrawerId] = useState('');
   const [dashboardWorkflowId, setDashboardWorkflowId] = useState('');
   const [workflowSidebar, setWorkflowSidebar] = useState<WorkflowSidebarState | null>(null);
+  const [reportingWorkflowOpen, setReportingWorkflowOpen] = useState(false);
   const [requisitionSidebar, setRequisitionSidebar] = useState<RequisitionSidebarState | null>(null);
 
   const [ctpaForm, setCtpaForm] = useState<CtpaFormState>(defaultCtpa);
@@ -1217,14 +1218,17 @@ function App({ embedded = false, initialPage = 'dashboard' }: AppProps) {
 
   const renderModules = () => (
     <div className="page-stack">
-      <PageHeader
-        eyebrow="Radiology Reporting Modules"
-        title="Structured Reporting Modules"
-        description="Select a modality and body system to open a focused educational reporting workflow."
-      />
+      {!reportingWorkflowOpen ? (
+        <PageHeader
+          eyebrow="Radiology Reporting Modules"
+          title="Structured Reporting Modules"
+          description="Select a modality and body system to open a focused educational reporting workflow."
+        />
+      ) : null}
       <BranchingModuleNavigator
         initialWorkflowId={dashboardWorkflowId}
         onInitialWorkflowOpened={() => setDashboardWorkflowId('')}
+        onWorkflowSelectionChange={setReportingWorkflowOpen}
         onOpenCalculators={() => setActivePage('calculators')}
         renderWorkflow={(moduleType) => {
           if (schemaDrivenModuleTypes.includes(moduleType as keyof typeof reportingWorkflowSchemas)) {
@@ -1644,7 +1648,7 @@ function App({ embedded = false, initialPage = 'dashboard' }: AppProps) {
             onInsertText={(text, label, target) => insertTextIntoBuilder(text, label, target)}
           />
         ) : null}
-        <footer>RadRepPilot prototype. User-entered findings only. Final report requires clinician verification.</footer>
+        <footer>Educational reporting workflow. Verify all user-entered findings and final wording.</footer>
       </main>
     </div>
   );

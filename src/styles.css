@@ -1961,6 +1961,36 @@ fieldset.field {
   line-height: 1.45;
 }
 
+.selected-workflow-bar {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  align-items: center;
+  border: 1px solid rgba(216, 224, 234, 0.88);
+  border-radius: 8px;
+  padding: 10px 12px;
+  background: linear-gradient(180deg, #fff, rgba(248, 251, 253, 0.92));
+}
+
+.selected-workflow-bar h2 {
+  margin: 5px 0 2px;
+  color: var(--slate);
+  font-size: clamp(1.05rem, 1.5vw, 1.35rem);
+  line-height: 1.2;
+}
+
+.selected-workflow-bar p {
+  margin: 0;
+  color: var(--muted);
+  font-size: 0.88rem;
+  font-weight: 720;
+}
+
+.selected-workflow-bar .button-row {
+  justify-content: flex-end;
+  flex-shrink: 0;
+}
+
 .breadcrumb-row {
   display: flex;
   flex-wrap: wrap;
@@ -3367,9 +3397,14 @@ footer {
   }
 
   .branching-topbar,
+  .selected-workflow-bar,
   .optional-context-header,
   .incidental-compact-row {
     display: grid;
+  }
+
+  .selected-workflow-bar .button-row {
+    justify-content: flex-start;
   }
 
   .anatomy-detail-grid,
@@ -5078,6 +5113,176 @@ footer {
   display: flex;
   flex-wrap: wrap;
   gap: 7px;
+}
+
+.guided-requisition-panel {
+  gap: 12px;
+}
+
+.guided-main-fields {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(90px, 120px) minmax(130px, 170px);
+  gap: 10px;
+  align-items: end;
+}
+
+.guided-match-summary,
+.selected-requisition-summary {
+  border: 1px solid rgba(216, 224, 234, 0.86);
+  border-radius: 13px;
+  padding: 11px 12px;
+  background: rgba(255, 255, 255, 0.8);
+  display: grid;
+  gap: 5px;
+}
+
+.guided-match-summary span,
+.selected-requisition-summary span {
+  color: var(--teal);
+  font-size: 0.72rem;
+  font-weight: 900;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.guided-match-summary p,
+.selected-requisition-summary p {
+  margin: 0;
+}
+
+.guided-match-summary small,
+.selected-requisition-summary small {
+  color: var(--muted);
+  line-height: 1.4;
+}
+
+.selected-requisition-summary {
+  grid-template-columns: minmax(0, 1.2fr) minmax(0, 1fr) auto;
+  align-items: center;
+}
+
+.selected-requisition-summary > div {
+  display: grid;
+  gap: 3px;
+  min-width: 0;
+}
+
+.selected-requisition-summary strong {
+  color: var(--ink);
+}
+
+.guided-drawer-layer {
+  position: fixed;
+  inset: 0;
+  z-index: 70;
+  display: grid;
+  justify-items: end;
+}
+
+.guided-drawer-scrim {
+  position: absolute;
+  inset: 0;
+  border: 0;
+  background: rgba(15, 23, 42, 0.32);
+  cursor: pointer;
+}
+
+.guided-drawer-panel {
+  position: relative;
+  z-index: 1;
+  width: min(720px, calc(100vw - 22px));
+  height: 100%;
+  overflow: auto;
+  border-left: 1px solid rgba(216, 224, 234, 0.9);
+  background: linear-gradient(180deg, #fff, #f8fbfd);
+  box-shadow: -24px 0 60px rgba(15, 23, 42, 0.22);
+  padding: 18px;
+  display: grid;
+  align-content: start;
+  gap: 14px;
+}
+
+.guided-drawer-header {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  align-items: flex-start;
+  border-bottom: 1px solid var(--line);
+  padding-bottom: 12px;
+}
+
+.guided-drawer-header h3 {
+  margin: 4px 0;
+  color: var(--ink);
+}
+
+.guided-drawer-header p {
+  margin: 0;
+  color: var(--muted);
+}
+
+.guided-drawer-body {
+  display: grid;
+  gap: 12px;
+}
+
+.guided-question-card,
+.guided-selected-scenario {
+  border: 1px solid rgba(216, 224, 234, 0.88);
+  border-radius: 14px;
+  padding: 12px;
+  background: #fff;
+  display: grid;
+  gap: 10px;
+}
+
+.guided-question-card h4,
+.guided-selected-scenario h4 {
+  margin: 0;
+  color: var(--slate);
+}
+
+.guided-selected-scenario p,
+.guided-selected-scenario small {
+  margin: 0;
+  color: var(--muted);
+  line-height: 1.45;
+}
+
+.guided-answer-grid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.guided-answer-pill {
+  border: 1px solid rgba(216, 224, 234, 0.9);
+  border-radius: 999px;
+  padding: 8px 10px;
+  background: #fff;
+  color: var(--slate);
+  font-size: 0.84rem;
+  font-weight: 790;
+}
+
+.guided-answer-pill.active {
+  border-color: rgba(37, 99, 235, 0.32);
+  background: var(--blue-soft);
+  color: var(--blue-dark);
+  box-shadow: 0 8px 20px rgba(37, 99, 235, 0.08);
+}
+
+.guided-drawer-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 9px;
+}
+
+.guided-alternative-list {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 220px), 1fr));
+  gap: 9px;
+  margin-top: 10px;
 }
 
 .appropriateness-check-card {

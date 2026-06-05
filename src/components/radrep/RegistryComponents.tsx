@@ -1064,6 +1064,20 @@ export function PrimaryCareRequestBuilder({ initialForm, onInsertText, onSaveTex
     setDraftStatus('Clinical scenario selected');
   };
 
+  const applyGuidedClinicalContext = (phrases: string[]) => {
+    setForm((existing) => {
+      const nextParts = Array.from(new Set(phrases.map((phrase) => phrase.trim()).filter(Boolean)));
+      return regenerate({
+        ...existing,
+        values: {
+          ...existing.values,
+          redFlags: nextParts.join('; '),
+        },
+      });
+    });
+    setDraftStatus('Clinical scenario context updated');
+  };
+
   const toggleClinicalPrompt = (prompt: string, checked: boolean) => {
     setForm((existing) => {
       const current = typeof existing.values.redFlags === 'string' ? existing.values.redFlags : '';
@@ -1247,9 +1261,9 @@ export function PrimaryCareRequestBuilder({ initialForm, onInsertText, onSaveTex
             {viewMode !== 'preview' ? (
               <section className="request-form-panel">
                 <div className="section-heading">
-                  <span className="eyebrow">Search-first requisition builder</span>
+                  <span className="eyebrow">Guided imaging request</span>
                   <h3>Clinical problem to imaging request</h3>
-                  <p>Start with the problem or diagnosis. ACR extracted table summaries are shown only when relevant.</p>
+                  <p>Enter the clinical problem, clarify the scenario, then select an imaging option from the guided drawer.</p>
                 </div>
 
                 <RequisitionAppropriatenessPanel
@@ -1262,9 +1276,14 @@ export function PrimaryCareRequestBuilder({ initialForm, onInsertText, onSaveTex
                     setPreferredVariantId('');
                     setAppropriatenessCheck(null);
                   }}
+                  onSelectTopicVariant={(topicId, variantId) => {
+                    setSelectedComplaintId(`topic:${topicId}`);
+                    setPreferredVariantId(variantId);
+                    setAppropriatenessCheck(null);
+                  }}
                   onSelectScenario={applyScenario}
-                  onToggleClinicalPrompt={toggleClinicalPrompt}
-                  onApplyWording={(text) => updateValue('clinicalQuestion', text)}
+                  onApplyClinicalContext={applyGuidedClinicalContext}
+                  onUpdateValue={updateValue}
                   onSelectImagingOption={selectRequestedImagingOption}
                   onAppropriatenessCheckChange={setAppropriatenessCheck}
                   onOpenGuide={onOpenImagingGuide}
@@ -1275,16 +1294,6 @@ export function PrimaryCareRequestBuilder({ initialForm, onInsertText, onSaveTex
                   <div className="form-grid request-field-grid">
                     <GenericField
                       field={{
-                        id: 'mainSymptom',
-                        label: 'Main clinical problem / indication',
-                        type: 'textarea',
-                        placeholder: 'e.g. sudden severe headache reaching maximal intensity within 1 hour',
-                      }}
-                      value={form.values.mainSymptom || form.values.indication}
-                      onChange={(valueToSet) => updateValue('mainSymptom', valueToSet)}
-                    />
-                    <GenericField
-                      field={{
                         id: 'clinicalQuestion',
                         label: 'Key clinical question',
                         type: 'textarea',
@@ -1293,8 +1302,6 @@ export function PrimaryCareRequestBuilder({ initialForm, onInsertText, onSaveTex
                       value={form.values.clinicalQuestion}
                       onChange={(valueToSet) => updateValue('clinicalQuestion', valueToSet)}
                     />
-                  </div>
-                  <div className="patient-context-grid">
                     <GenericField
                       field={{
                         id: 'requestedProcedure',
@@ -1304,27 +1311,6 @@ export function PrimaryCareRequestBuilder({ initialForm, onInsertText, onSaveTex
                       }}
                       value={form.values.requestedProcedure}
                       onChange={(valueToSet) => updateValue('requestedProcedure', valueToSet)}
-                    />
-                    <GenericField
-                      field={{ id: 'age', label: 'Age', type: 'text', placeholder: '67' }}
-                      value={form.values.age}
-                      onChange={(valueToSet) => updateValue('age', valueToSet)}
-                    />
-                    <GenericField
-                      field={{
-                        id: 'sex',
-                        label: 'Sex/gender',
-                        type: 'select',
-                        options: [
-                          { value: '', label: 'Not specified' },
-                          { value: 'M', label: 'M' },
-                          { value: 'F', label: 'F' },
-                          { value: 'X', label: 'X/other' },
-                          { value: 'Prefer not to specify', label: 'Prefer not to specify' },
-                        ],
-                      }}
-                      value={form.values.sex}
-                      onChange={(valueToSet) => updateValue('sex', valueToSet)}
                     />
                   </div>
                   <details className="accordion-card advanced-context-card">
@@ -1417,7 +1403,7 @@ export function PrimaryCareRequestBuilder({ initialForm, onInsertText, onSaveTex
 
                 {template.oneClickNegatives.length ? (
                   <details className="accordion-card">
-                    <summary>Template quick fills</summary>
+                    <summary>Optional quick fills</summary>
                     <div className="one-click-row">
                       {template.oneClickNegatives.map((negative) => (
                         <button className="ghost-button chip-button" onClick={() => applyNegative(negative.values)} type="button" key={negative.label}>
@@ -1429,7 +1415,7 @@ export function PrimaryCareRequestBuilder({ initialForm, onInsertText, onSaveTex
                 ) : null}
 
                 <details className="accordion-card">
-                  <summary>Additional template-specific prompts</summary>
+                  <summary>Additional request details</summary>
                   {formFields}
                 </details>
 
