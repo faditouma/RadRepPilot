@@ -217,36 +217,184 @@ function normalizeAppropriateness(value) {
 function deriveQuestionsFromScenario(topicTitle, variantTitle) {
   const text = `${topicTitle} ${variantTitle}`.toLowerCase();
   const questions = [];
-
-  const rules = [
-    ["trauma", "Trauma?", "history of trauma"],
-    ["pregnan", "Pregnancy or postpartum?", "pregnancy or postpartum context"],
-    ["fever", "Fever or infection concern?", "fever or infection concern"],
-    ["infection", "Fever or infection concern?", "fever or infection concern"],
-    ["cancer", "Cancer history?", "history of cancer"],
-    ["immunosupp", "Immunosuppression?", "immunosuppression"],
-    ["anticoag", "Anticoagulation?", "anticoagulation"],
-    ["neurologic deficit", "Focal neurologic deficit?", "focal neurologic deficit"],
-    ["renal", "Renal function or contrast concern?", "renal function or contrast concern"],
-    ["contrast", "Renal function or contrast concern?", "renal function or contrast concern"],
-    ["thunderclap", "Sudden severe thunderclap onset?", "sudden severe thunderclap onset"],
-    ["sudden", "Sudden severe onset?", "sudden severe onset"],
-    ["right lower quadrant", "Right lower quadrant pain?", "right lower quadrant pain"],
-    ["right upper quadrant", "Right upper quadrant pain?", "right upper quadrant pain"],
-    ["obstruction", "Obstruction concern?", "clinical concern for obstruction"],
-    ["hematuria", "Hematuria?", "hematuria"],
-    ["flank", "Flank pain?", "flank pain"],
-  ];
-
   const seen = new Set();
 
-  for (const [keyword, label, phrase] of rules) {
-    if (text.includes(keyword) && !seen.has(label)) {
-      seen.add(label);
+  const rules = [
+    {
+      id: "trauma",
+      label: "Trauma or recent injury?",
+      keywords: ["trauma", "injury", "post-traumatic", "fracture"],
+      phrase: "trauma or recent injury",
+    },
+    {
+      id: "acute",
+      label: "Acute presentation?",
+      keywords: ["acute", "new onset", "sudden"],
+      phrase: "acute presentation",
+    },
+    {
+      id: "chronic",
+      label: "Chronic or recurrent symptoms?",
+      keywords: ["chronic", "recurrent", "follow-up", "surveillance"],
+      phrase: "chronic or recurrent symptoms",
+    },
+    {
+      id: "fever-infection",
+      label: "Fever, infection, sepsis, or abscess concern?",
+      keywords: [
+        "fever",
+        "infection",
+        "infectious",
+        "sepsis",
+        "abscess",
+        "pyelonephritis",
+        "osteomyelitis",
+      ],
+      phrase: "fever or infection concern",
+    },
+    {
+      id: "cancer",
+      label: "Known cancer or malignancy concern?",
+      keywords: [
+        "cancer",
+        "malignancy",
+        "neoplasm",
+        "tumor",
+        "metastatic",
+        "staging",
+        "surveillance",
+      ],
+      phrase: "known cancer or malignancy concern",
+    },
+    {
+      id: "immunosuppression",
+      label: "Immunosuppression or neutropenia?",
+      keywords: [
+        "immunosuppression",
+        "immunocompromised",
+        "neutropenic",
+        "neutropenia",
+      ],
+      phrase: "immunosuppression or neutropenia",
+    },
+    {
+      id: "pregnancy",
+      label: "Pregnant, postpartum, or pregnancy possible?",
+      keywords: ["pregnancy", "pregnant", "postpartum", "peripartum"],
+      phrase: "pregnancy or postpartum context",
+    },
+    {
+      id: "hcg-positive",
+      label: "β-hCG positive?",
+      keywords: ["hcg positive", "β-hcg positive", "beta-hcg positive"],
+      phrase: "β-hCG positive",
+    },
+    {
+      id: "hcg-negative",
+      label: "β-hCG negative?",
+      keywords: ["hcg negative", "β-hcg negative", "beta-hcg negative"],
+      phrase: "β-hCG negative",
+    },
+    {
+      id: "gynecologic",
+      label: "Gynecologic etiology suspected?",
+      keywords: ["gynecologic", "gynaecologic", "adnexal", "ovarian", "endometriosis"],
+      phrase: "gynecologic etiology suspected",
+    },
+    {
+      id: "nongynecologic",
+      label: "Nongynecologic etiology suspected?",
+      keywords: ["nongynecologic", "non-gynecologic", "nongynaecologic"],
+      phrase: "nongynecologic etiology suspected",
+    },
+    {
+      id: "right-lower-quadrant",
+      label: "Right lower quadrant pain?",
+      keywords: ["right lower quadrant", "rlq", "appendicitis"],
+      phrase: "right lower quadrant pain",
+    },
+    {
+      id: "right-upper-quadrant",
+      label: "Right upper quadrant pain?",
+      keywords: ["right upper quadrant", "ruq", "biliary", "cholecystitis"],
+      phrase: "right upper quadrant pain",
+    },
+    {
+      id: "left-lower-quadrant",
+      label: "Left lower quadrant pain?",
+      keywords: ["left lower quadrant", "llq", "diverticulitis"],
+      phrase: "left lower quadrant pain",
+    },
+    {
+      id: "flank-stone",
+      label: "Flank pain, renal colic, or stone concern?",
+      keywords: [
+        "flank pain",
+        "renal colic",
+        "urolithiasis",
+        "stone disease",
+        "stone",
+        "hematuria",
+      ],
+      phrase: "flank pain, renal colic, or stone concern",
+    },
+    {
+      id: "hematuria",
+      label: "Hematuria?",
+      keywords: ["hematuria"],
+      phrase: "hematuria",
+    },
+    {
+      id: "obstruction",
+      label: "Obstruction concern?",
+      keywords: ["obstruction", "bowel obstruction", "small-bowel obstruction", "sbo"],
+      phrase: "obstruction concern",
+    },
+    {
+      id: "neurologic-deficit",
+      label: "Focal neurologic deficit?",
+      keywords: ["neurologic deficit", "focal neurologic", "focal deficit", "stroke"],
+      phrase: "focal neurologic deficit",
+    },
+    {
+      id: "thunderclap",
+      label: "Sudden severe/thunderclap headache?",
+      keywords: ["thunderclap", "sudden severe", "maximal severity"],
+      phrase: "sudden severe or thunderclap headache",
+    },
+    {
+      id: "papilledema-icp",
+      label: "Papilledema or raised ICP concern?",
+      keywords: ["papilledema", "intracranial hypertension", "raised icp", "intracranial pressure"],
+      phrase: "papilledema or raised ICP concern",
+    },
+    {
+      id: "anticoagulation",
+      label: "Anticoagulation?",
+      keywords: ["anticoagulation", "anticoagulated"],
+      phrase: "anticoagulation",
+    },
+    {
+      id: "renal-contrast",
+      label: "Renal function or contrast concern?",
+      keywords: ["renal function", "kidney disease", "contrast concern", "renal insufficiency"],
+      phrase: "renal function or contrast concern",
+    },
+    {
+      id: "postoperative",
+      label: "Recent surgery or postoperative state?",
+      keywords: ["postoperative", "post-op", "recent surgery", "prior surgery"],
+      phrase: "recent surgery or postoperative state",
+    },
+  ];
+
+  for (const rule of rules) {
+    if (rule.keywords.some((keyword) => text.includes(keyword)) && !seen.has(rule.id)) {
+      seen.add(rule.id);
       questions.push({
-        id: slugify(label),
-        label,
-        positivePhrase: phrase,
+        id: rule.id,
+        label: rule.label,
+        positivePhrase: rule.phrase,
       });
     }
   }
