@@ -3,16 +3,17 @@
   "private": true,
   "version": "0.1.0",
   "type": "module",
-  "scripts": {
-    "dev": "vite",
-    "build": "tsc -b && vite build",
-    "extract:acr": "node scripts/extract-acr-pdfs.mjs",
-    "generate:acr-topics": "node scripts/generate-acr-topics.mjs",
-    "convert:acr": "node scripts/convert-acr-raw-to-curated.mjs",
-    "preview": "vite preview",
-    "test": "vitest run",
-    "report:acr-quality": "node scripts/generate-acr-quality-reports.mjs"
-  },
+"scripts": {
+  "dev": "vite",
+  "build": "tsc -b && vite build",
+  "extract:acr": "node scripts/extract-acr-pdfs.mjs",
+  "generate:acr-topics": "node scripts/generate-acr-topics.mjs",
+  "convert:acr": "node scripts/convert-acr-raw-to-curated.mjs",
+  "acr:clean": "node scripts/acr/clean-acr-procedure-rows.mjs",
+  "preview": "vite preview",
+  "test": "vitest run",
+  "report:acr-quality": "node scripts/generate-acr-quality-reports.mjs"
+},
   "dependencies": {
     "@supabase/supabase-js": "^2.106.2",
     "react": "^18.3.1",
