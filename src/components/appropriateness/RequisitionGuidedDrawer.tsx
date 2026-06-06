@@ -1,28 +1,16 @@
 import { useEffect, useMemo, useState } from 'react';
-import type { AppropriatenessCategory, AppropriatenessTopic, AppropriatenessVariant, ImagingOption } from '../../data/appropriateness';
+import type {
+  AppropriatenessCategory,
+  AppropriatenessTopic,
+  AppropriatenessVariant,
+  ImagingOption,
+} from '../../data/appropriateness';
 import { reviewStatusLabel } from '../../utils/appropriatenessSearch';
 import { deriveScenarioQuestions } from '../../utils/acrScenarioQuestions';
 import type { ScenarioAnswerMap } from '../../utils/acrScenarioMatching';
 import { rankVariants, selectedAnswerPhrases } from '../../utils/acrScenarioMatching';
 import { cleanVariantTitle } from '../../utils/requisitionTopicMatching';
 
-function isMeaningfullyDifferent(primary?: string, secondary?: string) {
-  const normalize = (value?: string) =>
-    String(value ?? "")
-      .toLowerCase()
-      .replace(/[^a-z0-9]+/g, " ")
-      .replace(/\s+/g, " ")
-      .trim();
-
-  const a = normalize(primary);
-  const b = normalize(secondary);
-
-  if (!a || !b) return false;
-  if (a === b) return false;
-  if (a.includes(b) || b.includes(a)) return false;
-
-  return true;
-}
 interface RequisitionGuidedSelection {
   topic: AppropriatenessTopic;
   variant: AppropriatenessVariant;
@@ -82,22 +70,43 @@ export function RequisitionGuidedDrawer({
   const [answers, setAnswers] = useState<ScenarioAnswerMap>({});
   const [manualScenarioKey, setManualScenarioKey] = useState('');
   const [selectedTopicId, setSelectedTopicId] = useState('');
-  const selectedTopic = topicMatches.find((topic) => topic.id === selectedTopicId)
-    ?? (topicMatches.length === 1 ? topicMatches[0] : undefined);
-  const questions = useMemo(() => deriveScenarioQuestions(selectedTopic ? [selectedTopic] : [], clinicalProblem), [clinicalProblem, selectedTopic]);
-  const ranked = useMemo(() => rankVariants(selectedTopic ? [selectedTopic] : [], answers, questions), [answers, questions, selectedTopic]);
+
+  const selectedTopic =
+    topicMatches.find((topic) => topic.id === selectedTopicId) ??
+    (topicMatches.length === 1 ? topicMatches[0] : undefined);
+
+  const questions = useMemo(
+    () => deriveScenarioQuestions(selectedTopic ? [selectedTopic] : [], clinicalProblem),
+    [clinicalProblem, selectedTopic]
+  );
+
+  const ranked = useMemo(
+    () => rankVariants(selectedTopic ? [selectedTopic] : [], answers, questions),
+    [answers, questions, selectedTopic]
+  );
+
   const selectedScenario = useMemo(() => {
     const manual = ranked.find((item) => `${item.topic.id}:${item.variant.id}` === manualScenarioKey);
     return manual ?? ranked[0];
   }, [manualScenarioKey, ranked]);
-  const optionsByCategory = useMemo(() => groupedOptions(selectedScenario?.variant), [selectedScenario?.variant]);
-  const answerPhrases = useMemo(() => selectedAnswerPhrases(questions, answers), [answers, questions]);
+
+  const optionsByCategory = useMemo(
+    () => groupedOptions(selectedScenario?.variant),
+    [selectedScenario?.variant]
+  );
+
+  const answerPhrases = useMemo(
+    () => selectedAnswerPhrases(questions, answers),
+    [answers, questions]
+  );
+
   const requiredAnswersComplete = questions
     .filter((question) => question.required)
     .every((question) => Boolean(answers[question.id]?.length));
 
   useEffect(() => {
     if (!open) return;
+
     setStep('clarify');
     setManualScenarioKey('');
     setAnswers({});
@@ -107,15 +116,19 @@ export function RequisitionGuidedDrawer({
   const toggleOption = (questionId: string, optionId: string, mode: 'single' | 'multi' | 'boolean') => {
     setAnswers((existing) => {
       const current = existing[questionId] ?? [];
+
       if (mode === 'single' || mode === 'boolean') {
         return {
           ...existing,
           [questionId]: current.includes(optionId) ? [] : [optionId],
         };
       }
+
       return {
         ...existing,
-        [questionId]: current.includes(optionId) ? current.filter((item) => item !== optionId) : [...current, optionId],
+        [questionId]: current.includes(optionId)
+          ? current.filter((item) => item !== optionId)
+          : [...current, optionId],
       };
     });
   };
@@ -124,7 +137,13 @@ export function RequisitionGuidedDrawer({
 
   return (
     <div className="guided-drawer-layer" role="dialog" aria-modal="true" aria-label="Clarify clinical scenario">
-      <button className="guided-drawer-scrim" type="button" onClick={onClose} aria-label="Close guided imaging drawer" />
+      <button
+        className="guided-drawer-scrim"
+        type="button"
+        onClick={onClose}
+        aria-label="Close guided imaging drawer"
+      />
+
       <aside className="guided-drawer-panel">
         <div className="guided-drawer-header">
           <div>
@@ -135,6 +154,7 @@ export function RequisitionGuidedDrawer({
               {age || sex ? ` · ${[age, sex].filter(Boolean).join('')}` : ''}
             </p>
           </div>
+
           <button className="ghost-button compact-panel-toggle" type="button" onClick={onClose}>
             Close
           </button>
@@ -145,6 +165,7 @@ export function RequisitionGuidedDrawer({
             <p className="guide-status-note">
               Choose the closest extracted ACR topic and scenario. Add only context that is known.
             </p>
+
             {topicMatches.length > 1 ? (
               <section className="guided-question-card">
                 <h4>Which extracted ACR topic best matches the clinical problem?</h4>
@@ -167,12 +188,15 @@ export function RequisitionGuidedDrawer({
                 </div>
               </section>
             ) : null}
-            {selectedTopic ? questions.map((question) => (
+
+            {selectedTopic ? (
+              questions.map((question) => (
                 <section className="guided-question-card" key={question.id}>
                   <h4>{question.label}</h4>
                   <div className="guided-answer-grid">
                     {question.options.map((item) => {
                       const active = Boolean(answers[question.id]?.includes(item.id));
+
                       return (
                         <button
                           className={`guided-answer-pill ${active ? 'active' : ''}`}
@@ -187,9 +211,11 @@ export function RequisitionGuidedDrawer({
                     })}
                   </div>
                 </section>
-              )) : (
-                <div className="inline-note">Choose the closest ACR topic before continuing.</div>
-              )}
+              ))
+            ) : (
+              <div className="inline-note">Choose the closest ACR topic before continuing.</div>
+            )}
+
             <div className="guided-drawer-actions">
               <button
                 className="primary-button"
@@ -199,12 +225,16 @@ export function RequisitionGuidedDrawer({
               >
                 Continue to recommended imaging
               </button>
+
               <button className="secondary-button" onClick={onClose} type="button">
                 Cancel
               </button>
             </div>
+
             {!topicMatches.length ? (
-              <div className="inline-note">No ACR-style topic match was found for this search. Try a different complaint or diagnosis.</div>
+              <div className="inline-note">
+                No ACR-style topic match was found for this search. Try a different complaint or diagnosis.
+              </div>
             ) : null}
           </div>
         ) : (
@@ -216,15 +246,8 @@ export function RequisitionGuidedDrawer({
                   <h4>
                     {cleanVariantTitle(
                       selectedScenario.variant.title || selectedScenario.variant.clinicalScenario
-                  )}
-                 </h4>
-
-                 {isMeaningfullyDifferent(
-                  selectedScenario.variant.title,
-                  selectedScenario.variant.clinicalScenario
-                 ) && (
-                   <p>{selectedScenario.variant.clinicalScenario}</p>
-                )}
+                    )}
+                  </h4>
                   <small>
                     {selectedScenario.topic.sourceLabel} · {reviewStatusLabel(selectedScenario.topic.reviewStatus)}
                   </small>
@@ -254,25 +277,49 @@ export function RequisitionGuidedDrawer({
                   {categoryOrder.map((category) => {
                     const options = optionsByCategory[category];
                     if (!options.length) return null;
+
                     return (
-                      <details className="requisition-recommendation-group" open={category === 'Usually Appropriate'} key={category}>
+                      <details
+                        className="requisition-recommendation-group"
+                        open={category === 'Usually Appropriate'}
+                        key={category}
+                      >
                         <summary>
                           <span className={`guide-category-badge ${categoryClass(category)}`}>{category}</span>
-                          <small>{options.length} option{options.length === 1 ? '' : 's'}</small>
+                          <small>
+                            {options.length} option{options.length === 1 ? '' : 's'}
+                          </small>
                         </summary>
+
                         <div className="requisition-option-list">
                           {options.map((optionToSelect) => (
-                            <article className="requisition-option-card" key={`${category}-${optionToSelect.procedure}`}>
+                            <article
+                              className="requisition-option-card"
+                              key={`${category}-${optionToSelect.procedure}`}
+                            >
                               <div>
                                 <strong>{optionToSelect.procedure}</strong>
-                                <span>{optionToSelect.shortRationale}</span>
+                                <span>
+                                  Listed as {optionToSelect.appropriatenessCategory}
+                                  {optionToSelect.radiationLevel
+                                    ? ` · Relative radiation: ${optionToSelect.radiationLevel}`
+                                    : ''}
+                                </span>
                               </div>
+
                               <div className="requisition-option-badges">
-                                <span className={`guide-category-badge ${categoryClass(optionToSelect.appropriatenessCategory)}`}>
+                                <span
+                                  className={`guide-category-badge ${categoryClass(
+                                    optionToSelect.appropriatenessCategory
+                                  )}`}
+                                >
                                   {optionToSelect.appropriatenessCategory}
                                 </span>
-                                <span className="guide-radiation-badge">{optionToSelect.radiationLevel}</span>
+                                <span className="guide-radiation-badge">
+                                  {optionToSelect.radiationLevel}
+                                </span>
                               </div>
+
                               <button
                                 className="secondary-button"
                                 type="button"
@@ -311,7 +358,9 @@ export function RequisitionGuidedDrawer({
                 </div>
               </>
             ) : (
-              <div className="inline-note">No matching clinical scenario found. Go back and adjust the clinical problem.</div>
+              <div className="inline-note">
+                No matching clinical scenario found. Go back and adjust the clinical problem.
+              </div>
             )}
           </div>
         )}
