@@ -6,6 +6,23 @@ import type { ScenarioAnswerMap } from '../../utils/acrScenarioMatching';
 import { rankVariants, selectedAnswerPhrases } from '../../utils/acrScenarioMatching';
 import { cleanVariantTitle } from '../../utils/requisitionTopicMatching';
 
+function isMeaningfullyDifferent(primary?: string, secondary?: string) {
+  const normalize = (value?: string) =>
+    String(value ?? "")
+      .toLowerCase()
+      .replace(/[^a-z0-9]+/g, " ")
+      .replace(/\s+/g, " ")
+      .trim();
+
+  const a = normalize(primary);
+  const b = normalize(secondary);
+
+  if (!a || !b) return false;
+  if (a === b) return false;
+  if (a.includes(b) || b.includes(a)) return false;
+
+  return true;
+}
 interface RequisitionGuidedSelection {
   topic: AppropriatenessTopic;
   variant: AppropriatenessVariant;
@@ -196,8 +213,18 @@ export function RequisitionGuidedDrawer({
               <>
                 <section className="guided-selected-scenario">
                   <span className="eyebrow">Matched clinical scenario</span>
-                  <h4>{cleanVariantTitle(selectedScenario.variant.title || selectedScenario.variant.clinicalScenario)}</h4>
-                  <p>{selectedScenario.variant.clinicalScenario}</p>
+                  <h4>
+                    {cleanVariantTitle(
+                      selectedScenario.variant.title || selectedScenario.variant.clinicalScenario
+                  )}
+                 </h4>
+
+                 {isMeaningfullyDifferent(
+                  selectedScenario.variant.title,
+                  selectedScenario.variant.clinicalScenario
+                 ) && (
+                   <p>{selectedScenario.variant.clinicalScenario}</p>
+                )}
                   <small>
                     {selectedScenario.topic.sourceLabel} · {reviewStatusLabel(selectedScenario.topic.reviewStatus)}
                   </small>

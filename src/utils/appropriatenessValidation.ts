@@ -1,6 +1,11 @@
 import type { AppropriatenessCategory, ImagingOption, RadiationLevel } from '../data/appropriateness';
 
-export type AppropriatenessCheckSeverity = 'appropriate' | 'conditional' | 'not_appropriate' | 'unknown' | 'not_selected';
+export type AppropriatenessCheckSeverity =
+  | 'appropriate'
+  | 'conditional'
+  | 'not_appropriate'
+  | 'unknown'
+  | 'not_selected';
 
 export interface RequestedImagingCheck {
   match?: ImagingOption;
@@ -11,7 +16,18 @@ export interface RequestedImagingCheck {
   suggestedAlternatives: ImagingOption[];
 }
 
-const stopWords = new Set(['imaging', 'study', 'exam', 'examination', 'with', 'without', 'and', 'or', 'iv', 'contrast']);
+const stopWords = new Set([
+  'imaging',
+  'study',
+  'exam',
+  'examination',
+  'with',
+  'without',
+  'and',
+  'or',
+  'iv',
+  'contrast',
+]);
 
 export function normalizeProcedureName(value: string): string {
   return value
@@ -29,42 +45,61 @@ function tokens(value: string): string[] {
     .filter((token) => token.length > 1 && !stopWords.has(token));
 }
 
-function similarity(a: string, b: string) {
+function similarity(a: string, b: string): number {
   const normalizedA = normalizeProcedureName(a);
   const normalizedB = normalizeProcedureName(b);
+
   if (!normalizedA || !normalizedB) return 0;
   if (normalizedA === normalizedB) return 1;
   if (normalizedA.includes(normalizedB) || normalizedB.includes(normalizedA)) return 0.9;
 
   const aTokens = new Set(tokens(a));
   const bTokens = new Set(tokens(b));
+
   if (!aTokens.size || !bTokens.size) return 0;
+
   const overlap = [...aTokens].filter((token) => bTokens.has(token)).length;
   return overlap / Math.max(aTokens.size, bTokens.size);
 }
 
-function bestAlternatives(options: ImagingOption[]) {
-  const usually = options.filter((option) => option.appropriatenessCategory === 'Usually Appropriate');
-  const may = options.filter((option) => option.appropriatenessCategory.startsWith('May Be Appropriate'));
+function bestAlternatives(options: ImagingOption[]): ImagingOption[] {
+  const usually = options.filter(
+    (option) => option.appropriatenessCategory === 'Usually Appropriate'
+  );
+
+  const may = options.filter((option) =>
+    option.appropriatenessCategory.startsWith('May Be Appropriate')
+  );
+
   return (usually.length ? usually : may).slice(0, 4);
 }
 
-export function findMatchingImagingOption(requestedProcedure: string, options: ImagingOption[]): ImagingOption | undefined {
+export function findMatchingImagingOption(
+  requestedProcedure: string,
+  options: ImagingOption[]
+): ImagingOption | undefined {
   const scored = options
-    .map((option) => ({ option, score: similarity(requestedProcedure, option.procedure) }))
+    .map((option) => ({
+      option,
+      score: similarity(requestedProcedure, option.procedure),
+    }))
     .sort((a, b) => b.score - a.score);
 
   return scored[0]?.score >= 0.5 ? scored[0].option : undefined;
 }
 
-export function classifyRequestedImaging(requestedProcedure: string, options: ImagingOption[]): RequestedImagingCheck {
+export function classifyRequestedImaging(
+  requestedProcedure: string,
+  options: ImagingOption[]
+): RequestedImagingCheck {
   const requested = requestedProcedure.trim();
   const suggestedAlternatives = bestAlternatives(options);
 
   if (!requested) {
     return {
       severity: 'not_selected',
-      message: 'Select a requested imaging option to check appropriateness against the selected clinical scenario.',
+      message:
+        'Select a requested imaging option to check appropriateness against the selected clinical scenario.',
       suggestedAlternatives,
     };
   }
@@ -85,7 +120,7 @@ export function classifyRequestedImaging(requestedProcedure: string, options: Im
       appropriatenessCategory: match.appropriatenessCategory,
       radiationLevel: match.radiationLevel,
       severity: 'appropriate',
-      message: `${match.procedure} is listed as Usually Appropriate for the selected clinical scenario.`,
+      message: 'Listed as Usually Appropriate for the selected clinical scenario.',
       suggestedAlternatives,
     };
   }
@@ -96,7 +131,8 @@ export function classifyRequestedImaging(requestedProcedure: string, options: Im
       appropriatenessCategory: match.appropriatenessCategory,
       radiationLevel: match.radiationLevel,
       severity: 'not_appropriate',
-      message: `${match.procedure} is listed as Usually Not Appropriate for the selected clinical scenario. Consider a Usually Appropriate option if it matches the clinical question.`,
+      message:
+        'Usually Not Appropriate for the selected clinical scenario. Consider a Usually Appropriate option if it matches the clinical question.',
       suggestedAlternatives,
     };
   }
@@ -106,7 +142,7 @@ export function classifyRequestedImaging(requestedProcedure: string, options: Im
     appropriatenessCategory: match.appropriatenessCategory,
     radiationLevel: match.radiationLevel,
     severity: 'conditional',
-    message: `${match.procedure} is listed as ${match.appropriatenessCategory}. This may be reasonable depending on the clinical details and local protocol.`,
+    message: `Listed as ${match.appropriatenessCategory}. This may be reasonable depending on the clinical details and local protocol.`,
     suggestedAlternatives,
   };
 }
