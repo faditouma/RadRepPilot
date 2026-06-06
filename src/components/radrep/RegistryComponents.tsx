@@ -875,16 +875,25 @@ export function PrimaryCareRequestBuilder({ initialForm, onInsertText, onSaveTex
   const selectedTopicForTitle = selectedComplaintId.startsWith('topic:')
     ? getTopicById(selectedComplaintId.replace(/^topic:/, ''))
     : undefined;
-  const activeRequisitionTitle = selectedTopicForTitle?.title ?? template.title;
+  const typedClinicalProblem = typeof form.values.mainSymptom === 'string' ? form.values.mainSymptom.trim() : '';
+  const activeRequisitionTitle = selectedTopicForTitle?.title ?? (typedClinicalProblem ? `Imaging request: ${typedClinicalProblem}` : template.title);
   const outputStyle = form.outputStyle ?? 'standard';
-  const missing = useMemo(() => getMissingEssentials(form), [form]);
+  const requisitionQuality = useMemo(() => scoreRequisitionCompleteness(form), [form]);
+  const missing = useMemo(
+    () =>
+      typedClinicalProblem
+        ? requisitionQuality.checks
+            .filter((check) => !check.complete)
+            .map((check) => check.missingLabel ?? check.label)
+        : getMissingEssentials(form),
+    [form, requisitionQuality.checks, typedClinicalProblem],
+  );
   const pathwayMissing = useMemo(() => {
     const additions: string[] = [];
     if (!form.values.acrScenario && !selectedComplaintId) additions.push('Clinical scenario');
     if (!form.values.requestedProcedure) additions.push('Selected requested imaging');
     return Array.from(new Set([...missing, ...additions]));
   }, [form.values.acrScenario, form.values.requestedProcedure, missing, selectedComplaintId]);
-  const requisitionQuality = useMemo(() => scoreRequisitionCompleteness(form), [form]);
   const readinessPercent = Math.round((requisitionQuality.complete / Math.max(requisitionQuality.total, 1)) * 100);
   const readinessLabel = pathwayMissing.length ? 'Requisition readiness: needs key details' : 'Requisition readiness: ready for review';
   const generated = form.generatedText || generateReferralText(form, outputStyle);
@@ -984,6 +993,27 @@ export function PrimaryCareRequestBuilder({ initialForm, onInsertText, onSaveTex
     setDraftStatus('Local requisition draft updated');
   };
 
+  const updateClinicalProblem = (valueToSet: string) => {
+    setSelectedComplaintId('');
+    setPreferredVariantId('');
+    setAppropriatenessCheck(null);
+    setForm((existing) =>
+      regenerate({
+        ...existing,
+        values: {
+          ...existing.values,
+          mainSymptom: valueToSet,
+          indication: '',
+          acrScenario: '',
+          requestedProcedure: '',
+          clinicalQuestion: '',
+          redFlags: '',
+        },
+      }),
+    );
+    setDraftStatus('Clinical problem updated');
+  };
+
   const updateOutputStyle = (style: RequisitionOutputStyle) => {
     setForm((existing) => regenerate({ ...existing, outputStyle: style }));
   };
@@ -1051,13 +1081,11 @@ export function PrimaryCareRequestBuilder({ initialForm, onInsertText, onSaveTex
         ...existing,
         values: {
           ...existing.values,
-          mainSymptom: scenario.clinicalScenario,
-          indication: scenario.clinicalScenario,
           clinicalQuestion:
             scenario.suggestedQuestion && scenario.suggestedQuestion !== 'Requisition wording pending for this topic.'
               ? scenario.suggestedQuestion
               : existing.values.clinicalQuestion || `Please assess for findings relevant to ${scenario.topicTitle}.`,
-          acrScenario: `${scenario.topicTitle} - ${scenario.variantTitle}`,
+          acrScenario: scenario.variantTitle,
         },
       }),
     );
@@ -1283,6 +1311,7 @@ export function PrimaryCareRequestBuilder({ initialForm, onInsertText, onSaveTex
                   }}
                   onSelectScenario={applyScenario}
                   onApplyClinicalContext={applyGuidedClinicalContext}
+                  onClinicalProblemChange={updateClinicalProblem}
                   onUpdateValue={updateValue}
                   onSelectImagingOption={selectRequestedImagingOption}
                   onAppropriatenessCheckChange={setAppropriatenessCheck}

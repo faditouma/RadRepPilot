@@ -1,4 +1,5 @@
 import type { AppropriatenessTopic } from '../data/appropriateness';
+import { cleanVariantTitle } from './requisitionTopicMatching';
 
 export type ScenarioQuestionType = 'single' | 'multi' | 'boolean';
 
@@ -6,178 +7,146 @@ export interface ScenarioQuestionOption {
   id: string;
   label: string;
   mapsToKeywords: string[];
+  mapsToVariantIds?: string[];
   requisitionPhrase: string;
+  includeInRequisition?: boolean;
 }
 
 export interface ScenarioQuestion {
   id: string;
   label: string;
   type: ScenarioQuestionType;
+  required?: boolean;
   options: ScenarioQuestionOption[];
-}
-
-function includesAny(text: string, terms: string[]) {
-  return terms.some((term) => text.includes(term));
 }
 
 function normalizeId(text: string) {
   return text.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
 }
 
-function option(label: string, keywords: string[], phrase = label): ScenarioQuestionOption {
+function contextOption(label: string, keywords: string[], phrase = label): ScenarioQuestionOption {
   return {
     id: normalizeId(label),
     label,
     mapsToKeywords: keywords,
     requisitionPhrase: phrase,
+    includeInRequisition: true,
   };
 }
 
-function addQuestion(questions: ScenarioQuestion[], question: ScenarioQuestion) {
-  if (questions.some((item) => item.id === question.id)) return;
-  questions.push(question);
+function contextQuestion(topic: AppropriatenessTopic): ScenarioQuestion | undefined {
+  const text = [
+    topic.title,
+    topic.clinicalArea,
+    ...topic.keywords,
+    ...topic.variants.flatMap((variant) => [variant.title, variant.clinicalScenario]),
+  ].join(' ').toLowerCase();
+
+  if (text.includes('headache')) {
+    return {
+      id: 'headache-additional-context',
+      label: 'Additional known headache context',
+      type: 'multi',
+      options: [
+        contextOption('Anticoagulation', ['anticoagulation', 'anticoagulant'], 'anticoagulation history'),
+        contextOption('Focal neurologic deficit', ['focal neurologic deficit', 'neurologic deficit'], 'focal neurologic deficit'),
+        contextOption('Fever / meningism', ['fever', 'meningism'], 'fever or meningismus'),
+        contextOption('Cancer history', ['cancer', 'malignancy'], 'history of cancer'),
+        contextOption('Immunosuppression', ['immunosuppression', 'immunocompromised'], 'immunosuppression'),
+        contextOption('Recent trauma', ['trauma', 'posttraumatic'], 'recent trauma'),
+      ],
+    };
+  }
+
+  if (text.includes('low back pain')) {
+    return {
+      id: 'back-pain-additional-context',
+      label: 'Additional known back-pain context',
+      type: 'multi',
+      options: [
+        contextOption('Objective neurologic deficit', ['neurologic deficit'], 'objective neurologic deficit'),
+        contextOption('Bowel/bladder or saddle symptoms', ['cauda', 'bowel', 'bladder', 'saddle'], 'bowel/bladder or saddle symptoms'),
+        contextOption('Fever / infection risk', ['fever', 'infection'], 'fever or infection risk'),
+        contextOption('Cancer history', ['cancer', 'malignancy'], 'history of cancer'),
+        contextOption('Recent trauma', ['trauma'], 'recent trauma'),
+        contextOption('Prior lumbar surgery', ['prior surgery'], 'prior lumbar surgery'),
+      ],
+    };
+  }
+
+  if (text.includes('pulmonary embol')) {
+    return {
+      id: 'pe-additional-context',
+      label: 'Additional known PE context',
+      type: 'multi',
+      options: [
+        contextOption('Positive D-dimer', ['positive d dimer'], 'positive D-dimer'),
+        contextOption('High pretest probability', ['high pretest probability'], 'high pretest probability'),
+        contextOption('Pregnancy', ['pregnancy', 'pregnant'], 'pregnancy'),
+        contextOption('Hemodynamic instability', ['hemodynamic instability'], 'hemodynamic instability'),
+        contextOption('Renal function / contrast concern', ['renal', 'contrast'], 'renal function or contrast concern'),
+      ],
+    };
+  }
+
+  if (text.includes('hematuria')) {
+    return {
+      id: 'hematuria-additional-context',
+      label: 'Additional known hematuria context',
+      type: 'multi',
+      options: [
+        contextOption('Flank pain', ['flank pain'], 'flank pain'),
+        contextOption('Infection symptoms', ['infection', 'fever'], 'infection symptoms'),
+        contextOption('Malignancy risk factors', ['malignancy', 'risk factors'], 'malignancy risk factors'),
+        contextOption('Anticoagulation', ['anticoagulation'], 'anticoagulation history'),
+        contextOption('Renal function / contrast concern', ['renal', 'contrast'], 'renal function or contrast concern'),
+      ],
+    };
+  }
+
+  if (/(abdominal|quadrant|pancreatitis|bowel obstruction|biliary|flank pain)/.test(text)) {
+    return {
+      id: 'abdominal-additional-context',
+      label: 'Additional known abdominal context',
+      type: 'multi',
+      options: [
+        contextOption('Fever', ['fever'], 'fever'),
+        contextOption('Vomiting', ['vomiting'], 'vomiting'),
+        contextOption('Prior abdominal surgery', ['postoperative', 'prior surgery'], 'prior abdominal surgery'),
+        contextOption('Pregnancy', ['pregnancy', 'pregnant'], 'pregnancy'),
+        contextOption('Abnormal inflammatory markers', ['leukocytosis', 'inflammatory'], 'abnormal inflammatory markers'),
+        contextOption('Renal function / contrast concern', ['renal', 'contrast'], 'renal function or contrast concern'),
+      ],
+    };
+  }
+
+  return undefined;
 }
 
-function topicText(topicMatches: AppropriatenessTopic[], complaintText: string) {
-  return [
-    complaintText,
-    ...topicMatches.flatMap((topic) => [
-      topic.title,
-      topic.clinicalArea,
-      ...topic.keywords,
-      ...topic.variants.flatMap((variant) => [
-        variant.title,
-        variant.clinicalScenario,
-        ...variant.imagingOptions.map((item) => item.procedure),
-      ]),
-    ]),
-  ]
-    .join(' ')
-    .toLowerCase();
-}
+export function deriveScenarioQuestions(topicMatches: AppropriatenessTopic[], _complaintText: string): ScenarioQuestion[] {
+  const topic = topicMatches[0];
+  if (!topic) return [];
 
-export function deriveScenarioQuestions(topicMatches: AppropriatenessTopic[], complaintText: string): ScenarioQuestion[] {
-  const text = topicText(topicMatches, complaintText);
   const questions: ScenarioQuestion[] = [];
-
-  if (includesAny(text, ['headache', 'migraine', 'intracranial', 'brain', 'head'])) {
-    addQuestion(questions, {
-      id: 'headache-pattern',
-      label: 'Headache pattern',
-      type: 'multi',
-      options: [
-        option('Sudden severe / thunderclap', ['sudden', 'severe', 'thunderclap', 'maximal', '1 hour'], 'sudden severe headache reaching maximal intensity within 1 hour'),
-        option('Trauma', ['trauma', 'injury'], 'headache after trauma'),
-        option('Focal neurologic deficit', ['neurologic deficit', 'focal', 'stroke', 'weakness'], 'focal neurologic deficit'),
-        option('Cancer history', ['cancer', 'malignancy', 'metastatic'], 'history of cancer'),
-        option('Immunosuppression', ['immunosuppression', 'immunocompromised'], 'immunosuppression'),
-        option('Pregnancy / postpartum', ['pregnancy', 'pregnant', 'postpartum'], 'pregnancy/postpartum status relevant'),
-        option('Fever / meningism', ['fever', 'meningism', 'meningitis', 'infection'], 'fever or meningismus'),
-        option('Papilledema / raised ICP concern', ['papilledema', 'intracranial hypertension', 'raised icp'], 'papilledema or raised intracranial pressure concern'),
-        option('Chronic stable headache', ['chronic', 'stable', 'migraine'], 'chronic stable headache pattern'),
-        option('Anticoagulation', ['anticoagulation', 'anticoagulant'], 'anticoagulation history'),
-      ],
+  if (topic.variants.length > 1) {
+    questions.push({
+      id: 'acr-scenario',
+      label: 'Which extracted ACR clinical scenario best fits?',
+      type: 'single',
+      required: true,
+      options: topic.variants.map((variant) => ({
+        id: variant.id,
+        label: cleanVariantTitle(variant.title || variant.clinicalScenario),
+        mapsToKeywords: [],
+        mapsToVariantIds: [variant.id],
+        requisitionPhrase: '',
+        includeInRequisition: false,
+      })),
     });
   }
 
-  if (includesAny(text, ['low back', 'back pain', 'lumbar', 'spine', 'radiculopathy', 'cauda'])) {
-    addQuestion(questions, {
-      id: 'back-pain-red-flags',
-      label: 'Back pain context',
-      type: 'multi',
-      options: [
-        option('Trauma', ['trauma', 'fracture'], 'trauma history'),
-        option('Cancer history', ['cancer', 'malignancy'], 'cancer history'),
-        option('Fever / infection risk', ['fever', 'infection', 'discitis', 'osteomyelitis'], 'fever or infection risk'),
-        option('Neurologic deficit', ['neurologic deficit', 'radiculopathy', 'weakness'], 'neurologic deficit'),
-        option('Cauda equina symptoms', ['cauda', 'bowel', 'bladder', 'saddle'], 'cauda equina symptoms'),
-        option('Prior surgery', ['prior surgery', 'postoperative'], 'prior spine surgery'),
-        option('Duration > 6 weeks / failed conservative therapy', ['6 weeks', 'chronic', 'failed conservative'], 'symptoms persisting despite conservative treatment'),
-      ],
-    });
-  }
+  const additionalContext = contextQuestion(topic);
+  if (additionalContext) questions.push(additionalContext);
 
-  if (includesAny(text, ['pulmonary embol', 'pe ', 'ctpa'])) {
-    addQuestion(questions, {
-      id: 'pe-context',
-      label: 'Suspected PE context',
-      type: 'multi',
-      options: [
-        option('Pregnancy', ['pregnancy', 'pregnant'], 'pregnancy status relevant'),
-        option('Hemodynamic instability', ['unstable', 'hemodynamic', 'hypoxia'], 'hemodynamic instability or oxygenation concern'),
-        option('Contrast / renal concern', ['contrast', 'renal', 'kidney'], 'renal function or contrast concern'),
-        option('Pretest probability / D-dimer available', ['d-dimer', 'pretest', 'probability'], 'pretest probability/D-dimer context available'),
-        option('Abnormal CXR', ['abnormal chest radiograph', 'abnormal cxr'], 'abnormal chest radiograph'),
-      ],
-    });
-  }
-
-  if (includesAny(text, ['dvt', 'venous thrombosis', 'leg swelling'])) {
-    addQuestion(questions, {
-      id: 'dvt-context',
-      label: 'DVT context',
-      type: 'multi',
-      options: [
-        option('Unilateral leg swelling/pain', ['unilateral', 'leg swelling', 'pain'], 'unilateral leg swelling/pain'),
-        option('Pregnancy', ['pregnancy', 'pregnant'], 'pregnancy status relevant'),
-        option('Prior DVT', ['prior dvt', 'recurrent'], 'prior DVT history'),
-        option('Anticoagulation', ['anticoagulation', 'anticoagulant'], 'anticoagulation status'),
-        option('Suspected recurrent DVT', ['recurrent', 'prior dvt'], 'suspected recurrent DVT'),
-      ],
-    });
-  }
-
-  if (includesAny(text, ['hematuria', 'renal', 'flank', 'stone', 'urolithiasis', 'colic'])) {
-    addQuestion(questions, {
-      id: 'urinary-context',
-      label: 'Urinary tract context',
-      type: 'multi',
-      options: [
-        option('Gross hematuria', ['gross hematuria'], 'gross hematuria'),
-        option('Microscopic hematuria', ['microscopic hematuria'], 'microscopic hematuria'),
-        option('Flank pain / renal colic', ['flank', 'colic', 'stone', 'urolithiasis'], 'flank pain/renal colic'),
-        option('Infection symptoms', ['infection', 'fever', 'uti'], 'infection symptoms'),
-        option('Malignancy risk', ['malignancy', 'cancer', 'risk'], 'malignancy risk factors'),
-        option('Renal function / contrast concern', ['renal', 'contrast', 'kidney'], 'renal function/contrast concern'),
-        option('Pregnancy', ['pregnancy', 'pregnant'], 'pregnancy status relevant'),
-      ],
-    });
-  }
-
-  if (includesAny(text, ['abdominal', 'abdomen', 'appendicitis', 'obstruction', 'biliary', 'pancreatitis', 'ruq'])) {
-    addQuestion(questions, {
-      id: 'abdominal-context',
-      label: 'Abdominal pain context',
-      type: 'multi',
-      options: [
-        option('Right lower quadrant / appendicitis concern', ['appendicitis', 'right lower quadrant', 'rlq'], 'right lower quadrant pain/appendicitis concern'),
-        option('Bowel obstruction concern', ['obstruction', 'transition', 'distension'], 'bowel obstruction concern'),
-        option('RUQ / biliary concern', ['ruq', 'biliary', 'gallbladder', 'cholecystitis'], 'right upper quadrant/biliary concern'),
-        option('Pancreatitis concern', ['pancreatitis', 'lipase', 'pancreatic'], 'pancreatitis concern'),
-        option('Fever', ['fever', 'infection'], 'fever'),
-        option('Pregnancy', ['pregnancy', 'pregnant'], 'pregnancy status relevant'),
-        option('Prior surgery', ['prior surgery', 'adhesion'], 'prior surgery'),
-        option('Renal colic / hematuria', ['renal colic', 'flank', 'hematuria'], 'renal colic or hematuria'),
-      ],
-    });
-  }
-
-  addQuestion(questions, {
-    id: 'general-context',
-    label: 'General clinical context',
-    type: 'multi',
-    options: [
-      option('Acute presentation', ['acute', 'initial'], 'acute presentation'),
-      option('Chronic or recurrent', ['chronic', 'recurrent'], 'chronic or recurrent symptoms'),
-      option('Trauma', ['trauma', 'injury'], 'trauma history'),
-      option('Fever / infection concern', ['fever', 'infection'], 'fever or infection concern'),
-      option('Cancer history', ['cancer', 'malignancy'], 'cancer history'),
-      option('Immunosuppression', ['immunosuppression', 'immunocompromised'], 'immunosuppression'),
-      option('Pregnancy', ['pregnancy', 'pregnant'], 'pregnancy status relevant'),
-      option('Renal function / contrast concern', ['renal', 'contrast'], 'renal function/contrast concern'),
-      option('Prior imaging', ['prior imaging', 'comparison'], 'prior imaging/comparison available'),
-    ],
-  });
-
-  return questions.slice(0, 3);
+  return questions;
 }

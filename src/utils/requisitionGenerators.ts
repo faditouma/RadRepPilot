@@ -143,16 +143,20 @@ export function generateReferralText(form: ReferralFormState, style: Requisition
   const rawTone = form.tone ?? form.values.requisitionTone;
   const tone: 'polite' | 'direct' = rawTone === 'direct' ? 'direct' : 'polite';
   const symptom =
-    valueFor(form, 'positiveSymptoms') ||
     valueFor(form, 'mainSymptom') ||
+    valueFor(form, 'positiveSymptoms') ||
     valueFor(form, 'indication') ||
     valueFor(form, 'bodyPart') ||
     valueFor(form, 'painLocation') ||
     fallbackSymptom(template);
   const duration = valueFor(form, 'duration');
-  const question = valueFor(form, 'clinicalQuestion') || template.defaultQuestion;
   const requestedProcedure = valueFor(form, 'requestedProcedure');
   const acrScenario = valueFor(form, 'acrScenario');
+  const question =
+    valueFor(form, 'clinicalQuestion') ||
+    (valueFor(form, 'mainSymptom') && !acrScenario && !requestedProcedure
+      ? `Please advise on appropriate imaging for ${symptom}`
+      : template.defaultQuestion);
   const specialty = specialtyPhrases(form);
   const knownFor = join([
     pmhx,

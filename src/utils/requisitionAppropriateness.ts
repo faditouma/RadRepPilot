@@ -239,8 +239,8 @@ export function generateAppropriatenessAwareRequisitionSentence(
   const patient = age || sex ? `${age}${sex && sex !== 'Prefer not to specify' ? sex : ''}` : 'Patient';
   const pmhx = valueFor(form, 'pmhx');
   const symptom =
-    valueFor(form, 'positiveSymptoms') ||
     valueFor(form, 'mainSymptom') ||
+    valueFor(form, 'positiveSymptoms') ||
     valueFor(form, 'indication') ||
     valueFor(form, 'painLocation') ||
     template.description;

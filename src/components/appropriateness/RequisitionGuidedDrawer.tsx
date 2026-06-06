@@ -4,6 +4,7 @@ import { reviewStatusLabel } from '../../utils/appropriatenessSearch';
 import { deriveScenarioQuestions } from '../../utils/acrScenarioQuestions';
 import type { ScenarioAnswerMap } from '../../utils/acrScenarioMatching';
 import { rankVariants, selectedAnswerPhrases } from '../../utils/acrScenarioMatching';
+import { cleanVariantTitle } from '../../utils/requisitionTopicMatching';
 
 interface RequisitionGuidedSelection {
   topic: AppropriatenessTopic;
@@ -63,20 +64,28 @@ export function RequisitionGuidedDrawer({
   const [step, setStep] = useState<'clarify' | 'recommend'>('clarify');
   const [answers, setAnswers] = useState<ScenarioAnswerMap>({});
   const [manualScenarioKey, setManualScenarioKey] = useState('');
-  const questions = useMemo(() => deriveScenarioQuestions(topicMatches, clinicalProblem), [clinicalProblem, topicMatches]);
-  const ranked = useMemo(() => rankVariants(topicMatches, answers, questions), [answers, questions, topicMatches]);
+  const [selectedTopicId, setSelectedTopicId] = useState('');
+  const selectedTopic = topicMatches.find((topic) => topic.id === selectedTopicId)
+    ?? (topicMatches.length === 1 ? topicMatches[0] : undefined);
+  const questions = useMemo(() => deriveScenarioQuestions(selectedTopic ? [selectedTopic] : [], clinicalProblem), [clinicalProblem, selectedTopic]);
+  const ranked = useMemo(() => rankVariants(selectedTopic ? [selectedTopic] : [], answers, questions), [answers, questions, selectedTopic]);
   const selectedScenario = useMemo(() => {
     const manual = ranked.find((item) => `${item.topic.id}:${item.variant.id}` === manualScenarioKey);
     return manual ?? ranked[0];
   }, [manualScenarioKey, ranked]);
   const optionsByCategory = useMemo(() => groupedOptions(selectedScenario?.variant), [selectedScenario?.variant]);
   const answerPhrases = useMemo(() => selectedAnswerPhrases(questions, answers), [answers, questions]);
+  const requiredAnswersComplete = questions
+    .filter((question) => question.required)
+    .every((question) => Boolean(answers[question.id]?.length));
 
   useEffect(() => {
     if (!open) return;
     setStep('clarify');
     setManualScenarioKey('');
-  }, [open, clinicalProblem]);
+    setAnswers({});
+    setSelectedTopicId(topicMatches.length === 1 ? topicMatches[0].id : '');
+  }, [open, clinicalProblem, topicMatches]);
 
   const toggleOption = (questionId: string, optionId: string, mode: 'single' | 'multi' | 'boolean') => {
     setAnswers((existing) => {
@@ -117,31 +126,60 @@ export function RequisitionGuidedDrawer({
         {step === 'clarify' ? (
           <div className="guided-drawer-body">
             <p className="guide-status-note">
-              Answer only what is known. This helps match the clinical problem to the most relevant ACR scenario.
+              Choose the closest extracted ACR topic and scenario. Add only context that is known.
             </p>
-            {questions.map((question) => (
-              <section className="guided-question-card" key={question.id}>
-                <h4>{question.label}</h4>
+            {topicMatches.length > 1 ? (
+              <section className="guided-question-card">
+                <h4>Which extracted ACR topic best matches the clinical problem?</h4>
                 <div className="guided-answer-grid">
-                  {question.options.map((item) => {
-                    const active = answers[question.id]?.includes(item.id);
-                    return (
-                      <button
-                        className={`guided-answer-pill ${active ? 'active' : ''}`}
-                        onClick={() => toggleOption(question.id, item.id, question.type)}
-                        type="button"
-                        aria-pressed={active}
-                        key={item.id}
-                      >
-                        {item.label}
-                      </button>
-                    );
-                  })}
+                  {topicMatches.map((topic) => (
+                    <button
+                      className={`guided-answer-pill ${selectedTopic?.id === topic.id ? 'active' : ''}`}
+                      onClick={() => {
+                        setSelectedTopicId(topic.id);
+                        setAnswers({});
+                        setManualScenarioKey('');
+                      }}
+                      type="button"
+                      aria-pressed={selectedTopic?.id === topic.id}
+                      key={topic.id}
+                    >
+                      {topic.title}
+                    </button>
+                  ))}
                 </div>
               </section>
-            ))}
+            ) : null}
+            {selectedTopic ? questions.map((question) => (
+                <section className="guided-question-card" key={question.id}>
+                  <h4>{question.label}</h4>
+                  <div className="guided-answer-grid">
+                    {question.options.map((item) => {
+                      const active = Boolean(answers[question.id]?.includes(item.id));
+                      return (
+                        <button
+                          className={`guided-answer-pill ${active ? 'active' : ''}`}
+                          onClick={() => toggleOption(question.id, item.id, question.type)}
+                          type="button"
+                          aria-pressed={active}
+                          key={item.id}
+                        >
+                          {item.label}
+                        </button>
+                      );
+                    })}
+                  </div>
+                </section>
+              )) : (
+                <div className="inline-note">Choose the closest ACR topic before continuing.</div>
+              )}
             <div className="guided-drawer-actions">
-              <button className="primary-button" onClick={() => setStep('recommend')} type="button" disabled={!topicMatches.length}>
+              <button
+                className="primary-button"
+                onClick={() => setStep('recommend')}
+                type="button"
+                disabled={!selectedTopic || !requiredAnswersComplete}
+              >
                 Continue to recommended imaging
               </button>
               <button className="secondary-button" onClick={onClose} type="button">
@@ -158,7 +196,7 @@ export function RequisitionGuidedDrawer({
               <>
                 <section className="guided-selected-scenario">
                   <span className="eyebrow">Matched clinical scenario</span>
-                  <h4>{selectedScenario.variant.title || selectedScenario.variant.clinicalScenario}</h4>
+                  <h4>{cleanVariantTitle(selectedScenario.variant.title || selectedScenario.variant.clinicalScenario)}</h4>
                   <p>{selectedScenario.variant.clinicalScenario}</p>
                   <small>
                     {selectedScenario.topic.sourceLabel} · {reviewStatusLabel(selectedScenario.topic.reviewStatus)}
@@ -177,7 +215,7 @@ export function RequisitionGuidedDrawer({
                           key={`${item.topic.id}:${item.variant.id}`}
                         >
                           <span>{item.topic.title}</span>
-                          <strong>{item.variant.title}</strong>
+                          <strong>{cleanVariantTitle(item.variant.title)}</strong>
                           <small>{item.variant.clinicalScenario}</small>
                         </button>
                       ))}

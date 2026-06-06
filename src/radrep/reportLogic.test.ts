@@ -128,6 +128,45 @@ describe('RadRepPilot clinical text helpers', () => {
     expect(generateReferralText(form)).not.toContain('Please assess for/rule out assess for');
   });
 
+  it('keeps the entered clinical problem in an ACR-guided requisition', () => {
+    const form: ReferralFormState = {
+      requestType: 'ct-head-headache',
+      generatedText: '',
+      values: {
+        age: '67',
+        mainSymptom: 'headache',
+        positiveSymptoms: 'stale template symptom',
+        acrScenario: 'Headache: Sudden onset severe headache that reaches maximal severity within one hour.',
+        redFlags: 'sudden severe headache reaching maximal intensity within 1 hour; anticoagulation history',
+        requestedProcedure: 'CT head without IV contrast',
+        clinicalQuestion: 'Assess for acute intracranial hemorrhage or other acute intracranial abnormality',
+      },
+    };
+
+    const requisition = generateReferralText(form);
+    expect(requisition).toContain('presenting with headache');
+    expect(requisition).not.toContain('presenting with stale template symptom');
+    expect(requisition).toContain('CT head without IV contrast');
+    expect(requisition).toContain('acute intracranial hemorrhage');
+  });
+
+  it('does not leak a stale template question before guided imaging is selected', () => {
+    const requisition = generateReferralText({
+      requestType: 'ct-head-headache',
+      generatedText: '',
+      values: {
+        mainSymptom: 'abdominal pain attached',
+        clinicalQuestion: '',
+        requestedProcedure: '',
+        acrScenario: '',
+      },
+    });
+
+    expect(requisition).toContain('presenting with abdominal pain attached');
+    expect(requisition).toContain('Please advise on appropriate imaging for abdominal pain attached');
+    expect(requisition).not.toContain('intracranial');
+  });
+
   it('generates report-ready text for the new schema-driven workflows', () => {
     const appendicitis = generateReportingWorkflowReport('appendicitis', {
       ...reportingWorkflowSchemas.appendicitis.defaultValues,

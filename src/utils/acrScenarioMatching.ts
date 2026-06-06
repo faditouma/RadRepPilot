@@ -26,7 +26,7 @@ export function selectedAnswerKeywords(questions: ScenarioQuestion[], answers: S
 export function selectedAnswerPhrases(questions: ScenarioQuestion[], answers: ScenarioAnswerMap): string[] {
   const phrases = questions.flatMap((question) =>
     question.options
-      .filter((option) => answers[question.id]?.includes(option.id))
+      .filter((option) => option.includeInRequisition !== false && answers[question.id]?.includes(option.id))
       .map((option) => option.requisitionPhrase),
   );
   return Array.from(new Set(phrases.map((phrase) => phrase.trim()).filter(Boolean)));
@@ -51,17 +51,21 @@ export function scoreVariantAgainstAnswers(variant: AppropriatenessVariant, answ
 
 export function rankVariants(topicMatches: AppropriatenessTopic[], answers: ScenarioAnswerMap, questions: ScenarioQuestion[] = []): RankedScenario[] {
   const answerKeywords = selectedAnswerKeywords(questions, answers);
-  const expandedAnswers = {
-    ...answers,
-    __keywords: answerKeywords,
-  };
+  const selectedVariantIds = new Set(
+    questions.flatMap((question) =>
+      question.options
+        .filter((option) => answers[question.id]?.includes(option.id))
+        .flatMap((option) => option.mapsToVariantIds ?? []),
+    ),
+  );
+  const contextualAnswers = { __keywords: answerKeywords };
 
   return topicMatches
     .flatMap((topic) =>
       topic.variants.map((variant) => {
-        const topicContext = [topic.title, topic.clinicalArea, ...topic.keywords].join(' ');
-        const score = scoreVariantAgainstAnswers(variant, expandedAnswers, topicContext);
-        const scenarioText = normalize([topicContext, variant.title, variant.clinicalScenario].join(' '));
+        const directScenarioScore = selectedVariantIds.has(variant.id) ? 1000 : 0;
+        const score = directScenarioScore + scoreVariantAgainstAnswers(variant, contextualAnswers);
+        const scenarioText = normalize([variant.title, variant.clinicalScenario].join(' '));
         const matchedKeywords = answerKeywords.filter((keyword) => scenarioText.includes(keyword));
         return { topic, variant, score, matchedKeywords };
       }),

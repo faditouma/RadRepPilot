@@ -58,7 +58,7 @@ export const clinicalComplaintMappings: ClinicalComplaintMapping[] = [
     id: 'renal-colic',
     complaint: 'Renal colic',
     synonyms: ['flank pain', 'kidney stone', 'ureteric stone', 'urolithiasis', 'hematuria with flank pain'],
-    relatedTopicIds: ['acute-onset-flank-pain-suspicion-of-stone-disease'],
+    relatedTopicIds: ['acute-onset-flank-pain-suspicion-of-stone-disease-urolithiasis'],
     missingInfoPrompts: [
       'Side and duration of pain',
       'Hematuria',
@@ -134,12 +134,15 @@ export const clinicalComplaintMappings: ClinicalComplaintMapping[] = [
   {
     id: 'abdominal-pain',
     complaint: 'Abdominal pain',
-    synonyms: ['acute abdomen', 'RLQ pain', 'LLQ pain', 'diffuse abdominal pain', 'bowel obstruction', 'appendicitis'],
+    synonyms: ['abdomen', 'abdominal pain', 'acute abdomen', 'RLQ pain', 'LLQ pain', 'diffuse abdominal pain', 'bowel obstruction', 'appendicitis'],
     relatedTopicIds: [
-      'right-lower-quadrant-pain-suspected-appendicitis',
-      'left-lower-quadrant-pain-suspected-diverticulitis',
+      'acute-nonlocalized-abdominal-pain',
+      'right-lower-quadrant-pain',
+      'left-lower-quadrant-pain',
       'suspected-small-bowel-obstruction',
-      'chronic-pancreatitis',
+      'right-upper-quadrant-pain',
+      'acute-pancreatitis',
+      'acute-onset-flank-pain-suspicion-of-stone-disease-urolithiasis',
     ],
     missingInfoPrompts: [
       'Pain location, onset, and duration',

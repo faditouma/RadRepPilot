@@ -1,16 +1,9 @@
 import { useEffect, useMemo, useState } from 'react';
 import type { PrimaryCareContentTemplate, ReferralFormState } from '../../radrep/types';
 import type { AppropriatenessTopic } from '../../data/appropriateness';
-import {
-  reviewStatusLabel,
-  searchAppropriatenessLayer,
-} from '../../utils/appropriatenessSearch';
-import {
-  getComplaintMappingById,
-  resolveAppropriatenessForComplaint,
-  resolveAppropriatenessForTopic,
-} from '../../utils/requisitionAppropriateness';
+import { getTopicById, reviewStatusLabel } from '../../utils/appropriatenessSearch';
 import { classifyRequestedImaging, type RequestedImagingCheck } from '../../utils/appropriatenessValidation';
+import { buildClinicalQuestion, cleanVariantTitle, findRequisitionTopicMatches } from '../../utils/requisitionTopicMatching';
 import { RequisitionGuidedDrawer } from './RequisitionGuidedDrawer';
 
 interface RequisitionAppropriatenessPanelProps {
@@ -22,6 +15,7 @@ interface RequisitionAppropriatenessPanelProps {
   onSelectTopicVariant?: (topicId: string, variantId: string) => void;
   onSelectScenario?: (scenario: { topicTitle: string; variantTitle: string; clinicalScenario: string; suggestedQuestion?: string }) => void;
   onApplyClinicalContext?: (phrases: string[]) => void;
+  onClinicalProblemChange?: (value: string) => void;
   onUpdateValue?: (fieldId: string, value: string) => void;
   onSelectImagingOption: (procedure: string, suggestedQuestion: string) => void;
   onAppropriatenessCheckChange?: (check: RequestedImagingCheck | null) => void;
@@ -34,27 +28,6 @@ function selectedTopicId(selectionId: string) {
 
 function selectionKeyForTopic(topicId: string) {
   return `topic:${topicId}`;
-}
-
-function uniqueTopics(topics: AppropriatenessTopic[]): AppropriatenessTopic[] {
-  const seen = new Set<string>();
-  const unique: AppropriatenessTopic[] = [];
-  topics.forEach((topic) => {
-    if (seen.has(topic.id)) return;
-    seen.add(topic.id);
-    unique.push(topic);
-  });
-  return unique;
-}
-
-function topicKeywords(topics: AppropriatenessTopic[]) {
-  const words = topics.flatMap((topic) => [
-    topic.title,
-    topic.clinicalArea,
-    ...topic.keywords,
-    ...topic.variants.map((variant) => variant.title),
-  ]);
-  return Array.from(new Set(words.flatMap((item) => item.split(/[;,/]/)).map((item) => item.trim()).filter(Boolean))).slice(0, 8);
 }
 
 function topicReviewSummary(topic?: AppropriatenessTopic) {
@@ -71,33 +44,23 @@ export function RequisitionAppropriatenessPanel({
   onSelectTopicVariant,
   onSelectScenario,
   onApplyClinicalContext,
+  onClinicalProblemChange,
   onUpdateValue,
   onSelectImagingOption,
   onAppropriatenessCheckChange,
   onOpenGuide,
 }: RequisitionAppropriatenessPanelProps) {
   const [drawerOpen, setDrawerOpen] = useState(false);
-  const clinicalProblem = String(form.values.mainSymptom || form.values.indication || form.values.positiveSymptoms || '').trim();
+  const clinicalProblem = String(form.values.mainSymptom || form.values.indication || form.values.positiveSymptoms || '');
+  const clinicalProblemQuery = clinicalProblem.trim();
   const age = typeof form.values.age === 'string' ? form.values.age : '';
   const sex = typeof form.values.sex === 'string' ? form.values.sex : '';
   const directTopicId = selectedTopicId(selectedComplaintId);
-  const mapping = directTopicId ? undefined : getComplaintMappingById(selectedComplaintId);
-  const support = directTopicId ? resolveAppropriatenessForTopic(directTopicId) : resolveAppropriatenessForComplaint(mapping);
-  const selectedTopic = directTopicId ? support.relatedTopics.find((item) => item.topicId === directTopicId)?.topic : support.relatedTopics[0]?.topic;
-  const selectedVariant = selectedTopic?.variants.find((variant) => variant.id === preferredVariantId)
-    ?? support.relatedTopics.flatMap((item) => item.suggestedVariants).find((variant) => variant.id === preferredVariantId)
-    ?? selectedTopic?.variants[0];
-  const searched = useMemo(() => {
-    if (!clinicalProblem) return { complaintMappings: [], topics: [] };
-    return searchAppropriatenessLayer(clinicalProblem);
-  }, [clinicalProblem]);
-  const topicMatches = useMemo(() => {
-    const fromComplaints = searched.complaintMappings.flatMap((complaint) =>
-      resolveAppropriatenessForComplaint(complaint).relatedTopics.map((item) => item.topic).filter((topic): topic is AppropriatenessTopic => Boolean(topic)),
-    );
-    return uniqueTopics([...fromComplaints, ...searched.topics]).slice(0, 8);
-  }, [searched]);
-  const possibleMatchLabels = topicKeywords(topicMatches);
+  const selectedTopic = directTopicId ? getTopicById(directTopicId) : undefined;
+  const selectedVariant = selectedTopic?.variants.find((variant) => variant.id === preferredVariantId);
+  const matchResult = useMemo(() => findRequisitionTopicMatches(clinicalProblemQuery), [clinicalProblemQuery]);
+  const topicMatches = matchResult.topics;
+  const possibleMatchLabels = topicMatches.map((topic) => topic.title);
   const activeOptions = selectedVariant?.imagingOptions ?? [];
   const appropriatenessCheck = useMemo(
     () => selectedVariant ? classifyRequestedImaging(String(form.values.requestedProcedure ?? ''), activeOptions) : null,
@@ -122,7 +85,7 @@ export function RequisitionAppropriatenessPanel({
           Clinical problem / indication
           <input
             value={clinicalProblem}
-            onChange={(event) => onUpdateValue?.('mainSymptom', event.target.value)}
+            onChange={(event) => onClinicalProblemChange?.(event.target.value)}
             placeholder="e.g. headache, low back pain, suspected PE, hematuria"
           />
         </label>
@@ -144,7 +107,7 @@ export function RequisitionAppropriatenessPanel({
 
       <div className="guided-match-summary">
         <span>Possible ACR matches found</span>
-        {clinicalProblem ? (
+        {clinicalProblemQuery ? (
           topicMatches.length ? (
             <>
               <p>{possibleMatchLabels.join(', ')}</p>
@@ -159,7 +122,7 @@ export function RequisitionAppropriatenessPanel({
       </div>
 
       <div className="button-row">
-        <button className="primary-button" type="button" onClick={() => setDrawerOpen(true)} disabled={!clinicalProblem.trim()}>
+        <button className="primary-button" type="button" onClick={() => setDrawerOpen(true)} disabled={!clinicalProblemQuery}>
           Find appropriate imaging
         </button>
         {selectedVariant ? (
@@ -173,7 +136,7 @@ export function RequisitionAppropriatenessPanel({
         <section className="selected-requisition-summary">
           <div>
             <span>Selected scenario</span>
-            <strong>{selectedVariant.title || selectedVariant.clinicalScenario}</strong>
+            <strong>{cleanVariantTitle(selectedVariant.title || selectedVariant.clinicalScenario)}</strong>
             <small>{selectedVariant.clinicalScenario}</small>
           </div>
           <div>
@@ -204,16 +167,16 @@ export function RequisitionAppropriatenessPanel({
                   }
                   onSelectScenario?.({
                     topicTitle: topic.title,
-                    variantTitle: variant.title,
+                    variantTitle: cleanVariantTitle(variant.title),
                     clinicalScenario: variant.clinicalScenario,
-                    suggestedQuestion: variant.requisitionSuggestions[0],
+                    suggestedQuestion: variant.requisitionSuggestions[0] || buildClinicalQuestion(topic, variant),
                   });
                 }}
                 type="button"
                 key={`${topic.id}-${variant.id}`}
               >
                 <span>{topic.title}</span>
-                <strong>{variant.title}</strong>
+                <strong>{cleanVariantTitle(variant.title)}</strong>
                 <small>{variant.clinicalScenario}</small>
               </button>
             )),
@@ -222,6 +185,7 @@ export function RequisitionAppropriatenessPanel({
       </details>
 
       <RequisitionGuidedDrawer
+        key={`${clinicalProblemQuery}:${drawerOpen ? 'open' : 'closed'}`}
         open={drawerOpen}
         clinicalProblem={clinicalProblem}
         age={age}
@@ -235,13 +199,14 @@ export function RequisitionAppropriatenessPanel({
             onSelectComplaint(selectionKeyForTopic(topic.id));
           }
           onApplyClinicalContext?.(answerPhrases);
+          const suggestedQuestion = variant.requisitionSuggestions[0] || buildClinicalQuestion(topic, variant);
           onSelectScenario?.({
             topicTitle: topic.title,
-            variantTitle: variant.title,
+            variantTitle: cleanVariantTitle(variant.title),
             clinicalScenario: variant.clinicalScenario,
-            suggestedQuestion: variant.requisitionSuggestions[0] || `Please assess for findings relevant to ${variant.title || topic.title}.`,
+            suggestedQuestion,
           });
-          onSelectImagingOption(option.procedure, variant.requisitionSuggestions[0] || `Please assess for findings relevant to ${variant.title || topic.title}.`);
+          onSelectImagingOption(option.procedure, suggestedQuestion);
         }}
       />
     </section>
