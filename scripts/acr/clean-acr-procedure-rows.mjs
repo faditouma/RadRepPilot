@@ -70,6 +70,39 @@ function rowToObject(headers, row) {
   return obj;
 }
 
+function classifyAcrOptionKind(procedure) {
+  const text = String(procedure ?? '').toLowerCase();
+
+  const treatmentTerms = [
+    'embolization',
+    'embolisation',
+    'drainage',
+    'aspiration',
+    'biopsy',
+    'ablation',
+    'thrombolysis',
+    'thrombectomy',
+    'stent',
+    'stenting',
+    'nephrostomy',
+    'cholecystostomy',
+    'arthrocentesis',
+    'injection',
+    'catheter',
+    'treatment',
+    'therapy',
+    'therapeutic',
+    'intervention',
+    'interventional',
+  ];
+
+  if (treatmentTerms.some((term) => text.includes(term))) {
+    return 'treatment_or_interventional';
+  }
+
+  return 'diagnostic_imaging';
+}
+
 function getField(row, candidates) {
   for (const key of candidates) {
     if (row[key] !== undefined) return row[key];
@@ -282,6 +315,7 @@ function buildClinicalIndex(cleanRows) {
       procedure,
       appropriateness,
       radiation,
+      optionKind: classifyAcrOptionKind(procedure),
     });
   }
 
