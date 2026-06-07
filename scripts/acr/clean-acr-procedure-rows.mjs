@@ -103,6 +103,42 @@ function classifyAcrOptionKind(procedure) {
   return 'diagnostic_imaging';
 }
 
+function isClearlyNotProcedure(value) {
+  const text = String(value ?? '').trim();
+  const lower = text.toLowerCase();
+
+  if (!text) return true;
+
+  // A procedure name should be short. Long paragraphs are narrative/source text.
+  if (text.length > 140) return true;
+
+  const badStarts = [
+    'panel members',
+    'summary of literature',
+    'literature review',
+    'introduction/background',
+    'background',
+    'references',
+    'variant',
+    'narrative',
+    'discussion',
+    'for additional information',
+    'appropriateness category',
+    'relative radiation level',
+    'rating comments',
+    'usually appropriate',
+    'may be appropriate',
+    'usually not appropriate',
+  ];
+
+  if (badStarts.some((prefix) => lower.startsWith(prefix))) return true;
+
+  const procedurePattern =
+    /^(ct|cta|ctu|mri|mra|mr\b|us\b|ultrasound|radiograph|radiography|x-ray|xray|fluoroscopy|nuclear medicine|fdg-pet|pet|pet\/ct|bone scan|venography|angiography|arteriography|mammography|tomosynthesis)\b/i;
+
+  return !procedurePattern.test(text);
+}
+
 function getField(row, candidates) {
   for (const key of candidates) {
     if (row[key] !== undefined) return row[key];
@@ -459,12 +495,20 @@ function buildClinicalIndex(cleanRows) {
       topic.scenarios.push(scenario);
     }
 
-    scenario.imagingOptions.push({
-      procedure,
-      appropriateness,
-      radiation,
-      optionKind: classifyAcrOptionKind(procedure),
-    });
+    if (isClearlyNotProcedure(procedure)) {
+  rejectedRows.push({
+    ...row,
+    rejectReason: 'non_procedure_narrative_or_invalid_procedure',
+  });
+  continue;
+}
+
+scenario.imagingOptions.push({
+  procedure,
+  appropriateness,
+  radiation,
+  optionKind: classifyAcrOptionKind(procedure),
+});
   }
 
   return Array.from(topicMap.values());
