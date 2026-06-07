@@ -1,11 +1,132 @@
-import { generatedAppropriatenessTopics } from './generated';
+import acrClinicalIndex from './normalized/acrClinicalIndex.json';
 import { clinicalComplaintMappings } from './clinicalMappings';
 import { chronicPancreatitisTopic } from './topics/chronicPancreatitis';
 import type { AppropriatenessTopic } from './types';
 
+type NormalizedAcrTopic = {
+  topicId: string;
+  topicTitle: string;
+  clinicalArea?: string;
+  complaintKeywords?: string[];
+  keywords?: string[];
+  scenarios?: Array<{
+    scenarioId: string;
+    scenarioTitle: string;
+    clinicalScenario?: string;
+    imagingOptions?: Array<{
+      procedure?: string;
+      appropriateness?: string;
+      appropriatenessCategory?: string;
+      radiation?: string;
+      radiationLevel?: string;
+      optionKind?: string;
+    }>;
+  }>;
+};
+
 function isPublicUsableTopic(topic: AppropriatenessTopic) {
   return ['extracted', 'needs_validation', 'reviewed', 'manually_curated'].includes(topic.reviewStatus);
 }
+
+function cleanScenarioTitle(value: string) {
+  return String(value ?? '')
+    .replace(/^variant\s+\d+\s*:\s*/i, '')
+    .trim();
+}
+
+function isProcedureUsable(value?: string) {
+  const text = String(value ?? '').trim();
+  const lower = text.toLowerCase();
+
+  if (!text) return false;
+  if (text.length > 140) return false;
+
+  if (
+    lower.startsWith('panel members') ||
+    lower.startsWith('summary of literature') ||
+    lower.includes('summary of literature review') ||
+    lower.includes('introduction/background') ||
+    lower.includes('initial imaging definition') ||
+    lower.includes('more than one procedure can be considered')
+  ) {
+    return false;
+  }
+
+  return true;
+}
+
+function normalizeAppropriateness(value?: string) {
+  const text = String(value ?? '').trim();
+
+  if (text === 'Usually Appropriate') return 'Usually Appropriate';
+  if (text === 'May Be Appropriate') return 'May Be Appropriate';
+  if (text === 'May Be Appropriate (Disagreement)') return 'May Be Appropriate (Disagreement)';
+  if (text === 'Usually Not Appropriate') return 'Usually Not Appropriate';
+
+  return 'May Be Appropriate';
+}
+
+function normalizeRadiation(value?: string) {
+  const text = String(value ?? '').trim();
+
+  if (text === 'O' || text === '0') return 'O';
+  if (text === '☢') return '☢';
+  if (text === '☢☢') return '☢☢';
+  if (text === '☢☢☢') return '☢☢☢';
+  if (text === '☢☢☢☢') return '☢☢☢☢';
+
+  return 'Unknown';
+}
+
+function convertNormalizedTopic(topic: NormalizedAcrTopic): AppropriatenessTopic {
+  const converted = {
+    id: topic.topicId,
+    title: topic.topicTitle,
+    clinicalArea: topic.clinicalArea || 'General',
+    sourceLabel: 'ACR Appropriateness Criteria · Extracted table',
+    sourceUrl: '',
+    reviewStatus: 'extracted',
+    keywords: Array.from(
+      new Set([
+        ...(topic.complaintKeywords ?? []),
+        ...(topic.keywords ?? []),
+        topic.topicTitle,
+      ].filter(Boolean)),
+    ),
+    variants: (topic.scenarios ?? [])
+      .map((scenario) => {
+        const imagingOptions = (scenario.imagingOptions ?? [])
+          .filter((option) => isProcedureUsable(option.procedure))
+          .map((option) => ({
+            procedure: String(option.procedure ?? '').trim(),
+            appropriatenessCategory: normalizeAppropriateness(
+              option.appropriatenessCategory ?? option.appropriateness,
+            ),
+            radiationLevel: normalizeRadiation(option.radiationLevel ?? option.radiation),
+            shortRationale: '',
+            optionKind:
+              option.optionKind === 'treatment_or_interventional'
+                ? 'treatment_or_interventional'
+                : 'diagnostic_imaging',
+          }));
+
+        return {
+          id: scenario.scenarioId,
+          title: cleanScenarioTitle(scenario.scenarioTitle),
+          clinicalScenario: cleanScenarioTitle(scenario.clinicalScenario || scenario.scenarioTitle),
+          imagingOptions,
+          requisitionSuggestions: [],
+        };
+      })
+      .filter((variant) => variant.imagingOptions.length > 0),
+  };
+
+  return converted as unknown as AppropriatenessTopic;
+}
+
+const normalizedAppropriatenessTopics: AppropriatenessTopic[] = (
+  acrClinicalIndex as NormalizedAcrTopic[]
+).map(convertNormalizedTopic);
 
 const manuallyCuratedAppropriatenessTopics: AppropriatenessTopic[] = [
   chronicPancreatitisTopic,
@@ -13,26 +134,18 @@ const manuallyCuratedAppropriatenessTopics: AppropriatenessTopic[] = [
 
 const manualTopicIds = new Set(manuallyCuratedAppropriatenessTopics.map((topic) => topic.id));
 
-// Curated/generated topic import workflow:
-// 1. Import a topic from ./topics/[topicName].
-//    Generated extracted summaries are imported through ./generated/index.ts.
-// 2. Add manually reviewed topics to manuallyCuratedAppropriatenessTopics above.
-// 3. Use reviewStatus to label the topic honestly:
-//    extracted -> source table extracted only
-//    needs_validation -> usable table/summary but source validation pending
-//    reviewed -> reviewed against source
-//    manually_curated -> reviewed and enriched with local educational summaries
-// 4. Do not import raw JSON or full PDF text directly. Convert/review first.
 const allAppropriatenessTopicCandidates: AppropriatenessTopic[] = [
   ...manuallyCuratedAppropriatenessTopics,
-  ...generatedAppropriatenessTopics.filter((topic) => !manualTopicIds.has(topic.id)),
+  ...normalizedAppropriatenessTopics.filter((topic) => !manualTopicIds.has(topic.id)),
 ];
 
-export const pendingValidationAppropriatenessTopics: AppropriatenessTopic[] = allAppropriatenessTopicCandidates.filter(
-  (topic) => topic.reviewStatus === 'extracted' || topic.reviewStatus === 'needs_validation',
-);
+export const pendingValidationAppropriatenessTopics: AppropriatenessTopic[] =
+  allAppropriatenessTopicCandidates.filter(
+    (topic) => topic.reviewStatus === 'extracted' || topic.reviewStatus === 'needs_validation',
+  );
 
-export const appropriatenessTopics: AppropriatenessTopic[] = allAppropriatenessTopicCandidates.filter(isPublicUsableTopic);
+export const appropriatenessTopics: AppropriatenessTopic[] =
+  allAppropriatenessTopicCandidates.filter(isPublicUsableTopic);
 
 export function getAppropriatenessTopicById(topicId: string): AppropriatenessTopic | undefined {
   return appropriatenessTopics.find((topic) => topic.id === topicId);
