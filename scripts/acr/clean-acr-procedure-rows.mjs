@@ -250,6 +250,26 @@ function normalizeAppropriateness(value) {
   return String(value ?? "").trim() || "Unspecified";
 }
 
+function normalizeRadiation(value) {
+  const text = String(value ?? '').trim();
+
+  if (!text) return '';
+  if (text === 'O' || text === '0') return 'O';
+  if (text === '☢') return '☢';
+  if (text === '☢☢') return '☢☢';
+  if (text === '☢☢☢') return '☢☢☢';
+  if (text === '☢☢☢☢') return '☢☢☢☢';
+
+  const lower = text.toLowerCase();
+
+  if (lower === 'none') return 'O';
+  if (lower === 'low') return '☢☢';
+  if (lower === 'moderate') return '☢☢☢';
+  if (lower === 'higher' || lower === 'high') return '☢☢☢☢';
+
+  return text;
+}
+
 function deriveQuestionsFromScenario(topicTitle, variantTitle) {
   const text = `${topicTitle} ${variantTitle}`.toLowerCase();
   const questions = [];
@@ -454,9 +474,20 @@ function buildClinicalIndex(cleanRows) {
       getField(row, ["procedure", "procedure_name", "imaging_procedure"])
     );
     const appropriateness = normalizeAppropriateness(
-      getField(row, ["appropriateness", "rating_category", "category"])
-    );
-    const radiation = getField(row, ["radiation", "relative_radiation_level", "rrl"]) || "";
+  row.appropriateness_category ||
+  row.appropriatenessCategory ||
+  row.appropriateness ||
+  row.rating ||
+  row.category
+);
+
+const radiation = normalizeRadiation(
+  row.radiation_level ||
+  row.radiationLevel ||
+  row.radiation_level_plain ||
+  row.radiation ||
+  row.relative_radiation_level
+);
     const sourcePdf = getField(row, ["source_pdf", "pdf", "file", "filename"]) || "";
     const pageNumber = getField(row, ["page_number", "page"]) || "";
 
