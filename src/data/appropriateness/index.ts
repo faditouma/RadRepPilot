@@ -80,13 +80,25 @@ function normalizeRadiation(value?: string) {
 
 function convertNormalizedTopic(topic: NormalizedAcrTopic): AppropriatenessTopic {
   const converted = {
-    id: topic.topicId,
-    title: topic.topicTitle,
-    clinicalArea: topic.clinicalArea || 'General',
-    sourceLabel: 'ACR Appropriateness Criteria · Extracted table',
-    sourceUrl: '',
-    reviewStatus: 'extracted',
-    keywords: Array.from(
+  id: topic.topicId,
+  title: topic.topicTitle,
+  clinicalArea: topic.clinicalArea || 'General',
+  sourceLabel: 'ACR Appropriateness Criteria · Extracted table',
+  sourceUrl: '',
+  reviewStatus: 'extracted',
+
+  summary: 'Appropriateness table extracted. Clinical summary pending.',
+  requisitionWording:
+    'Use the selected ACR scenario and imaging option to generate a focused requisition.',
+  reportingPearls: [],
+  cautions: [
+    'This is an educational summary, not an imaging-ordering rule.',
+    'Confirm modality choice with local protocol and radiology guidance when needed.',
+  ],
+  followUpPearls: [],
+  missingInfoPrompts: [],
+
+  keywords: Array.from(
       new Set([
         ...(topic.complaintKeywords ?? []),
         ...(topic.keywords ?? []),
