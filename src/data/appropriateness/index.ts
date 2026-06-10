@@ -123,12 +123,13 @@ function convertNormalizedTopic(topic: NormalizedAcrTopic): AppropriatenessTopic
           }));
 
         return {
-          id: scenario.scenarioId,
-          title: cleanScenarioTitle(scenario.scenarioTitle),
-          clinicalScenario: cleanScenarioTitle(scenario.clinicalScenario || scenario.scenarioTitle),
-          imagingOptions,
-          requisitionSuggestions: [],
-        };
+  id: scenario.scenarioId,
+  title: cleanScenarioTitle(scenario.scenarioTitle),
+  clinicalScenario: cleanScenarioTitle(scenario.clinicalScenario || scenario.scenarioTitle),
+  imagingOptions,
+  requisitionSuggestions: [],
+  missingInformationPrompts: [],
+};
       })
       .filter((variant) => variant.imagingOptions.length > 0),
   };
