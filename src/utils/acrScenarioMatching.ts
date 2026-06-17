@@ -3,6 +3,11 @@ import type { ScenarioQuestion } from './acrScenarioQuestions';
 
 export type ScenarioAnswerMap = Record<string, string[]>;
 
+export interface ScenarioMatchingContext {
+  age?: string;
+  sex?: string;
+}
+
 export interface RankedScenario {
   topic: AppropriatenessTopic;
   variant: AppropriatenessVariant;
@@ -22,6 +27,20 @@ function selectedOptions(questions: ScenarioQuestion[], answers: ScenarioAnswerM
   return questions.flatMap((question) =>
     question.options.filter((option) => answers[question.id]?.includes(option.id))
   );
+}
+
+function numericAge(age?: string): number | undefined {
+  const match = String(age ?? '').match(/\d+/);
+  if (!match) return undefined;
+  const parsed = Number(match[0]);
+  return Number.isFinite(parsed) ? parsed : undefined;
+}
+
+function normalizedSex(sex?: string) {
+  const value = normalize(String(sex ?? ''));
+  if (['f', 'female', 'woman'].includes(value)) return 'female';
+  if (['m', 'male', 'man'].includes(value)) return 'male';
+  return '';
 }
 
 export function selectedAnswerKeywords(questions: ScenarioQuestion[], answers: ScenarioAnswerMap): string[] {
@@ -52,11 +71,38 @@ function keywordScore(keyword: string, haystack: string) {
   return tokenHits * 2;
 }
 
+function populationScore(variant: AppropriatenessVariant, context?: ScenarioMatchingContext) {
+  const text = normalize([variant.title, variant.clinicalScenario].join(' '));
+  const age = numericAge(context?.age);
+  const sex = normalizedSex(context?.sex);
+  let score = 0;
+
+  if (age !== undefined) {
+    if (age >= 50 && /(older age|greater than 50|>50|over 50)/.test(text)) score += 35;
+    if (age < 18 && /(child|children|pediatric|paediatric|adolescent)/.test(text)) score += 45;
+    if (age >= 18 && /(adult|adults)/.test(text)) score += 20;
+    if (age >= 18 && /(child|children|pediatric|paediatric)/.test(text)) score -= 35;
+  }
+
+  if (sex === 'female') {
+    if (/(female|woman|women|pregnan|peripartum|postpartum|hcg|gynecologic|gynaecologic|adnexal|ovarian|uterine)/.test(text)) score += 18;
+    if (/(male|prostate|testicular|scrotal)/.test(text)) score -= 45;
+  }
+
+  if (sex === 'male') {
+    if (/(male|prostate|testicular|scrotal)/.test(text)) score += 18;
+    if (/(pregnan|peripartum|postpartum|hcg|gynecologic|gynaecologic|adnexal|ovarian|uterine)/.test(text)) score -= 45;
+  }
+
+  return score;
+}
+
 export function scoreVariantAgainstAnswers(
   variant: AppropriatenessVariant,
   answers: ScenarioAnswerMap,
   questions: ScenarioQuestion[] = [],
-  topicText = ''
+  topicText = '',
+  context?: ScenarioMatchingContext,
 ): number {
   const haystack = normalize([
     topicText,
@@ -66,18 +112,23 @@ export function scoreVariantAgainstAnswers(
   ].join(' '));
 
   const chosenOptions = selectedOptions(questions, answers);
+  const answerScore = chosenOptions.reduce((score, option) => {
+    if (option.mapsToVariantIds?.length) {
+      return score + (option.mapsToVariantIds.includes(variant.id) ? 120 : 0);
+    }
 
-  return chosenOptions.reduce((score, option) => {
-    const directVariantScore = option.mapsToVariantIds?.includes(variant.id) ? 100 : 0;
     const keywordTotal = option.mapsToKeywords.reduce((sum, keyword) => sum + keywordScore(keyword, haystack), 0);
-    return score + directVariantScore + keywordTotal;
+    return score + keywordTotal;
   }, 0);
+
+  return answerScore + populationScore(variant, context);
 }
 
 export function rankVariants(
   topicMatches: AppropriatenessTopic[],
   answers: ScenarioAnswerMap,
-  questions: ScenarioQuestion[] = []
+  questions: ScenarioQuestion[] = [],
+  context?: ScenarioMatchingContext,
 ): RankedScenario[] {
   const answerKeywords = selectedAnswerKeywords(questions, answers);
 
@@ -85,7 +136,7 @@ export function rankVariants(
     .flatMap((topic) =>
       topic.variants.map((variant) => {
         const topicText = [topic.title, topic.clinicalArea, ...topic.keywords].join(' ');
-        const score = scoreVariantAgainstAnswers(variant, answers, questions, topicText);
+        const score = scoreVariantAgainstAnswers(variant, answers, questions, topicText, context);
         const scenarioText = normalize([variant.title, variant.clinicalScenario].join(' '));
         const matchedKeywords = answerKeywords.filter((keyword) => scenarioText.includes(keyword));
 
@@ -107,7 +158,8 @@ export function rankVariants(
 export function getBestScenario(
   topicMatches: AppropriatenessTopic[],
   answers: ScenarioAnswerMap,
-  questions: ScenarioQuestion[] = []
+  questions: ScenarioQuestion[] = [],
+  context?: ScenarioMatchingContext,
 ): RankedScenario | undefined {
-  return rankVariants(topicMatches, answers, questions)[0];
+  return rankVariants(topicMatches, answers, questions, context)[0];
 }

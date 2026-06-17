@@ -1,5 +1,6 @@
 import type { AppropriatenessTopic, AppropriatenessVariant } from '../data/appropriateness';
 import { allAppropriatenessTopics, allClinicalMappings, getTopicById } from './appropriatenessSearch';
+import type { ScenarioMatchingContext } from './acrScenarioMatching';
 import type { ClinicalComplaintMapping } from '../data/appropriateness/clinicalMappings';
 
 const stopWords = new Set([
@@ -55,14 +56,23 @@ function scoreMapping(query: string, mapping: ClinicalComplaintMapping) {
   );
 }
 
-function scoreTopic(query: string, topic: AppropriatenessTopic) {
+function scoreTopic(query: string, topic: AppropriatenessTopic, context?: ScenarioMatchingContext) {
   const titleScore = Math.max(scoreCandidate(query, topic.title), scoreCandidate(query, topic.id.replace(/-/g, ' ')));
   const keywordScore = Math.max(0, ...topic.keywords.map((keyword) => scoreCandidate(query, keyword) - 25));
   const variantScore = Math.max(
     0,
     ...topic.variants.map((variant) => Math.max(scoreCandidate(query, variant.title), scoreCandidate(query, variant.clinicalScenario)) - 35),
   );
-  return Math.max(titleScore, keywordScore, variantScore);
+
+  const sex = String(context?.sex ?? '').toLowerCase();
+  const populationBoost = topic.variants.some((variant) => {
+    const text = normalize(String(variant.title) + ' ' + String(variant.clinicalScenario));
+    if (/^(f|female)$/.test(sex)) return /(pregnan|hcg|gynecologic|adnexal|ovarian|uterine)/.test(text);
+    if (/^(m|male)$/.test(sex)) return /(prostate|testicular|scrotal)/.test(text);
+    return false;
+  }) ? 8 : 0;
+
+  return Math.max(titleScore, keywordScore, variantScore) + populationBoost;
 }
 
 export interface RequisitionTopicMatchResult {
@@ -70,7 +80,7 @@ export interface RequisitionTopicMatchResult {
   topics: AppropriatenessTopic[];
 }
 
-export function findRequisitionTopicMatches(query: string): RequisitionTopicMatchResult {
+export function findRequisitionTopicMatches(query: string, context?: ScenarioMatchingContext): RequisitionTopicMatchResult {
   const normalizedQuery = normalize(query);
   if (!normalizedQuery) return { topics: [] };
 
@@ -88,7 +98,7 @@ export function findRequisitionTopicMatches(query: string): RequisitionTopicMatc
   }
 
   const topics = allAppropriatenessTopics()
-    .map((topic) => ({ topic, score: scoreTopic(normalizedQuery, topic) }))
+    .map((topic) => ({ topic, score: scoreTopic(normalizedQuery, topic, context) }))
     .filter((item) => item.score >= 55)
     .sort((a, b) => b.score - a.score)
     .slice(0, 8)

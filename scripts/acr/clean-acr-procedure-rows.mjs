@@ -241,11 +241,15 @@ function slugify(text) {
 }
 
 function normalizeAppropriateness(value) {
-  const text = String(value ?? "").toLowerCase();
+  const text = String(value ?? "").trim().toLowerCase();
 
+  if (!text) return "Unspecified";
+  if (text.includes("may be appropriate") && text.includes("disagreement")) {
+    return "May Be Appropriate (Disagreement)";
+  }
+  if (text.includes("usually not appropriate")) return "Usually Not Appropriate";
   if (text.includes("usually appropriate")) return "Usually Appropriate";
   if (text.includes("may be appropriate")) return "May Be Appropriate";
-  if (text.includes("usually not appropriate")) return "Usually Not Appropriate";
 
   return String(value ?? "").trim() || "Unspecified";
 }
@@ -259,19 +263,59 @@ function normalizeRadiation(value) {
   if (text === '☢☢') return '☢☢';
   if (text === '☢☢☢') return '☢☢☢';
   if (text === '☢☢☢☢') return '☢☢☢☢';
+  if (text === '☢☢☢☢☢') return '☢☢☢☢☢';
 
   const lower = text.toLowerCase();
 
-  if (lower === 'none') return 'O';
+  if (lower === 'none' || lower === 'no radiation') return 'O';
+  if (lower === 'very_low' || lower === 'very low') return '☢';
   if (lower === 'low') return '☢☢';
   if (lower === 'moderate') return '☢☢☢';
   if (lower === 'higher' || lower === 'high') return '☢☢☢☢';
+  if (lower === 'highest') return '☢☢☢☢☢';
+  if (lower === 'varies' || lower === 'variable') return 'Varies';
 
   return text;
 }
 
+function questionPolarityForRule(ruleId, text, keyword) {
+  const normalizedText = String(text ?? '').toLowerCase();
+  const normalizedKeyword = String(keyword ?? '').toLowerCase();
+  const redFlagIds = new Set([
+    'trauma',
+    'fever-infection',
+    'cancer',
+    'immunosuppression',
+    'pregnancy',
+    'neurologic-deficit',
+    'thunderclap',
+    'papilledema-icp',
+  ]);
+
+  if (normalizedText.includes('without any of the following') && redFlagIds.has(ruleId)) {
+    return 'absent';
+  }
+
+  const negationPatterns = [
+    'without ' + normalizedKeyword,
+    'no ' + normalizedKeyword,
+    'negative for ' + normalizedKeyword,
+    'absence of ' + normalizedKeyword,
+  ];
+
+  if (negationPatterns.some((pattern) => normalizedText.includes(pattern))) {
+    return 'absent';
+  }
+
+  if (ruleId === 'neurologic-deficit' && normalizedText.includes('normal neurologic')) {
+    return 'absent';
+  }
+
+  return 'present';
+}
+
 function deriveQuestionsFromScenario(topicTitle, variantTitle) {
-  const text = `${topicTitle} ${variantTitle}`.toLowerCase();
+  const text = String(topicTitle + ' ' + variantTitle).toLowerCase();
   const questions = [];
   const seen = new Set();
 
@@ -279,7 +323,7 @@ function deriveQuestionsFromScenario(topicTitle, variantTitle) {
     {
       id: "trauma",
       label: "Trauma or recent injury?",
-      keywords: ["trauma", "injury", "post-traumatic", "fracture"],
+      keywords: ["trauma", "injury", "post-traumatic", "posttraumatic", "fracture"],
       phrase: "trauma or recent injury",
     },
     {
@@ -297,40 +341,19 @@ function deriveQuestionsFromScenario(topicTitle, variantTitle) {
     {
       id: "fever-infection",
       label: "Fever, infection, sepsis, or abscess concern?",
-      keywords: [
-        "fever",
-        "infection",
-        "infectious",
-        "sepsis",
-        "abscess",
-        "pyelonephritis",
-        "osteomyelitis",
-      ],
+      keywords: ["fever", "infection", "infectious", "sepsis", "abscess", "pyelonephritis", "osteomyelitis"],
       phrase: "fever or infection concern",
     },
     {
       id: "cancer",
       label: "Known cancer or malignancy concern?",
-      keywords: [
-        "cancer",
-        "malignancy",
-        "neoplasm",
-        "tumor",
-        "metastatic",
-        "staging",
-        "surveillance",
-      ],
+      keywords: ["cancer", "malignancy", "neoplasm", "tumor", "metastatic", "staging", "surveillance"],
       phrase: "known cancer or malignancy concern",
     },
     {
       id: "immunosuppression",
       label: "Immunosuppression or neutropenia?",
-      keywords: [
-        "immunosuppression",
-        "immunocompromised",
-        "neutropenic",
-        "neutropenia",
-      ],
+      keywords: ["immunosuppression", "immunocompromised", "immunocompromise", "neutropenic", "neutropenia"],
       phrase: "immunosuppression or neutropenia",
     },
     {
@@ -384,14 +407,7 @@ function deriveQuestionsFromScenario(topicTitle, variantTitle) {
     {
       id: "flank-stone",
       label: "Flank pain, renal colic, or stone concern?",
-      keywords: [
-        "flank pain",
-        "renal colic",
-        "urolithiasis",
-        "stone disease",
-        "stone",
-        "hematuria",
-      ],
+      keywords: ["flank pain", "renal colic", "urolithiasis", "stone disease", "stone", "hematuria"],
       phrase: "flank pain, renal colic, or stone concern",
     },
     {
@@ -415,19 +431,19 @@ function deriveQuestionsFromScenario(topicTitle, variantTitle) {
     {
       id: "thunderclap",
       label: "Sudden severe/thunderclap headache?",
-      keywords: ["thunderclap", "sudden severe", "maximal severity"],
+      keywords: ["thunderclap", "sudden severe", "maximal severity", "sudden onset"],
       phrase: "sudden severe or thunderclap headache",
     },
     {
       id: "papilledema-icp",
       label: "Papilledema or raised ICP concern?",
-      keywords: ["papilledema", "intracranial hypertension", "raised icp", "intracranial pressure"],
+      keywords: ["papilledema", "intracranial hypertension", "raised icp", "intracranial pressure", "pulsatile tinnitus", "visual symptoms"],
       phrase: "papilledema or raised ICP concern",
     },
     {
       id: "anticoagulation",
       label: "Anticoagulation?",
-      keywords: ["anticoagulation", "anticoagulated"],
+      keywords: ["anticoagulation", "anticoagulated", "anticoagulant"],
       phrase: "anticoagulation",
     },
     {
@@ -444,13 +460,25 @@ function deriveQuestionsFromScenario(topicTitle, variantTitle) {
     },
   ];
 
+  if (text.includes('without any of the following') || text.includes('without red flags') || text.includes('no red flags')) {
+    questions.push({
+      id: 'no-red-flags',
+      label: 'No red flags identified?',
+      positivePhrase: 'no red flags identified',
+      polarity: 'present',
+    });
+    seen.add('no-red-flags');
+  }
+
   for (const rule of rules) {
-    if (rule.keywords.some((keyword) => text.includes(keyword)) && !seen.has(rule.id)) {
+    const matchedKeyword = rule.keywords.find((keyword) => text.includes(keyword));
+    if (matchedKeyword && !seen.has(rule.id)) {
       seen.add(rule.id);
       questions.push({
         id: rule.id,
         label: rule.label,
         positivePhrase: rule.phrase,
+        polarity: questionPolarityForRule(rule.id, text, matchedKeyword),
       });
     }
   }
@@ -488,8 +516,8 @@ const radiation = normalizeRadiation(
   row.radiation ||
   row.relative_radiation_level
 );
-    const sourcePdf = getField(row, ["source_pdf", "pdf", "file", "filename"]) || "";
-    const pageNumber = getField(row, ["page_number", "page"]) || "";
+    const sourcePdf = getField(row, ["source_file", "source_pdf", "pdf", "file", "filename"]) || "";
+    const pageNumber = getField(row, ["page_number", "page", "source_page"]) || "";
 
     const topicId = slugify(topicTitle);
     const scenarioId = slugify(`${topicTitle}-${variantTitle}`);
@@ -534,12 +562,24 @@ const radiation = normalizeRadiation(
   continue;
 }
 
-scenario.imagingOptions.push({
-  procedure,
-  appropriateness,
-  radiation,
-  optionKind: classifyAcrOptionKind(procedure),
+const optionKey = [procedure.toLowerCase().replace(/\s+/g, ' ').trim(), appropriateness, radiation].join('|');
+const alreadyAdded = scenario.imagingOptions.some((option) => {
+  const existingKey = [
+    String(option.procedure ?? '').toLowerCase().replace(/\s+/g, ' ').trim(),
+    option.appropriateness,
+    option.radiation,
+  ].join('|');
+  return existingKey === optionKey;
 });
+
+if (!alreadyAdded) {
+  scenario.imagingOptions.push({
+    procedure,
+    appropriateness,
+    radiation,
+    optionKind: classifyAcrOptionKind(procedure),
+  });
+}
   }
 
   return Array.from(topicMap.values());

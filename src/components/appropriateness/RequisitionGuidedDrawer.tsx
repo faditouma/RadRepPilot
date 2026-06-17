@@ -75,14 +75,16 @@ export function RequisitionGuidedDrawer({
     topicMatches.find((topic) => topic.id === selectedTopicId) ??
     (topicMatches.length === 1 ? topicMatches[0] : undefined);
 
+  const scenarioContext = useMemo(() => ({ age, sex }), [age, sex]);
+
   const questions = useMemo(
-    () => deriveScenarioQuestions(selectedTopic ? [selectedTopic] : [], clinicalProblem),
-    [clinicalProblem, selectedTopic]
+    () => deriveScenarioQuestions(selectedTopic ? [selectedTopic] : [], clinicalProblem, scenarioContext),
+    [clinicalProblem, scenarioContext, selectedTopic]
   );
 
   const ranked = useMemo(
-    () => rankVariants(selectedTopic ? [selectedTopic] : [], answers, questions),
-    [answers, questions, selectedTopic]
+    () => rankVariants(selectedTopic ? [selectedTopic] : [], answers, questions, scenarioContext),
+    [answers, questions, scenarioContext, selectedTopic]
   );
 
   const selectedScenario = useMemo(() => {

@@ -1,11 +1,34 @@
 import acrClinicalIndex from './normalized/acrClinicalIndex.json';
 import { clinicalComplaintMappings } from './clinicalMappings';
 import { chronicPancreatitisTopic } from './topics/chronicPancreatitis';
-import type { AppropriatenessTopic } from './types';
+import type {
+  AcrScenarioQuestion,
+  AppropriatenessCategory,
+  AppropriatenessTopic,
+  ImagingOption,
+  RadiationLevel,
+} from './types';
+
+type NormalizedAcrQuestion = {
+  id?: string;
+  label?: string;
+  positivePhrase?: string;
+  polarity?: 'present' | 'absent';
+};
+
+type NormalizedAcrOption = {
+  procedure?: string;
+  appropriateness?: string;
+  appropriatenessCategory?: string;
+  radiation?: string;
+  radiationLevel?: string;
+  optionKind?: string;
+};
 
 type NormalizedAcrTopic = {
   topicId: string;
   topicTitle: string;
+  year?: string;
   clinicalArea?: string;
   complaintKeywords?: string[];
   keywords?: string[];
@@ -13,14 +36,10 @@ type NormalizedAcrTopic = {
     scenarioId: string;
     scenarioTitle: string;
     clinicalScenario?: string;
-    imagingOptions?: Array<{
-      procedure?: string;
-      appropriateness?: string;
-      appropriatenessCategory?: string;
-      radiation?: string;
-      radiationLevel?: string;
-      optionKind?: string;
-    }>;
+    sourcePdf?: string;
+    pageNumber?: string;
+    questions?: NormalizedAcrQuestion[];
+    imagingOptions?: NormalizedAcrOption[];
   }>;
 };
 
@@ -31,6 +50,8 @@ function isPublicUsableTopic(topic: AppropriatenessTopic) {
 function cleanScenarioTitle(value: string) {
   return String(value ?? '')
     .replace(/^variant\s+\d+\s*:\s*/i, '')
+    .replace(/\s*initial imaging\.?\s*$/i, '')
+    .replace(/[.\s]+$/g, '')
     .trim();
 }
 
@@ -55,86 +76,154 @@ function isProcedureUsable(value?: string) {
   return true;
 }
 
-function normalizeAppropriateness(value?: string) {
-  const text = String(value ?? '').trim();
+function normalizeAppropriateness(value?: string): AppropriatenessCategory | undefined {
+  const text = String(value ?? '').trim().toLowerCase();
 
-  if (text === 'Usually Appropriate') return 'Usually Appropriate';
-  if (text === 'May Be Appropriate') return 'May Be Appropriate';
-  if (text === 'May Be Appropriate (Disagreement)') return 'May Be Appropriate (Disagreement)';
-  if (text === 'Usually Not Appropriate') return 'Usually Not Appropriate';
+  if (!text) return undefined;
+  if (text.includes('may be appropriate') && text.includes('disagreement')) return 'May Be Appropriate (Disagreement)';
+  if (text === 'usually appropriate' || text.includes('usually appropriate')) return 'Usually Appropriate';
+  if (text === 'may be appropriate' || text.includes('may be appropriate')) return 'May Be Appropriate';
+  if (text === 'usually not appropriate' || text.includes('usually not appropriate')) return 'Usually Not Appropriate';
 
-  return 'May Be Appropriate';
+  return undefined;
 }
 
-function normalizeRadiation(value?: string) {
+function normalizeRadiation(value?: string): RadiationLevel | undefined {
   const text = String(value ?? '').trim();
+  const lower = text.toLowerCase();
 
-  if (text === 'O' || text === '0') return 'O';
+  if (!text) return undefined;
+  if (text === 'O' || text === '0' || lower === 'none' || lower === 'no radiation') return 'O';
   if (text === '☢') return '☢';
   if (text === '☢☢') return '☢☢';
   if (text === '☢☢☢') return '☢☢☢';
   if (text === '☢☢☢☢') return '☢☢☢☢';
+  if (text === '☢☢☢☢☢') return '☢☢☢☢☢';
+  if (lower === 'varies' || lower === 'variable') return 'Varies';
+  if (lower === 'very_low' || lower === 'very low') return '☢';
+  if (lower === 'low') return '☢☢';
+  if (lower === 'moderate') return '☢☢☢';
+  if (lower === 'higher' || lower === 'high') return '☢☢☢☢';
+  if (lower === 'highest') return '☢☢☢☢☢';
 
-  return 'Unknown';
+  return undefined;
+}
+
+function normalizeQuestion(question: NormalizedAcrQuestion): AcrScenarioQuestion | undefined {
+  const id = String(question.id ?? '').trim();
+  const label = String(question.label ?? '').trim();
+  const positivePhrase = String(question.positivePhrase ?? label).trim();
+
+  if (!id || !label || !positivePhrase) return undefined;
+
+  return {
+    id,
+    label,
+    positivePhrase,
+    polarity: question.polarity === 'absent' ? 'absent' : 'present',
+  };
+}
+
+function optionKey(option: Pick<ImagingOption, 'procedure' | 'appropriatenessCategory' | 'radiationLevel'>) {
+  return [
+    option.procedure.toLowerCase().replace(/\s+/g, ' ').trim(),
+    option.appropriatenessCategory,
+    option.radiationLevel,
+  ].join('|');
+}
+
+function normalizeOption(option: NormalizedAcrOption): ImagingOption | undefined {
+  if (!isProcedureUsable(option.procedure)) return undefined;
+
+  const appropriatenessCategory = normalizeAppropriateness(option.appropriatenessCategory ?? option.appropriateness);
+  const radiationLevel = normalizeRadiation(option.radiationLevel ?? option.radiation);
+  const procedure = String(option.procedure ?? '').trim();
+
+  if (!procedure || !appropriatenessCategory || !radiationLevel) return undefined;
+
+  return {
+    procedure,
+    appropriatenessCategory,
+    radiationLevel,
+    shortRationale: procedure + ' is listed as ' + appropriatenessCategory + ' for this extracted ACR scenario.',
+    optionKind:
+      option.optionKind === 'treatment_or_interventional'
+        ? 'treatment_or_interventional'
+        : 'diagnostic_imaging',
+  };
+}
+
+function dedupeOptions(options: ImagingOption[]) {
+  const seen = new Set<string>();
+  return options.filter((option) => {
+    const key = optionKey(option);
+    if (seen.has(key)) return false;
+    seen.add(key);
+    return true;
+  });
 }
 
 function convertNormalizedTopic(topic: NormalizedAcrTopic): AppropriatenessTopic {
-  const converted = {
-  id: topic.topicId,
-  title: topic.topicTitle,
-  clinicalArea: topic.clinicalArea || 'General',
-  sourceLabel: 'ACR Appropriateness Criteria · Extracted table',
-  sourceUrl: '',
-  reviewStatus: 'extracted',
+  const variants = (topic.scenarios ?? [])
+    .map((scenario) => {
+      const imagingOptions = dedupeOptions(
+        (scenario.imagingOptions ?? [])
+          .map(normalizeOption)
+          .filter((option): option is ImagingOption => Boolean(option)),
+      );
 
-  summary: 'Appropriateness table extracted. Clinical summary pending.',
-  requisitionWording:
-    'Use the selected ACR scenario and imaging option to generate a focused requisition.',
-  reportingPearls: [],
-  cautions: [
-    'This is an educational summary, not an imaging-ordering rule.',
-    'Confirm modality choice with local protocol and radiology guidance when needed.',
-  ],
-  followUpPearls: [],
-  missingInfoPrompts: [],
+      const extractedQuestions = (scenario.questions ?? [])
+        .map(normalizeQuestion)
+        .filter((question): question is AcrScenarioQuestion => Boolean(question));
 
-  keywords: Array.from(
+      return {
+        id: scenario.scenarioId,
+        title: cleanScenarioTitle(scenario.scenarioTitle),
+        clinicalScenario: cleanScenarioTitle(scenario.clinicalScenario || scenario.scenarioTitle),
+        sourcePdf: scenario.sourcePdf || undefined,
+        pageNumber: scenario.pageNumber || undefined,
+        extractedQuestions,
+        imagingOptions,
+        requisitionSuggestions: [],
+        missingInformationPrompts: extractedQuestions.map((question) => question.label),
+        reportingPearls: [],
+        cautions: [],
+      };
+    })
+    .filter((variant) => variant.imagingOptions.length > 0);
+
+  return {
+    id: topic.topicId,
+    title: topic.topicTitle,
+    year: topic.year || '',
+    clinicalArea: topic.clinicalArea || 'General',
+    sourceLabel: 'ACR Appropriateness Criteria · Extracted table',
+    sourceUrl: '',
+    sourceNote: 'Extracted structured table summary. Validate against the original criteria and local protocol before clinical use.',
+    reviewStatus: 'extracted',
+    clinicalSummary: 'Appropriateness table extracted. Clinical summary pending.',
+    reportingPearls: [],
+    cautions: [
+      'This is an educational summary, not an imaging-ordering rule.',
+      'Confirm modality choice with local protocol and radiology guidance when needed.',
+    ],
+    followUpPearls: [],
+    missingClinicalInfoPrompts: [],
+    requisitionPearls: [],
+    keywords: Array.from(
       new Set([
         ...(topic.complaintKeywords ?? []),
         ...(topic.keywords ?? []),
         topic.topicTitle,
+        ...variants.flatMap((variant) => [
+          variant.title,
+          variant.clinicalScenario,
+          ...variant.extractedQuestions.map((question) => question.positivePhrase),
+        ]),
       ].filter(Boolean)),
     ),
-    variants: (topic.scenarios ?? [])
-      .map((scenario) => {
-        const imagingOptions = (scenario.imagingOptions ?? [])
-          .filter((option) => isProcedureUsable(option.procedure))
-          .map((option) => ({
-            procedure: String(option.procedure ?? '').trim(),
-            appropriatenessCategory: normalizeAppropriateness(
-              option.appropriatenessCategory ?? option.appropriateness,
-            ),
-            radiationLevel: normalizeRadiation(option.radiationLevel ?? option.radiation),
-            shortRationale: '',
-            optionKind:
-              option.optionKind === 'treatment_or_interventional'
-                ? 'treatment_or_interventional'
-                : 'diagnostic_imaging',
-          }));
-
-        return {
-  id: scenario.scenarioId,
-  title: cleanScenarioTitle(scenario.scenarioTitle),
-  clinicalScenario: cleanScenarioTitle(scenario.clinicalScenario || scenario.scenarioTitle),
-  imagingOptions,
-  requisitionSuggestions: [],
-  missingInformationPrompts: [],
-};
-      })
-      .filter((variant) => variant.imagingOptions.length > 0),
+    variants,
   };
-
-  return converted as unknown as AppropriatenessTopic;
 }
 
 const normalizedAppropriatenessTopics: AppropriatenessTopic[] = (
@@ -197,6 +286,8 @@ export function searchAppropriatenessTopics(query: string): AppropriatenessTopic
       ...topic.variants.flatMap((variant) => [
         variant.title,
         variant.clinicalScenario,
+        variant.sourcePdf ?? '',
+        ...((variant.extractedQuestions ?? []).map((question) => question.positivePhrase)),
         ...variant.imagingOptions.map((option) => option.procedure),
       ]),
     ]
@@ -208,6 +299,8 @@ export function searchAppropriatenessTopics(query: string): AppropriatenessTopic
 }
 
 export type {
+  AcrScenarioQuestion,
+  AcrScenarioQuestionPolarity,
   AppropriatenessCategory,
   AppropriatenessTopic,
   AppropriatenessVariant,

@@ -70,8 +70,8 @@ export function RequisitionAppropriatenessPanel({
   const selectedVariant = selectedTopic?.variants.find((variant) => variant.id === preferredVariantId);
 
   const matchResult = useMemo(
-    () => findRequisitionTopicMatches(clinicalProblemQuery),
-    [clinicalProblemQuery]
+    () => findRequisitionTopicMatches(clinicalProblemQuery, { age, sex }),
+    [age, clinicalProblemQuery, sex]
   );
 
   const topicMatches = matchResult.topics;

@@ -1,4 +1,6 @@
-import type { AppropriatenessTopic, AppropriatenessVariant } from '../data/appropriateness';
+import type { AcrScenarioQuestion, AppropriatenessTopic, AppropriatenessVariant } from '../data/appropriateness';
+import type { ScenarioMatchingContext } from './acrScenarioMatching';
+import { cleanVariantTitle } from './requisitionTopicMatching';
 
 export type ScenarioQuestionType = 'single' | 'multi' | 'boolean';
 
@@ -9,6 +11,7 @@ export interface ScenarioQuestionOption {
   mapsToVariantIds?: string[];
   requisitionPhrase: string;
   includeInRequisition?: boolean;
+  polarity?: 'present' | 'absent';
 }
 
 export interface ScenarioQuestion {
@@ -25,6 +28,10 @@ function normalizeText(text: string) {
 
 function normalizeId(text: string) {
   return text.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
+}
+
+function unique<T>(values: T[]): T[] {
+  return Array.from(new Set(values));
 }
 
 function variantText(variant: AppropriatenessVariant) {
@@ -46,7 +53,7 @@ function option(
   keywords: string[],
   variants: AppropriatenessVariant[],
   phrase = label,
-  includeInRequisition = true
+  includeInRequisition = true,
 ): ScenarioQuestionOption {
   return {
     id: normalizeId(label),
@@ -69,6 +76,85 @@ function hasTopicText(topic: AppropriatenessTopic, keywords: string[]) {
   return matchesAny(text, keywords);
 }
 
+function scenarioLabel(variant: AppropriatenessVariant) {
+  return cleanVariantTitle(variant.title || variant.clinicalScenario || 'ACR scenario');
+}
+
+function scenarioSelectionQuestion(topic: AppropriatenessTopic, context?: ScenarioMatchingContext): ScenarioQuestion | null {
+  const options = topic.variants.map((variant) => ({
+    id: variant.id,
+    label: scenarioLabel(variant),
+    mapsToKeywords: [variant.title, variant.clinicalScenario, ...((variant.extractedQuestions ?? []).map((item) => item.positivePhrase))],
+    mapsToVariantIds: [variant.id],
+    requisitionPhrase: '',
+    includeInRequisition: false,
+    polarity: 'present' as const,
+  }));
+
+  if (!options.length) return null;
+
+  return {
+    id: 'acr-scenario',
+    label: context?.age || context?.sex ? 'Closest ACR scenario after age/sex check' : 'Closest ACR scenario',
+    type: 'single' as const,
+    required: false,
+    options,
+  };
+}
+
+function cleanQuestionPhrase(question: AcrScenarioQuestion) {
+  return question.positivePhrase.replace(/[?]+$/g, '').trim();
+}
+
+function absentLabel(question: AcrScenarioQuestion) {
+  const base = cleanQuestionPhrase(question).replace(/^known\s+/i, '').replace(/^history of\s+/i, '');
+  return 'No ' + base;
+}
+
+function extractedQuestionGroup(topic: AppropriatenessTopic): ScenarioQuestion | null {
+  const optionMap = new Map<string, ScenarioQuestionOption>();
+
+  topic.variants.forEach((variant) => {
+    (variant.extractedQuestions ?? []).forEach((question) => {
+      const polarity = question.polarity ?? 'present';
+      const key = question.id + ':' + polarity;
+      const existing = optionMap.get(key);
+      const phrase = polarity === 'absent' ? absentLabel(question) : cleanQuestionPhrase(question);
+      const label = polarity === 'absent' ? absentLabel(question) : question.label;
+
+      if (existing) {
+        existing.mapsToVariantIds = unique([...(existing.mapsToVariantIds ?? []), variant.id]);
+        return;
+      }
+
+      optionMap.set(key, {
+        id: key,
+        label,
+        mapsToKeywords: [question.positivePhrase],
+        mapsToVariantIds: [variant.id],
+        requisitionPhrase: phrase,
+        includeInRequisition: true,
+        polarity,
+      });
+    });
+  });
+
+  const options = Array.from(optionMap.values()).sort((a, b) => {
+    if (a.polarity !== b.polarity) return a.polarity === 'present' ? -1 : 1;
+    return a.label.localeCompare(b.label);
+  });
+
+  if (!options.length) return null;
+
+  return {
+    id: 'acr-extracted-context',
+    label: 'Which ACR scenario details are present?',
+    type: 'multi' as const,
+    required: false,
+    options,
+  };
+}
+
 function headacheQuestions(topic: AppropriatenessTopic): ScenarioQuestion[] {
   const variants = topic.variants;
 
@@ -76,73 +162,20 @@ function headacheQuestions(topic: AppropriatenessTopic): ScenarioQuestion[] {
     {
       id: 'headache-pattern',
       label: 'Which headache pattern best fits?',
-      type: 'single',
-      required: true,
+      type: 'single' as const,
+      required: false,
       options: [
-        option(
-          'Sudden severe / thunderclap, maximal within 1 hour',
-          ['sudden onset severe', 'thunderclap', 'maximal severity', 'within one hour'],
-          variants,
-          'sudden severe thunderclap headache reaching maximal severity within 1 hour'
-        ),
-        option(
-          'Typical migraine or tension-type headache with normal neurologic exam',
-          ['primary migraine', 'tension type headache', 'normal neurologic examination'],
-          variants,
-          'headache consistent with migraine or tension-type pattern with normal neurologic exam'
-        ),
-        option(
-          'Trigeminal autonomic / cluster-type headache',
-          ['trigeminal autonomic', 'cluster headache'],
-          variants,
-          'trigeminal autonomic or cluster-type headache pattern'
-        ),
-        option(
-          'Raised ICP features / papilledema / worse with Valsalva',
-          ['intracranial hypertension', 'papilledema', 'pulsatile tinnitus', 'worse on valsalva'],
-          variants,
-          'features concerning for raised intracranial pressure'
-        ),
-        option(
-          'Intracranial hypotension pattern / positional, worse upright',
-          ['intracranial hypotension', 'positional', 'worse when upright', 'better when lying down'],
-          variants,
-          'positional headache concerning for intracranial hypotension'
-        ),
-        option(
-          'Pregnancy or peripartum onset',
-          ['pregnancy', 'peripartum', 'postpartum'],
-          variants,
-          'new headache during pregnancy or peripartum period'
-        ),
-        option(
-          'Red flags present',
-          ['red flags', 'fever', 'neurologic deficit', 'cancer', 'immunocompromise', 'older age', 'posttraumatic'],
-          variants,
-          'headache with red-flag features'
-        ),
-        option(
-          'No red flags identified',
-          ['without any of the following red flags', 'without red flags', 'no red flags'],
-          variants,
-          'no red-flag headache features identified'
-        ),
-      ],
+        option('Sudden severe / thunderclap, maximal within 1 hour', ['sudden onset severe', 'thunderclap', 'maximal severity', 'within one hour'], variants, 'sudden severe thunderclap headache reaching maximal severity within 1 hour'),
+        option('Typical migraine or tension-type headache with normal neurologic exam', ['primary migraine', 'tension type headache', 'normal neurologic examination'], variants, 'headache consistent with migraine or tension-type pattern with normal neurologic exam'),
+        option('Trigeminal autonomic / cluster-type headache', ['trigeminal autonomic', 'cluster headache'], variants, 'trigeminal autonomic or cluster-type headache pattern'),
+        option('Raised ICP features / papilledema / worse with Valsalva', ['intracranial hypertension', 'papilledema', 'pulsatile tinnitus', 'worse on valsalva'], variants, 'features concerning for raised intracranial pressure'),
+        option('Intracranial hypotension pattern / positional, worse upright', ['intracranial hypotension', 'positional', 'worse when upright', 'better when lying down'], variants, 'positional headache concerning for intracranial hypotension'),
+        option('Pregnancy or peripartum onset', ['pregnancy', 'peripartum', 'postpartum'], variants, 'new headache during pregnancy or peripartum period'),
+        option('Red flags present', ['red flags', 'fever', 'neurologic deficit', 'cancer', 'immunocompromise', 'older age', 'posttraumatic'], variants, 'headache with red-flag features'),
+        option('No red flags identified', ['without any of the following red flags', 'without red flags', 'no red flags'], variants, 'no red-flag headache features identified'),
+      ].filter((item) => item.mapsToVariantIds?.length),
     },
-    {
-      id: 'headache-red-flags',
-      label: 'Which red flags are present?',
-      type: 'multi',
-      options: [
-        option('Focal neurologic deficit', ['focal neurologic deficit', 'neurologic deficit'], variants, 'focal neurologic deficit'),
-        option('Fever / meningism', ['fever', 'meningism'], variants, 'fever or meningismus'),
-        option('Cancer history', ['cancer', 'malignancy'], variants, 'history of cancer'),
-        option('Immunosuppression', ['immunosuppression', 'immunocompromise', 'immunocompromised'], variants, 'immunosuppression'),
-        option('Recent trauma', ['trauma', 'posttraumatic', 'post traumatic'], variants, 'recent trauma'),
-        option('Anticoagulation', ['anticoagulation', 'anticoagulant'], variants, 'anticoagulation'),
-      ],
-    },
-  ];
+  ].filter((question) => question.options.length);
 }
 
 function pelvicQuestions(topic: AppropriatenessTopic): ScenarioQuestion[] {
@@ -152,8 +185,8 @@ function pelvicQuestions(topic: AppropriatenessTopic): ScenarioQuestion[] {
     {
       id: 'pelvic-problem',
       label: 'Which pelvic scenario best fits?',
-      type: 'single',
-      required: true,
+      type: 'single' as const,
+      required: false,
       options: [
         option('Acute pelvic pain, reproductive age', ['acute pelvic pain', 'reproductive age'], variants, 'acute pelvic pain in reproductive-age patient'),
         option('β-hCG positive', ['hcg positive', 'β hcg positive', 'pregnancy positive'], variants, 'β-hCG positive'),
@@ -162,9 +195,9 @@ function pelvicQuestions(topic: AppropriatenessTopic): ScenarioQuestion[] {
         option('Nongynecologic etiology suspected', ['nongynecological etiology suspected', 'nongynecologic etiology suspected'], variants, 'nongynecologic etiology suspected'),
         option('Adnexal mass suspected', ['adnexal mass'], variants, 'clinically suspected adnexal mass'),
         option('Endometriosis suspected', ['endometriosis'], variants, 'clinically suspected endometriosis'),
-      ],
+      ].filter((item) => item.mapsToVariantIds?.length),
     },
-  ];
+  ].filter((question) => question.options.length);
 }
 
 function abdominalQuestions(topic: AppropriatenessTopic): ScenarioQuestion[] {
@@ -174,8 +207,8 @@ function abdominalQuestions(topic: AppropriatenessTopic): ScenarioQuestion[] {
     {
       id: 'abdominal-location',
       label: 'Which abdominal scenario best fits?',
-      type: 'single',
-      required: true,
+      type: 'single' as const,
+      required: false,
       options: [
         option('Right lower quadrant / appendicitis concern', ['right lower quadrant', 'appendicitis', 'rlq'], variants, 'right lower quadrant pain or appendicitis concern'),
         option('Right upper quadrant / biliary concern', ['right upper quadrant', 'biliary', 'cholecystitis', 'ruq'], variants, 'right upper quadrant or biliary concern'),
@@ -184,22 +217,9 @@ function abdominalQuestions(topic: AppropriatenessTopic): ScenarioQuestion[] {
         option('Pancreatitis concern', ['pancreatitis'], variants, 'pancreatitis concern'),
         option('Bowel obstruction concern', ['bowel obstruction', 'small bowel obstruction', 'obstruction'], variants, 'bowel obstruction concern'),
         option('Acute nonlocalized abdominal pain', ['acute nonlocalized abdominal pain', 'nonlocalized abdominal pain'], variants, 'acute nonlocalized abdominal pain'),
-      ],
+      ].filter((item) => item.mapsToVariantIds?.length),
     },
-    {
-      id: 'abdominal-context',
-      label: 'Which additional abdominal context is known?',
-      type: 'multi',
-      options: [
-        option('Fever / infection concern', ['fever', 'infection', 'abscess', 'sepsis'], variants, 'fever or infection concern'),
-        option('Vomiting', ['vomiting'], variants, 'vomiting'),
-        option('Prior abdominal surgery / postoperative', ['prior surgery', 'postoperative', 'post op'], variants, 'prior abdominal surgery or postoperative state'),
-        option('Pregnancy', ['pregnancy', 'pregnant'], variants, 'pregnancy'),
-        option('Abnormal inflammatory markers', ['leukocytosis', 'inflammatory markers'], variants, 'abnormal inflammatory markers'),
-        option('Renal function / contrast concern', ['renal function', 'renal insufficiency', 'contrast'], variants, 'renal function or contrast concern'),
-      ],
-    },
-  ];
+  ].filter((question) => question.options.length);
 }
 
 function backPainQuestions(topic: AppropriatenessTopic): ScenarioQuestion[] {
@@ -208,9 +228,9 @@ function backPainQuestions(topic: AppropriatenessTopic): ScenarioQuestion[] {
   return [
     {
       id: 'back-pain-red-flags',
-      label: 'Which back-pain red flags are present?',
-      type: 'multi',
-      required: true,
+      label: 'Which back-pain context applies?',
+      type: 'multi' as const,
+      required: false,
       options: [
         option('Objective neurologic deficit', ['neurologic deficit', 'objective neurologic'], variants, 'objective neurologic deficit'),
         option('Cauda equina symptoms', ['cauda equina', 'bowel', 'bladder', 'saddle'], variants, 'cauda equina symptoms'),
@@ -219,9 +239,9 @@ function backPainQuestions(topic: AppropriatenessTopic): ScenarioQuestion[] {
         option('Recent trauma', ['trauma', 'fracture'], variants, 'recent trauma'),
         option('Prior lumbar surgery', ['prior surgery', 'postoperative'], variants, 'prior lumbar surgery'),
         option('No red flags identified', ['without red flags', 'no red flags', 'uncomplicated'], variants, 'no back-pain red flags identified'),
-      ],
+      ].filter((item) => item.mapsToVariantIds?.length),
     },
-  ];
+  ].filter((question) => question.options.length);
 }
 
 function peQuestions(topic: AppropriatenessTopic): ScenarioQuestion[] {
@@ -231,8 +251,8 @@ function peQuestions(topic: AppropriatenessTopic): ScenarioQuestion[] {
     {
       id: 'pe-context',
       label: 'Which suspected PE context applies?',
-      type: 'multi',
-      required: true,
+      type: 'multi' as const,
+      required: false,
       options: [
         option('High pretest probability', ['high pretest probability'], variants, 'high pretest probability for PE'),
         option('Positive D-dimer', ['positive d dimer', 'd dimer'], variants, 'positive D-dimer'),
@@ -240,9 +260,9 @@ function peQuestions(topic: AppropriatenessTopic): ScenarioQuestion[] {
         option('Hemodynamic instability', ['hemodynamic instability', 'unstable'], variants, 'hemodynamic instability'),
         option('Abnormal CXR', ['abnormal chest radiograph', 'abnormal cxr'], variants, 'abnormal chest radiograph'),
         option('Renal function / contrast concern', ['renal', 'contrast'], variants, 'renal function or contrast concern'),
-      ],
+      ].filter((item) => item.mapsToVariantIds?.length),
     },
-  ];
+  ].filter((question) => question.options.length);
 }
 
 function genericScenarioQuestions(topic: AppropriatenessTopic): ScenarioQuestion[] {
@@ -266,23 +286,36 @@ function genericScenarioQuestions(topic: AppropriatenessTopic): ScenarioQuestion
     {
       id: 'scenario-context',
       label: 'Which clinical context applies?',
-      type: 'multi',
+      type: 'multi' as const,
       options: candidateOptions,
     },
   ];
 }
 
-export function deriveScenarioQuestions(topicMatches: AppropriatenessTopic[], _complaintText: string): ScenarioQuestion[] {
+export function deriveScenarioQuestions(
+  topicMatches: AppropriatenessTopic[],
+  _complaintText: string,
+  context?: ScenarioMatchingContext,
+): ScenarioQuestion[] {
   const topic = topicMatches[0];
   if (!topic) return [];
 
-  if (hasTopicText(topic, ['headache'])) return headacheQuestions(topic);
-  if (hasTopicText(topic, ['pelvic pain', 'adnexal', 'endometriosis'])) return pelvicQuestions(topic);
-  if (hasTopicText(topic, ['low back pain', 'radiculopathy', 'cauda equina'])) return backPainQuestions(topic);
-  if (hasTopicText(topic, ['pulmonary embol'])) return peQuestions(topic);
-  if (hasTopicText(topic, ['abdominal', 'quadrant', 'pancreatitis', 'bowel obstruction', 'biliary', 'flank pain', 'urolithiasis'])) {
-    return abdominalQuestions(topic);
-  }
+  const scenarioQuestion = scenarioSelectionQuestion(topic, context);
+  const extractedQuestion = extractedQuestionGroup(topic);
 
-  return genericScenarioQuestions(topic);
+  const fallbackQuestions = (() => {
+    if (hasTopicText(topic, ['headache'])) return headacheQuestions(topic);
+    if (hasTopicText(topic, ['pelvic pain', 'adnexal', 'endometriosis'])) return pelvicQuestions(topic);
+    if (hasTopicText(topic, ['low back pain', 'radiculopathy', 'cauda equina'])) return backPainQuestions(topic);
+    if (hasTopicText(topic, ['pulmonary embol'])) return peQuestions(topic);
+    if (hasTopicText(topic, ['abdominal', 'quadrant', 'pancreatitis', 'bowel obstruction', 'biliary', 'flank pain', 'urolithiasis'])) {
+      return abdominalQuestions(topic);
+    }
+
+    return genericScenarioQuestions(topic);
+  })();
+
+  return [scenarioQuestion, extractedQuestion, ...fallbackQuestions].filter(
+    (question): question is ScenarioQuestion => Boolean(question && question.options.length),
+  );
 }
