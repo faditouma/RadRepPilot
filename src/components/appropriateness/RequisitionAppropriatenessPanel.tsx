@@ -110,27 +110,35 @@ export function RequisitionAppropriatenessPanel({
     onAppropriatenessCheckChange?.(appropriatenessCheck);
   }, [appropriatenessCheck, onAppropriatenessCheckChange]);
 
+  const startComplaintFlow = (complaint: string) => {
+    onClinicalProblemChange?.(complaint);
+    window.setTimeout(() => setDrawerOpen(true), 0);
+  };
+
   return (
     <section className="requisition-appropriateness-panel guided-requisition-panel">
-      <div className="guide-section-heading">
+      <div className="clinical-intake-heading">
         <div>
-          <span className="eyebrow">Clinical problem</span>
-          <h3>Start with the patient complaint</h3>
+          <span className="eyebrow">Clinical intake</span>
+          <h3>Start with a complaint</h3>
+          <p>Choose a common presentation or type the complaint. The questionnaire asks the details needed to match an imaging pathway.</p>
         </div>
       </div>
 
       <details className="complaint-starter-disclosure" open={!clinicalProblemQuery}>
-        <summary>Common complaint flows</summary>
+        <summary>Common presentations</summary>
         <div className="complaint-starter-grid" aria-label="Common imaging requisition complaint flows">
           {curatedComplaintStarters.map((mapping) => (
             <button
               className="complaint-starter-card"
               type="button"
-              onClick={() => onClinicalProblemChange?.(mapping.complaint)}
+              onClick={() => startComplaintFlow(mapping.complaint)}
               key={mapping.id}
             >
+              <span className="complaint-card-kicker">Flow</span>
               <strong>{mapping.complaint}</strong>
               <span>{mapping.missingInfoPrompts.slice(0, 2).join(' · ')}</span>
+              <em>Open questionnaire</em>
             </button>
           ))}
         </div>
@@ -192,7 +200,7 @@ export function RequisitionAppropriatenessPanel({
           onClick={() => setDrawerOpen(true)}
           disabled={!clinicalProblemQuery}
         >
-          Find appropriate imaging
+          Open questionnaire
         </button>
 
         {selectedVariant ? (
@@ -241,39 +249,6 @@ export function RequisitionAppropriatenessPanel({
           ) : null}
         </section>
       ) : null}
-
-      <details className="guide-section compact" open={false}>
-        <summary>View matching clinical situations</summary>
-        <div className="guided-alternative-list">
-          {topicMatches.flatMap((topic) =>
-            topic.variants.slice(0, 4).map((variant) => (
-              <button
-                className="requisition-match-card"
-                onClick={() => {
-                  if (onSelectTopicVariant) {
-                    onSelectTopicVariant(topic.id, variant.id);
-                  } else {
-                    onSelectComplaint(selectionKeyForTopic(topic.id));
-                  }
-
-                  onSelectScenario?.({
-                    topicTitle: topic.title,
-                    variantTitle: cleanVariantTitle(variant.title),
-                    clinicalScenario: variant.clinicalScenario,
-                    suggestedQuestion: variant.requisitionSuggestions[0] || buildClinicalQuestion(topic, variant),
-                  });
-                }}
-                type="button"
-                key={`${topic.id}-${variant.id}`}
-              >
-                <span>{topic.title}</span>
-                <strong>{cleanVariantTitle(variant.title)}</strong>
-                <small>{variant.clinicalScenario}</small>
-              </button>
-            ))
-          )}
-        </div>
-      </details>
 
       <RequisitionGuidedDrawer
         key={`${clinicalProblemQuery}:${drawerOpen ? 'open' : 'closed'}`}

@@ -1311,17 +1311,20 @@ function App({ embedded = false, initialPage = 'dashboard', onActivePageChange }
 
   const renderReferral = () => (
     <div className="page-stack">
-      <PageHeader
-        eyebrow="Imaging requisitions"
-        title="Imaging requisitions"
-        description="Search clinical complaints, review educational imaging guidance, and draft concise requisition wording."
-      />
+      {!embedded ? (
+        <PageHeader
+          eyebrow="Imaging requisitions"
+          title="Imaging requisitions"
+          description="Search clinical complaints, review educational imaging guidance, and draft concise requisition wording."
+        />
+      ) : null}
       <PrimaryCareRequestBuilder
         initialForm={referralForm}
         onInsertText={insertTextIntoBuilder}
         onSaveText={saveTextDraft}
         onOpenImagingGuide={openGuideTopic}
         onSidebarStateChange={setRequisitionSidebar}
+        compactHeader={embedded}
       />
     </div>
   );
@@ -1600,10 +1603,10 @@ function App({ embedded = false, initialPage = 'dashboard', onActivePageChange }
               <section className="workflow-side-card workflow-module-map">
                 <span className="eyebrow">Imaging requisition</span>
                 <h3>Search-first request</h3>
-                <p>Clinical problem → scenario → imaging → requisition</p>
+                <p>Complaint → questions → imaging → requisition</p>
                 <ol>
                   <li>Search problem</li>
-                  <li>Select scenario</li>
+                  <li>Answer questions</li>
                   <li>Choose imaging</li>
                   <li>Review draft</li>
                 </ol>

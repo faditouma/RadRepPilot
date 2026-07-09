@@ -44,6 +44,7 @@ interface GeneratedTextPanelProps {
   onInsertTarget?: (target: InsertTarget) => void;
   onSave: () => void;
   copyLabel?: string;
+  placeholder?: string;
 }
 
 const insertTargets: Array<{ target: InsertTarget; label: string }> = [
@@ -89,6 +90,7 @@ export function GeneratedTextPanel({
   onInsertTarget,
   onSave,
   copyLabel = 'Copy',
+  placeholder,
 }: GeneratedTextPanelProps) {
   return (
     <section className="generated-text-panel">
@@ -99,7 +101,7 @@ export function GeneratedTextPanel({
         </div>
         <CopyButton text={text} label={copyLabel} />
       </div>
-      <textarea value={text} onChange={(event) => onTextChange?.(event.target.value)} readOnly={!onTextChange} />
+      <textarea value={text} onChange={(event) => onTextChange?.(event.target.value)} readOnly={!onTextChange} placeholder={placeholder} />
       <div className="button-row generated-actions">
         <CopyButton text={text} label={copyLabel} className="primary-button" />
         {onInsertTarget ? (
@@ -810,6 +812,7 @@ interface PrimaryCareRequestBuilderProps {
   onSaveText: (title: string, type: DraftType, text: string, structuredData?: unknown) => void;
   onOpenImagingGuide?: (topicId: string, variantId?: string) => void;
   onSidebarStateChange?: (state: RequisitionSidebarState | null) => void;
+  compactHeader?: boolean;
 }
 
 type PrimaryCareViewMode = 'form' | 'preview' | 'split';
@@ -854,7 +857,14 @@ function appropriatenessSeverityLabel(check: RequestedImagingCheck) {
   return 'Select requested imaging';
 }
 
-export function PrimaryCareRequestBuilder({ initialForm, onInsertText, onSaveText, onOpenImagingGuide, onSidebarStateChange }: PrimaryCareRequestBuilderProps) {
+export function PrimaryCareRequestBuilder({
+  initialForm,
+  onInsertText,
+  onSaveText,
+  onOpenImagingGuide,
+  onSidebarStateChange,
+  compactHeader = false,
+}: PrimaryCareRequestBuilderProps) {
   const [mode, setMode] = useState<'quick' | 'detailed'>('quick');
   const [viewMode, setViewMode] = useState<PrimaryCareViewMode>(() => {
     if (typeof window === 'undefined') return 'form';
@@ -1289,6 +1299,7 @@ export function PrimaryCareRequestBuilder({ initialForm, onInsertText, onSaveTex
         onTextChange={(text) => setForm((existing) => ({ ...existing, generatedText: text }))}
         onSave={() => onSaveText(activeRequisitionTitle, 'referral', generated, { referralForm: { ...form, generatedText: generated }, requisitionText: generated })}
         copyLabel="Copy requisition"
+        placeholder="Choose a complaint, answer the questionnaire, and select an imaging option to generate an editable requisition."
       />
       <button className="secondary-button full-width-action" onClick={resetRequisition} type="button">
         Clear/reset
@@ -1298,11 +1309,23 @@ export function PrimaryCareRequestBuilder({ initialForm, onInsertText, onSaveTex
 
   return (
     <section className="primary-care-workspace">
-      <div className="primary-care-topbar">
-        <div>
-          <h2>Imaging requisitions</h2>
-          <p>Search a clinical complaint, answer focused questions, choose an imaging option, and draft a concise request.</p>
-        </div>
+      <div className={`primary-care-topbar ${compactHeader ? 'compact' : ''}`}>
+        {!compactHeader ? (
+          <div>
+            <h2>Imaging requisitions</h2>
+            <p>Search a clinical complaint, answer focused questions, choose an imaging option, and draft a concise request.</p>
+          </div>
+        ) : (
+          <div className="primary-care-flow-summary">
+            <span>Complaint</span>
+            <i />
+            <span>Clinical questions</span>
+            <i />
+            <span>Recommended imaging</span>
+            <i />
+            <span>Editable requisition</span>
+          </div>
+        )}
         <div className="primary-care-toggle-stack">
           <SegmentedControl
             value={viewMode}
@@ -1321,12 +1344,6 @@ export function PrimaryCareRequestBuilder({ initialForm, onInsertText, onSaveTex
           <div className={`request-main-grid ${viewMode}`}>
             {viewMode !== 'preview' ? (
               <section className="request-form-panel">
-                <div className="section-heading">
-                  <span className="eyebrow">Guided imaging request</span>
-                  <h3>Clinical problem to imaging request</h3>
-                  <p>Enter the clinical problem, clarify the scenario, then select an imaging option from the guided drawer.</p>
-                </div>
-
                 <RequisitionAppropriatenessPanel
                   template={template}
                   form={form}

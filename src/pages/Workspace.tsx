@@ -15,7 +15,7 @@ export function Workspace() {
     referral: {
       title: 'Imaging Requisition Workspace',
       description:
-        'Start with a clinical complaint, answer focused questions, review educational appropriateness guidance, and draft a concise imaging request without entering patient-identifying information.',
+        'Start with a clinical complaint, answer focused questions, review educational imaging guidance, and draft a concise request.',
     },
     imagingGuide: {
       title: 'Imaging Guide',

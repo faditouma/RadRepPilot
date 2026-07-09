@@ -1479,6 +1479,33 @@ fieldset.field {
   align-items: center;
 }
 
+.primary-care-topbar.compact {
+  padding: 10px 12px;
+  border-color: rgba(216, 224, 234, 0.78);
+  background: rgba(255, 255, 255, 0.78);
+  box-shadow: none;
+}
+
+.primary-care-flow-summary {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+  color: var(--muted);
+  font-size: 0.84rem;
+  font-weight: 820;
+}
+
+.primary-care-flow-summary span:first-child {
+  color: var(--blue-dark);
+}
+
+.primary-care-flow-summary i {
+  width: 18px;
+  height: 1px;
+  background: var(--line);
+}
+
 .primary-care-toggle-stack {
   display: flex;
   flex-wrap: wrap;
@@ -5163,6 +5190,101 @@ footer {
   gap: 12px;
 }
 
+.clinical-intake-heading {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  align-items: flex-start;
+}
+
+.clinical-intake-heading h3 {
+  margin: 4px 0 4px;
+}
+
+.clinical-intake-heading p {
+  max-width: 760px;
+  font-size: 0.95rem;
+}
+
+.complaint-starter-disclosure {
+  border: 1px solid rgba(216, 224, 234, 0.82);
+  border-radius: 16px;
+  background: rgba(255, 255, 255, 0.72);
+  overflow: hidden;
+}
+
+.complaint-starter-disclosure summary {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 11px 13px;
+  cursor: pointer;
+  color: var(--ink);
+  font-weight: 900;
+}
+
+.complaint-starter-disclosure summary::marker {
+  color: var(--primary);
+}
+
+.complaint-starter-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 210px), 1fr));
+  gap: 10px;
+  padding: 0 12px 12px;
+}
+
+.complaint-starter-card {
+  display: grid;
+  gap: 7px;
+  min-height: 128px;
+  text-align: left;
+  border: 1px solid rgba(216, 224, 234, 0.95);
+  border-radius: 15px;
+  padding: 12px;
+  background:
+    radial-gradient(circle at 100% 0%, rgba(6, 182, 212, 0.09), transparent 8rem),
+    linear-gradient(180deg, #fff, rgba(248, 250, 252, 0.9));
+  color: var(--slate);
+  box-shadow: 0 6px 18px rgba(15, 23, 42, 0.04);
+  cursor: pointer;
+  transition: transform 0.16s ease, box-shadow 0.16s ease, border-color 0.16s ease;
+}
+
+.complaint-starter-card:hover {
+  transform: translateY(-1px);
+  border-color: rgba(37, 99, 235, 0.34);
+  box-shadow: 0 14px 28px rgba(37, 99, 235, 0.1);
+}
+
+.complaint-starter-card .complaint-card-kicker {
+  color: var(--teal);
+  font-size: 0.68rem;
+  font-weight: 950;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+
+.complaint-starter-card strong {
+  color: var(--ink);
+  font-size: 1rem;
+  letter-spacing: -0.01em;
+}
+
+.complaint-starter-card span:not(.complaint-card-kicker) {
+  color: var(--muted);
+  font-size: 0.83rem;
+  line-height: 1.35;
+}
+
+.complaint-starter-card em {
+  align-self: end;
+  color: var(--blue-dark);
+  font-size: 0.78rem;
+  font-style: normal;
+  font-weight: 900;
+}
+
 .guided-main-fields {
   display: grid;
   grid-template-columns: minmax(0, 1fr) minmax(90px, 120px) minmax(130px, 170px);
@@ -5286,6 +5408,45 @@ footer {
   color: var(--slate);
 }
 
+.guided-question-select {
+  width: 100%;
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  background: #fff;
+  color: var(--ink);
+  padding: 10px 12px;
+  font: inherit;
+  font-weight: 760;
+}
+
+.guided-checkbox-list {
+  display: grid;
+  gap: 8px;
+}
+
+.guided-checkbox-row {
+  display: flex;
+  align-items: flex-start;
+  gap: 9px;
+  border: 1px solid rgba(216, 224, 234, 0.9);
+  border-radius: 11px;
+  padding: 9px 10px;
+  background: #fff;
+  color: var(--slate);
+  font-size: 0.88rem;
+  font-weight: 760;
+}
+
+.guided-checkbox-row input {
+  margin-top: 2px;
+}
+
+.guided-checkbox-row.active {
+  border-color: rgba(37, 99, 235, 0.32);
+  background: var(--blue-soft);
+  color: var(--blue-dark);
+}
+
 .guided-selected-scenario p,
 .guided-selected-scenario small {
   margin: 0;
@@ -5314,6 +5475,33 @@ footer {
   background: var(--blue-soft);
   color: var(--blue-dark);
   box-shadow: 0 8px 20px rgba(37, 99, 235, 0.08);
+}
+
+.guided-live-match {
+  display: grid;
+  gap: 6px;
+  border: 1px solid rgba(6, 182, 212, 0.22);
+  border-radius: 14px;
+  padding: 12px;
+  background: linear-gradient(135deg, rgba(236, 254, 255, 0.78), rgba(255, 255, 255, 0.96));
+}
+
+.guided-live-match span {
+  color: var(--teal);
+  font-size: 0.7rem;
+  font-weight: 950;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+
+.guided-live-match strong {
+  color: var(--ink);
+}
+
+.guided-live-match p {
+  margin: 0;
+  color: var(--muted);
+  line-height: 1.45;
 }
 
 .guided-drawer-actions {

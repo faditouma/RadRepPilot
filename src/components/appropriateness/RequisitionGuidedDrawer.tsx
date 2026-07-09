@@ -102,6 +102,16 @@ export function RequisitionGuidedDrawer({
     [answers, questions]
   );
 
+  const topRecommendedOptions = useMemo(
+    () =>
+      [
+        ...optionsByCategory['Usually Appropriate'],
+        ...optionsByCategory['May Be Appropriate'],
+        ...optionsByCategory['May Be Appropriate (Disagreement)'],
+      ].slice(0, 2),
+    [optionsByCategory],
+  );
+
   const requiredAnswersComplete = questions
     .filter((question) => question.required)
     .every((question) => Boolean(answers[question.id]?.length));
@@ -114,6 +124,13 @@ export function RequisitionGuidedDrawer({
     setAnswers({});
     setSelectedTopicId(topicMatches.length === 1 ? topicMatches[0].id : '');
   }, [open, clinicalProblem, topicMatches]);
+
+  const setSingleOption = (questionId: string, optionId: string) => {
+    setAnswers((existing) => ({
+      ...existing,
+      [questionId]: optionId ? [optionId] : [],
+    }));
+  };
 
   const toggleOption = (questionId: string, optionId: string, mode: 'single' | 'multi' | 'boolean') => {
     setAnswers((existing) => {
@@ -171,23 +188,22 @@ export function RequisitionGuidedDrawer({
             {topicMatches.length > 1 ? (
               <section className="guided-question-card">
                 <h4>Which clinical area best matches this complaint?</h4>
-                <div className="guided-answer-grid">
+                <select
+                  className="guided-question-select"
+                  value={selectedTopic?.id ?? ''}
+                  onChange={(event) => {
+                    setSelectedTopicId(event.target.value);
+                    setAnswers({});
+                    setManualScenarioKey('');
+                  }}
+                >
+                  <option value="">Choose clinical area...</option>
                   {topicMatches.map((topic) => (
-                    <button
-                      className={`guided-answer-pill ${selectedTopic?.id === topic.id ? 'active' : ''}`}
-                      onClick={() => {
-                        setSelectedTopicId(topic.id);
-                        setAnswers({});
-                        setManualScenarioKey('');
-                      }}
-                      type="button"
-                      aria-pressed={selectedTopic?.id === topic.id}
-                      key={topic.id}
-                    >
+                    <option value={topic.id} key={topic.id}>
                       {topic.title}
-                    </button>
+                    </option>
                   ))}
-                </div>
+                </select>
               </section>
             ) : null}
 
@@ -195,28 +211,56 @@ export function RequisitionGuidedDrawer({
               questions.map((question) => (
                 <section className="guided-question-card" key={question.id}>
                   <h4>{question.label}</h4>
-                  <div className="guided-answer-grid">
-                    {question.options.map((item) => {
-                      const active = Boolean(answers[question.id]?.includes(item.id));
-
-                      return (
-                        <button
-                          className={`guided-answer-pill ${active ? 'active' : ''}`}
-                          onClick={() => toggleOption(question.id, item.id, question.type)}
-                          type="button"
-                          aria-pressed={active}
-                          key={item.id}
-                        >
+                  {question.type === 'single' || question.type === 'boolean' ? (
+                    <select
+                      className="guided-question-select"
+                      value={answers[question.id]?.[0] ?? ''}
+                      onChange={(event) => setSingleOption(question.id, event.target.value)}
+                    >
+                      <option value="">Choose one...</option>
+                      {question.options.map((item) => (
+                        <option value={item.id} key={item.id}>
                           {item.label}
-                        </button>
-                      );
-                    })}
-                  </div>
+                        </option>
+                      ))}
+                    </select>
+                  ) : (
+                    <div className="guided-checkbox-list">
+                      {question.options.map((item) => {
+                        const active = Boolean(answers[question.id]?.includes(item.id));
+
+                        return (
+                          <label className={`guided-checkbox-row ${active ? 'active' : ''}`} key={item.id}>
+                            <input
+                              checked={active}
+                              onChange={() => toggleOption(question.id, item.id, question.type)}
+                              type="checkbox"
+                            />
+                            <span>{item.label}</span>
+                          </label>
+                        );
+                      })}
+                    </div>
+                  )}
                 </section>
               ))
             ) : (
               <div className="inline-note">Choose the closest clinical area before continuing.</div>
             )}
+
+            {selectedScenario ? (
+              <section className="guided-live-match">
+                <span>Current match</span>
+                <strong>{cleanVariantTitle(selectedScenario.variant.title || selectedScenario.variant.clinicalScenario)}</strong>
+                {topRecommendedOptions.length ? (
+                  <p>
+                    Likely imaging: {topRecommendedOptions.map((option) => option.procedure).join(' · ')}
+                  </p>
+                ) : (
+                  <p>Recommendation table pending for this clinical situation.</p>
+                )}
+              </section>
+            ) : null}
 
             <div className="guided-drawer-actions">
               <button
