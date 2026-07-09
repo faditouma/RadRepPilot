@@ -77,7 +77,7 @@ function hasTopicText(topic: AppropriatenessTopic, keywords: string[]) {
 }
 
 function scenarioLabel(variant: AppropriatenessVariant) {
-  return cleanVariantTitle(variant.title || variant.clinicalScenario || 'ACR scenario');
+  return cleanVariantTitle(variant.title || variant.clinicalScenario || 'Clinical situation');
 }
 
 function scenarioSelectionQuestion(topic: AppropriatenessTopic, context?: ScenarioMatchingContext): ScenarioQuestion | null {
@@ -95,7 +95,7 @@ function scenarioSelectionQuestion(topic: AppropriatenessTopic, context?: Scenar
 
   return {
     id: 'acr-scenario',
-    label: context?.age || context?.sex ? 'Closest ACR scenario after age/sex check' : 'Closest ACR scenario',
+    label: context?.age || context?.sex ? 'Closest clinical situation after age/sex check' : 'Closest clinical situation',
     type: 'single' as const,
     required: false,
     options,
@@ -148,7 +148,7 @@ function extractedQuestionGroup(topic: AppropriatenessTopic): ScenarioQuestion |
 
   return {
     id: 'acr-extracted-context',
-    label: 'Which ACR scenario details are present?',
+    label: 'Which details are present?',
     type: 'multi' as const,
     required: false,
     options,
@@ -265,6 +265,108 @@ function peQuestions(topic: AppropriatenessTopic): ScenarioQuestion[] {
   ].filter((question) => question.options.length);
 }
 
+
+function dvtQuestions(topic: AppropriatenessTopic): ScenarioQuestion[] {
+  const variants = topic.variants;
+
+  return [
+    {
+      id: 'dvt-context',
+      label: 'Which DVT context applies?',
+      type: 'multi' as const,
+      required: false,
+      options: [
+        option('Leg swelling or calf pain', ['leg swelling', 'calf', 'lower extremity'], variants, 'lower-limb swelling or calf pain'),
+        option('Pregnancy or postpartum', ['pregnancy', 'postpartum'], variants, 'pregnancy or postpartum context'),
+        option('Prior DVT or high VTE risk', ['prior dvt', 'previous dvt', 'high risk', 'vte'], variants, 'prior VTE or high VTE risk'),
+        option('Current anticoagulation', ['anticoagulation', 'anticoagulated'], variants, 'currently anticoagulated'),
+        option('Upper-extremity symptoms or catheter concern', ['upper extremity', 'catheter'], variants, 'upper-extremity symptoms or catheter concern'),
+      ].filter((item) => item.mapsToVariantIds?.length),
+    },
+  ].filter((question) => question.options.length);
+}
+
+function respiratoryQuestions(topic: AppropriatenessTopic): ScenarioQuestion[] {
+  const variants = topic.variants;
+
+  return [
+    {
+      id: 'respiratory-context',
+      label: 'Which respiratory context applies?',
+      type: 'multi' as const,
+      required: false,
+      options: [
+        option('Acute cough, fever, or suspected pneumonia', ['acute respiratory illness', 'pneumonia', 'immunocompetent'], variants, 'acute cough or suspected pneumonia'),
+        option('Immunocompromised', ['immunocompromised'], variants, 'immunocompromised status'),
+        option('Chronic cough', ['chronic cough'], variants, 'chronic cough'),
+        option('Chronic dyspnea', ['chronic dyspnea'], variants, 'chronic dyspnea'),
+        option('Hemoptysis', ['hemoptysis'], variants, 'hemoptysis'),
+        option('Possible TB or atypical infection', ['tuberculosis', 'tb'], variants, 'possible tuberculosis or atypical infection'),
+      ].filter((item) => item.mapsToVariantIds?.length),
+    },
+  ].filter((question) => question.options.length);
+}
+
+function chestPainQuestions(topic: AppropriatenessTopic): ScenarioQuestion[] {
+  const variants = topic.variants;
+
+  return [
+    {
+      id: 'chest-pain-context',
+      label: 'Which chest-pain context applies?',
+      type: 'multi' as const,
+      required: false,
+      options: [
+        option('Possible acute coronary syndrome', ['acute coronary syndrome', 'acs'], variants, 'possible acute coronary syndrome'),
+        option('Low probability coronary artery disease', ['low probability', 'nonspecific chest pain'], variants, 'low probability coronary artery disease'),
+        option('Pleuritic pain or PE concern', ['pulmonary embolism', 'pleuritic'], variants, 'pleuritic chest pain or PE concern'),
+        option('Chest wall pain or trauma', ['chest wall', 'trauma'], variants, 'chest wall pain or trauma context'),
+        option('Dyspnea or hypoxia', ['dyspnea', 'hypoxia'], variants, 'dyspnea or hypoxia'),
+      ].filter((item) => item.mapsToVariantIds?.length),
+    },
+  ].filter((question) => question.options.length);
+}
+
+function hematuriaQuestions(topic: AppropriatenessTopic): ScenarioQuestion[] {
+  const variants = topic.variants;
+
+  return [
+    {
+      id: 'hematuria-context',
+      label: 'Which hematuria context applies?',
+      type: 'multi' as const,
+      required: false,
+      options: [
+        option('Gross hematuria', ['gross hematuria'], variants, 'gross hematuria'),
+        option('Microscopic hematuria', ['microhematuria', 'microscopic'], variants, 'microscopic hematuria'),
+        option('Flank pain or stone symptoms', ['flank pain', 'stone', 'urolithiasis'], variants, 'flank pain or stone symptoms'),
+        option('Painless hematuria / malignancy risk', ['malignancy', 'cancer', 'risk'], variants, 'painless hematuria or malignancy risk factors'),
+        option('Renal function or contrast concern', ['renal', 'contrast'], variants, 'renal function or contrast concern'),
+      ].filter((item) => item.mapsToVariantIds?.length),
+    },
+  ].filter((question) => question.options.length);
+}
+
+function mskTraumaQuestions(topic: AppropriatenessTopic): ScenarioQuestion[] {
+  const variants = topic.variants;
+
+  return [
+    {
+      id: 'msk-trauma-context',
+      label: 'Which injury context applies?',
+      type: 'multi' as const,
+      required: false,
+      options: [
+        option('Initial radiographs not yet done', ['initial imaging', 'radiographs'], variants, 'initial injury imaging'),
+        option('Persistent pain after negative radiographs', ['negative radiographs', 'persistent pain'], variants, 'persistent pain after negative radiographs'),
+        option('Suspected fracture or dislocation', ['fracture', 'dislocation'], variants, 'suspected fracture or dislocation'),
+        option('Post-reduction or follow-up', ['postreduction', 'follow up', 'follow-up'], variants, 'post-reduction or follow-up assessment'),
+        option('Hardware or prior surgery', ['hardware', 'arthroplasty', 'postoperative'], variants, 'hardware or prior surgery'),
+      ].filter((item) => item.mapsToVariantIds?.length),
+    },
+  ].filter((question) => question.options.length);
+}
+
 function genericScenarioQuestions(topic: AppropriatenessTopic): ScenarioQuestion[] {
   const variants = topic.variants;
 
@@ -308,6 +410,13 @@ export function deriveScenarioQuestions(
     if (hasTopicText(topic, ['pelvic pain', 'adnexal', 'endometriosis'])) return pelvicQuestions(topic);
     if (hasTopicText(topic, ['low back pain', 'radiculopathy', 'cauda equina'])) return backPainQuestions(topic);
     if (hasTopicText(topic, ['pulmonary embol'])) return peQuestions(topic);
+    if (hasTopicText(topic, ['deep vein thrombosis', 'dvt', 'venous thrombosis'])) return dvtQuestions(topic);
+    if (hasTopicText(topic, ['chest pain', 'coronary artery disease', 'acute coronary'])) return chestPainQuestions(topic);
+    if (hasTopicText(topic, ['respiratory', 'cough', 'dyspnea', 'pneumonia', 'hemoptysis'])) return respiratoryQuestions(topic);
+    if (hasTopicText(topic, ['hematuria'])) return hematuriaQuestions(topic);
+    if (hasTopicText(topic, ['trauma', 'acute hand', 'acute hip', 'acute shoulder', 'acute elbow', 'acute ankle', 'acute foot'])) {
+      return mskTraumaQuestions(topic);
+    }
     if (hasTopicText(topic, ['abdominal', 'quadrant', 'pancreatitis', 'bowel obstruction', 'biliary', 'flank pain', 'urolithiasis'])) {
       return abdominalQuestions(topic);
     }
@@ -315,7 +424,11 @@ export function deriveScenarioQuestions(
     return genericScenarioQuestions(topic);
   })();
 
-  return [scenarioQuestion, extractedQuestion, ...fallbackQuestions].filter(
+  const clinicalQuestions = [extractedQuestion, ...fallbackQuestions].filter(
     (question): question is ScenarioQuestion => Boolean(question && question.options.length),
   );
+
+  return clinicalQuestions.length
+    ? clinicalQuestions
+    : [scenarioQuestion].filter((question): question is ScenarioQuestion => Boolean(question && question.options.length));
 }

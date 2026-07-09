@@ -30,7 +30,7 @@ export function PublicHome() {
           diagnoses.
         </div>
         <div className="public-home-actions">
-          <Link className="button-link" to="/workspace">
+          <Link className="button-link" to="/workspace/requisitions">
             Start using RadRepPilot
           </Link>
           <Link className="button-link" to="/signup">

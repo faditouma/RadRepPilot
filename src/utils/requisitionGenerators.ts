@@ -175,7 +175,7 @@ export function generateReferralText(form: ReferralFormState, style: Requisition
   if (style === 'detailed') {
     const details = join([
       valueFor(form, 'negativeSymptoms') ? `Pertinent negatives: ${valueFor(form, 'negativeSymptoms')}` : undefined,
-      acrScenario ? `Selected clinical scenario: ${acrScenario}.` : undefined,
+      acrScenario ? `Selected clinical situation: ${acrScenario}.` : undefined,
       surgicalHistory ? `Relevant surgical history: ${surgicalHistory}.` : undefined,
       specialty.length ? specialty.join('; ') : undefined,
       valueFor(form, 'redFlags') ? `Red flags: ${valueFor(form, 'redFlags')}` : undefined,
@@ -184,7 +184,7 @@ export function generateReferralText(form: ReferralFormState, style: Requisition
   }
 
   const objective = join([
-    acrScenario ? `Clinical scenario: ${acrScenario}` : undefined,
+    acrScenario ? `Clinical situation: ${acrScenario}` : undefined,
     valueFor(form, 'redFlags') ? `Clinical context: ${valueFor(form, 'redFlags')}` : undefined,
     valueFor(form, 'examFindings') ? `Exam: ${valueFor(form, 'examFindings')}` : undefined,
     valueFor(form, 'labs') ? `Labs: ${valueFor(form, 'labs')}` : undefined,

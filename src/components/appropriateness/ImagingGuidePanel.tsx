@@ -47,6 +47,21 @@ const radiationRank: Partial<Record<RadiationLevel, number>> = {
   Varies: 6,
 };
 
+const guideStarterSearches = [
+  'Headache',
+  'Abdominal pain',
+  'RUQ pain',
+  'Renal colic',
+  'Suspected PE',
+  'Suspected DVT',
+  'Low back pain',
+  'Hematuria',
+  'Chest pain',
+  'Cough / dyspnea',
+  'MSK trauma',
+  'Acute pancreatitis',
+];
+
 function categoryClass(category: AppropriatenessCategory) {
   if (category === 'Usually Appropriate') return 'usually';
   if (category === 'Usually Not Appropriate') return 'not-appropriate';
@@ -224,7 +239,7 @@ function buildTopicGroups(
     addGroup(
       'best',
       'Best matches',
-      'Ranked by title, variant, procedure, keyword, and complaint mapping matches.',
+      'Ranked by title, clinical situation, procedure, keyword, and complaint mapping matches.',
       sortedTopics.filter((topic) => scoreTopic(topic, query, mappedTopicIds) > 0).slice(0, 10)
     );
   }
@@ -324,7 +339,7 @@ function ComplaintMappingCard({
 
       {relatedTopics.some(({ topic }) => topic) ? (
         <div className="guide-reviewed-recommendations">
-          <h4>ACR-style recommendations</h4>
+          <h4>Imaging recommendations</h4>
           {relatedTopics
             .filter((item): item is { topicId: string; topic: AppropriatenessTopic } => Boolean(item.topic))
             .map(({ topic }) => {
@@ -380,7 +395,7 @@ function TopicResultCard({
 
       <div className="guide-topic-card-stats">
         {topic.year && topic.year !== 'unknown' ? <span>{topic.year}</span> : null}
-        <span>{topic.variants.length} variants</span>
+        <span>{topic.variants.length} clinical situations</span>
         <span>{procedureTypes.slice(0, 3).join(', ') || 'Procedure type pending'}</span>
       </div>
 
@@ -477,14 +492,24 @@ export function ImagingGuidePanel({ onUseInRequisition }: ImagingGuidePanelProps
     []
   );
 
+  const hasSearch = Boolean(query.trim());
+  const hasActiveFilter =
+    clinicalAreaFilter !== 'All' ||
+    procedureTypeFilter !== 'All' ||
+    categoryFilter !== 'All' ||
+    radiationFilter !== 'All' ||
+    reviewStatusFilter !== 'All';
+
   const visibleTopics = useMemo(() => {
-    const searchResults = searchAppropriatenessLayer(query).topics;
-    const candidateTopics = query.trim()
+    const searchResults = hasSearch ? searchAppropriatenessLayer(query).topics : [];
+    const candidateTopics = hasSearch
       ? uniqueTopics([
           ...searchResults,
           ...appropriatenessTopics.filter((topic) => mappedTopicIds.has(topic.id)),
         ])
-      : appropriatenessTopics;
+      : hasActiveFilter
+        ? appropriatenessTopics
+        : [];
 
     return candidateTopics.filter((topic) =>
       topicMatchesFilters(
@@ -499,6 +524,8 @@ export function ImagingGuidePanel({ onUseInRequisition }: ImagingGuidePanelProps
   }, [
     categoryFilter,
     clinicalAreaFilter,
+    hasActiveFilter,
+    hasSearch,
     mappedTopicIds,
     procedureTypeFilter,
     query,
@@ -525,7 +552,7 @@ export function ImagingGuidePanel({ onUseInRequisition }: ImagingGuidePanelProps
 
   const requisitionText = selectedVariantRequisitionSuggestions.length
     ? selectedVariantRequisitionSuggestions.join('\n\n')
-    : 'Requisition wording pending for this extracted variant. Use the selected clinical scenario and recommended imaging option to generate a focused request.';
+    : 'Requisition wording pending for this extracted table. Use the selected clinical situation and recommended imaging option to generate a focused request.';
 
   const extractedTopicCount = appropriatenessTopics.filter(
     (topic) => topic.reviewStatus === 'extracted' || topic.reviewStatus === 'needs_validation'
@@ -568,7 +595,7 @@ export function ImagingGuidePanel({ onUseInRequisition }: ImagingGuidePanelProps
       <div className="guide-layout">
         <aside className="guide-topic-panel">
           <label className="guide-search-label" htmlFor="imaging-guide-search">
-            Search topic, complaint, variant, procedure, or keyword
+            Search complaint, topic, clinical situation, procedure, or keyword
           </label>
 
           <input
@@ -578,6 +605,28 @@ export function ImagingGuidePanel({ onUseInRequisition }: ImagingGuidePanelProps
             onChange={(event) => setQuery(event.target.value)}
             placeholder="e.g. headache, CT, suspected PE, ultrasound, low back pain..."
           />
+
+          {!hasSearch ? (
+            <div className="guide-starter-searches" aria-label="Common Imaging Guide searches">
+              <span>Common searches</span>
+              <div>
+                {guideStarterSearches.map((starterSearch) => (
+                  <button
+                    className="guide-starter-chip"
+                    type="button"
+                    onClick={() => {
+                      setQuery(starterSearch);
+                      setSelectedTopicId('');
+                      setSelectedVariantId('');
+                    }}
+                    key={starterSearch}
+                  >
+                    {starterSearch}
+                  </button>
+                ))}
+              </div>
+            </div>
+          ) : null}
 
           <div className="guide-topic-count" role="status">
             <strong>{visibleTopics.length}</strong>
@@ -659,7 +708,13 @@ export function ImagingGuidePanel({ onUseInRequisition }: ImagingGuidePanelProps
           </details>
 
           <div className="guide-result-list" aria-label="Grouped Imaging Guide results">
-            <TopicResultGroups groups={groupedTopics} onSelectTopic={selectTopic} selectedTopic={selectedTopic} />
+            {!hasSearch && !hasActiveFilter ? (
+              <p className="guide-no-results">
+                Search a complaint, diagnosis, modality, or procedure to view matching extracted recommendations.
+              </p>
+            ) : (
+              <TopicResultGroups groups={groupedTopics} onSelectTopic={selectTopic} selectedTopic={selectedTopic} />
+            )}
           </div>
         </aside>
 
@@ -694,7 +749,7 @@ export function ImagingGuidePanel({ onUseInRequisition }: ImagingGuidePanelProps
                   <div className="guide-source-meta">
                     <span>{selectedTopic.sourceLabel}</span>
                     {selectedTopic.year && selectedTopic.year !== 'unknown' ? <span>{selectedTopic.year}</span> : null}
-                    <span>{selectedTopic.variants.length} variants</span>
+                    <span>{selectedTopic.variants.length} clinical situations</span>
                     <span>{topicRadiationSummary(selectedTopic)}</span>
                   </div>
 
@@ -726,7 +781,7 @@ export function ImagingGuidePanel({ onUseInRequisition }: ImagingGuidePanelProps
 
                 <CopyButton
                   text={`${selectedTopic.title}${selectedVariant ? ` - ${selectedVariant.title}` : ''}`}
-                  label="Copy topic/variant"
+                  label="Copy guide item"
                   className="secondary-button"
                 />
               </div>
@@ -739,7 +794,7 @@ export function ImagingGuidePanel({ onUseInRequisition }: ImagingGuidePanelProps
 
               <section className="guide-section">
                 <label className="guide-search-label" htmlFor="imaging-guide-variant">
-                  Clinical variant
+                  Clinical situation
                 </label>
 
                 <select
@@ -796,7 +851,7 @@ export function ImagingGuidePanel({ onUseInRequisition }: ImagingGuidePanelProps
                         </table>
                       </div>
                     ) : (
-                      <p>Recommendation table pending for this variant.</p>
+                      <p>Recommendation table pending for this clinical situation.</p>
                     )}
 
                     <details className="guide-status-note source-detail-disclosure">
@@ -893,9 +948,21 @@ export function ImagingGuidePanel({ onUseInRequisition }: ImagingGuidePanelProps
           ) : (
             <div className="guide-empty-state">
               <div>
-                <span className="eyebrow">Imaging Guide</span>
-                <h2>No reviewed or extracted topic found</h2>
-                <p>Try a different symptom, diagnosis, modality, or review-status filter.</p>
+                <span className="eyebrow">Search-first guide</span>
+                {!hasSearch && !hasActiveFilter ? (
+                  <>
+                    <h2>Search a complaint to begin.</h2>
+                    <p>
+                      The Imaging Guide contains extracted appropriateness tables, but it only shows matches after you search or
+                      apply filters so the page stays readable.
+                    </p>
+                  </>
+                ) : (
+                  <>
+                    <h2>No reviewed or extracted topic found</h2>
+                    <p>Try a different symptom, diagnosis, modality, or review-status filter.</p>
+                  </>
+                )}
               </div>
             </div>
           )}

@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useState } from 'react';
 import type { PrimaryCareContentTemplate, ReferralFormState } from '../../radrep/types';
 import type { AppropriatenessTopic } from '../../data/appropriateness';
+import { clinicalComplaintMappings } from '../../data/appropriateness/clinicalMappings';
 import { getTopicById, reviewStatusLabel } from '../../utils/appropriatenessSearch';
 import { classifyRequestedImaging, type RequestedImagingCheck } from '../../utils/appropriatenessValidation';
 import { buildClinicalQuestion, cleanVariantTitle, findRequisitionTopicMatches } from '../../utils/requisitionTopicMatching';
@@ -39,6 +40,25 @@ function topicReviewSummary(topic?: AppropriatenessTopic) {
   if (!topic) return '';
   return `${topic.sourceLabel} · ${reviewStatusLabel(topic.reviewStatus)}`;
 }
+
+const curatedComplaintStarterIds = [
+  'headache',
+  'abdominal-pain',
+  'ruq-pain',
+  'renal-colic',
+  'suspected-pe',
+  'suspected-dvt',
+  'low-back-pain',
+  'hematuria',
+  'chest-pain',
+  'cough-dyspnea',
+  'msk-trauma',
+  'acute-pancreatitis',
+];
+
+const curatedComplaintStarters = curatedComplaintStarterIds
+  .map((id) => clinicalComplaintMappings.find((mapping) => mapping.id === id))
+  .filter((mapping): mapping is NonNullable<typeof mapping> => Boolean(mapping));
 
 export function RequisitionAppropriatenessPanel({
   template,
@@ -95,9 +115,26 @@ export function RequisitionAppropriatenessPanel({
       <div className="guide-section-heading">
         <div>
           <span className="eyebrow">Clinical problem</span>
-          <h3>Find appropriate imaging</h3>
+          <h3>Start with the patient complaint</h3>
         </div>
       </div>
+
+      <details className="complaint-starter-disclosure" open={!clinicalProblemQuery}>
+        <summary>Common complaint flows</summary>
+        <div className="complaint-starter-grid" aria-label="Common imaging requisition complaint flows">
+          {curatedComplaintStarters.map((mapping) => (
+            <button
+              className="complaint-starter-card"
+              type="button"
+              onClick={() => onClinicalProblemChange?.(mapping.complaint)}
+              key={mapping.id}
+            >
+              <strong>{mapping.complaint}</strong>
+              <span>{mapping.missingInfoPrompts.slice(0, 2).join(' · ')}</span>
+            </button>
+          ))}
+        </div>
+      </details>
 
       <div className="guided-main-fields">
         <label className="field">
@@ -131,20 +168,20 @@ export function RequisitionAppropriatenessPanel({
       </div>
 
       <div className="guided-match-summary">
-        <span>Possible ACR matches found</span>
+        <span>Matching imaging pathways</span>
         {clinicalProblemQuery ? (
           topicMatches.length ? (
             <>
-              <p>{possibleMatchLabels.join(', ')}</p>
+              <p>{possibleMatchLabels.slice(0, 5).join(', ')}{possibleMatchLabels.length > 5 ? `, +${possibleMatchLabels.length - 5} more` : ''}</p>
               <small>
-                {topicMatches.length} related topic{topicMatches.length === 1 ? '' : 's'} available for guided matching.
+                {topicMatches.length} pathway{topicMatches.length === 1 ? '' : 's'} available for guided matching.
               </small>
             </>
           ) : (
-            <p>No reviewed/extracted topic matched yet. Try a broader problem or diagnosis.</p>
+            <p>No imaging pathway matched yet. Try a simpler complaint such as headache, abdominal pain, dyspnea, or low back pain.</p>
           )
         ) : (
-          <p>Enter a clinical problem, then open the guided drawer.</p>
+          <p>Enter a complaint or choose a common presentation below.</p>
         )}
       </div>
 
@@ -160,7 +197,7 @@ export function RequisitionAppropriatenessPanel({
 
         {selectedVariant ? (
           <button className="secondary-button" type="button" onClick={() => setDrawerOpen(true)}>
-            Edit clinical scenario
+            Edit answers
           </button>
         ) : null}
       </div>
@@ -168,7 +205,7 @@ export function RequisitionAppropriatenessPanel({
       {selectedVariant ? (
         <section className="selected-requisition-summary">
           <div>
-            <span>Selected scenario</span>
+            <span>Matched clinical situation</span>
             <strong>
               {cleanVariantTitle(selectedVariant.title || selectedVariant.clinicalScenario)}
             </strong>
@@ -206,7 +243,7 @@ export function RequisitionAppropriatenessPanel({
       ) : null}
 
       <details className="guide-section compact" open={false}>
-        <summary>View all matching ACR scenarios</summary>
+        <summary>View matching clinical situations</summary>
         <div className="guided-alternative-list">
           {topicMatches.flatMap((topic) =>
             topic.variants.slice(0, 4).map((variant) => (

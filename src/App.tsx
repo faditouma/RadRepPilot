@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import {
   CopyButton,
   FormSection,
@@ -46,6 +46,7 @@ import {
 import { reportingWorkflowSchemas, schemaDrivenModuleTypes, type WorkflowIncidentalOption } from './data/reportingWorkflowSchemas';
 import { generateReportingWorkflowReport } from './utils/reportGenerators';
 import { scoreReportCompleteness } from './utils/qualityMetrics';
+import { workspacePageToHashPath } from './utils/workspaceRoutes';
 import {
   generateReferralText,
   getReferralTemplate,
@@ -74,6 +75,7 @@ const GUIDE_SELECTION_KEY = 'radreppilot.pendingImagingGuideSelection';
 type AppProps = {
   embedded?: boolean;
   initialPage?: PageKey;
+  onActivePageChange?: (page: PageKey) => void;
 };
 
 const moduleLabels: Record<ModuleType, string> = {
@@ -278,8 +280,23 @@ function getStructuredObject(value: unknown): Record<string, unknown> {
   return value && typeof value === 'object' ? (value as Record<string, unknown>) : {};
 }
 
-function App({ embedded = false, initialPage = 'dashboard' }: AppProps) {
+function App({ embedded = false, initialPage = 'dashboard', onActivePageChange }: AppProps) {
   const [activePage, setActivePage] = useState<PageKey>(initialPage);
+  const routeSyncRef = useRef(false);
+
+  useEffect(() => {
+    routeSyncRef.current = true;
+    setActivePage(initialPage);
+  }, [initialPage]);
+
+  useEffect(() => {
+    if (!embedded) return;
+    if (routeSyncRef.current) {
+      routeSyncRef.current = false;
+      return;
+    }
+    if (activePage !== initialPage) onActivePageChange?.(activePage);
+  }, [activePage, embedded, initialPage, onActivePageChange]);
   const [demoOpen, setDemoOpen] = useState(false);
   const [builderSourceModule, setBuilderSourceModule] = useState<ModuleType>('ctpa');
   const [drafts, setDrafts] = useState<SavedDraft[]>(() => loadDrafts());
@@ -1297,7 +1314,7 @@ function App({ embedded = false, initialPage = 'dashboard' }: AppProps) {
       <PageHeader
         eyebrow="Imaging requisitions"
         title="Imaging requisitions"
-        description="Search clinical complaints, review educational ACR-style imaging options, and draft concise requisition wording."
+        description="Search clinical complaints, review educational imaging guidance, and draft concise requisition wording."
       />
       <PrimaryCareRequestBuilder
         initialForm={referralForm}
@@ -1547,15 +1564,15 @@ function App({ embedded = false, initialPage = 'dashboard' }: AppProps) {
             <strong>Modules</strong>
           </div>
           {workspaceTabs.map((tab) => (
-            <button
+            <a
               className={activePage === tab.key ? 'active' : ''}
+              href={workspacePageToHashPath(tab.key)}
               key={tab.key}
               onClick={() => setActivePage(tab.key)}
-              type="button"
             >
               <RadIcon name={tab.iconName} size={20} />
               {tab.label}
-            </button>
+            </a>
           ))}
           {activePage === 'modules' && workflowSidebar ? (
             <div className="workspace-sidebar-widgets" aria-label="Current workflow status">

@@ -5,7 +5,7 @@ export function Feedback() {
     <PageShell
       eyebrow="Feedback"
       title="Help Improve RadRepPilot"
-      description="RadRepPilot is being developed as a public-good educational project."
+      description="Feedback from learners, residents, radiologists, referring clinicians, and educators helps improve the platform."
     >
       <p>
         RadRepPilot is being developed as a public-good educational project. Feedback from learners, residents, radiologists,

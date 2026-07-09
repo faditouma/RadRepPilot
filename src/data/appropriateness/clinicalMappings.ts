@@ -158,7 +158,7 @@ export const clinicalComplaintMappings: ClinicalComplaintMapping[] = [
     id: 'hematuria',
     complaint: 'Hematuria',
     synonyms: ['gross hematuria', 'microscopic hematuria', 'blood in urine', 'urothelial malignancy concern', 'flank pain hematuria'],
-    relatedTopicIds: ['hematuria', 'acute-onset-flank-pain-suspicion-of-stone-disease'],
+    relatedTopicIds: ['hematuria', 'acute-onset-flank-pain-suspicion-of-stone-disease-urolithiasis'],
     missingInfoPrompts: [
       'Gross versus microscopic hematuria',
       'Painful versus painless hematuria',
@@ -169,25 +169,97 @@ export const clinicalComplaintMappings: ClinicalComplaintMapping[] = [
     commonRequisitionLanguage:
       'Patient with hematuria and [risk factors/symptoms]. Please assess for urinary tract stone, mass, obstruction, or other imaging-relevant cause as appropriate.',
   },
+  {
+    id: 'chest-pain',
+    complaint: 'Chest pain',
+    synonyms: ['acute chest pain', 'pleuritic chest pain', 'cardiac chest pain', 'ACS concern', 'noncardiac chest pain'],
+    relatedTopicIds: [
+      'chest-pain-possible-acute-coronary-syndrome',
+      'acute-nonspecific-chest-pain-low-probability-of-coronary-artery-disease',
+      'nontraumatic-chest-wall-pain',
+      'suspected-pulmonary-embolism',
+    ],
+    missingInfoPrompts: [
+      'Pain onset, character, and duration',
+      'Hemodynamic status and ECG/troponin context if available',
+      'Pleuritic symptoms, dyspnea, hypoxia, or PE risk factors',
+      'Trauma or chest wall tenderness',
+      'Renal function and contrast contraindication if CT is being considered',
+    ],
+    commonRequisitionLanguage:
+      'Patient with chest pain and [relevant features/risk factors]. Please assess for the most likely imaging-relevant cardiopulmonary or chest wall cause as appropriate.',
+  },
+  {
+    id: 'cough-dyspnea',
+    complaint: 'Cough / dyspnea',
+    synonyms: ['shortness of breath', 'dyspnea', 'cough', 'pneumonia', 'respiratory infection', 'chronic cough'],
+    relatedTopicIds: [
+      'acute-respiratory-illness-in-immunocompetent-patients',
+      'acute-respiratory-illness-in-immunocompromised-patients',
+      'chronic-cough',
+      'chronic-dyspnea-noncardiovascular-origin',
+      'pneumonia-in-the-immunocompetent-child',
+    ],
+    missingInfoPrompts: [
+      'Acute versus chronic duration',
+      'Fever, sputum, hypoxia, chest pain, or hemoptysis',
+      'Immunocompromised status or cancer history',
+      'Smoking/COPD/asthma history when relevant',
+      'Prior chest imaging and treatment response',
+    ],
+    commonRequisitionLanguage:
+      'Patient with cough/dyspnea for [duration] with [key features]. Please assess for imaging-relevant cardiopulmonary abnormality.',
+  },
+  {
+    id: 'msk-trauma',
+    complaint: 'MSK trauma / acute joint pain',
+    synonyms: ['injury', 'fall', 'fracture', 'ankle injury', 'wrist injury', 'shoulder pain', 'hip pain', 'acute joint pain'],
+    relatedTopicIds: [
+      'acute-hand-and-wrist-trauma',
+      'acute-trauma-to-the-ankle',
+      'acute-trauma-to-the-foot',
+      'acute-shoulder-pain',
+      'acute-hip-pain',
+      'acute-elbow-and-forearm-pain',
+    ],
+    missingInfoPrompts: [
+      'Body part and laterality',
+      'Mechanism and timing of injury',
+      'Focal bony tenderness, inability to weight bear, deformity, or neurovascular concern',
+      'Prior surgery/hardware or prior fracture',
+      'Persistent pain despite negative initial radiographs if applicable',
+    ],
+    commonRequisitionLanguage:
+      'Patient with [body part/laterality] injury and [exam findings]. Please assess for acute osseous or joint abnormality on radiographs.',
+  },
+
 ];
 
+function normalizeComplaintText(value: string) {
+  return value.toLowerCase().replace(/[^a-z0-9]+/g, ' ').replace(/\s+/g, ' ').trim();
+}
+
 export function searchClinicalMappings(query: string): ClinicalComplaintMapping[] {
-  const normalized = query.trim().toLowerCase();
+  const normalized = normalizeComplaintText(query);
 
   if (!normalized) return [];
 
+  const queryTerms = normalized.split(' ').filter((term) => term.length > 2);
+
   return clinicalComplaintMappings.filter((mapping) => {
-    const haystack = [
+    const phrases = [
       mapping.complaint,
       ...mapping.synonyms,
       ...mapping.relatedTopicIds,
       ...(mapping.suggestedVariantIds ?? []),
       ...mapping.missingInfoPrompts,
       mapping.commonRequisitionLanguage,
-    ]
-      .join(' ')
-      .toLowerCase();
+    ].map(normalizeComplaintText);
 
-    return haystack.includes(normalized);
+    const haystack = phrases.join(' ');
+    const directPhraseMatch = phrases.some((phrase) => phrase.includes(normalized) || normalized.includes(phrase));
+    const termMatch = queryTerms.length > 0 && queryTerms.every((term) => haystack.includes(term));
+
+    return directPhraseMatch || termMatch;
   });
 }

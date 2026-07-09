@@ -3333,7 +3333,8 @@ footer {
     padding: 4px 12px 4px 4px;
   }
 
-  .workspace-side-panel button {
+  .workspace-side-panel button,
+.workspace-side-panel a {
     flex: 0 0 auto;
     width: auto;
   }
@@ -3346,7 +3347,8 @@ footer {
     padding: 0 0 0 10px;
   }
 
-  .workspace-side-panel button.active {
+  .workspace-side-panel button.active,
+.workspace-side-panel a.active {
     box-shadow: inset 0 -3px 0 rgba(6, 182, 212, 0.75);
   }
 
@@ -4139,7 +4141,8 @@ footer {
   font-size: 1rem;
 }
 
-.workspace-side-panel button {
+.workspace-side-panel button,
+.workspace-side-panel a {
   display: flex;
   align-items: center;
   gap: 10px;
@@ -4151,6 +4154,7 @@ footer {
   color: var(--muted);
   font-weight: 820;
   text-align: left;
+  text-decoration: none;
 }
 
 .workspace-side-panel .rad-icon {
@@ -4158,13 +4162,16 @@ footer {
 }
 
 .workspace-side-panel button:hover,
-.workspace-side-panel button.active {
+.workspace-side-panel button.active,
+.workspace-side-panel a:hover,
+.workspace-side-panel a.active {
   border-color: rgba(37, 99, 235, 0.2);
   background: var(--blue-soft);
   color: var(--blue-dark);
 }
 
-.workspace-side-panel button.active {
+.workspace-side-panel button.active,
+.workspace-side-panel a.active {
   box-shadow: inset 3px 0 0 rgba(6, 182, 212, 0.75);
 }
 
@@ -4297,6 +4304,43 @@ footer {
   color: var(--muted);
   font-size: 0.76rem;
   font-weight: 850;
+}
+
+
+.guide-starter-searches {
+  display: grid;
+  gap: 8px;
+  border: 1px solid rgba(216, 224, 234, 0.82);
+  border-radius: 13px;
+  padding: 10px;
+  background: rgba(248, 250, 252, 0.72);
+}
+
+.guide-starter-searches > span {
+  color: var(--slate);
+  font-size: 0.78rem;
+  font-weight: 850;
+}
+
+.guide-starter-searches > div {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 7px;
+}
+
+.guide-starter-chip {
+  border: 1px solid rgba(37, 99, 235, 0.18);
+  border-radius: 999px;
+  padding: 7px 9px;
+  background: #fff;
+  color: var(--blue-dark);
+  font-size: 0.78rem;
+  font-weight: 820;
+}
+
+.guide-starter-chip:hover {
+  border-color: rgba(6, 182, 212, 0.42);
+  background: rgba(236, 254, 255, 0.8);
 }
 
 .guide-topic-count {

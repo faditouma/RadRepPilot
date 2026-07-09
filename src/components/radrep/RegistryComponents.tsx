@@ -10,7 +10,7 @@ import { generateIncidentalFindingSentence, type IncidentalValueMap } from '../.
 import { getTopicById } from '../../utils/appropriatenessSearch';
 import type { RequestedImagingCheck } from '../../utils/appropriatenessValidation';
 import { scoreRequisitionCompleteness } from '../../utils/qualityMetrics';
-import { generateReferralText, getMissingEssentials, getPrimaryCareTemplate } from '../../utils/requisitionGenerators';
+import { generateReferralText, getPrimaryCareTemplate } from '../../utils/requisitionGenerators';
 import { generateRadsPreviewSentence } from '../../utils/radsPreviewGenerators';
 import { RadIcon } from '../icons/RadIcon';
 import type {
@@ -839,6 +839,13 @@ const secondaryQuickFieldIds = new Set([
   'redFlags',
 ]);
 
+const genericRequisitionMissingItems = [
+  'Clinical problem / indication',
+  'Age/sex',
+  'Relevant PMHx or healthy/no PMHx status',
+  'Specific question for radiology',
+];
+
 function appropriatenessSeverityLabel(check: RequestedImagingCheck) {
   if (check.severity === 'appropriate') return 'Usually Appropriate';
   if (check.severity === 'conditional') return check.appropriatenessCategory ?? 'May be appropriate';
@@ -875,28 +882,51 @@ export function PrimaryCareRequestBuilder({ initialForm, onInsertText, onSaveTex
   const selectedTopicForTitle = selectedComplaintId.startsWith('topic:')
     ? getTopicById(selectedComplaintId.replace(/^topic:/, ''))
     : undefined;
+  function hasRequisitionContext(candidate: ReferralFormState = form, complaintId = selectedComplaintId) {
+    const values = candidate.values ?? {};
+    const contextIds = [
+      'mainSymptom',
+      'positiveSymptoms',
+      'indication',
+      'requestedProcedure',
+      'clinicalQuestion',
+      'acrScenario',
+      'painLocation',
+      'bodyPart',
+    ];
+
+    return Boolean(
+      complaintId ||
+        candidate.generatedText?.trim() ||
+        contextIds.some((id) => {
+          const value = values[id];
+          return typeof value === 'string' ? Boolean(value.trim()) : Boolean(value);
+        }),
+    );
+  }
   const typedClinicalProblem = typeof form.values.mainSymptom === 'string' ? form.values.mainSymptom.trim() : '';
-  const activeRequisitionTitle = selectedTopicForTitle?.title ?? (typedClinicalProblem ? `Imaging request: ${typedClinicalProblem}` : template.title);
+  const hasStartedRequisition = hasRequisitionContext(form);
+  const activeRequisitionTitle = selectedTopicForTitle?.title ?? (typedClinicalProblem ? `Imaging request: ${typedClinicalProblem}` : 'New imaging request');
   const outputStyle = form.outputStyle ?? 'standard';
   const requisitionQuality = useMemo(() => scoreRequisitionCompleteness(form), [form]);
   const missing = useMemo(
     () =>
-      typedClinicalProblem
+      hasStartedRequisition
         ? requisitionQuality.checks
             .filter((check) => !check.complete)
             .map((check) => check.missingLabel ?? check.label)
-        : getMissingEssentials(form),
-    [form, requisitionQuality.checks, typedClinicalProblem],
+        : genericRequisitionMissingItems,
+    [hasStartedRequisition, requisitionQuality.checks],
   );
   const pathwayMissing = useMemo(() => {
     const additions: string[] = [];
-    if (!form.values.acrScenario && !selectedComplaintId) additions.push('Clinical scenario');
-    if (!form.values.requestedProcedure) additions.push('Selected requested imaging');
+    if (hasStartedRequisition && !form.values.acrScenario && !selectedComplaintId) additions.push('Focused clinical questions');
+    if (hasStartedRequisition && !form.values.requestedProcedure) additions.push('Selected requested imaging');
     return Array.from(new Set([...missing, ...additions]));
-  }, [form.values.acrScenario, form.values.requestedProcedure, missing, selectedComplaintId]);
+  }, [form.values.acrScenario, form.values.requestedProcedure, hasStartedRequisition, missing, selectedComplaintId]);
   const readinessPercent = Math.round((requisitionQuality.complete / Math.max(requisitionQuality.total, 1)) * 100);
   const readinessLabel = pathwayMissing.length ? 'Requisition readiness: needs key details' : 'Requisition readiness: ready for review';
-  const generated = form.generatedText || generateReferralText(form, outputStyle);
+  const generated = form.generatedText || (hasStartedRequisition ? generateReferralText(form, outputStyle) : '');
   const modalityOptions = useMemo(() => ['All', ...Array.from(new Set(primaryCareContentRegistry.map((item) => item.modality))).sort()], []);
 
   const filtered = primaryCareContentRegistry.filter((item) => {
@@ -975,9 +1005,9 @@ export function PrimaryCareRequestBuilder({ initialForm, onInsertText, onSaveTex
     }
   }, []);
 
-  const regenerate = (next: ReferralFormState) => ({
+  const regenerate = (next: ReferralFormState, complaintId = selectedComplaintId) => ({
     ...next,
-    generatedText: generateReferralText(next, next.outputStyle ?? 'standard'),
+    generatedText: hasRequisitionContext(next, complaintId) ? generateReferralText(next, next.outputStyle ?? 'standard') : '',
   });
 
   const updateValue = (fieldId: string, valueToSet: string | boolean) => {
@@ -998,7 +1028,8 @@ export function PrimaryCareRequestBuilder({ initialForm, onInsertText, onSaveTex
     setPreferredVariantId('');
     setAppropriatenessCheck(null);
     setForm((existing) =>
-      regenerate({
+      regenerate(
+        {
         ...existing,
         values: {
           ...existing.values,
@@ -1009,7 +1040,9 @@ export function PrimaryCareRequestBuilder({ initialForm, onInsertText, onSaveTex
           clinicalQuestion: '',
           redFlags: '',
         },
-      }),
+        },
+        '',
+      ),
     );
     setDraftStatus('Clinical problem updated');
   };
@@ -1043,7 +1076,7 @@ export function PrimaryCareRequestBuilder({ initialForm, onInsertText, onSaveTex
     setSelectedComplaintId('');
     setPreferredVariantId('');
     setAppropriatenessCheck(null);
-    setForm(regenerate(next));
+    setForm(regenerate(next, ''));
     setDraftStatus('Template reset');
   };
 
@@ -1058,7 +1091,7 @@ export function PrimaryCareRequestBuilder({ initialForm, onInsertText, onSaveTex
     setSelectedComplaintId('');
     setPreferredVariantId('');
     setAppropriatenessCheck(null);
-    setForm(regenerate(next));
+    setForm(regenerate(next, ''));
     setDraftStatus('Local requisition draft cleared');
   };
 
@@ -1089,7 +1122,7 @@ export function PrimaryCareRequestBuilder({ initialForm, onInsertText, onSaveTex
         },
       }),
     );
-    setDraftStatus('Clinical scenario selected');
+    setDraftStatus('Clinical situation selected');
   };
 
   const applyGuidedClinicalContext = (phrases: string[]) => {
@@ -1103,7 +1136,7 @@ export function PrimaryCareRequestBuilder({ initialForm, onInsertText, onSaveTex
         },
       });
     });
-    setDraftStatus('Clinical scenario context updated');
+    setDraftStatus('Clinical situation context updated');
   };
 
   const toggleClinicalPrompt = (prompt: string, checked: boolean) => {
@@ -1268,7 +1301,7 @@ export function PrimaryCareRequestBuilder({ initialForm, onInsertText, onSaveTex
       <div className="primary-care-topbar">
         <div>
           <h2>Imaging requisitions</h2>
-          <p>Search a clinical problem, select an educational ACR-style scenario, choose imaging, and draft a concise request.</p>
+          <p>Search a clinical complaint, answer focused questions, choose an imaging option, and draft a concise request.</p>
         </div>
         <div className="primary-care-toggle-stack">
           <SegmentedControl

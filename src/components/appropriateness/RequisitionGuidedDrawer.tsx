@@ -138,7 +138,7 @@ export function RequisitionGuidedDrawer({
   if (!open) return null;
 
   return (
-    <div className="guided-drawer-layer" role="dialog" aria-modal="true" aria-label="Clarify clinical scenario">
+    <div className="guided-drawer-layer" role="dialog" aria-modal="true" aria-label="Clinical imaging questions">
       <button
         className="guided-drawer-scrim"
         type="button"
@@ -149,8 +149,8 @@ export function RequisitionGuidedDrawer({
       <aside className="guided-drawer-panel">
         <div className="guided-drawer-header">
           <div>
-            <span className="eyebrow">{step === 'clarify' ? 'Clarify scenario' : 'Recommended imaging'}</span>
-            <h3>{step === 'clarify' ? 'Clarify clinical scenario' : 'Review recommendation'}</h3>
+            <span className="eyebrow">{step === 'clarify' ? 'Clinical questions' : 'Recommended imaging'}</span>
+            <h3>{step === 'clarify' ? 'Answer focused questions' : 'Review imaging options'}</h3>
             <p>
               {clinicalProblem || 'Clinical problem not entered'}
               {age || sex ? ` · ${[age, sex].filter(Boolean).join('')}` : ''}
@@ -165,12 +165,12 @@ export function RequisitionGuidedDrawer({
         {step === 'clarify' ? (
           <div className="guided-drawer-body">
             <p className="guide-status-note">
-              Choose the closest extracted ACR topic and scenario. Add only context that is known.
+              Answer only what is known. RadRepPilot uses these details to match the closest educational imaging pathway.
             </p>
 
             {topicMatches.length > 1 ? (
               <section className="guided-question-card">
-                <h4>Which extracted ACR topic best matches the clinical problem?</h4>
+                <h4>Which clinical area best matches this complaint?</h4>
                 <div className="guided-answer-grid">
                   {topicMatches.map((topic) => (
                     <button
@@ -215,7 +215,7 @@ export function RequisitionGuidedDrawer({
                 </section>
               ))
             ) : (
-              <div className="inline-note">Choose the closest ACR topic before continuing.</div>
+              <div className="inline-note">Choose the closest clinical area before continuing.</div>
             )}
 
             <div className="guided-drawer-actions">
@@ -225,7 +225,7 @@ export function RequisitionGuidedDrawer({
                 type="button"
                 disabled={!selectedTopic || !requiredAnswersComplete}
               >
-                Continue to recommended imaging
+                Show recommended imaging
               </button>
 
               <button className="secondary-button" onClick={onClose} type="button">
@@ -235,7 +235,7 @@ export function RequisitionGuidedDrawer({
 
             {!topicMatches.length ? (
               <div className="inline-note">
-                No ACR-style topic match was found for this search. Try a different complaint or diagnosis.
+                No imaging pathway was found for this search. Try a different complaint or diagnosis.
               </div>
             ) : null}
           </div>
@@ -244,20 +244,20 @@ export function RequisitionGuidedDrawer({
             {selectedScenario ? (
               <>
                 <section className="guided-selected-scenario">
-                  <span className="eyebrow">Matched clinical scenario</span>
+                  <span className="eyebrow">Matched clinical situation</span>
                   <h4>
                     {cleanVariantTitle(
                       selectedScenario.variant.title || selectedScenario.variant.clinicalScenario
                     )}
                   </h4>
                   <small>
-                    {selectedScenario.topic.sourceLabel} · {reviewStatusLabel(selectedScenario.topic.reviewStatus)}
+                    Educational appropriateness source: {selectedScenario.topic.sourceLabel} · {reviewStatusLabel(selectedScenario.topic.reviewStatus)}
                   </small>
                 </section>
 
                 {ranked.length > 1 ? (
                   <details className="guide-section compact">
-                    <summary>Alternative matching scenarios</summary>
+                    <summary>Other possible clinical situations</summary>
                     <div className="guided-alternative-list">
                       {ranked.slice(1, 4).map((item) => (
                         <button
@@ -361,7 +361,7 @@ export function RequisitionGuidedDrawer({
               </>
             ) : (
               <div className="inline-note">
-                No matching clinical scenario found. Go back and adjust the clinical problem.
+                No matching clinical situation found. Go back and adjust the clinical problem.
               </div>
             )}
           </div>

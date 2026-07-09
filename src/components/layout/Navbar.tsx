@@ -10,7 +10,7 @@ interface NavbarProps {
 
 const publicLinks = [
   { to: '/', label: 'Home' },
-  { to: '/workspace', label: 'Workspace' },
+  { to: '/workspace/requisitions', label: 'Workspace' },
   { to: '/about', label: 'About' },
   { to: '/disclaimer', label: 'Disclaimer' },
   { to: '/feedback', label: 'Feedback' },
@@ -18,7 +18,7 @@ const publicLinks = [
 
 const appLinks = [
   { to: '/', label: 'Home' },
-  { to: '/workspace', label: 'Workspace' },
+  { to: '/workspace/requisitions', label: 'Workspace' },
   { to: '/dashboard', label: 'Dashboard' },
   { to: '/reports', label: 'Reports' },
   { to: '/reports/new', label: 'New Report' },
