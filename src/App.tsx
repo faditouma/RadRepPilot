@@ -1646,7 +1646,13 @@ function App({ embedded = false, initialPage = 'dashboard', onActivePageChange }
         <Sidebar activePage={activePage} onNavigate={setActivePage} />
       )}
       <main className={embedded ? 'workspace-main-shell' : 'main-shell'}>
-        <SafetyBanner />
+        {embedded ? (
+          <div className="workspace-inline-safety" role="note">
+            Educational use only. Do not enter patient-identifying information.
+          </div>
+        ) : (
+          <SafetyBanner />
+        )}
         {embedded && activePage === 'dashboard' ? renderWorkspaceOverview() : null}
         {!embedded && activePage === 'dashboard' ? renderDashboard() : null}
         {activePage === 'modules' ? renderModules() : null}
@@ -1668,7 +1674,7 @@ function App({ embedded = false, initialPage = 'dashboard', onActivePageChange }
             onInsertText={(text, label, target) => insertTextIntoBuilder(text, label, target)}
           />
         ) : null}
-        <footer>Educational reporting workflow. Verify all user-entered findings and final wording.</footer>
+        {!embedded ? <footer>Educational reporting workflow. Verify all user-entered findings and final wording.</footer> : null}
       </main>
     </div>
   );

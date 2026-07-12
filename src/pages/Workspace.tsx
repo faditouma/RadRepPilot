@@ -2,6 +2,7 @@ import { useCallback, useEffect } from 'react';
 import { useLocation, useNavigate, useParams } from 'react-router-dom';
 import App from '../App';
 import { useSupabaseSession } from '../components/auth/useSupabaseSession';
+import { Navbar } from '../components/layout/Navbar';
 import type { PageKey } from '../radrep/types';
 import { workspacePageToRoutePath, workspaceSlugToPage } from '../utils/workspaceRoutes';
 
@@ -74,19 +75,20 @@ export function Workspace() {
   );
 
   return (
-    <main className="workspace-route">
-      <section className="workspace-route-header">
-        <span className="eyebrow">Workspace</span>
-        <h1>{workspaceHeader.title}</h1>
-        <p>{workspaceHeader.description}</p>
-        <div className="workspace-account-note">
-          {session
-            ? 'Signed in. Preferences and saved reports are available from your dashboard.'
-            : 'You can use these tools without an account. Create a free account to save reports and preferences.'}
-        </div>
-      </section>
+    <div className="platform-layout workspace-platform">
+      <Navbar variant={session ? 'app' : 'public'} />
+      <main className="workspace-route">
+        <section className="workspace-route-header">
+          <div>
+            <span className="eyebrow">Workspace</span>
+            <h1>{workspaceHeader.title}</h1>
+            <p>{workspaceHeader.description}</p>
+          </div>
+          <p className="workspace-account-note">{session ? 'Signed in.' : 'No account required.'}</p>
+        </section>
 
-      <App embedded initialPage={initialPage} onActivePageChange={handleActivePageChange} />
-    </main>
+        <App embedded initialPage={initialPage} onActivePageChange={handleActivePageChange} />
+      </main>
+    </div>
   );
 }

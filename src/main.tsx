@@ -24,12 +24,12 @@ ReactDOM.createRoot(document.getElementById('root') as HTMLElement).render(
       <Routes>
         <Route element={<PublicLayout />}>
           <Route path="/" element={<HomeRoute />} />
-          <Route path="/workspace" element={<Workspace />} />
-          <Route path="/workspace/:workspaceSection" element={<Workspace />} />
           <Route path="/about" element={<About />} />
           <Route path="/disclaimer" element={<Disclaimer />} />
           <Route path="/feedback" element={<Feedback />} />
         </Route>
+        <Route path="/workspace" element={<Workspace />} />
+        <Route path="/workspace/:workspaceSection" element={<Workspace />} />
         <Route path="/login" element={<Login />} />
         <Route path="/signup" element={<Signup />} />
         <Route element={<ProtectedRoute />}>
