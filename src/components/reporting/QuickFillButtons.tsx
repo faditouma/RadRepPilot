@@ -37,7 +37,6 @@ export function QuickFillButtons({ quickFills, onApply, activeQuickFillId }: Qui
             key={quickFill.id}
           >
             <strong>{quickFill.label}</strong>
-            <span>{quickFill.description}</span>
           </button>
         ))}
       </div>

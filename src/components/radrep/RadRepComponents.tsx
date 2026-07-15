@@ -4,16 +4,16 @@ import type { DraftType, ModuleType, PageKey, ReportSections, SavedDraft } from 
 import { RadRepPilotLogo } from '../branding/RadRepPilotLogo';
 import { RadIcon, type RadIconName } from '../icons/RadIcon';
 
-const navItems: Array<{ key: PageKey; label: string; description: string; iconName: RadIconName }> = [
-  { key: 'dashboard', label: 'Dashboard', description: 'Overview', iconName: 'dashboard' },
-  { key: 'modules', label: 'Radiology Reporting', description: 'Structured workflows', iconName: 'xray' },
-  { key: 'calculators', label: 'Guidelines & Calculators', description: 'Decision support', iconName: 'calculator' },
-  { key: 'builder', label: 'Report Builder', description: 'Assemble final draft', iconName: 'report' },
-  { key: 'referral', label: 'Imaging requisitions', description: 'Clearer handoffs', iconName: 'primaryCare' },
-  { key: 'why', label: 'Why This Matters', description: 'Clinical insight', iconName: 'helper' },
-  { key: 'gallery', label: 'Example Outputs', description: 'Reports and requisitions', iconName: 'followUp' },
-  { key: 'drafts', label: 'Saved Drafts', description: 'Local browser storage', iconName: 'savedDrafts' },
-  { key: 'safety', label: 'About / Safety', description: 'Scope and limits', iconName: 'safety' },
+const navItems: Array<{ key: PageKey; label: string; iconName: RadIconName }> = [
+  { key: 'dashboard', label: 'Dashboard', iconName: 'dashboard' },
+  { key: 'modules', label: 'Radiology Reporting', iconName: 'xray' },
+  { key: 'calculators', label: 'Guidelines & Calculators', iconName: 'calculator' },
+  { key: 'builder', label: 'Report Builder', iconName: 'report' },
+  { key: 'referral', label: 'Imaging requisitions', iconName: 'primaryCare' },
+  { key: 'why', label: 'Why This Matters', iconName: 'helper' },
+  { key: 'gallery', label: 'Example Outputs', iconName: 'followUp' },
+  { key: 'drafts', label: 'Saved Drafts', iconName: 'savedDrafts' },
+  { key: 'safety', label: 'About / Safety', iconName: 'safety' },
 ];
 
 const moduleLabels: Record<DraftType, string> = {
@@ -59,7 +59,6 @@ export function Sidebar({ activePage, onNavigate }: SidebarProps) {
           >
             <RadIcon name={item.iconName} size={21} />
             <span>{item.label}</span>
-            <small>{item.description}</small>
           </button>
         ))}
       </nav>
@@ -93,7 +92,7 @@ interface ModuleCardProps {
   ctaLabel?: string;
 }
 
-export function ModuleCard({ title, description, meta, iconName = 'report', onOpen, ctaLabel = 'Open' }: ModuleCardProps) {
+export function ModuleCard({ title, meta, iconName = 'report', onOpen, ctaLabel = 'Open' }: ModuleCardProps) {
   return (
     <article className="module-card">
       <div className="module-card-topline">
@@ -103,7 +102,6 @@ export function ModuleCard({ title, description, meta, iconName = 'report', onOp
         <span>{meta}</span>
       </div>
       <h3>{title}</h3>
-      <p>{description}</p>
       <button className="secondary-button" onClick={onOpen} type="button">
         {ctaLabel}
       </button>

@@ -116,9 +116,6 @@ export function BranchingModuleNavigator({
           <div>
             <Breadcrumbs items={breadcrumbs} />
             <h2>{selectedWorkflow.title}</h2>
-            <p>
-              {selectedModalityName} · {selectedBodySystemName} · Educational workflow
-            </p>
           </div>
           <div className="button-row">
             <button className="secondary-button" onClick={() => setSelectedWorkflowId('')} type="button">
@@ -137,7 +134,6 @@ export function BranchingModuleNavigator({
           <div>
             <Breadcrumbs items={breadcrumbs} />
             <h2>{selectedBodySystem ? 'Select a workflow' : selectedModality ? 'Select a body system' : 'Select a modality to begin.'}</h2>
-            <p>Use the branching path to reach a focused reporting workflow in a few clicks.</p>
           </div>
           <div className="button-row">
             {selectedBodySystem ? (
@@ -182,7 +178,6 @@ export function BranchingModuleNavigator({
                 </span>
                 {modality.name}
               </strong>
-              <small>{modality.description}</small>
             </button>
           ))}
         </div>
@@ -199,7 +194,6 @@ export function BranchingModuleNavigator({
                 </span>
                 {bodySystem.name}
               </strong>
-              <small>{bodySystem.description}</small>
               <em>{bodySystem.workflows.length} workflows</em>
             </button>
           ))}
@@ -236,7 +230,6 @@ function WorkflowChoiceCard({ workflow, onOpen }: { workflow: NavigationWorkflow
         </div>
       </div>
       <h3>{workflow.title}</h3>
-      <p>{workflow.description}</p>
       {workflow.toolBadges?.length ? (
         <div className="checklist-preview">
           {workflow.toolBadges.map((badge) => (
@@ -264,7 +257,6 @@ function PlannedWorkflowPanel({ workflow, onOpenCalculators }: { workflow: Navig
         </div>
       </div>
       <h3>{workflow.title}</h3>
-      <p>{preview?.description ?? workflow.description}</p>
       <div className="planned-preview-grid">
         <PreviewList title="Clinical scenario" items={preview?.clinicalScenario ? [preview.clinicalScenario] : ['Planned structured workflow for this indication.']} />
         <PreviewList title="Key findings to report" items={preview?.keyFindings ?? ['Primary abnormality descriptors', 'Location and extent', 'Comparison']} />

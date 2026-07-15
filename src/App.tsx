@@ -1681,12 +1681,11 @@ interface PageHeaderProps {
   description: string;
 }
 
-function PageHeader({ eyebrow, title, description }: PageHeaderProps) {
+function PageHeader({ eyebrow, title }: PageHeaderProps) {
   return (
     <header className="page-header">
       <span className="eyebrow">{eyebrow}</span>
       <h1>{title}</h1>
-      <p>{description}</p>
     </header>
   );
 }

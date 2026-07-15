@@ -319,10 +319,9 @@ export function CalculatorRegistry({ onInsertSentence, onSaveText, initialHelper
             <span className="breadcrumb-pill">Guidelines & Calculators</span>
             {selectedCategory ? <span className="breadcrumb-pill">{selectedCategory.name}</span> : null}
             {selectedCalculator ? <span className="breadcrumb-pill">{selectedCalculator.name}</span> : null}
-          </div>
-          <h2>{selectedCalculator ? selectedCalculator.name : selectedCategory ? 'Select a helper' : 'Select a body system or helper family'}</h2>
-          <p>Open an interactive helper first; source details and limitations stay collapsed until needed.</p>
-        </div>
+	          </div>
+	          <h2>{selectedCalculator ? selectedCalculator.name : selectedCategory ? 'Select a helper' : 'Select a body system or helper family'}</h2>
+	        </div>
         <div className="button-row">
           {selectedCalculator ? (
             <button className="secondary-button" onClick={() => setSelectedCalculatorId('')} type="button">
@@ -383,12 +382,11 @@ export function CalculatorRegistry({ onInsertSentence, onSaveText, initialHelper
               <strong>
                 <span className="nav-icon" aria-hidden="true">
                   <RadIcon name={category.iconName} size={24} />
-                </span>
-                {category.name}
-              </strong>
-              <small>{category.description}</small>
-              <em>{category.calculatorIds.length} helpers</em>
-            </button>
+	                </span>
+	                {category.name}
+	              </strong>
+	              <em>{category.calculatorIds.length} helpers</em>
+	            </button>
           ))}
         </div>
       )}
@@ -407,10 +405,9 @@ function HelperChoiceCard({ calculator, onOpen }: { calculator: CalculatorDefini
           <StatusBadge status={calculator.status} />
           <span className="content-status-badge small">{calculator.contentStatus ?? 'Educational draft'}</span>
         </div>
-      </div>
-      <h3>{calculator.name}</h3>
-      <p>{calculator.description}</p>
-      <button className={calculator.status === 'placeholder' ? 'secondary-button' : 'primary-button'} onClick={onOpen} type="button">
+	      </div>
+	      <h3>{calculator.name}</h3>
+	      <button className={calculator.status === 'placeholder' ? 'secondary-button' : 'primary-button'} onClick={onOpen} type="button">
         {calculator.status === 'placeholder' ? 'View planned helper' : 'Open helper'}
       </button>
     </article>
@@ -459,11 +456,10 @@ function CalculatorRegistryCard({
           {calculator.modality} · {calculator.bodySystem}
         </span>
         <StatusBadge status={calculator.status} />
-      </div>
-      <h3>{calculator.name}</h3>
-      <p>{calculator.description}</p>
+	      </div>
+	      <h3>{calculator.name}</h3>
 
-      {calculator.status !== 'placeholder' ? (
+	      {calculator.status !== 'placeholder' ? (
         <>
           <div className="calculator-field-grid">
             {calculator.fields.map((field) =>

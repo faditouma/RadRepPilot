@@ -36,3 +36,4 @@ tsconfig.*.tsbuildinfo
 # Local ACR extraction spreadsheet reports.
 reports/acr-extraction/*.csv
 reports/acr-extraction/*.xlsx
+.vercel

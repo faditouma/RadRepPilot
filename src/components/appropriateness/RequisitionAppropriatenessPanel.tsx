@@ -121,7 +121,6 @@ export function RequisitionAppropriatenessPanel({
         <div>
           <span className="eyebrow">Clinical intake</span>
           <h3>Start with a complaint</h3>
-          <p>Choose a common presentation or type the complaint. The questionnaire asks the details needed to match an imaging pathway.</p>
         </div>
       </div>
 
@@ -137,8 +136,6 @@ export function RequisitionAppropriatenessPanel({
             >
               <span className="complaint-card-kicker">Flow</span>
               <strong>{mapping.complaint}</strong>
-              <span>{mapping.missingInfoPrompts.slice(0, 2).join(' · ')}</span>
-              <em>Open questionnaire</em>
             </button>
           ))}
         </div>
@@ -175,23 +172,16 @@ export function RequisitionAppropriatenessPanel({
         </label>
       </div>
 
-      <div className="guided-match-summary">
-        <span>Matching imaging pathways</span>
-        {clinicalProblemQuery ? (
-          topicMatches.length ? (
-            <>
-              <p>{possibleMatchLabels.slice(0, 5).join(', ')}{possibleMatchLabels.length > 5 ? `, +${possibleMatchLabels.length - 5} more` : ''}</p>
-              <small>
-                {topicMatches.length} pathway{topicMatches.length === 1 ? '' : 's'} available for guided matching.
-              </small>
-            </>
+      {clinicalProblemQuery ? (
+        <div className="guided-match-summary">
+          <span>Matching imaging pathways</span>
+          {topicMatches.length ? (
+            <p>{possibleMatchLabels.slice(0, 5).join(', ')}{possibleMatchLabels.length > 5 ? `, +${possibleMatchLabels.length - 5} more` : ''}</p>
           ) : (
-            <p>No imaging pathway matched yet. Try a simpler complaint such as headache, abdominal pain, dyspnea, or low back pain.</p>
-          )
-        ) : (
-          <p>Enter a complaint or choose a common presentation below.</p>
-        )}
-      </div>
+            <p>No matching pathway yet.</p>
+          )}
+        </div>
+      ) : null}
 
       <div className="button-row">
         <button

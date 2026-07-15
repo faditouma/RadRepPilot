@@ -20,7 +20,7 @@ export function WorkflowToolDock({ tools, activeTool, onSelect }: WorkflowToolDo
     <section className="workflow-tool-dock" aria-label="Workflow tools">
       <div>
         <span className="eyebrow">Tools</span>
-        <h3>Open optional support only when needed</h3>
+        <h3>Optional support</h3>
       </div>
       <div className="workflow-tool-grid">
         {visibleTools.map((tool) => (
@@ -32,7 +32,6 @@ export function WorkflowToolDock({ tools, activeTool, onSelect }: WorkflowToolDo
             key={tool.id}
           >
             <strong>{tool.label}</strong>
-            <span>{tool.description}</span>
           </button>
         ))}
       </div>

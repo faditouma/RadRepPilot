@@ -369,16 +369,14 @@ export function ReportingWorkflowPage({
           <div className="section-heading">
             <span className="eyebrow">Clinical context</span>
             <h3>Optional context fields</h3>
-            <p>Use these only when they affect technique, comparison, or final wording.</p>
           </div>
           {clinicalContextSections.length ? (
             <div className="accordion-stack">
               {clinicalContextSections.map((section) => (
                 <details className="workflow-card workflow-accordion nested-accordion" open key={section.id}>
-                  <summary>
-                    <span>{section.title}</span>
-                    {section.description ? <small>{section.description}</small> : null}
-                  </summary>
+	                  <summary>
+	                    <span>{section.title}</span>
+	                  </summary>
                   <div className="workflow-form-grid">
                     {section.fields.map((field) => (
                       <StructuredFieldRenderer
@@ -414,11 +412,10 @@ export function ReportingWorkflowPage({
     if (activeTool === 'helpers') {
       return (
         <section className="workflow-card compact-workflow-card workflow-tool-panel">
-          <div className="section-heading">
-            <span className="eyebrow">Calculators / classification systems</span>
-            <h3>Linked helpers</h3>
-            <p>Open helpers only when needed, then copy or insert the generated sentence into the draft.</p>
-          </div>
+	          <div className="section-heading">
+	            <span className="eyebrow">Calculators / classification systems</span>
+	            <h3>Linked helpers</h3>
+	          </div>
           <div className="checklist-preview">
             {helperLinks.map((helper) => (
               <button className="helper-link-chip" onClick={() => onOpenHelper?.(helper.id)} type="button" key={helper.id}>
@@ -439,11 +436,10 @@ export function ReportingWorkflowPage({
     if (activeTool === 'freeText') {
       return (
         <section className="workflow-card workflow-tool-panel">
-          <div className="section-heading">
-            <span className="eyebrow">Free text</span>
-            <h3>Additional findings / radiologist comment</h3>
-            <p>Use for relevant findings not captured above, nuance, comparison, uncertainty, or differential considerations.</p>
-          </div>
+	          <div className="section-heading">
+	            <span className="eyebrow">Free text</span>
+	            <h3>Additional findings / radiologist comment</h3>
+	          </div>
           <label className="field">
             Additional findings / radiologist comment
             <textarea
@@ -459,11 +455,10 @@ export function ReportingWorkflowPage({
     if (activeTool === 'limitations') {
       return (
         <section className="workflow-card workflow-tool-panel">
-          <div className="section-heading">
-            <span className="eyebrow">Limitations</span>
-            <h3>Limitations / uncertainty</h3>
-            <p>Document technical limitations only when relevant to the final wording.</p>
-          </div>
+	          <div className="section-heading">
+	            <span className="eyebrow">Limitations</span>
+	            <h3>Limitations / uncertainty</h3>
+	          </div>
           <label className="field">
             Limitations / uncertainty
             <textarea
@@ -498,18 +493,16 @@ export function ReportingWorkflowPage({
           {renderToolPanel()}
 
           <section className="workflow-card workflow-core-card">
-            <div className="section-heading">
-              <span className="eyebrow">Core findings</span>
-              <h3>Structured imaging findings</h3>
-              <p>Complete the findings verified on the study. Optional tools stay above this section until opened.</p>
-            </div>
+	          <div className="section-heading">
+	            <span className="eyebrow">Core findings</span>
+	            <h3>Structured imaging findings</h3>
+	          </div>
             <div className="accordion-stack">
               {imagingSections.map((section) => (
                 <details className="workflow-card workflow-accordion nested-accordion" open={section.defaultOpen ?? true} key={section.id}>
-                  <summary>
-                    <span>{section.title}</span>
-                    {section.description ? <small>{section.description}</small> : null}
-                  </summary>
+	                  <summary>
+	                    <span>{section.title}</span>
+	                  </summary>
                   <div className="workflow-form-grid">
                     {section.fields.map((field) => (
                       <StructuredFieldRenderer
