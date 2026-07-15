@@ -4120,18 +4120,6 @@ footer {
   line-height: 1.42;
 }
 
-.workspace-account-note {
-  flex: 0 0 auto;
-  border: 1px solid rgba(37, 99, 235, 0.14);
-  border-radius: 999px;
-  padding: 6px 10px;
-  background: rgba(239, 246, 255, 0.72);
-  color: var(--blue-dark);
-  font-size: 0.82rem;
-  font-weight: 780;
-  white-space: nowrap;
-}
-
 .workspace-legacy-shell {
   width: 100%;
   display: grid;

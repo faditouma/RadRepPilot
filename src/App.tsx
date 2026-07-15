@@ -1267,11 +1267,6 @@ function App({ embedded = false, initialPage = 'dashboard', onActivePageChange }
 
   const renderWorkspaceOverview = () => (
     <div className="page-stack">
-      <PageHeader
-        eyebrow="Workspace overview"
-        title="Choose a workspace tool"
-        description="Use the side navigation to open structured reporting workflows, focused calculators, requisition support, examples, or local drafts."
-      />
       <section className="module-grid">
         <ModuleCard
           title="Structured reporting modules"

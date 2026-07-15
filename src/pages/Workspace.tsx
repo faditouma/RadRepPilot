@@ -49,13 +49,13 @@ export function Workspace() {
     },
     dashboard: {
       title: 'Workspace Overview',
-      description: 'Choose a RadRepPilot tool from the sidebar. Each tool has its own refreshable link.',
+      description: '',
     },
   };
 
   const workspaceHeader = workspaceHeaders[initialPage] ?? {
     title: 'RadRepPilot Workspace',
-    description: 'Choose a RadRepPilot tool from the sidebar. Each tool has its own refreshable link.',
+    description: '',
   };
 
   useEffect(() => {
@@ -82,9 +82,8 @@ export function Workspace() {
           <div>
             <span className="eyebrow">Workspace</span>
             <h1>{workspaceHeader.title}</h1>
-            <p>{workspaceHeader.description}</p>
+            {workspaceHeader.description ? <p>{workspaceHeader.description}</p> : null}
           </div>
-          <p className="workspace-account-note">{session ? 'Signed in.' : 'No account required.'}</p>
         </section>
 
         <App embedded initialPage={initialPage} onActivePageChange={handleActivePageChange} />
