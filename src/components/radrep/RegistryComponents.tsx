@@ -849,7 +849,7 @@ function appropriatenessSeverityLabel(check: RequestedImagingCheck) {
   if (check.severity === 'appropriate') return 'Usually Appropriate';
   if (check.severity === 'conditional') return check.appropriatenessCategory ?? 'May be appropriate';
   if (check.severity === 'not_appropriate') return 'Usually Not Appropriate';
-  if (check.severity === 'unknown') return 'Not found in selected scenario';
+  if (check.severity === 'unknown') return 'Not found in recommendation set';
   return 'Select requested imaging';
 }
 
@@ -1128,7 +1128,7 @@ export function PrimaryCareRequestBuilder({
         },
       }),
     );
-    setDraftStatus('Clinical situation selected');
+    setDraftStatus('Clinical details selected');
   };
 
   const applyGuidedClinicalContext = (phrases: string[]) => {
@@ -1142,7 +1142,7 @@ export function PrimaryCareRequestBuilder({
         },
       });
     });
-    setDraftStatus('Clinical situation context updated');
+    setDraftStatus('Clinical details updated');
   };
 
   const toggleClinicalPrompt = (prompt: string, checked: boolean) => {
@@ -1295,7 +1295,7 @@ export function PrimaryCareRequestBuilder({
         onTextChange={(text) => setForm((existing) => ({ ...existing, generatedText: text }))}
         onSave={() => onSaveText(activeRequisitionTitle, 'referral', generated, { referralForm: { ...form, generatedText: generated }, requisitionText: generated })}
         copyLabel="Copy requisition"
-        placeholder="Choose a complaint, answer the questionnaire, and select an imaging option to generate an editable requisition."
+        placeholder="Generated requisition will appear here."
       />
       <button className="secondary-button full-width-action" onClick={resetRequisition} type="button">
         Clear/reset
@@ -1309,7 +1309,6 @@ export function PrimaryCareRequestBuilder({
         {!compactHeader ? (
           <div>
             <h2>Imaging requisitions</h2>
-            <p>Search a clinical complaint, answer focused questions, choose an imaging option, and draft a concise request.</p>
           </div>
         ) : (
           <div className="primary-care-flow-summary">

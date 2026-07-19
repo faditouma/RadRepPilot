@@ -5,7 +5,6 @@ import type {
   AppropriatenessVariant,
   ImagingOption,
 } from '../../data/appropriateness';
-import { reviewStatusLabel } from '../../utils/appropriatenessSearch';
 import { deriveScenarioQuestions } from '../../utils/acrScenarioQuestions';
 import type { ScenarioAnswerMap } from '../../utils/acrScenarioMatching';
 import { rankVariants, selectedAnswerPhrases } from '../../utils/acrScenarioMatching';
@@ -102,16 +101,6 @@ export function RequisitionGuidedDrawer({
     [answers, questions]
   );
 
-  const topRecommendedOptions = useMemo(
-    () =>
-      [
-        ...optionsByCategory['Usually Appropriate'],
-        ...optionsByCategory['May Be Appropriate'],
-        ...optionsByCategory['May Be Appropriate (Disagreement)'],
-      ].slice(0, 2),
-    [optionsByCategory],
-  );
-
   const requiredAnswersComplete = questions
     .filter((question) => question.required)
     .every((question) => Boolean(answers[question.id]?.length));
@@ -166,8 +155,8 @@ export function RequisitionGuidedDrawer({
       <aside className="guided-drawer-panel">
         <div className="guided-drawer-header">
           <div>
-            <span className="eyebrow">{step === 'clarify' ? 'Clinical questions' : 'Recommended imaging'}</span>
-            <h3>{step === 'clarify' ? 'Answer focused questions' : 'Review imaging options'}</h3>
+            <span className="eyebrow">{step === 'clarify' ? 'Clinical details' : 'Recommended imaging'}</span>
+            <h3>{step === 'clarify' ? 'Answer focused questions' : 'Choose an imaging option'}</h3>
             <p>
               {clinicalProblem || 'Clinical problem not entered'}
               {age || sex ? ` · ${[age, sex].filter(Boolean).join('')}` : ''}
@@ -181,13 +170,9 @@ export function RequisitionGuidedDrawer({
 
         {step === 'clarify' ? (
           <div className="guided-drawer-body">
-            <p className="guide-status-note">
-              Answer only what is known. RadRepPilot uses these details to match the closest educational imaging pathway.
-            </p>
-
             {topicMatches.length > 1 ? (
               <section className="guided-question-card">
-                <h4>Which clinical area best matches this complaint?</h4>
+                <h4>Clinical focus</h4>
                 <select
                   className="guided-question-select"
                   value={selectedTopic?.id ?? ''}
@@ -197,7 +182,7 @@ export function RequisitionGuidedDrawer({
                     setManualScenarioKey('');
                   }}
                 >
-                  <option value="">Choose clinical area...</option>
+                  <option value="">Choose focus...</option>
                   {topicMatches.map((topic) => (
                     <option value={topic.id} key={topic.id}>
                       {topic.title}
@@ -245,22 +230,8 @@ export function RequisitionGuidedDrawer({
                 </section>
               ))
             ) : (
-              <div className="inline-note">Choose the closest clinical area before continuing.</div>
+              <div className="inline-note">Choose the closest focus before continuing.</div>
             )}
-
-            {selectedScenario ? (
-              <section className="guided-live-match">
-                <span>Current match</span>
-                <strong>{cleanVariantTitle(selectedScenario.variant.title || selectedScenario.variant.clinicalScenario)}</strong>
-                {topRecommendedOptions.length ? (
-                  <p>
-                    Likely imaging: {topRecommendedOptions.map((option) => option.procedure).join(' · ')}
-                  </p>
-                ) : (
-                  <p>Recommendation table pending for this clinical situation.</p>
-                )}
-              </section>
-            ) : null}
 
             <div className="guided-drawer-actions">
               <button
@@ -269,7 +240,7 @@ export function RequisitionGuidedDrawer({
                 type="button"
                 disabled={!selectedTopic || !requiredAnswersComplete}
               >
-                Show recommended imaging
+                Show recommendations
               </button>
 
               <button className="secondary-button" onClick={onClose} type="button">
@@ -279,7 +250,7 @@ export function RequisitionGuidedDrawer({
 
             {!topicMatches.length ? (
               <div className="inline-note">
-                No imaging pathway was found for this search. Try a different complaint or diagnosis.
+                No imaging recommendation set was found for this search. Try a different complaint or diagnosis.
               </div>
             ) : null}
           </div>
@@ -288,20 +259,14 @@ export function RequisitionGuidedDrawer({
             {selectedScenario ? (
               <>
                 <section className="guided-selected-scenario">
-                  <span className="eyebrow">Matched clinical situation</span>
-                  <h4>
-                    {cleanVariantTitle(
-                      selectedScenario.variant.title || selectedScenario.variant.clinicalScenario
-                    )}
-                  </h4>
-                  <small>
-                    Educational appropriateness source: {selectedScenario.topic.sourceLabel} · {reviewStatusLabel(selectedScenario.topic.reviewStatus)}
-                  </small>
+                  <span className="eyebrow">Clinical fit</span>
+                  <h4>Recommendations based on the entered clinical details</h4>
+                  <small>Source: ACR Appropriateness Criteria table summary. Confirm with local protocol and radiologist judgment.</small>
                 </section>
 
                 {ranked.length > 1 ? (
                   <details className="guide-section compact">
-                    <summary>Other possible clinical situations</summary>
+                    <summary>Other possible matches</summary>
                     <div className="guided-alternative-list">
                       {ranked.slice(1, 4).map((item) => (
                         <button
@@ -310,9 +275,8 @@ export function RequisitionGuidedDrawer({
                           type="button"
                           key={`${item.topic.id}:${item.variant.id}`}
                         >
-                          <span>{item.topic.title}</span>
+                          <span>Clinical fit</span>
                           <strong>{cleanVariantTitle(item.variant.title)}</strong>
-                          <small>{item.variant.clinicalScenario}</small>
                         </button>
                       ))}
                     </div>
@@ -345,12 +309,6 @@ export function RequisitionGuidedDrawer({
                             >
                               <div>
                                 <strong>{optionToSelect.procedure}</strong>
-                                <span>
-                                  Listed as {optionToSelect.appropriatenessCategory}
-                                  {optionToSelect.radiationLevel
-                                    ? ` · Relative radiation: ${optionToSelect.radiationLevel}`
-                                    : ''}
-                                </span>
                               </div>
 
                               <div className="requisition-option-badges">
@@ -379,7 +337,7 @@ export function RequisitionGuidedDrawer({
                                   onClose();
                                 }}
                               >
-                                Select imaging
+                                Use this imaging
                               </button>
                             </article>
                           ))}
@@ -390,9 +348,9 @@ export function RequisitionGuidedDrawer({
                 </div>
 
                 <details className="guide-section compact">
-                  <summary>Source details</summary>
+                  <summary>Source summary</summary>
                   <p>
-                    {selectedScenario.topic.sourceLabel}. Appropriateness table summary; verify against the source document,
+                    {selectedScenario.topic.sourceLabel}. Structured appropriateness table summary; verify against the source document,
                     local protocols, and radiologist judgment.
                   </p>
                 </details>
@@ -405,7 +363,7 @@ export function RequisitionGuidedDrawer({
               </>
             ) : (
               <div className="inline-note">
-                No matching clinical situation found. Go back and adjust the clinical problem.
+                No matching presentation found. Go back and adjust the clinical problem.
               </div>
             )}
           </div>

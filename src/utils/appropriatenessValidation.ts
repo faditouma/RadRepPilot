@@ -99,7 +99,7 @@ export function classifyRequestedImaging(
     return {
       severity: 'not_selected',
       message:
-        'Select a requested imaging option to check appropriateness against the selected clinical scenario.',
+        'Select an imaging option to check it against the guided request.',
       suggestedAlternatives,
     };
   }
@@ -109,7 +109,7 @@ export function classifyRequestedImaging(
   if (!match) {
     return {
       severity: 'unknown',
-      message: `"${requested}" was not found in the selected scenario table. Confirm the request locally or choose a listed option.`,
+      message: `"${requested}" was not found in the current recommendation set. Confirm locally or choose a listed option.`,
       suggestedAlternatives,
     };
   }
@@ -120,7 +120,7 @@ export function classifyRequestedImaging(
       appropriatenessCategory: match.appropriatenessCategory,
       radiationLevel: match.radiationLevel,
       severity: 'appropriate',
-      message: 'Listed as Usually Appropriate for the selected clinical scenario.',
+      message: 'Usually Appropriate for the entered clinical details.',
       suggestedAlternatives,
     };
   }
@@ -132,7 +132,7 @@ export function classifyRequestedImaging(
       radiationLevel: match.radiationLevel,
       severity: 'not_appropriate',
       message:
-        'Usually Not Appropriate for the selected clinical scenario. Consider a Usually Appropriate option if it matches the clinical question.',
+        'Usually Not Appropriate for the entered clinical details. Consider a Usually Appropriate option if it matches the clinical question.',
       suggestedAlternatives,
     };
   }

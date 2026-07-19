@@ -77,7 +77,7 @@ function hasTopicText(topic: AppropriatenessTopic, keywords: string[]) {
 }
 
 function scenarioLabel(variant: AppropriatenessVariant) {
-  return cleanVariantTitle(variant.title || variant.clinicalScenario || 'Clinical situation');
+  return cleanVariantTitle(variant.title || variant.clinicalScenario || 'Clinical presentation');
 }
 
 function scenarioSelectionQuestion(topic: AppropriatenessTopic, context?: ScenarioMatchingContext): ScenarioQuestion | null {
@@ -95,7 +95,7 @@ function scenarioSelectionQuestion(topic: AppropriatenessTopic, context?: Scenar
 
   return {
     id: 'acr-scenario',
-    label: context?.age || context?.sex ? 'Closest clinical situation after age/sex check' : 'Closest clinical situation',
+    label: context?.age || context?.sex ? 'Closest clinical presentation after age/sex check' : 'Closest clinical presentation',
     type: 'single' as const,
     required: false,
     options,

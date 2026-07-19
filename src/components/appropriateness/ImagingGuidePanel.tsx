@@ -16,6 +16,7 @@ import {
   reviewStatusSummary,
   searchAppropriatenessLayer,
 } from '../../utils/appropriatenessSearch';
+import { cleanVariantTitle } from '../../utils/requisitionTopicMatching';
 import { CopyButton } from '../radrep/RadRepComponents';
 
 const GUIDE_SELECTION_KEY = 'radreppilot.pendingImagingGuideSelection';
@@ -239,7 +240,7 @@ function buildTopicGroups(
     addGroup(
       'best',
       'Best matches',
-      'Ranked by title, clinical situation, procedure, keyword, and complaint mapping matches.',
+      'Ranked by title, presentation, procedure, keyword, and complaint mapping matches.',
       sortedTopics.filter((topic) => scoreTopic(topic, query, mappedTopicIds) > 0).slice(0, 10)
     );
   }
@@ -351,7 +352,7 @@ function ComplaintMappingCard({
 
               return variantsToShow.map((variant) => (
                 <div className="guide-reviewed-variant" key={`${topic.id}-${variant.id}`}>
-                  <strong>{variant.title}</strong>
+                  <strong>{cleanVariantTitle(variant.title)}</strong>
                   <div className="guide-mini-option-list">
                     {(variant.imagingOptions ?? []).slice(0, 4).map((option) => (
                       <span key={option.procedure}>
@@ -395,13 +396,12 @@ function TopicResultCard({
 
       <div className="guide-topic-card-stats">
         {topic.year && topic.year !== 'unknown' ? <span>{topic.year}</span> : null}
-        <span>{topic.variants.length} clinical situations</span>
+        <span>{topic.variants.length} recommendation sets</span>
         <span>{procedureTypes.slice(0, 3).join(', ') || 'Procedure type pending'}</span>
       </div>
 
       <div className="guide-topic-card-summary">
         <span>{topicRadiationSummary(topic)}</span>
-        <span>{statusNoteForTopic(topic)}</span>
       </div>
     </button>
   );
@@ -431,7 +431,6 @@ function TopicResultGroups({
           <div className="guide-result-group-header">
             <div>
               <h3>{group.title}</h3>
-              <p>{group.helper}</p>
             </div>
             <span>{group.topics.length}</span>
           </div>
@@ -552,7 +551,7 @@ export function ImagingGuidePanel({ onUseInRequisition }: ImagingGuidePanelProps
 
   const requisitionText = selectedVariantRequisitionSuggestions.length
     ? selectedVariantRequisitionSuggestions.join('\n\n')
-    : 'Requisition wording pending for this extracted table. Use the selected clinical situation and recommended imaging option to generate a focused request.';
+    : 'Requisition wording pending for this extracted table. Use the selected imaging option to generate a focused request.';
 
   const extractedTopicCount = appropriatenessTopics.filter(
     (topic) => topic.reviewStatus === 'extracted' || topic.reviewStatus === 'needs_validation'
@@ -595,7 +594,7 @@ export function ImagingGuidePanel({ onUseInRequisition }: ImagingGuidePanelProps
       <div className="guide-layout">
         <aside className="guide-topic-panel">
           <label className="guide-search-label" htmlFor="imaging-guide-search">
-            Search complaint, topic, clinical situation, procedure, or keyword
+            Search complaint, topic, presentation, procedure, or keyword
           </label>
 
           <input
@@ -725,9 +724,6 @@ export function ImagingGuidePanel({ onUseInRequisition }: ImagingGuidePanelProps
                 <div>
                   <span className="eyebrow">Complaint mapping</span>
                   <h2>Clinical complaint matches</h2>
-                  <p>
-                    Complaint mappings connect everyday clinical language to extracted or curated Imaging Guide topics when available.
-                  </p>
                 </div>
               </div>
 
@@ -749,7 +745,7 @@ export function ImagingGuidePanel({ onUseInRequisition }: ImagingGuidePanelProps
                   <div className="guide-source-meta">
                     <span>{selectedTopic.sourceLabel}</span>
                     {selectedTopic.year && selectedTopic.year !== 'unknown' ? <span>{selectedTopic.year}</span> : null}
-                    <span>{selectedTopic.variants.length} clinical situations</span>
+                    <span>{selectedTopic.variants.length} recommendation sets</span>
                     <span>{topicRadiationSummary(selectedTopic)}</span>
                   </div>
 
@@ -770,7 +766,9 @@ export function ImagingGuidePanel({ onUseInRequisition }: ImagingGuidePanelProps
                     );
 
                     onUseInRequisition?.(selectedTopic.id, selectedVariant?.id, {
-                      scenarioTitle: selectedVariant?.title || selectedVariant?.clinicalScenario,
+                      scenarioTitle: selectedVariant
+                        ? cleanVariantTitle(selectedVariant.title || selectedVariant.clinicalScenario)
+                        : undefined,
                       procedure: usuallyAppropriate?.procedure,
                     });
                   }}
@@ -780,7 +778,7 @@ export function ImagingGuidePanel({ onUseInRequisition }: ImagingGuidePanelProps
                 </button>
 
                 <CopyButton
-                  text={`${selectedTopic.title}${selectedVariant ? ` - ${selectedVariant.title}` : ''}`}
+                  text={`${selectedTopic.title}${selectedVariant ? ` - ${cleanVariantTitle(selectedVariant.title)}` : ''}`}
                   label="Copy guide item"
                   className="secondary-button"
                 />
@@ -794,7 +792,7 @@ export function ImagingGuidePanel({ onUseInRequisition }: ImagingGuidePanelProps
 
               <section className="guide-section">
                 <label className="guide-search-label" htmlFor="imaging-guide-variant">
-                  Clinical situation
+                  Clinical presentation
                 </label>
 
                 <select
@@ -804,7 +802,7 @@ export function ImagingGuidePanel({ onUseInRequisition }: ImagingGuidePanelProps
                 >
                   {selectedTopic.variants.map((variant) => (
                     <option key={variant.id} value={variant.id}>
-                      {variant.title}
+                      {cleanVariantTitle(variant.title)}
                     </option>
                   ))}
                 </select>
@@ -817,7 +815,6 @@ export function ImagingGuidePanel({ onUseInRequisition }: ImagingGuidePanelProps
                   <section className="guide-section">
                     <div className="guide-section-heading">
                       <h3>Recommendation table</h3>
-                      <span>Procedure, category, radiation, rationale</span>
                     </div>
 
                     {selectedVariantImagingOptions.length ? (
@@ -851,13 +848,13 @@ export function ImagingGuidePanel({ onUseInRequisition }: ImagingGuidePanelProps
                         </table>
                       </div>
                     ) : (
-                      <p>Recommendation table pending for this clinical situation.</p>
+                      <p>Recommendation table pending for this presentation.</p>
                     )}
 
                     <details className="guide-status-note source-detail-disclosure">
-                      <summary>Source and extraction details</summary>
+                      <summary>Provenance</summary>
                       <p>
-                        {statusNoteForTopic(selectedTopic)} Source/status note:{' '}
+                        {statusNoteForTopic(selectedTopic)}{' '}
                         {selectedTopic.sourceNote || 'No additional source note available.'}
                       </p>
                     </details>
@@ -867,7 +864,6 @@ export function ImagingGuidePanel({ onUseInRequisition }: ImagingGuidePanelProps
                     <section className="guide-section">
                       <div className="guide-section-heading">
                         <h3>Missing clinical information</h3>
-                        <span>Useful details before choosing or protocoling imaging</span>
                       </div>
                       <ul className="guide-chip-list">
                         {selectedVariantMissingInformationPrompts.map((prompt) => (

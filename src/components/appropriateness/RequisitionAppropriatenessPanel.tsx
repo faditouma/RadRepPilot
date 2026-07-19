@@ -95,7 +95,6 @@ export function RequisitionAppropriatenessPanel({
   );
 
   const topicMatches = matchResult.topics;
-  const possibleMatchLabels = topicMatches.map((topic) => topic.title);
   const activeOptions = selectedVariant?.imagingOptions ?? [];
 
   const appropriatenessCheck = useMemo(
@@ -119,14 +118,13 @@ export function RequisitionAppropriatenessPanel({
     <section className="requisition-appropriateness-panel guided-requisition-panel">
       <div className="clinical-intake-heading">
         <div>
-          <span className="eyebrow">Clinical intake</span>
-          <h3>Start with a complaint</h3>
+          <span className="eyebrow">Imaging request</span>
+          <h3>Start with the clinical problem</h3>
         </div>
       </div>
 
-      <details className="complaint-starter-disclosure" open={!clinicalProblemQuery}>
-        <summary>Common presentations</summary>
-        <div className="complaint-starter-grid" aria-label="Common imaging requisition complaint flows">
+      {!clinicalProblemQuery ? (
+        <div className="complaint-starter-grid compact" aria-label="Common imaging request complaints">
           {curatedComplaintStarters.map((mapping) => (
             <button
               className="complaint-starter-card"
@@ -139,7 +137,7 @@ export function RequisitionAppropriatenessPanel({
             </button>
           ))}
         </div>
-      </details>
+      ) : null}
 
       <div className="guided-main-fields">
         <label className="field">
@@ -172,17 +170,6 @@ export function RequisitionAppropriatenessPanel({
         </label>
       </div>
 
-      {clinicalProblemQuery ? (
-        <div className="guided-match-summary">
-          <span>Matching imaging pathways</span>
-          {topicMatches.length ? (
-            <p>{possibleMatchLabels.slice(0, 5).join(', ')}{possibleMatchLabels.length > 5 ? `, +${possibleMatchLabels.length - 5} more` : ''}</p>
-          ) : (
-            <p>No matching pathway yet.</p>
-          )}
-        </div>
-      ) : null}
-
       <div className="button-row">
         <button
           className="primary-button"
@@ -190,7 +177,7 @@ export function RequisitionAppropriatenessPanel({
           onClick={() => setDrawerOpen(true)}
           disabled={!clinicalProblemQuery}
         >
-          Open questionnaire
+          Open guided questions
         </button>
 
         {selectedVariant ? (
@@ -203,10 +190,8 @@ export function RequisitionAppropriatenessPanel({
       {selectedVariant ? (
         <section className="selected-requisition-summary">
           <div>
-            <span>Matched clinical situation</span>
-            <strong>
-              {cleanVariantTitle(selectedVariant.title || selectedVariant.clinicalScenario)}
-            </strong>
+            <span>Clinical details</span>
+            <strong>Guided questions completed</strong>
           </div>
 
           <div>
@@ -215,7 +200,7 @@ export function RequisitionAppropriatenessPanel({
             <small>
               {appropriatenessCheck?.match
                 ? [
-                    `Listed as ${appropriatenessCheck.match.appropriatenessCategory}`,
+                    appropriatenessCheck.match.appropriatenessCategory,
                     appropriatenessCheck.match.radiationLevel
                       ? `Relative radiation: ${appropriatenessCheck.match.radiationLevel}`
                       : '',
@@ -234,7 +219,7 @@ export function RequisitionAppropriatenessPanel({
               type="button"
               onClick={() => onOpenGuide?.(selectedTopic.id, selectedVariant.id)}
             >
-              Source details
+              Source summary
             </button>
           ) : null}
         </section>
