@@ -182,7 +182,7 @@ export const moduleNavigationTree: NavigationModality[] = [
         name: 'Chest',
         description: 'PE, nodules, infection, screening categories, and chest incidental findings.',
         workflows: [
-          workflow('ctpa-pe', 'CTPA Pulmonary Embolism', 'PE presence, most proximal level, RV/LV ratio, infarct, and effusion.', 'implemented', 'ctpa', ['RV/LV']),
+          workflow('ctpa-pe', 'CT Pulmonary Angiography', 'Technical quality, PE distribution and chronicity, right-heart findings, complications, and communication.', 'implemented', 'ctpa', ['RV/LV']),
           workflow('ct-chest-nodule', 'Pulmonary Nodule / Fleischner', 'Nodule type, size, risk, stability, and simplified follow-up.', 'implemented', 'nodule', ['Fleischner']),
           workflow('lung-rads', 'Lung Cancer Screening / Lung-RADS', 'Screening nodule category preview and follow-up sentence.', 'partial', undefined, ['Lung-RADS']),
           workflow('ct-chest-pneumonia-ild-mass', 'Pneumonia / ILD / Mass', 'Parenchymal pattern, distribution, airway/pleura, and mass concern.'),

@@ -194,12 +194,92 @@ export function scoreReportCompleteness(moduleType: ModuleType, values: Record<s
   }
 
   if (moduleType === 'ctpa') {
+    const peStatus = textValue(values.pePresent);
+    const positivePeDetailsComplete =
+      peStatus !== 'present' ||
+      (addressed(values.embolusAppearance) &&
+        addressed(values.laterality) &&
+        addressed(values.proximalLevel) &&
+        hasMeaningfulText(values.involvedBranches));
+    const indeterminateDetailsComplete =
+      peStatus !== 'indeterminate' ||
+      (addressed(values.indeterminateLevel) && hasMeaningfulText(values.indeterminateLocation));
+    const rightHeartAddressed =
+      addressed(values.rightHeartSynthesis) ||
+      addressedAny(values, [
+        'rvDiameterMm',
+        'lvDiameterMm',
+        'enteredRvLvRatio',
+        'septalConfiguration',
+        'contrastReflux',
+        'mainPulmonaryArteryEnlargement',
+      ]) ||
+      hasMeaningfulText(values.otherRightHeartFindings);
+    const associatedFindingsAddressed =
+      addressedAny(values, [
+        'pulmonaryInfarct',
+        'pleuralEffusion',
+        'atelectaticConsolidativeOpacity',
+        'pneumothorax',
+      ]) || hasAny(values, ['alternativeDiagnosis', 'additionalFindings', 'findingsOverride']);
+    const urgentFinding =
+      ['present', 'indeterminate', 'not-adequately-assessed'].includes(peStatus) ||
+      textValue(values.examQuality) === 'nondiagnostic' ||
+      textValue(values.pneumothorax) === 'present';
+    const communicationComplete =
+      !urgentFinding ||
+      (addressed(values.communicationStatus) &&
+        (textValue(values.communicationStatus) !== 'occurred' ||
+          (hasMeaningfulText(values.communicationRecipient) &&
+            hasMeaningfulText(values.communicationDate) &&
+            hasMeaningfulText(values.communicationTime) &&
+            hasMeaningfulText(values.communicationMethod))));
+
     return score('Report completeness', [
-      { label: 'PE presence/distribution documented', complete: hasAny(values, ['pePresent', 'proximalLevel', 'laterality']) || hasValue(report.findings) },
-      { label: 'RV/LV or right heart strain addressed', complete: hasAny(values, ['rvDiameterMm', 'lvDiameterMm']) || /right heart|rv\/lv/i.test(report.impression) },
-      { label: 'Pulmonary infarct addressed', complete: hasAny(values, ['pulmonaryInfarct']) || /infarct/i.test(report.findings) },
-      { label: 'Pleural effusion addressed', complete: hasAny(values, ['pleuralEffusion']) || /effusion/i.test(report.findings) },
-      { label: 'Key negatives included', complete: hasAny(values, ['keyNegatives']) || /no /i.test(report.findings + report.impression) },
+      {
+        label: 'Clinical indication addressed',
+        complete: hasMeaningfulText(values.clinicalIndication),
+        missingLabel: 'Clinical indication not entered',
+      },
+      {
+        label: 'Technical quality addressed',
+        complete:
+          addressed(values.contrastOpacification) &&
+          addressed(values.examQuality) &&
+          addressed(values.respiratoryMotion) &&
+          addressed(values.bolusTimingArtifact),
+        missingLabel: 'Contrast quality, diagnostic quality, motion, or bolus timing not addressed',
+      },
+      {
+        label: 'PE assessment and distribution complete',
+        complete: addressed(values.pePresent) && positivePeDetailsComplete && indeterminateDetailsComplete,
+        missingLabel:
+          peStatus === 'present'
+            ? 'Positive PE appearance/distribution incomplete'
+            : peStatus === 'indeterminate'
+              ? 'Indeterminate filling-defect detail incomplete'
+              : 'PE assessment not entered',
+      },
+      {
+        label: 'Right-heart findings addressed',
+        complete: rightHeartAddressed,
+        missingLabel: 'Right-heart assessment not entered',
+      },
+      {
+        label: 'Associated findings addressed',
+        complete: associatedFindingsAddressed,
+        missingLabel: 'Complications/associated thoracic findings not addressed',
+      },
+      {
+        label: 'Impression generated',
+        complete: hasMeaningfulText(report.impression),
+        missingLabel: 'Impression incomplete',
+      },
+      {
+        label: 'Urgent communication status addressed when applicable',
+        complete: communicationComplete,
+        missingLabel: 'Critical-result communication status/details incomplete',
+      },
       optionalFindingCheck('Incidental follow-up addressed if present', values.incidentalFindings, report.incidentalFindings, 'No incidental finding entered', 'Incidental finding/follow-up documented'),
     ]);
   }

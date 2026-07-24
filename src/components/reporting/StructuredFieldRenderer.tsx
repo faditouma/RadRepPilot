@@ -64,7 +64,7 @@ export function StructuredFieldRenderer({ field, value, onChange }: StructuredFi
           value={stringValue}
           onChange={(event) => onChange(event.target.value)}
           placeholder={field.placeholder}
-          type={field.type === 'number' ? 'number' : 'text'}
+          type={['number', 'date', 'time'].includes(field.type) ? field.type : 'text'}
           min={field.type === 'number' ? '0' : undefined}
           step={field.type === 'number' ? '0.1' : undefined}
         />

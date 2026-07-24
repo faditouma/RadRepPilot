@@ -1,8 +1,13 @@
 import type { InsertTarget, ModuleType, ReferralOption } from '../radrep/types';
 
-export type WorkflowFieldType = 'text' | 'textarea' | 'number' | 'select' | 'checkbox-group';
+export type WorkflowFieldType = 'text' | 'textarea' | 'number' | 'date' | 'time' | 'select' | 'checkbox-group';
 export type WorkflowValue = string | string[];
 export type WorkflowValues = Record<string, WorkflowValue>;
+
+export interface WorkflowFieldVisibility {
+  field: string;
+  equals: string | string[];
+}
 
 export interface WorkflowField {
   id: string;
@@ -12,6 +17,7 @@ export interface WorkflowField {
   options?: ReferralOption[];
   wide?: boolean;
   suffix?: string;
+  visibleWhen?: WorkflowFieldVisibility;
 }
 
 export interface WorkflowSection {
@@ -52,6 +58,24 @@ export interface ReportingWorkflowSchema {
   badges: string[];
   insertTargets: InsertTarget[];
   safetyNote: string;
+  contentMetadata?: {
+    sourceChapter: string;
+    sourceType: string;
+    guidelineOrClassificationName?: string;
+    guidelineVersion?: string;
+    lastReviewedDate: string;
+    reviewStatus: 'needs_clinical_review' | 'manually_curated' | 'reviewed';
+    clinicalValidationRequired: boolean;
+  };
+}
+
+export function isWorkflowFieldVisible(field: WorkflowField, values: WorkflowValues): boolean {
+  if (!field.visibleWhen) return true;
+  const currentValue = values[field.visibleWhen.field];
+  const expectedValues = Array.isArray(field.visibleWhen.equals)
+    ? field.visibleWhen.equals
+    : [field.visibleWhen.equals];
+  return typeof currentValue === 'string' && expectedValues.includes(currentValue);
 }
 
 const yesNoUnknown = [
@@ -249,35 +273,118 @@ const incidentalHeadNeck = [
 ];
 
 const pePresenceOptions = [
-  { value: 'no', label: 'No PE identified' },
-  { value: 'yes', label: 'PE present' },
+  { value: '', label: 'Select PE assessment…' },
+  { value: 'absent', label: 'Absent' },
+  { value: 'present', label: 'Present' },
   { value: 'indeterminate', label: 'Indeterminate' },
+  { value: 'not-adequately-assessed', label: 'Not adequately assessed' },
 ];
 
 const lateralityPeOptions = [
+  { value: '', label: 'Select involvement…' },
   { value: 'right', label: 'Right' },
   { value: 'left', label: 'Left' },
   { value: 'bilateral', label: 'Bilateral' },
 ];
 
 const proximalLevelOptions = [
+  { value: '', label: 'Select most proximal level…' },
   { value: 'main pulmonary artery', label: 'Main pulmonary artery' },
+  { value: 'right pulmonary artery', label: 'Right pulmonary artery' },
+  { value: 'left pulmonary artery', label: 'Left pulmonary artery' },
   { value: 'lobar', label: 'Lobar' },
   { value: 'segmental', label: 'Segmental' },
   { value: 'subsegmental', label: 'Subsegmental' },
 ];
 
-const clotBurdenOptions = [
-  { value: 'low', label: 'Low' },
+const embolusAppearanceOptions = [
+  { value: '', label: 'Select appearance…' },
+  { value: 'acute', label: 'Acute' },
+  { value: 'chronic', label: 'Chronic' },
+  { value: 'acute-on-chronic', label: 'Acute-on-chronic' },
+  { value: 'indeterminate', label: 'Indeterminate' },
+];
+
+const occlusionOptions = [
+  { value: '', label: 'Select if relevant…' },
+  { value: 'occlusive', label: 'Occlusive' },
+  { value: 'nonocclusive', label: 'Nonocclusive' },
+  { value: 'mixed', label: 'Mixed occlusive and nonocclusive' },
+  { value: 'not assessed', label: 'Not assessed' },
+];
+
+const technicalQualityOptions = [
+  { value: '', label: 'Select diagnostic quality…' },
+  { value: 'diagnostic', label: 'Diagnostic' },
+  { value: 'limited', label: 'Limited' },
+  { value: 'nondiagnostic', label: 'Nondiagnostic' },
+];
+
+const contrastOpacificationOptions = [
+  { value: '', label: 'Select opacification…' },
+  { value: 'adequate', label: 'Adequate' },
+  { value: 'suboptimal', label: 'Suboptimal' },
+  { value: 'poor', label: 'Poor' },
+  { value: 'not assessed', label: 'Not assessed' },
+];
+
+const artifactOptions = [
+  { value: '', label: 'Select assessment…' },
+  { value: 'absent', label: 'Absent' },
+  { value: 'present', label: 'Present' },
+  { value: 'mild', label: 'Mild' },
   { value: 'moderate', label: 'Moderate' },
-  { value: 'high', label: 'High' },
+  { value: 'severe', label: 'Severe' },
+  { value: 'not assessed', label: 'Not assessed' },
+];
+
+const findingStatusOptions = [
+  { value: '', label: 'Select assessment…' },
+  { value: 'absent', label: 'Absent' },
+  { value: 'present', label: 'Present' },
+  { value: 'not assessed', label: 'Not assessed' },
+];
+
+const septalConfigurationOptions = [
+  { value: '', label: 'Select assessment…' },
+  { value: 'normal', label: 'No flattening or bowing' },
+  { value: 'flattening', label: 'Septal flattening' },
+  { value: 'leftward bowing', label: 'Leftward septal bowing' },
+  { value: 'not assessed', label: 'Not assessed' },
+];
+
+const rightHeartSynthesisOptions = [
+  { value: '', label: 'Select user synthesis…' },
+  { value: 'no-associated-findings', label: 'No CT findings associated with right-heart strain' },
+  { value: 'associated-findings-present', label: 'CT findings that may be associated with right-heart strain' },
+  { value: 'indeterminate', label: 'Indeterminate assessment' },
+  { value: 'not assessed', label: 'Not assessed' },
 ];
 
 const pleuralEffusionSimpleOptions = [
+  { value: '', label: 'Select assessment…' },
   { value: 'none', label: 'None' },
   { value: 'small', label: 'Small' },
   { value: 'moderate', label: 'Moderate' },
   { value: 'large', label: 'Large' },
+  { value: 'not assessed', label: 'Not assessed' },
+];
+
+const opacityOptions = [
+  { value: '', label: 'Select assessment…' },
+  { value: 'absent', label: 'Absent' },
+  { value: 'atelectatic', label: 'Atelectatic opacity' },
+  { value: 'consolidative', label: 'Consolidative opacity' },
+  { value: 'mixed', label: 'Mixed atelectatic/consolidative opacity' },
+  { value: 'not assessed', label: 'Not assessed' },
+];
+
+const communicationStatusOptions = [
+  { value: '', label: 'Select communication status…' },
+  { value: 'occurred', label: 'Communication occurred' },
+  { value: 'not-performed', label: 'Communication did not occur' },
+  { value: 'not-required', label: 'Communication not required' },
+  { value: 'not-documented', label: 'Not documented' },
 ];
 
 const noduleTypeOptions = [
@@ -363,31 +470,68 @@ export const reportingWorkflowSchemas: Record<
   ctpa: {
     moduleType: 'ctpa',
     moduleId: 'ctpa-pe',
-    title: 'CTPA: Pulmonary Embolism',
-    shortTitle: 'CTPA PE',
+    title: 'CT Pulmonary Angiography',
+    shortTitle: 'CTPA',
     modality: 'CT',
     bodySystem: 'Chest',
-    clinicalQuestion: 'Assess for pulmonary embolism, right heart strain, and associated thoracic findings.',
+    clinicalQuestion: 'Assess for pulmonary embolism, right-heart findings, complications, and alternative acute thoracic disease.',
     techniqueDefault: 'CT pulmonary angiogram was performed after intravenous contrast administration. Multiplanar reformats were reviewed.',
     badges: ['Implemented', 'Educational draft', 'RV/LV helper'],
     insertTargets: ['findings', 'impression', 'incidentalFindings', 'recommendations'],
     safetyNote: prototypeSafety,
+    contentMetadata: {
+      sourceChapter: 'Chapter 32: CT pulmonary angiography',
+      sourceType: 'Textbook content pack (2021 reference)',
+      guidelineOrClassificationName: 'No management guideline embedded',
+      guidelineVersion: 'Not applicable',
+      lastReviewedDate: '2026-07-24',
+      reviewStatus: 'needs_clinical_review',
+      clinicalValidationRequired: true,
+    },
     defaultValues: {
       clinicalIndication: '',
+      relevantClinicalContext: '',
+      comparisonStudy: '',
+      comparisonDate: '',
       examType: 'CT pulmonary angiogram',
-      pePresent: 'no',
-      laterality: 'right',
-      proximalLevel: 'segmental',
-      clotBurden: 'low',
-      saddleEmbolus: 'no',
+      contrastOpacification: '',
+      examQuality: '',
+      respiratoryMotion: '',
+      bolusTimingArtifact: '',
+      otherTechnicalLimitations: '',
+      pePresent: '',
+      embolusAppearance: '',
+      laterality: '',
+      proximalLevel: '',
+      involvedBranches: '',
+      occlusion: '',
+      embolusCharacterization: '',
+      indeterminateLevel: '',
+      indeterminateLocation: '',
       rvDiameterMm: '',
       lvDiameterMm: '',
-      pulmonaryInfarct: 'no',
-      pleuralEffusion: 'none',
+      enteredRvLvRatio: '',
+      septalConfiguration: '',
+      contrastReflux: '',
+      mainPulmonaryArteryEnlargement: '',
+      rightHeartSynthesis: '',
+      otherRightHeartFindings: '',
+      pulmonaryInfarct: '',
+      pleuralEffusion: '',
+      atelectaticConsolidativeOpacity: '',
+      opacityDescription: '',
+      pneumothorax: '',
       alternativeDiagnosis: '',
       incidentalFindings: '',
       additionalFindings: '',
       limitationsUncertainty: '',
+      findingsOverride: '',
+      impressionOverride: '',
+      communicationStatus: '',
+      communicationRecipient: '',
+      communicationDate: '',
+      communicationTime: '',
+      communicationMethod: '',
     },
     sections: [
       {
@@ -395,24 +539,129 @@ export const reportingWorkflowSchemas: Record<
         title: 'Clinical context',
         defaultOpen: true,
         fields: [
-          area('clinicalIndication', 'Indication', 'Chest pain, dyspnea, elevated D-dimer, clinical concern for PE'),
+          area('clinicalIndication', 'Clinical indication', 'Chest pain, dyspnea, elevated D-dimer, clinical concern for PE'),
+          area('relevantClinicalContext', 'Relevant clinical context', 'Risk factors, prior thromboembolic disease, anticoagulation, or other relevant context'),
+          text('comparisonStudy', 'Comparison study', 'e.g. CTA chest'),
+          { id: 'comparisonDate', label: 'Comparison date', type: 'date' },
+        ],
+      },
+      {
+        id: 'technical-quality',
+        title: 'Technical quality',
+        defaultOpen: true,
+        fields: [
+          select('contrastOpacification', 'Pulmonary arterial contrast opacification', contrastOpacificationOptions),
+          select('examQuality', 'Examination quality', technicalQualityOptions),
+          select('respiratoryMotion', 'Respiratory motion', artifactOptions),
+          select('bolusTimingArtifact', 'Bolus-timing artifact', artifactOptions),
+          area('otherTechnicalLimitations', 'Other technical limitations', 'Describe any additional limitation and affected arterial level'),
         ],
       },
       {
         id: 'pe-findings',
-        title: 'Pulmonary embolism findings',
+        title: 'Pulmonary embolism',
         defaultOpen: true,
         fields: [
-          select('pePresent', 'Pulmonary embolism', pePresenceOptions),
-          select('laterality', 'Laterality', lateralityPeOptions),
-          select('proximalLevel', 'Most proximal level', proximalLevelOptions),
-          select('clotBurden', 'Clot burden', clotBurdenOptions),
-          yn('saddleEmbolus', 'Saddle embolus'),
+          select('pePresent', 'Pulmonary embolism assessment', pePresenceOptions),
+          {
+            ...select('embolusAppearance', 'Embolus appearance', embolusAppearanceOptions),
+            visibleWhen: { field: 'pePresent', equals: 'present' },
+          },
+          {
+            ...select('laterality', 'Involvement', lateralityPeOptions),
+            visibleWhen: { field: 'pePresent', equals: 'present' },
+          },
+          {
+            ...select('proximalLevel', 'Most proximal embolus level', proximalLevelOptions),
+            visibleWhen: { field: 'pePresent', equals: 'present' },
+          },
+          {
+            ...text('involvedBranches', 'Involved lobes or arterial branches', 'e.g. bilateral lower-lobe segmental branches', true),
+            visibleWhen: { field: 'pePresent', equals: 'present' },
+          },
+          {
+            ...select('occlusion', 'Occlusive appearance', occlusionOptions),
+            visibleWhen: { field: 'pePresent', equals: 'present' },
+          },
+          {
+            ...area('embolusCharacterization', 'Additional embolus characterization', 'Acute/chronic morphology, webs, bands, eccentric thrombus, calcification, or other relevant detail'),
+            visibleWhen: { field: 'pePresent', equals: 'present' },
+          },
+          {
+            ...select('indeterminateLevel', 'Level of indeterminate filling defect', proximalLevelOptions),
+            visibleWhen: { field: 'pePresent', equals: 'indeterminate' },
+          },
+          {
+            ...area('indeterminateLocation', 'Indeterminate filling-defect description', 'Describe the vessel, side, artifact, and degree of uncertainty'),
+            visibleWhen: { field: 'pePresent', equals: 'indeterminate' },
+          },
+        ],
+      },
+      {
+        id: 'right-heart',
+        title: 'Right-heart findings',
+        defaultOpen: false,
+        fields: [
           number('rvDiameterMm', 'RV diameter', 'mm'),
           number('lvDiameterMm', 'LV diameter', 'mm'),
-          yn('pulmonaryInfarct', 'Pulmonary infarct'),
+          number('enteredRvLvRatio', 'Entered RV/LV ratio'),
+          select('septalConfiguration', 'Interventricular septum', septalConfigurationOptions),
+          select('contrastReflux', 'Contrast reflux into IVC/hepatic veins', findingStatusOptions),
+          select('mainPulmonaryArteryEnlargement', 'Main pulmonary artery enlargement', findingStatusOptions),
+          select('rightHeartSynthesis', 'User-controlled right-heart synthesis', rightHeartSynthesisOptions),
+          area('otherRightHeartFindings', 'Other right-heart findings', 'Additional findings or user-controlled synthesis'),
+        ],
+      },
+      {
+        id: 'associated-findings',
+        title: 'Associated findings and complications',
+        defaultOpen: false,
+        fields: [
+          select('pulmonaryInfarct', 'Pulmonary infarction', findingStatusOptions),
           select('pleuralEffusion', 'Pleural effusion', pleuralEffusionSimpleOptions),
-          area('alternativeDiagnosis', 'Alternative/additional diagnosis', 'e.g. pneumonia, edema, malignancy, aortic finding'),
+          select('atelectaticConsolidativeOpacity', 'Atelectatic or consolidative opacity', opacityOptions),
+          {
+            ...text('opacityDescription', 'Opacity location/description', 'e.g. peripheral right lower-lobe wedge-shaped opacity', true),
+            visibleWhen: {
+              field: 'atelectaticConsolidativeOpacity',
+              equals: ['atelectatic', 'consolidative', 'mixed'],
+            },
+          },
+          select('pneumothorax', 'Pneumothorax', findingStatusOptions),
+          area('alternativeDiagnosis', 'Alternative acute thoracic diagnosis', 'e.g. pneumonia, edema, acute aortic abnormality'),
+          area('additionalFindings', 'Additional findings', 'Other relevant thoracic findings'),
+          area('incidentalFindings', 'Incidental findings', 'Incidental findings requiring documentation'),
+          area('findingsOverride', 'Findings free-text override', 'When entered, this replaces the generated findings section'),
+          area('impressionOverride', 'Impression free-text override', 'When entered, this replaces the generated impression section'),
+        ],
+      },
+      {
+        id: 'communication',
+        title: 'Critical-result communication',
+        defaultOpen: false,
+        description: 'Document communication only when it actually occurred. Positive or urgent findings should prompt consideration of local communication policy.',
+        fields: [
+          select('communicationStatus', 'Communication status', communicationStatusOptions),
+          {
+            ...text('communicationRecipient', 'Recipient', 'Name or clinical role'),
+            visibleWhen: { field: 'communicationStatus', equals: 'occurred' },
+          },
+          {
+            id: 'communicationDate',
+            label: 'Communication date',
+            type: 'date',
+            visibleWhen: { field: 'communicationStatus', equals: 'occurred' },
+          },
+          {
+            id: 'communicationTime',
+            label: 'Communication time',
+            type: 'time',
+            visibleWhen: { field: 'communicationStatus', equals: 'occurred' },
+          },
+          {
+            ...text('communicationMethod', 'Communication method', 'e.g. telephone, secure message, in person'),
+            visibleWhen: { field: 'communicationStatus', equals: 'occurred' },
+          },
         ],
       },
     ],
@@ -421,48 +670,55 @@ export const reportingWorkflowSchemas: Record<
     quickFills: [
       {
         id: 'no-pe',
-        label: 'No PE',
-        description: 'No pulmonary embolism or acute right heart strain entered.',
+        label: 'Diagnostic negative',
+        description: 'Fast pathway for a diagnostic examination with no pulmonary embolism.',
         intent: 'normal',
         values: {
-          pePresent: 'no',
+          contrastOpacification: 'adequate',
+          examQuality: 'diagnostic',
+          respiratoryMotion: 'absent',
+          bolusTimingArtifact: 'absent',
+          pePresent: 'absent',
           rvDiameterMm: '',
           lvDiameterMm: '',
-          pulmonaryInfarct: 'no',
+          enteredRvLvRatio: '',
+          rightHeartSynthesis: 'no-associated-findings',
+          pulmonaryInfarct: 'absent',
           pleuralEffusion: 'none',
-          saddleEmbolus: 'no',
+          atelectaticConsolidativeOpacity: 'absent',
+          pneumothorax: 'absent',
         },
       },
       {
-        id: 'segmental-pe-strain',
-        label: 'Segmental PE with RV/LV strain',
-        description: 'Bilateral segmental PE with elevated RV/LV measurements.',
+        id: 'bilateral-acute-pe',
+        label: 'Bilateral acute PE',
+        description: 'Bilateral acute pulmonary emboli with structured distribution fields.',
         intent: 'positive',
         values: {
-          pePresent: 'yes',
+          contrastOpacification: 'adequate',
+          examQuality: 'diagnostic',
+          respiratoryMotion: 'absent',
+          bolusTimingArtifact: 'absent',
+          pePresent: 'present',
+          embolusAppearance: 'acute',
           laterality: 'bilateral',
           proximalLevel: 'segmental',
-          clotBurden: 'moderate',
-          saddleEmbolus: 'no',
-          rvDiameterMm: '48',
-          lvDiameterMm: '36',
-          pulmonaryInfarct: 'no',
-          pleuralEffusion: 'small',
+          involvedBranches: 'bilateral segmental pulmonary arterial branches',
+          occlusion: 'nonocclusive',
         },
       },
       {
-        id: 'saddle-pe',
-        label: 'Saddle PE',
-        description: 'High clot burden PE with saddle embolus entered.',
+        id: 'limited-study',
+        label: 'Limited examination',
+        description: 'Suboptimal opacification with a limited embolus assessment.',
         intent: 'complicated',
         values: {
-          pePresent: 'yes',
-          laterality: 'bilateral',
-          proximalLevel: 'main pulmonary artery',
-          clotBurden: 'high',
-          saddleEmbolus: 'yes',
-          pulmonaryInfarct: 'no',
-          pleuralEffusion: 'none',
+          contrastOpacification: 'suboptimal',
+          examQuality: 'limited',
+          respiratoryMotion: 'moderate',
+          bolusTimingArtifact: 'present',
+          pePresent: 'not-adequately-assessed',
+          otherTechnicalLimitations: 'Assessment of distal segmental and subsegmental pulmonary arteries is limited.',
         },
       },
     ],

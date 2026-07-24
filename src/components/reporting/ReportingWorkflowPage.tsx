@@ -5,9 +5,16 @@ import type {
   WorkflowValue,
   WorkflowValues,
 } from '../../data/reportingWorkflowSchemas';
+import { isWorkflowFieldVisible } from '../../data/reportingWorkflowSchemas';
 import { generateReportingWorkflowReport } from '../../utils/reportGenerators';
 import { scoreReportCompleteness, type QualityScore } from '../../utils/qualityMetrics';
 import type { InsertTarget, ReportSections } from '../../radrep/types';
+import {
+  createStoredWorkflowDraft,
+  readStoredWorkflowDraft,
+  type StoredWorkflowDraft,
+  writeStoredWorkflowDraft,
+} from '../../lib/workflowDraftStorage';
 import { IncidentalFindingsPanel } from './IncidentalFindingsPanel';
 import { KeyNegativesPanel } from './KeyNegativesPanel';
 import { QuickFillButtons } from './QuickFillButtons';
@@ -31,17 +38,6 @@ export interface WorkflowSidebarState {
   draftStatus: string;
 }
 
-interface StoredWorkflowDraft {
-  workflowId: string;
-  moduleType: string;
-  values: WorkflowValues;
-  report: WorkflowDraftReport;
-  activeQuickFillId?: string;
-  lastUpdatedAt: string;
-}
-
-const LOCAL_DRAFT_KEY = 'radreppilot.activeWorkflowDraft';
-
 function cloneValues(values: WorkflowValues): WorkflowValues {
   return Object.fromEntries(
     Object.entries(values).map(([key, value]) => [key, Array.isArray(value) ? [...value] : value]),
@@ -57,26 +53,7 @@ function createDraftReport(schema: ReportingWorkflowSchema, values: WorkflowValu
 
 function readStoredDraft(schema: ReportingWorkflowSchema): StoredWorkflowDraft | null {
   if (typeof window === 'undefined') return null;
-
-  try {
-    const raw = window.localStorage.getItem(LOCAL_DRAFT_KEY);
-    if (!raw) return null;
-    const parsed = JSON.parse(raw) as Partial<StoredWorkflowDraft>;
-    if (parsed.workflowId !== schema.moduleId || parsed.moduleType !== schema.moduleType || !parsed.values || !parsed.report) {
-      return null;
-    }
-
-    return {
-      workflowId: parsed.workflowId,
-      moduleType: parsed.moduleType,
-      values: parsed.values,
-      report: parsed.report,
-      activeQuickFillId: parsed.activeQuickFillId ?? '',
-      lastUpdatedAt: parsed.lastUpdatedAt ?? new Date().toISOString(),
-    };
-  } catch {
-    return null;
-  }
+  return readStoredWorkflowDraft(window.localStorage, schema);
 }
 
 function templateModePatch(moduleType: string, mode: string): WorkflowValues {
@@ -205,15 +182,13 @@ export function ReportingWorkflowPage({
     (statusMessage = 'Draft saved locally') => {
       if (typeof window === 'undefined') return;
 
-      const nextDraft: StoredWorkflowDraft = {
-        workflowId: schema.moduleId,
-        moduleType: schema.moduleType,
+      const nextDraft = createStoredWorkflowDraft({
+        schema,
         values,
         report,
         activeQuickFillId,
-        lastUpdatedAt: new Date().toISOString(),
-      };
-      window.localStorage.setItem(LOCAL_DRAFT_KEY, JSON.stringify(nextDraft));
+      });
+      writeStoredWorkflowDraft(window.localStorage, nextDraft);
       setDraftStatus(statusTimestamp(statusMessage, new Date()));
     },
     [activeQuickFillId, report, schema.moduleId, schema.moduleType, values],
@@ -252,15 +227,13 @@ export function ReportingWorkflowPage({
   useEffect(() => {
     if (typeof window === 'undefined') return;
 
-    const nextDraft: StoredWorkflowDraft = {
-      workflowId: schema.moduleId,
-      moduleType: schema.moduleType,
+    const nextDraft = createStoredWorkflowDraft({
+      schema,
       values,
       report,
       activeQuickFillId,
-      lastUpdatedAt: new Date().toISOString(),
-    };
-    window.localStorage.setItem(LOCAL_DRAFT_KEY, JSON.stringify(nextDraft));
+    });
+    writeStoredWorkflowDraft(window.localStorage, nextDraft);
 
     if (isRestoringRef.current) {
       isRestoringRef.current = false;
@@ -378,7 +351,7 @@ export function ReportingWorkflowPage({
 	                    <span>{section.title}</span>
 	                  </summary>
                   <div className="workflow-form-grid">
-                    {section.fields.map((field) => (
+                    {section.fields.filter((field) => isWorkflowFieldVisible(field, values)).map((field) => (
                       <StructuredFieldRenderer
                         field={field}
                         value={values[field.id]}
@@ -504,7 +477,7 @@ export function ReportingWorkflowPage({
 	                    <span>{section.title}</span>
 	                  </summary>
                   <div className="workflow-form-grid">
-                    {section.fields.map((field) => (
+                    {section.fields.filter((field) => isWorkflowFieldVisible(field, values)).map((field) => (
                       <StructuredFieldRenderer
                         field={field}
                         value={values[field.id]}

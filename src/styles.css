@@ -5714,3 +5714,39 @@ footer {
     flex-direction: column;
   }
 }
+
+/* Keep the workspace mobile override after the platform workspace declarations. */
+@media (max-width: 880px) {
+  .workspace-platform .workspace-legacy-shell {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .workspace-platform .workspace-side-panel {
+    position: static;
+    display: flex;
+    gap: 8px;
+    overflow-x: auto;
+  }
+
+  .workspace-platform .workspace-side-panel-header {
+    min-width: 132px;
+    border-right: 1px solid rgba(216, 224, 234, 0.74);
+    border-bottom: 0;
+    margin: 0 4px 0 0;
+    padding: 4px 12px 4px 4px;
+  }
+
+  .workspace-platform .workspace-side-panel button,
+  .workspace-platform .workspace-side-panel a {
+    flex: 0 0 auto;
+    width: auto;
+  }
+
+  .workspace-platform .workspace-sidebar-widgets {
+    flex: 0 0 280px;
+    border-top: 0;
+    border-left: 1px solid rgba(216, 224, 234, 0.74);
+    margin: 0 0 0 4px;
+    padding: 0 0 0 10px;
+  }
+}

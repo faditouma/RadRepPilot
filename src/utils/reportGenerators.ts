@@ -2,7 +2,7 @@ export * from '../radrep/reportGenerators';
 
 import { reportingWorkflowSchemas, type ReportingWorkflowSchema, type WorkflowValues } from '../data/reportingWorkflowSchemas';
 import {
-  generateCtpaReport as generateLegacyCtpaReport,
+  calculateRvLvRatio,
   generateNoduleReport as generateLegacyNoduleReport,
   generateStrokeReport as generateLegacyStrokeReport,
 } from '../radrep/reportGenerators';
@@ -34,6 +34,254 @@ function commonReport(schema: ReportingWorkflowSchema, values: WorkflowValues, f
     recommendations:
       recommendations ??
       'Draft language only. Verify all user-entered findings, measurements, complications, comparisons, and final wording.',
+  };
+}
+
+function capitalize(value: string): string {
+  return value ? `${value.charAt(0).toUpperCase()}${value.slice(1)}` : '';
+}
+
+function generateCtpaWorkflowReport(schema: ReportingWorkflowSchema, values: WorkflowValues): ReportSections {
+  const indication = workflowValue(values, 'clinicalIndication') || schema.clinicalQuestion;
+  const context = workflowValue(values, 'relevantClinicalContext');
+  const comparisonStudy = workflowValue(values, 'comparisonStudy');
+  const comparisonDate = workflowValue(values, 'comparisonDate');
+  const quality = workflowValue(values, 'examQuality');
+  const opacification = workflowValue(values, 'contrastOpacification');
+  const motion = workflowValue(values, 'respiratoryMotion');
+  const bolusArtifact = workflowValue(values, 'bolusTimingArtifact');
+  const otherTechnicalLimitations = workflowValue(values, 'otherTechnicalLimitations');
+  const generalLimitations = workflowValue(values, 'limitationsUncertainty');
+  const peStatus = workflowValue(values, 'pePresent');
+  const appearance = workflowValue(values, 'embolusAppearance');
+  const laterality = workflowValue(values, 'laterality');
+  const proximalLevel = workflowValue(values, 'proximalLevel');
+  const involvedBranches = workflowValue(values, 'involvedBranches');
+  const occlusion = workflowValue(values, 'occlusion');
+  const embolusCharacterization = workflowValue(values, 'embolusCharacterization');
+  const indeterminateLevel = workflowValue(values, 'indeterminateLevel');
+  const indeterminateLocation = workflowValue(values, 'indeterminateLocation');
+  const rv = numberOrNull(values, 'rvDiameterMm');
+  const lv = numberOrNull(values, 'lvDiameterMm');
+  const enteredRatio = numberOrNull(values, 'enteredRvLvRatio');
+  const calculatedRatio = calculateRvLvRatio(
+    workflowValue(values, 'rvDiameterMm'),
+    workflowValue(values, 'lvDiameterMm'),
+  );
+  const rvLvRatio = calculatedRatio ?? enteredRatio;
+  const septum = workflowValue(values, 'septalConfiguration');
+  const reflux = workflowValue(values, 'contrastReflux');
+  const mainPaEnlargement = workflowValue(values, 'mainPulmonaryArteryEnlargement');
+  const rightHeartSynthesis = workflowValue(values, 'rightHeartSynthesis');
+  const otherRightHeartFindings = workflowValue(values, 'otherRightHeartFindings');
+  const infarct = workflowValue(values, 'pulmonaryInfarct');
+  const effusion = workflowValue(values, 'pleuralEffusion');
+  const opacity = workflowValue(values, 'atelectaticConsolidativeOpacity');
+  const opacityDescription = workflowValue(values, 'opacityDescription');
+  const pneumothorax = workflowValue(values, 'pneumothorax');
+  const alternativeDiagnosis = workflowValue(values, 'alternativeDiagnosis');
+  const additionalFindings = workflowValue(values, 'additionalFindings');
+  const incidentalFindings = workflowValue(values, 'incidentalFindings');
+  const findingsOverride = workflowValue(values, 'findingsOverride');
+  const impressionOverride = workflowValue(values, 'impressionOverride');
+
+  const technicalIssues = [
+    opacification === 'suboptimal' ? 'suboptimal pulmonary arterial opacification' : undefined,
+    opacification === 'poor' ? 'poor pulmonary arterial opacification' : undefined,
+    motion && !['absent', 'not assessed'].includes(motion) ? `${motion} respiratory motion` : undefined,
+    bolusArtifact && !['absent', 'not assessed'].includes(bolusArtifact)
+      ? `${bolusArtifact === 'present' ? '' : `${bolusArtifact} `}bolus-timing artifact`.trim()
+      : undefined,
+    otherTechnicalLimitations || undefined,
+    generalLimitations || undefined,
+  ].filter((item): item is string => Boolean(item));
+
+  const technique = cleanLines([
+    schema.techniqueDefault,
+    opacification && opacification !== 'not assessed'
+      ? `Pulmonary arterial contrast opacification is ${opacification}.`
+      : undefined,
+    quality ? `Examination quality is ${quality}.` : undefined,
+    motion && motion !== 'not assessed' ? `Respiratory motion is ${motion}.` : undefined,
+    bolusArtifact && bolusArtifact !== 'not assessed'
+      ? `Bolus-timing artifact is ${bolusArtifact}.`
+      : undefined,
+    technicalIssues.length ? `Technical limitations: ${technicalIssues.join('; ')}.` : undefined,
+  ]);
+
+  const comparisonLine =
+    comparisonStudy || comparisonDate
+      ? `Comparison: ${comparisonStudy || 'prior study'}${comparisonDate ? ` dated ${comparisonDate}` : ''}.`
+      : undefined;
+  const contextLine = context ? `Relevant clinical context: ${context}.` : undefined;
+
+  const levelPhrase =
+    proximalLevel === 'lobar'
+      ? 'lobar pulmonary arteries'
+      : proximalLevel === 'segmental'
+        ? 'segmental pulmonary arteries'
+        : proximalLevel === 'subsegmental'
+          ? 'subsegmental pulmonary arteries'
+          : proximalLevel;
+  const sidePhrase =
+    laterality === 'bilateral'
+      ? 'bilaterally'
+      : laterality
+        ? `on the ${laterality}`
+        : '';
+  const distribution = [
+    [levelPhrase, sidePhrase].filter(Boolean).join(' '),
+    involvedBranches ? `including ${involvedBranches}` : '',
+  ].filter(Boolean).join(', ');
+  const positivePeFinding =
+    peStatus === 'present'
+      ? `${appearance ? `${capitalize(appearance.replace(/-/g, ' '))} ` : ''}pulmonary embolism is present${
+          distribution ? ` involving the ${distribution}` : ''
+        }${occlusion && occlusion !== 'not assessed' ? `; ${occlusion}` : ''}.`
+      : undefined;
+  const positivePeImpression =
+    peStatus === 'present'
+      ? appearance === 'chronic'
+        ? `Chronic thromboembolic disease${distribution ? ` involving the ${distribution}` : ''}.`
+        : appearance === 'acute-on-chronic'
+          ? `Acute-on-chronic pulmonary embolic disease${distribution ? ` involving the ${distribution}` : ''}.`
+          : appearance === 'indeterminate'
+            ? `Pulmonary embolism of indeterminate age${distribution ? ` involving the ${distribution}` : ''}.`
+            : `Acute pulmonary embolism${distribution ? ` involving the ${distribution}` : ''}.`
+      : undefined;
+
+  const peFinding =
+    peStatus === 'absent'
+      ? quality === 'diagnostic'
+        ? 'No pulmonary embolism identified.'
+        : 'No pulmonary embolism identified within the technically evaluable pulmonary arteries.'
+      : peStatus === 'present'
+        ? positivePeFinding
+        : peStatus === 'indeterminate'
+          ? `Indeterminate filling defect${indeterminateLevel ? ` at the ${indeterminateLevel} level` : ''}${
+              indeterminateLocation ? `: ${indeterminateLocation}` : ''
+            }.`
+          : peStatus === 'not-adequately-assessed'
+            ? 'Pulmonary embolism is not adequately assessed on this examination.'
+            : undefined;
+
+  const measurementLine =
+    rv !== null || lv !== null || rvLvRatio !== null
+      ? [
+          rv !== null ? `RV ${rv} mm` : '',
+          lv !== null ? `LV ${lv} mm` : '',
+          rvLvRatio !== null
+            ? `RV/LV ratio ${rvLvRatio.toFixed(2).replace(/0+$/, '').replace(/\.$/, '')}${
+                calculatedRatio !== null ? ' (calculated)' : ' (entered)'
+              }`
+            : '',
+        ].filter(Boolean).join('; ') + '.'
+      : undefined;
+  const rightHeartLines = [
+    measurementLine,
+    septum === 'flattening'
+      ? 'Interventricular septal flattening is present.'
+      : septum === 'leftward bowing'
+        ? 'Leftward interventricular septal bowing is present.'
+        : septum === 'normal'
+          ? 'No interventricular septal flattening or bowing.'
+          : undefined,
+    reflux === 'present' ? 'Contrast reflux into the IVC/hepatic veins is present.' : undefined,
+    mainPaEnlargement === 'present' ? 'Main pulmonary artery enlargement is present.' : undefined,
+    otherRightHeartFindings ? `Additional right-heart findings: ${otherRightHeartFindings}` : undefined,
+  ];
+  const rightHeartImpression =
+    rightHeartSynthesis === 'associated-findings-present'
+      ? 'CT findings that may be associated with right-heart strain are present; correlate with the complete clinical assessment.'
+      : rightHeartSynthesis === 'no-associated-findings'
+        ? 'No CT findings entered that are associated with right-heart strain.'
+        : rightHeartSynthesis === 'indeterminate'
+          ? 'Right-heart strain assessment is indeterminate.'
+          : undefined;
+
+  const complicationFindings = [
+    infarct === 'present' ? 'Pulmonary infarction is present.' : undefined,
+    effusion && !['none', 'not assessed'].includes(effusion) ? `${capitalize(effusion)} pleural effusion.` : undefined,
+    opacity && !['absent', 'not assessed'].includes(opacity)
+      ? `${capitalize(opacity)} opacity${opacityDescription ? `: ${opacityDescription}` : ' is present'}.`
+      : undefined,
+    pneumothorax === 'present' ? 'Pneumothorax is present.' : undefined,
+    alternativeDiagnosis ? `Alternative acute thoracic diagnosis: ${alternativeDiagnosis}` : undefined,
+    additionalFindings ? `Additional findings: ${additionalFindings}` : undefined,
+  ];
+
+  const limitationImpression =
+    quality === 'nondiagnostic'
+      ? `Nondiagnostic examination for pulmonary embolism${technicalIssues.length ? ` due to ${technicalIssues.join('; ')}` : ''}.`
+      : quality === 'limited'
+        ? `Limited examination${technicalIssues.length ? ` due to ${technicalIssues.join('; ')}` : ''}.`
+        : technicalIssues.length
+          ? `Technical limitation: ${technicalIssues.join('; ')}.`
+          : undefined;
+
+  let peImpression: string | undefined;
+  if (peStatus === 'present') {
+    peImpression = positivePeImpression;
+  } else if (peStatus === 'indeterminate') {
+    peImpression = `Indeterminate${indeterminateLevel ? ` ${indeterminateLevel}` : ' pulmonary arterial'} filling defect${
+      indeterminateLocation ? ` (${indeterminateLocation})` : ''
+    }.`;
+  } else if (quality === 'nondiagnostic' || peStatus === 'not-adequately-assessed') {
+    peImpression = 'Pulmonary embolism cannot be adequately assessed on this examination.';
+  } else if (peStatus === 'absent') {
+    peImpression =
+      quality === 'limited'
+        ? 'No pulmonary embolism identified within the technically evaluable pulmonary arteries.'
+        : 'No pulmonary embolism identified.';
+  }
+
+  const complicationImpression = [
+    infarct === 'present' ? 'Pulmonary infarction.' : undefined,
+    pneumothorax === 'present' ? 'Pneumothorax.' : undefined,
+    alternativeDiagnosis || undefined,
+  ];
+
+  const findings = findingsOverride || cleanLines([
+    contextLine,
+    comparisonLine,
+    peFinding,
+    embolusCharacterization ? `Additional embolus characterization: ${embolusCharacterization}` : undefined,
+    ...rightHeartLines,
+    ...complicationFindings,
+    technicalIssues.length ? `Limitations: ${technicalIssues.join('; ')}.` : undefined,
+  ]);
+  const impression = impressionOverride || cleanLines([
+    peImpression,
+    rightHeartImpression,
+    ...complicationImpression,
+    limitationImpression,
+  ]);
+
+  const communicationStatus = workflowValue(values, 'communicationStatus');
+  const urgentFinding =
+    peStatus === 'present' ||
+    peStatus === 'indeterminate' ||
+    peStatus === 'not-adequately-assessed' ||
+    quality === 'nondiagnostic' ||
+    pneumothorax === 'present';
+  const communicationDocumentation =
+    communicationStatus === 'occurred'
+      ? `Critical-result communication documented: ${
+          workflowValue(values, 'communicationRecipient') || 'recipient not entered'
+        }${workflowValue(values, 'communicationMethod') ? ` via ${workflowValue(values, 'communicationMethod')}` : ''}${
+          workflowValue(values, 'communicationDate') ? ` on ${workflowValue(values, 'communicationDate')}` : ''
+        }${workflowValue(values, 'communicationTime') ? ` at ${workflowValue(values, 'communicationTime')}` : ''}.`
+      : urgentFinding
+        ? 'Critical-result communication prompt: follow local policy and document communication if it occurs.'
+        : 'Verify the final report and apply local communication policy when urgent findings are present.';
+
+  return {
+    indication,
+    technique,
+    findings,
+    impression,
+    incidentalFindings,
+    recommendations: communicationDocumentation,
   };
 }
 
@@ -564,7 +812,7 @@ export function generateReportingWorkflowReport(moduleType: ModuleType, values: 
 
   switch (moduleType) {
     case 'ctpa':
-      return generateLegacyCtpaReport(values as unknown as Parameters<typeof generateLegacyCtpaReport>[0]);
+      return generateCtpaWorkflowReport(schema, values);
     case 'nodule':
       return generateLegacyNoduleReport(values as unknown as Parameters<typeof generateLegacyNoduleReport>[0]);
     case 'stroke':
