@@ -14,6 +14,7 @@ export type PageKey =
 export type ModuleType =
   | 'ctpa'
   | 'lymphomaPetCt'
+  | 'pancreaticCancer'
   | 'nodule'
   | 'stroke'
   | 'chestXray'

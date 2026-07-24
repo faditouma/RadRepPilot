@@ -202,6 +202,91 @@ export function scoreReportCompleteness(moduleType: ModuleType, values: Record<s
     ]);
   }
 
+  if (moduleType === 'pancreaticCancer') {
+    const massStatus = textValue(values.pancreaticMass);
+    const tumorDetailsComplete =
+      !['present', 'indeterminate'].includes(massStatus) ||
+      (addressed(values.tumorLocation) &&
+        hasAny(values, ['tumorSizeApMm', 'tumorSizeTrMm', 'tumorSizeCcMm']) &&
+        addressed(values.tumorMorphology) &&
+        addressed(values.tumorEnhancement));
+    const vesselRelationshipsComplete = [
+      'smaContact',
+      'celiacContact',
+      'commonHepaticArteryContact',
+      'smvContact',
+      'portalVeinContact',
+    ].every((key) => addressed(values[key]));
+    const statusDetailsComplete = (statusKey: string, detailsKey: string): boolean => {
+      const status = textValue(values[statusKey]);
+      return (
+        addressed(values[statusKey]) &&
+        (!['present', 'indeterminate'].includes(status) || hasMeaningfulText(values[detailsKey]))
+      );
+    };
+
+    return score('Report completeness', [
+      {
+        label: 'Clinical indication addressed',
+        complete: hasMeaningfulText(values.clinicalIndication),
+        missingLabel: 'Clinical indication missing',
+      },
+      {
+        label: 'Protocol and technical quality addressed',
+        complete: hasMeaningfulText(values.modalityProtocol) && addressed(values.examQuality),
+        missingLabel: 'Modality/protocol or examination quality missing',
+      },
+      {
+        label: 'Primary tumor characterized',
+        complete: addressed(values.pancreaticMass) && tumorDetailsComplete,
+        missingLabel:
+          massStatus === 'present' || massStatus === 'indeterminate'
+            ? 'Tumor location, size, morphology, or enhancement missing'
+            : 'Pancreatic mass assessment missing',
+      },
+      {
+        label: 'Pancreaticobiliary ducts addressed',
+        complete:
+          addressed(values.pancreaticDuctObstruction) &&
+          addressed(values.biliaryObstruction) &&
+          addressed(values.upstreamAtrophy),
+        missingLabel: 'Pancreatic duct, biliary obstruction, or upstream atrophy missing',
+      },
+      {
+        label: 'Major vascular relationships addressed',
+        complete: vesselRelationshipsComplete,
+        missingLabel: 'One or more major vessel relationships are not assessed',
+      },
+      {
+        label: 'Local extension and regional nodes addressed',
+        complete:
+          statusDetailsComplete('adjacentOrganInvasion', 'adjacentOrganDetails') &&
+          statusDetailsComplete('regionalNodes', 'regionalNodeDetails'),
+        missingLabel: 'Local invasion or regional nodal assessment/details incomplete',
+      },
+      {
+        label: 'Distant metastatic disease addressed',
+        complete:
+          statusDetailsComplete('liverMetastases', 'liverMetastasisDetails') &&
+          statusDetailsComplete('peritonealMetastases', 'peritonealMetastasisDetails') &&
+          statusDetailsComplete('otherMetastases', 'otherMetastasisDetails'),
+        missingLabel: 'Liver, peritoneal, or other metastatic disease assessment/details incomplete',
+      },
+      {
+        label: 'Impression generated',
+        complete: hasMeaningfulText(report.impression),
+        missingLabel: 'Impression incomplete',
+      },
+      optionalFindingCheck(
+        'Incidental findings addressed',
+        values.incidentalFindings,
+        report.incidentalFindings,
+        'No incidental finding entered',
+        'Incidental finding documented',
+      ),
+    ]);
+  }
+
   if (moduleType === 'chestXray') {
     const airspaceAddressed = addressedAny(values, ['consolidation', 'atelectaticChange', 'interstitialEdema']) || hasFreeTextCoverage(values);
     const pleuraAddressed = addressedAny(values, ['pleuralEffusion', 'pneumothorax']) || hasFreeTextCoverage(values);

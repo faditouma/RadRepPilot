@@ -19,6 +19,7 @@ const navItems: Array<{ key: PageKey; label: string; iconName: RadIconName }> = 
 const moduleLabels: Record<DraftType, string> = {
   ctpa: 'CTPA Pulmonary Embolism',
   lymphomaPetCt: 'Lymphoma PET-CT',
+  pancreaticCancer: 'Pancreatic Cancer Staging',
   nodule: 'Pulmonary Nodule / Fleischner',
   stroke: 'CT Head Stroke / ASPECTS',
   chestXray: 'Chest X-ray: Infection / Dyspnea',

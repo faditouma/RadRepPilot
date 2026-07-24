@@ -232,6 +232,13 @@ export const moduleNavigationTree: NavigationModality[] = [
         name: 'Oncology',
         description: 'Response assessment, target lesions, and treatment comparison language.',
         workflows: [
+          workflow(
+            'ct-mri-pancreatic-cancer',
+            'Pancreatic Cancer Staging',
+            'Primary tumor, ductal obstruction, vessel contact, local invasion, nodes, metastases, and surgical anatomy.',
+            'implemented',
+            'pancreaticCancer',
+          ),
           workflow('oncology-recist', 'RECIST 1.1 Measurement Tracker', 'Target lesion sums, percent change, and simplified category.', 'partial', undefined, ['RECIST']),
           workflow('oncology-response', 'Treatment Response Comparison', 'Tumor burden, new lesions, non-target disease, and overall impression.'),
         ],

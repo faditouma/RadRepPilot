@@ -229,3 +229,241 @@ export function generateLymphomaPetCtReport(
       'No management recommendation is generated. Verify all disease sites, comparison data, reference activity, and any user-assigned response synthesis before finalizing.',
   };
 }
+
+function dimensions(values: WorkflowValues, keys: string[]): string {
+  const entered = keys
+    .map((key) => numberOrNull(values, key))
+    .filter((value): value is number => value !== null);
+  return entered.length ? `${entered.join(' × ')} mm` : '';
+}
+
+function assessmentSentence(label: string, status: string, details = ''): string | undefined {
+  if (!status || status === 'not assessed') return undefined;
+  if (status === 'absent') return `No ${label.toLowerCase()} is entered.`;
+  if (status === 'present') return `${label} is present${details ? `: ${details}` : ''}.`;
+  return `${label} is indeterminate${details ? `: ${details}` : ''}.`;
+}
+
+export function generatePancreaticCancerReport(
+  schema: ReportingWorkflowSchema,
+  values: WorkflowValues,
+): ReportSections {
+  const massStatus = workflowValue(values, 'pancreaticMass');
+  const location = workflowValue(values, 'tumorLocation');
+  const tumorDimensions = dimensions(values, [
+    'tumorSizeApMm',
+    'tumorSizeTrMm',
+    'tumorSizeCcMm',
+  ]);
+  const morphology = workflowValue(values, 'tumorMorphology');
+  const enhancement = workflowValue(values, 'tumorEnhancement');
+  const tumorDescription = workflowValue(values, 'tumorDescription');
+  const quality = workflowValue(values, 'examQuality');
+  const technicalLimitations = workflowValue(values, 'technicalLimitations');
+  const additionalUncertainty = workflowValue(values, 'limitationsUncertainty');
+  const limitationText = [technicalLimitations, additionalUncertainty].filter(Boolean).join('; ');
+  const findingsOverride = workflowValue(values, 'findingsOverride');
+  const impressionOverride = workflowValue(values, 'impressionOverride');
+
+  const massFinding =
+    massStatus === 'absent'
+      ? 'No pancreatic mass is entered.'
+      : massStatus === 'present'
+        ? `Pancreatic ${morphology || 'mass'}${location ? ` at the ${location}` : ''}${
+            tumorDimensions ? ` measuring ${tumorDimensions}` : ''
+          }${enhancement && enhancement !== 'not assessed' ? `, ${enhancement}` : ''}${
+            tumorDescription ? `. ${tumorDescription}` : ''
+          }.`
+        : massStatus === 'indeterminate'
+          ? `Indeterminate pancreatic lesion${location ? ` at the ${location}` : ''}${
+              tumorDimensions ? ` measuring ${tumorDimensions}` : ''
+            }${tumorDescription ? `: ${tumorDescription}` : ''}.`
+          : undefined;
+
+  const ductLines = [
+    assessmentSentence(
+      'Pancreatic duct obstruction',
+      workflowValue(values, 'pancreaticDuctObstruction'),
+      numberOrNull(values, 'pancreaticDuctDiameterMm') !== null
+        ? `main duct ${numberOrNull(values, 'pancreaticDuctDiameterMm')} mm`
+        : '',
+    ),
+    assessmentSentence(
+      'Biliary obstruction',
+      workflowValue(values, 'biliaryObstruction'),
+      numberOrNull(values, 'commonBileDuctDiameterMm') !== null
+        ? `common bile duct ${numberOrNull(values, 'commonBileDuctDiameterMm')} mm`
+        : '',
+    ),
+    assessmentSentence('Upstream pancreatic atrophy', workflowValue(values, 'upstreamAtrophy')),
+  ];
+
+  const vesselFields: Array<[string, string]> = [
+    ['Superior mesenteric artery', 'smaContact'],
+    ['Celiac axis', 'celiacContact'],
+    ['Common hepatic artery', 'commonHepaticArteryContact'],
+    ['Superior mesenteric vein', 'smvContact'],
+    ['Portal vein', 'portalVeinContact'],
+  ];
+  const involvedVessels = vesselFields
+    .map(([label, key]) => {
+      const relationship = workflowValue(values, key);
+      return relationship &&
+        !['no contact', 'not assessed'].includes(relationship)
+        ? `${label}: ${relationship}`
+        : '';
+    })
+    .filter(Boolean);
+  const noContactVessels = vesselFields
+    .filter(([, key]) => workflowValue(values, key) === 'no contact')
+    .map(([label]) => label);
+  const vascularLines = [
+    involvedVessels.length
+      ? `Tumor-vessel relationships: ${involvedVessels.join('; ')}.`
+      : undefined,
+    noContactVessels.length === vesselFields.length
+      ? 'No tumor contact with the assessed major peripancreatic arteries or veins is entered.'
+      : undefined,
+    workflowValue(values, 'vascularDeformity')
+      ? `Vessel narrowing/deformity/occlusion: ${workflowValue(values, 'vascularDeformity')}.`
+      : undefined,
+    workflowValue(values, 'vascularThrombosis')
+      ? `Vascular thrombosis: ${workflowValue(values, 'vascularThrombosis')}.`
+      : undefined,
+    workflowValue(values, 'collateralVessels')
+      ? `Collateral vessels: ${workflowValue(values, 'collateralVessels')}.`
+      : undefined,
+    workflowValue(values, 'vascularVariants')
+      ? `Surgically relevant vascular anatomy: ${workflowValue(values, 'vascularVariants')}.`
+      : undefined,
+  ];
+
+  const extensionLines = [
+    assessmentSentence(
+      'Adjacent-organ invasion',
+      workflowValue(values, 'adjacentOrganInvasion'),
+      workflowValue(values, 'adjacentOrganDetails'),
+    ),
+    assessmentSentence(
+      'Suspicious regional nodal disease',
+      workflowValue(values, 'regionalNodes'),
+      workflowValue(values, 'regionalNodeDetails'),
+    ),
+    assessmentSentence(
+      'Liver metastatic disease',
+      workflowValue(values, 'liverMetastases'),
+      workflowValue(values, 'liverMetastasisDetails'),
+    ),
+    assessmentSentence(
+      'Peritoneal metastatic disease',
+      workflowValue(values, 'peritonealMetastases'),
+      workflowValue(values, 'peritonealMetastasisDetails'),
+    ),
+    assessmentSentence(
+      'Other distant metastatic disease',
+      workflowValue(values, 'otherMetastases'),
+      workflowValue(values, 'otherMetastasisDetails'),
+    ),
+  ];
+
+  const generatedFindings = cleanLines([
+    workflowValue(values, 'comparisonStudy') || workflowValue(values, 'comparisonDate')
+      ? `Comparison: ${workflowValue(values, 'comparisonStudy') || 'prior examination'}${
+          workflowValue(values, 'comparisonDate')
+            ? ` dated ${workflowValue(values, 'comparisonDate')}`
+            : ''
+        }.`
+      : undefined,
+    massFinding,
+    ...ductLines,
+    ...vascularLines,
+    ...extensionLines,
+    workflowValue(values, 'additionalFindings')
+      ? `Additional findings: ${workflowValue(values, 'additionalFindings')}.`
+      : undefined,
+    limitationText ? `Limitations: ${limitationText}.` : undefined,
+  ]);
+
+  const metastaticStatuses = [
+    workflowValue(values, 'liverMetastases'),
+    workflowValue(values, 'peritonealMetastases'),
+    workflowValue(values, 'otherMetastases'),
+  ];
+  const metastaticSites = [
+    workflowValue(values, 'liverMetastases') === 'present' ? 'liver' : '',
+    workflowValue(values, 'peritonealMetastases') === 'present' ? 'peritoneum' : '',
+    workflowValue(values, 'otherMetastases') === 'present'
+      ? workflowValue(values, 'otherMetastasisDetails') || 'other distant sites'
+      : '',
+  ].filter(Boolean);
+  const indeterminateMetastases = metastaticStatuses.includes('indeterminate');
+
+  const tumorSummary =
+    massStatus === 'present'
+      ? `Pancreatic mass${location ? ` at the ${location}` : ''}${
+          tumorDimensions ? ` measuring ${tumorDimensions}` : ''
+        }.`
+      : massStatus === 'absent'
+        ? 'No pancreatic mass is entered.'
+        : massStatus === 'indeterminate'
+          ? 'Indeterminate pancreatic lesion; correlate with the detailed findings.'
+          : 'Pancreatic primary is not fully assessed from the entered findings.';
+  const vascularSummary =
+    involvedVessels.length
+      ? `Major tumor-vessel relationships: ${involvedVessels.join('; ')}.`
+      : noContactVessels.length === vesselFields.length
+        ? 'No tumor contact with the assessed major peripancreatic vessels is entered.'
+        : undefined;
+  const metastasisSummary = metastaticSites.length
+    ? `Metastatic disease is present involving ${metastaticSites.join(' and ')}.`
+    : indeterminateMetastases
+      ? 'Distant metastatic disease is indeterminate.'
+      : metastaticStatuses.every((status) => status === 'absent')
+        ? 'No liver, peritoneal, or other distant metastases are entered.'
+        : undefined;
+  const userSynthesis = workflowValue(values, 'userResectabilitySynthesis');
+  const limitationSummary =
+    quality === 'nondiagnostic'
+      ? `Nondiagnostic examination${limitationText ? `: ${limitationText}` : '.'}`
+      : quality === 'limited'
+        ? `Limited staging examination${limitationText ? `: ${limitationText}` : '.'}`
+        : undefined;
+
+  return {
+    indication: cleanLines([
+      workflowValue(values, 'clinicalIndication') || schema.clinicalQuestion,
+      workflowValue(values, 'pathologyStatus')
+        ? `Pathology status: ${workflowValue(values, 'pathologyStatus')}.`
+        : undefined,
+      workflowValue(values, 'relevantClinicalContext')
+        ? `Relevant clinical context: ${workflowValue(values, 'relevantClinicalContext')}.`
+        : undefined,
+    ]),
+    technique: cleanLines([
+      workflowValue(values, 'modalityProtocol') || schema.techniqueDefault,
+      quality ? `Examination quality: ${quality}.` : undefined,
+      technicalLimitations ? `Technical limitations: ${technicalLimitations}.` : undefined,
+    ]),
+    findings: findingsOverride || generatedFindings,
+    impression: impressionOverride || cleanLines([
+      limitationSummary,
+      tumorSummary,
+      vascularSummary,
+      assessmentSentence(
+        'Adjacent-organ invasion',
+        workflowValue(values, 'adjacentOrganInvasion'),
+        workflowValue(values, 'adjacentOrganDetails'),
+      ),
+      assessmentSentence(
+        'Suspicious regional nodal disease',
+        workflowValue(values, 'regionalNodes'),
+        workflowValue(values, 'regionalNodeDetails'),
+      ),
+      metastasisSummary,
+      userSynthesis ? `User resectability synthesis: ${userSynthesis}.` : undefined,
+    ]),
+    incidentalFindings: workflowValue(values, 'incidentalFindings'),
+    recommendations:
+      'No operability, treatment, or management recommendation is generated. Verify vessel relationships, metastatic disease, protocol adequacy, and any user-entered resectability synthesis before finalizing.',
+  };
+}
