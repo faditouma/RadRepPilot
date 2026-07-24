@@ -330,12 +330,20 @@ export const moduleNavigationTree: NavigationModality[] = [
   {
     name: 'Nuclear Medicine',
     iconName: 'nuclear',
-    description: 'Planned nuclear medicine structured reporting workflows.',
+    description: 'Structured PET/CT oncology reporting and planned endocrine nuclear medicine workflows.',
     bodySystems: [
       {
         name: 'Oncology',
-        description: 'Planned PET/CT response and surveillance workflows.',
-        workflows: [workflow('nuc-med-pet-response', 'PET/CT Response Preview', 'Target lesions, uptake pattern, and comparison language.')],
+        description: 'PET/CT staging and response assessment workflows.',
+        workflows: [
+          workflow(
+            'pet-ct-lymphoma',
+            'Lymphoma PET-CT',
+            'Nodal and extranodal disease distribution, reference activity, interval change, and response synthesis.',
+            'implemented',
+            'lymphomaPetCt',
+          ),
+        ],
       },
       {
         name: 'Endocrine',

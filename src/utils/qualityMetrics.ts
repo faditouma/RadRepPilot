@@ -131,6 +131,77 @@ export function scoreRequisitionCompleteness(form: ReferralFormState): QualitySc
 }
 
 export function scoreReportCompleteness(moduleType: ModuleType, values: Record<string, unknown>, report: ReportSections): QualityScore {
+  if (moduleType === 'lymphomaPetCt') {
+    const nodalStatus = textValue(values.nodalDisease);
+    const extranodalStatus = textValue(values.extranodalDisease);
+    const responseExam = /response|surveillance|recurrence/i.test(textValue(values.examPurpose));
+    const nodalDetailsComplete =
+      !['present', 'indeterminate'].includes(nodalStatus) ||
+      (hasMeaningfulText(values.nodalDistribution) && hasMeaningfulText(values.dominantNodalSite));
+    const extranodalDetailsComplete =
+      !['present', 'indeterminate'].includes(extranodalStatus) ||
+      (hasMeaningfulText(values.extranodalSites) && hasMeaningfulText(values.dominantExtranodalSite));
+    const responseComplete =
+      !responseExam ||
+      (hasAny(values, ['comparisonStudy', 'comparisonDate']) &&
+        addressed(values.intervalChange) &&
+        addressed(values.newLesions));
+
+    return score('Report completeness', [
+      {
+        label: 'Clinical indication and examination purpose addressed',
+        complete: hasMeaningfulText(values.clinicalIndication) && addressed(values.examPurpose),
+        missingLabel: 'Clinical indication or examination purpose missing',
+      },
+      {
+        label: 'Tracer and technical quality addressed',
+        complete: hasMeaningfulText(values.tracer) && addressed(values.examQuality),
+        missingLabel: 'Tracer or examination quality missing',
+      },
+      {
+        label: 'Nodal disease distribution complete',
+        complete: addressed(values.nodalDisease) && nodalDetailsComplete,
+        missingLabel:
+          nodalStatus === 'present' || nodalStatus === 'indeterminate'
+            ? 'Nodal distribution or dominant site missing'
+            : 'Nodal disease assessment missing',
+      },
+      {
+        label: 'Extranodal disease distribution complete',
+        complete: addressed(values.extranodalDisease) && extranodalDetailsComplete,
+        missingLabel:
+          extranodalStatus === 'present' || extranodalStatus === 'indeterminate'
+            ? 'Extranodal distribution or dominant site missing'
+            : 'Extranodal disease assessment missing',
+      },
+      {
+        label: 'Spleen, marrow, and liver addressed',
+        complete:
+          addressed(values.spleenAssessment) &&
+          addressed(values.marrowAssessment) &&
+          addressed(values.liverAssessment),
+        missingLabel: 'Spleen, marrow, or liver assessment missing',
+      },
+      {
+        label: 'Response assessment complete when applicable',
+        complete: responseComplete,
+        missingLabel: 'Comparison, interval change, or new-lesion assessment missing',
+      },
+      {
+        label: 'Impression generated',
+        complete: hasMeaningfulText(report.impression),
+        missingLabel: 'Impression incomplete',
+      },
+      optionalFindingCheck(
+        'Incidental findings addressed',
+        values.incidentalFindings,
+        report.incidentalFindings,
+        'No incidental finding entered',
+        'Incidental finding documented',
+      ),
+    ]);
+  }
+
   if (moduleType === 'chestXray') {
     const airspaceAddressed = addressedAny(values, ['consolidation', 'atelectaticChange', 'interstitialEdema']) || hasFreeTextCoverage(values);
     const pleuraAddressed = addressedAny(values, ['pleuralEffusion', 'pneumothorax']) || hasFreeTextCoverage(values);

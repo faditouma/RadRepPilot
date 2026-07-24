@@ -7,6 +7,7 @@ import {
   generateStrokeReport as generateLegacyStrokeReport,
 } from '../radrep/reportGenerators';
 import type { ModuleType, ReportSections } from '../radrep/types';
+import { generateLymphomaPetCtReport } from './cancerImagingReportGenerators';
 import { cleanLines, formatMeasurement, numberOrNull, sentenceList, workflowList, workflowValue, yes } from './impressionGenerators';
 
 function keyNegativeSentence(values: WorkflowValues, suppressPhrases: string[] = []): string | undefined {
@@ -811,6 +812,8 @@ export function generateReportingWorkflowReport(moduleType: ModuleType, values: 
   }
 
   switch (moduleType) {
+    case 'lymphomaPetCt':
+      return generateLymphomaPetCtReport(schema, values);
     case 'ctpa':
       return generateCtpaWorkflowReport(schema, values);
     case 'nodule':

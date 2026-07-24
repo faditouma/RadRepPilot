@@ -13,6 +13,7 @@ export type PageKey =
 
 export type ModuleType =
   | 'ctpa'
+  | 'lymphomaPetCt'
   | 'nodule'
   | 'stroke'
   | 'chestXray'

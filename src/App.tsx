@@ -80,6 +80,7 @@ type AppProps = {
 
 const moduleLabels: Record<ModuleType, string> = {
   ctpa: 'CTPA Pulmonary Embolism',
+  lymphomaPetCt: 'Lymphoma PET-CT',
   nodule: 'Pulmonary Nodule / Fleischner',
   stroke: 'CT Head Stroke / ASPECTS',
   chestXray: 'Chest X-ray: Infection / Dyspnea',
