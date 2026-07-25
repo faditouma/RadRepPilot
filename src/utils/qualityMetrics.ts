@@ -532,6 +532,36 @@ export function scoreReportCompleteness(moduleType: ModuleType, values: Record<s
     ]);
   }
 
+  if (moduleType === 'hilarCholangiocarcinoma') {
+    const lesionStatus = textValue(values.hilarLesion);
+    const lesionComplete =
+      !['present', 'indeterminate'].includes(lesionStatus) ||
+      (hasMeaningfulText(values.ductalEpicenter) && hasMeaningfulText(values.longitudinalExtent) &&
+        hasAny(values, ['lesionApMm', 'lesionTrMm', 'lesionCcMm']) &&
+        hasMeaningfulText(values.rightDuctExtent) && hasMeaningfulText(values.leftDuctExtent));
+    const statusDetailsComplete = (statusKey: string, detailsKey?: string) => {
+      const status = textValue(values[statusKey]);
+      return addressed(values[statusKey]) &&
+        (!detailsKey || !['present', 'indeterminate'].includes(status) || hasMeaningfulText(values[detailsKey]));
+    };
+    const vesselComplete = (relationshipKey: string, detailsKey: string) => {
+      const relationship = textValue(values[relationshipKey]);
+      return addressed(values[relationshipKey]) &&
+        (!['contact or encasement', 'narrowed', 'occluded', 'indeterminate'].includes(relationship) ||
+          hasMeaningfulText(values[detailsKey]));
+    };
+    return score('Report completeness', [
+      { label: 'Clinical indication addressed', complete: hasMeaningfulText(values.clinicalIndication), missingLabel: 'Clinical indication missing' },
+      { label: 'Protocol and technical quality addressed', complete: hasMeaningfulText(values.modalityProtocol) && addressed(values.examQuality), missingLabel: 'Protocol or examination quality missing' },
+      { label: 'Primary tumor and ductal extent characterized', complete: addressed(values.hilarLesion) && lesionComplete, missingLabel: lesionStatus === 'present' || lesionStatus === 'indeterminate' ? 'Ductal epicenter, longitudinal/right/left extent, or measurement missing' : 'Hilar lesion assessment missing' },
+      { label: 'Duct dilation and lobar atrophy addressed', complete: statusDetailsComplete('intrahepaticDuctDilation') && statusDetailsComplete('lobarAtrophy', 'lobarAtrophyDetails'), missingLabel: 'Duct dilation or lobar atrophy assessment/details incomplete' },
+      { label: 'Portal vein and hepatic artery relationships addressed', complete: vesselComplete('portalVeinRelationship', 'portalVeinDetails') && vesselComplete('hepaticArteryRelationship', 'hepaticArteryDetails'), missingLabel: 'Portal or arterial relationship/details incomplete' },
+      { label: 'Local invasion and nodes addressed', complete: statusDetailsComplete('liverInvasion', 'liverInvasionDetails') && statusDetailsComplete('adjacentOrganInvasion', 'adjacentOrganDetails') && statusDetailsComplete('suspiciousNodes', 'suspiciousNodeDetails'), missingLabel: 'Local invasion or nodal assessment/details incomplete' },
+      { label: 'Peritoneal and distant metastases addressed', complete: statusDetailsComplete('peritonealMetastases', 'peritonealMetastasisDetails') && statusDetailsComplete('distantMetastases', 'distantMetastasisDetails'), missingLabel: 'Metastatic disease assessment/details incomplete' },
+      { label: 'Impression generated', complete: hasMeaningfulText(report.impression), missingLabel: 'Impression incomplete' },
+    ]);
+  }
+
   if (moduleType === 'chestXray') {
     const airspaceAddressed = addressedAny(values, ['consolidation', 'atelectaticChange', 'interstitialEdema']) || hasFreeTextCoverage(values);
     const pleuraAddressed = addressedAny(values, ['pleuralEffusion', 'pneumothorax']) || hasFreeTextCoverage(values);

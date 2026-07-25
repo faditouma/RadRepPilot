@@ -310,6 +310,13 @@ export const moduleNavigationTree: NavigationModality[] = [
             'hccLiver',
             ['LI-RADS', 'OPTN'],
           ),
+          workflow(
+            'mri-hilar-cholangiocarcinoma',
+            'Hilar Cholangiocarcinoma CT/MRI',
+            'Ductal extent, lobar atrophy, portal and arterial relationships, biliary anatomy, local invasion, nodes, and metastases.',
+            'implemented',
+            'hilarCholangiocarcinoma',
+          ),
           workflow('incidental-pancreatic-cyst', 'Pancreatic Cyst / MRCP Follow-up', 'Cyst size, duct dilation, mural nodule, and surveillance wording.', 'partial'),
         ],
       },

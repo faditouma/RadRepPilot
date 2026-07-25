@@ -151,3 +151,128 @@ export const hccLiverWorkflowSchema: ReportingWorkflowSchema = {
     { id: 'limited-liver-study', label: 'Limited examination', description: 'Limited phase adequacy and observation assessment.', intent: 'complicated', values: { examQuality: 'limited', arterialPhaseAdequacy: 'not assessed', portalVenousPhaseAdequacy: 'not assessed', delayedPhaseAdequacy: 'not assessed', observationStatus: 'indeterminate', tumorInVein: 'not assessed', portalHypertension: 'not assessed', suspiciousNodes: 'not assessed', extrahepaticMetastases: 'not assessed' } },
   ],
 };
+
+const vesselRelationship: ReferralOption[] = [
+  { value: '', label: 'Select relationship…' },
+  { value: 'no contact', label: 'No tumor contact' },
+  { value: 'contact or encasement', label: 'Contact / encasement' },
+  { value: 'narrowed', label: 'Narrowed' },
+  { value: 'occluded', label: 'Occluded' },
+  { value: 'indeterminate', label: 'Indeterminate' },
+  { value: 'not assessed', label: 'Not assessed' },
+];
+const hilarDefaults: WorkflowValues = {
+  clinicalIndication: '', clinicalContext: '', comparisonStudy: '', comparisonDate: '',
+  modalityProtocol: '', examQuality: '', technicalLimitations: '', hilarLesion: '',
+  ductalEpicenter: '', longitudinalExtent: '', lesionApMm: '', lesionTrMm: '', lesionCcMm: '',
+  morphology: '', rightDuctExtent: '', leftDuctExtent: '', intrahepaticDuctDilation: '',
+  lobarAtrophy: '', lobarAtrophyDetails: '', portalVeinRelationship: '', portalVeinDetails: '',
+  hepaticArteryRelationship: '', hepaticArteryDetails: '', vascularVariants: '', biliaryVariants: '',
+  liverInvasion: '', liverInvasionDetails: '', adjacentOrganInvasion: '', adjacentOrganDetails: '',
+  suspiciousNodes: '', suspiciousNodeDetails: '', peritonealMetastases: '',
+  peritonealMetastasisDetails: '', distantMetastases: '', distantMetastasisDetails: '',
+  userAssignedBismuth: '', userStagingSynthesis: '', additionalFindings: '', incidentalFindings: '',
+  limitationsUncertainty: '', findingsOverride: '', impressionOverride: '',
+};
+
+export const hilarCholangiocarcinomaWorkflowSchema: ReportingWorkflowSchema = {
+  moduleType: 'hilarCholangiocarcinoma',
+  moduleId: 'mri-hilar-cholangiocarcinoma',
+  title: 'Hilar Cholangiocarcinoma CT/MRI',
+  shortTitle: 'Hilar cholangiocarcinoma',
+  modality: 'CT/MRI/MRCP',
+  bodySystem: 'Oncology',
+  clinicalQuestion: 'Map hilar biliary tumor extent, vascular relationships, lobar atrophy, local invasion, nodal disease, and metastases.',
+  techniqueDefault: 'Multiphase hepatobiliary CT/MRI with MRCP sequences as available was reviewed.',
+  badges: ['Implemented', 'Educational draft', 'Ductal mapping'],
+  insertTargets: ['findings', 'impression', 'incidentalFindings', 'recommendations'],
+  safetyNote: 'Verify ductal anatomy and extent, vascular relationships, lobar atrophy, invasion, nodes, metastases, and any user-assigned classification. No stage, operability, or treatment recommendation is generated automatically.',
+  contentMetadata: {
+    sourceChapter: 'Chapter 11: Hilar cholangiocarcinoma',
+    sourceType: 'Private development reference',
+    guidelineOrClassificationName: 'Bismuth-Corlette and cholangiocarcinoma TNM',
+    guidelineVersion: 'Current versions require primary-source verification',
+    lastReviewedDate: '2026-07-24',
+    reviewStatus: 'needs_clinical_review',
+    clinicalValidationRequired: true,
+  },
+  defaultValues: hilarDefaults,
+  sections: [
+    {
+      id: 'clinical-context', title: 'Clinical context', defaultOpen: true,
+      fields: [
+        area('clinicalIndication', 'Clinical indication', 'Suspected or confirmed hilar biliary malignancy and staging question'),
+        area('clinicalContext', 'Relevant clinical context', 'Pathology, cholangitis, biliary drainage/stents, surgery, or treatment'),
+        text('comparisonStudy', 'Comparison examination'), { id: 'comparisonDate', label: 'Comparison date', type: 'date' },
+      ],
+    },
+    {
+      id: 'technical-quality', title: 'Protocol and technical quality', defaultOpen: true,
+      fields: [
+        text('modalityProtocol', 'Modality and protocol', 'e.g. multiphase liver MRI with MRCP', true),
+        select('examQuality', 'Examination quality', quality),
+        area('technicalLimitations', 'Technical limitations', 'Motion, incomplete ductal visualization, stent artifact, missing phase, or other issue'),
+      ],
+    },
+    {
+      id: 'primary-ductal-tumor', title: 'Primary tumor and ductal extent', defaultOpen: true,
+      fields: [
+        select('hilarLesion', 'Hilar biliary lesion', assessment),
+        { ...text('ductalEpicenter', 'Ductal epicenter', 'Common hepatic duct, confluence, right/left duct, or other site', true), visibleWhen: { field: 'hilarLesion', equals: ['present', 'indeterminate'] } },
+        { ...area('longitudinalExtent', 'Longitudinal ductal extent', 'Proximal and distal extent by duct/branch'), visibleWhen: { field: 'hilarLesion', equals: ['present', 'indeterminate'] } },
+        { ...number('lesionApMm', 'AP dimension', 'mm'), visibleWhen: { field: 'hilarLesion', equals: ['present', 'indeterminate'] } },
+        { ...number('lesionTrMm', 'Transverse dimension', 'mm'), visibleWhen: { field: 'hilarLesion', equals: ['present', 'indeterminate'] } },
+        { ...number('lesionCcMm', 'Craniocaudal dimension', 'mm'), visibleWhen: { field: 'hilarLesion', equals: ['present', 'indeterminate'] } },
+        { ...area('morphology', 'Tumor morphology', 'Periductal infiltrating, mass-forming, intraductal, enhancement, and confidence'), visibleWhen: { field: 'hilarLesion', equals: ['present', 'indeterminate'] } },
+        { ...area('rightDuctExtent', 'Right ductal extent', 'Right hepatic duct and sectoral branch involvement'), visibleWhen: { field: 'hilarLesion', equals: ['present', 'indeterminate'] } },
+        { ...area('leftDuctExtent', 'Left ductal extent', 'Left hepatic duct and segmental branch involvement'), visibleWhen: { field: 'hilarLesion', equals: ['present', 'indeterminate'] } },
+        select('intrahepaticDuctDilation', 'Intrahepatic duct dilation', assessment),
+        select('lobarAtrophy', 'Lobar atrophy', assessment),
+        { ...area('lobarAtrophyDetails', 'Lobar atrophy details', 'Lobe/segments and severity'), visibleWhen: { field: 'lobarAtrophy', equals: ['present', 'indeterminate'] } },
+        text('userAssignedBismuth', 'User-assigned ductal classification', 'Optional; no category is calculated', true),
+      ],
+    },
+    {
+      id: 'vascular-anatomy', title: 'Vascular relationships and anatomy', defaultOpen: true,
+      fields: [
+        select('portalVeinRelationship', 'Portal vein relationship', vesselRelationship),
+        { ...area('portalVeinDetails', 'Portal vein details', 'Side/branch, circumferential extent, narrowing, occlusion, and collaterals'), visibleWhen: { field: 'portalVeinRelationship', equals: ['contact or encasement', 'narrowed', 'occluded', 'indeterminate'] } },
+        select('hepaticArteryRelationship', 'Hepatic artery relationship', vesselRelationship),
+        { ...area('hepaticArteryDetails', 'Hepatic artery details', 'Side/branch, circumferential extent, narrowing, occlusion, and collaterals'), visibleWhen: { field: 'hepaticArteryRelationship', equals: ['contact or encasement', 'narrowed', 'occluded', 'indeterminate'] } },
+        area('vascularVariants', 'Surgically relevant vascular variants'),
+        area('biliaryVariants', 'Surgically relevant biliary variants'),
+      ],
+    },
+    {
+      id: 'extension-metastases', title: 'Local extension, nodes, and metastases', defaultOpen: true,
+      fields: [
+        select('liverInvasion', 'Liver invasion', assessment),
+        { ...area('liverInvasionDetails', 'Liver invasion details'), visibleWhen: { field: 'liverInvasion', equals: ['present', 'indeterminate'] } },
+        select('adjacentOrganInvasion', 'Adjacent-organ invasion', assessment),
+        { ...area('adjacentOrganDetails', 'Adjacent-organ invasion details'), visibleWhen: { field: 'adjacentOrganInvasion', equals: ['present', 'indeterminate'] } },
+        select('suspiciousNodes', 'Suspicious nodes', assessment),
+        { ...area('suspiciousNodeDetails', 'Suspicious node details'), visibleWhen: { field: 'suspiciousNodes', equals: ['present', 'indeterminate'] } },
+        select('peritonealMetastases', 'Peritoneal metastases', assessment),
+        { ...area('peritonealMetastasisDetails', 'Peritoneal disease details'), visibleWhen: { field: 'peritonealMetastases', equals: ['present', 'indeterminate'] } },
+        select('distantMetastases', 'Other distant metastases', assessment),
+        { ...area('distantMetastasisDetails', 'Distant metastatic disease details'), visibleWhen: { field: 'distantMetastases', equals: ['present', 'indeterminate'] } },
+        area('userStagingSynthesis', 'User-controlled staging/resectability synthesis', 'Optional; no category is calculated'),
+      ],
+    },
+    {
+      id: 'additional-overrides', title: 'Additional findings and overrides', defaultOpen: false,
+      fields: [
+        area('additionalFindings', 'Additional findings'), area('incidentalFindings', 'Incidental findings'),
+        area('limitationsUncertainty', 'Additional uncertainty'),
+        area('findingsOverride', 'Findings free-text override', 'When entered, this replaces generated findings'),
+        area('impressionOverride', 'Impression free-text override', 'When entered, this replaces generated impression'),
+      ],
+    },
+  ],
+  keyNegatives: [], incidentalOptions: [],
+  quickFills: [
+    { id: 'no-hilar-lesion', label: 'No hilar lesion', description: 'Diagnostic examination with no hilar lesion or metastatic disease entered.', intent: 'normal', values: { examQuality: 'diagnostic', hilarLesion: 'absent', intrahepaticDuctDilation: 'absent', lobarAtrophy: 'absent', portalVeinRelationship: 'no contact', hepaticArteryRelationship: 'no contact', liverInvasion: 'absent', adjacentOrganInvasion: 'absent', suspiciousNodes: 'absent', peritonealMetastases: 'absent', distantMetastases: 'absent' } },
+    { id: 'hilar-tumor-mapping', label: 'Hilar tumor mapping', description: 'Positive pathway for ductal and vascular mapping.', intent: 'positive', values: { examQuality: 'diagnostic', hilarLesion: 'present' } },
+    { id: 'limited-hilar-study', label: 'Limited examination', description: 'Limited ductal and vascular assessment.', intent: 'complicated', values: { examQuality: 'limited', hilarLesion: 'indeterminate', intrahepaticDuctDilation: 'not assessed', lobarAtrophy: 'not assessed', portalVeinRelationship: 'not assessed', hepaticArteryRelationship: 'not assessed', liverInvasion: 'not assessed', adjacentOrganInvasion: 'not assessed', suspiciousNodes: 'not assessed', peritonealMetastases: 'not assessed', distantMetastases: 'not assessed' } },
+  ],
+};

@@ -14,7 +14,10 @@ import {
   generateRenalMassReport,
   generateRectalCancerMriReport,
 } from './cancerImagingReportGenerators';
-import { generateHccLiverReport } from './cancerImagingRemainingReportGenerators';
+import {
+  generateHccLiverReport,
+  generateHilarCholangiocarcinomaReport,
+} from './cancerImagingRemainingReportGenerators';
 import { cleanLines, formatMeasurement, numberOrNull, sentenceList, workflowList, workflowValue, yes } from './impressionGenerators';
 
 function keyNegativeSentence(values: WorkflowValues, suppressPhrases: string[] = []): string | undefined {
@@ -831,6 +834,8 @@ export function generateReportingWorkflowReport(moduleType: ModuleType, values: 
       return generateRenalMassReport(schema, values);
     case 'hccLiver':
       return generateHccLiverReport(schema, values);
+    case 'hilarCholangiocarcinoma':
+      return generateHilarCholangiocarcinomaReport(schema, values);
     case 'ctpa':
       return generateCtpaWorkflowReport(schema, values);
     case 'nodule':

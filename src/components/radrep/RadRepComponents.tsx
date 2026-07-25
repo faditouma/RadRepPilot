@@ -24,6 +24,7 @@ const moduleLabels: Record<DraftType, string> = {
   prostateMri: 'Prostate MRI',
   renalMass: 'Renal Mass CT/MRI',
   hccLiver: 'Hepatocellular Carcinoma CT/MRI',
+  hilarCholangiocarcinoma: 'Hilar Cholangiocarcinoma CT/MRI',
   nodule: 'Pulmonary Nodule / Fleischner',
   stroke: 'CT Head Stroke / ASPECTS',
   chestXray: 'Chest X-ray: Infection / Dyspnea',

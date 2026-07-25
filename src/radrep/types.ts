@@ -19,6 +19,7 @@ export type ModuleType =
   | 'prostateMri'
   | 'renalMass'
   | 'hccLiver'
+  | 'hilarCholangiocarcinoma'
   | 'nodule'
   | 'stroke'
   | 'chestXray'

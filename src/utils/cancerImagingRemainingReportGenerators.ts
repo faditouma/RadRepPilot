@@ -80,3 +80,72 @@ export function generateHccLiverReport(schema: ReportingWorkflowSchema, values: 
     recommendations: 'No LI-RADS, OPTN, transplant, treatment, or management category is calculated. Verify eligibility, phase adequacy, every observation, vascular invasion, and all user-assigned categories before finalizing.',
   };
 }
+
+export function generateHilarCholangiocarcinomaReport(schema: ReportingWorkflowSchema, values: WorkflowValues): ReportSections {
+  const status = workflowValue(values, 'hilarLesion');
+  const quality = workflowValue(values, 'examQuality');
+  const limitationText = [workflowValue(values, 'technicalLimitations'), workflowValue(values, 'limitationsUncertainty')].filter(Boolean).join('; ');
+  const size = dimensions(values, ['lesionApMm', 'lesionTrMm', 'lesionCcMm']);
+  const findingsOverride = workflowValue(values, 'findingsOverride');
+  const impressionOverride = workflowValue(values, 'impressionOverride');
+  const tumorLine =
+    status === 'absent' ? 'No hilar biliary lesion is entered.' :
+    status === 'present' ? `Hilar biliary tumor centered at ${workflowValue(values, 'ductalEpicenter') || 'an unspecified ductal site'}${size ? ` measuring ${size}` : ''}. ${workflowValue(values, 'longitudinalExtent') || ''}` :
+    status === 'indeterminate' ? `Indeterminate hilar biliary abnormality${workflowValue(values, 'ductalEpicenter') ? ` centered at ${workflowValue(values, 'ductalEpicenter')}` : ''}.` : undefined;
+  const ductalLines = [
+    workflowValue(values, 'rightDuctExtent') ? `Right ductal extent: ${workflowValue(values, 'rightDuctExtent')}.` : undefined,
+    workflowValue(values, 'leftDuctExtent') ? `Left ductal extent: ${workflowValue(values, 'leftDuctExtent')}.` : undefined,
+    positiveOrIndeterminate(values, 'Intrahepatic duct dilation', 'intrahepaticDuctDilation'),
+    positiveOrIndeterminate(values, 'Lobar atrophy', 'lobarAtrophy', 'lobarAtrophyDetails'),
+  ];
+  const vascularLines = [
+    workflowValue(values, 'portalVeinRelationship') && workflowValue(values, 'portalVeinRelationship') !== 'not assessed'
+      ? `Portal vein: ${workflowValue(values, 'portalVeinRelationship')}${workflowValue(values, 'portalVeinDetails') ? `; ${workflowValue(values, 'portalVeinDetails')}` : ''}.` : undefined,
+    workflowValue(values, 'hepaticArteryRelationship') && workflowValue(values, 'hepaticArteryRelationship') !== 'not assessed'
+      ? `Hepatic artery: ${workflowValue(values, 'hepaticArteryRelationship')}${workflowValue(values, 'hepaticArteryDetails') ? `; ${workflowValue(values, 'hepaticArteryDetails')}` : ''}.` : undefined,
+    workflowValue(values, 'vascularVariants') ? `Vascular variants: ${workflowValue(values, 'vascularVariants')}.` : undefined,
+    workflowValue(values, 'biliaryVariants') ? `Biliary variants: ${workflowValue(values, 'biliaryVariants')}.` : undefined,
+  ];
+  const extensionLines = [
+    positiveOrIndeterminate(values, 'Liver invasion', 'liverInvasion', 'liverInvasionDetails'),
+    positiveOrIndeterminate(values, 'Adjacent-organ invasion', 'adjacentOrganInvasion', 'adjacentOrganDetails'),
+    positiveOrIndeterminate(values, 'Suspicious nodal disease', 'suspiciousNodes', 'suspiciousNodeDetails'),
+    positiveOrIndeterminate(values, 'Peritoneal metastatic disease', 'peritonealMetastases', 'peritonealMetastasisDetails'),
+    positiveOrIndeterminate(values, 'Other distant metastatic disease', 'distantMetastases', 'distantMetastasisDetails'),
+  ];
+  const generatedFindings = cleanLines([
+    tumorLine,
+    workflowValue(values, 'morphology') ? `Morphology: ${workflowValue(values, 'morphology')}.` : undefined,
+    ...ductalLines, ...vascularLines, ...extensionLines,
+    workflowValue(values, 'userAssignedBismuth') ? `User-assigned ductal classification: ${workflowValue(values, 'userAssignedBismuth')}.` : undefined,
+    workflowValue(values, 'additionalFindings') ? `Additional findings: ${workflowValue(values, 'additionalFindings')}.` : undefined,
+    limitationText ? `Limitations: ${limitationText}.` : undefined,
+  ]);
+  const limitationSummary =
+    quality === 'nondiagnostic' ? `Nondiagnostic examination${limitationText ? `: ${limitationText}` : '.'}` :
+    quality === 'limited' ? `Limited hilar tumor assessment${limitationText ? `: ${limitationText}` : '.'}` : undefined;
+  const summary =
+    status === 'present' ? `Hilar biliary tumor${workflowValue(values, 'ductalEpicenter') ? ` centered at ${workflowValue(values, 'ductalEpicenter')}` : ''}${size ? ` measuring ${size}` : ''}.` :
+    status === 'absent' ? 'No hilar biliary lesion is entered.' :
+    status === 'indeterminate' ? 'Indeterminate hilar biliary abnormality.' : 'Hilar lesion assessment is incomplete.';
+  return {
+    indication: cleanLines([
+      workflowValue(values, 'clinicalIndication') || schema.clinicalQuestion,
+      workflowValue(values, 'clinicalContext') ? `Relevant clinical context: ${workflowValue(values, 'clinicalContext')}.` : undefined,
+    ]),
+    technique: cleanLines([
+      workflowValue(values, 'modalityProtocol') || schema.techniqueDefault,
+      quality ? `Examination quality: ${quality}.` : undefined,
+      workflowValue(values, 'technicalLimitations') ? `Technical limitations: ${workflowValue(values, 'technicalLimitations')}.` : undefined,
+    ]),
+    findings: findingsOverride || generatedFindings,
+    impression: impressionOverride || cleanLines([
+      limitationSummary, summary,
+      workflowValue(values, 'longitudinalExtent') ? `Ductal extent: ${workflowValue(values, 'longitudinalExtent')}.` : undefined,
+      ...vascularLines.slice(0, 2), ...extensionLines,
+      workflowValue(values, 'userStagingSynthesis') || undefined,
+    ]),
+    incidentalFindings: workflowValue(values, 'incidentalFindings'),
+    recommendations: 'No ductal classification, TNM stage, operability, treatment, or management recommendation is calculated. Verify ductal and vascular anatomy, local invasion, nodes, metastases, and user-assigned synthesis before finalizing.',
+  };
+}
