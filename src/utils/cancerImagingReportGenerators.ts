@@ -467,3 +467,204 @@ export function generatePancreaticCancerReport(
       'No operability, treatment, or management recommendation is generated. Verify vessel relationships, metastatic disease, protocol adequacy, and any user-entered resectability synthesis before finalizing.',
   };
 }
+
+export function generateRectalCancerMriReport(
+  schema: ReportingWorkflowSchema,
+  values: WorkflowValues,
+): ReportSections {
+  const tumorStatus = workflowValue(values, 'rectalTumor');
+  const quality = workflowValue(values, 'examQuality');
+  const technicalLimitations = workflowValue(values, 'technicalLimitations');
+  const additionalUncertainty = workflowValue(values, 'limitationsUncertainty');
+  const limitationText = [technicalLimitations, additionalUncertainty].filter(Boolean).join('; ');
+  const findingsOverride = workflowValue(values, 'findingsOverride');
+  const impressionOverride = workflowValue(values, 'impressionOverride');
+  const purpose = workflowValue(values, 'examPurpose');
+
+  const tumorFinding =
+    tumorStatus === 'absent'
+      ? 'No visible rectal tumor is entered.'
+      : tumorStatus === 'present'
+        ? `Rectal tumor${numberOrNull(values, 'distanceFromAnalVergeCm') !== null
+            ? ` with inferior margin ${numberOrNull(values, 'distanceFromAnalVergeCm')} cm from the anal verge`
+            : ''
+          }${workflowValue(values, 'relationToAnorectalJunction')
+            ? `, ${workflowValue(values, 'relationToAnorectalJunction')} the anorectal junction`
+            : ''
+          }${numberOrNull(values, 'craniocaudalLengthMm') !== null
+            ? `, measuring ${numberOrNull(values, 'craniocaudalLengthMm')} mm craniocaudally`
+            : ''
+          }${workflowValue(values, 'circumferentialLocation')
+            ? `, ${workflowValue(values, 'circumferentialLocation')}`
+            : ''
+          }${workflowValue(values, 'tumorMorphology')
+            ? `, with ${workflowValue(values, 'tumorMorphology')} morphology`
+            : ''
+          }${numberOrNull(values, 'extramuralDepthMm') !== null
+            ? `. Maximum extramural depth is ${numberOrNull(values, 'extramuralDepthMm')} mm`
+            : ''
+          }.`
+        : tumorStatus === 'indeterminate'
+          ? 'Indeterminate rectal abnormality; correlate with the entered localization and morphology.'
+          : undefined;
+
+  const fascia = workflowValue(values, 'mesorectalFasciaRelationship');
+  const fasciaFinding =
+    fascia && !['not assessed', 'not applicable'].includes(fascia)
+      ? `Mesorectal fascia is ${fascia}${
+          numberOrNull(values, 'minimumMesorectalFasciaDistanceMm') !== null
+            ? `; minimum tumor-to-fascia distance ${numberOrNull(values, 'minimumMesorectalFasciaDistanceMm')} mm`
+            : ''
+        }${workflowValue(values, 'fasciaThreatSite')
+          ? ` at ${workflowValue(values, 'fasciaThreatSite')}`
+          : ''
+        }.`
+      : undefined;
+
+  const positiveOrIndeterminate = (
+    label: string,
+    statusKey: string,
+    detailsKey: string,
+  ): string | undefined => {
+    const status = workflowValue(values, statusKey);
+    if (!['present', 'indeterminate'].includes(status)) return undefined;
+    return `${label} is ${status}${workflowValue(values, detailsKey) ? `: ${workflowValue(values, detailsKey)}` : ''}.`;
+  };
+
+  const stagingLines = [
+    positiveOrIndeterminate('Sphincter complex involvement', 'sphincterInvolvement', 'sphincterDetails'),
+    positiveOrIndeterminate('Levator involvement', 'levatorInvolvement', 'levatorDetails'),
+    positiveOrIndeterminate('Adjacent-organ invasion', 'adjacentOrganInvasion', 'adjacentOrganDetails'),
+    positiveOrIndeterminate('Extramural venous invasion', 'emvi', 'emviDetails'),
+    positiveOrIndeterminate('Suspicious mesorectal nodes', 'mesorectalNodes', 'mesorectalNodeDetails'),
+    positiveOrIndeterminate(
+      'Suspicious extramesorectal nodes',
+      'extramesorectalNodes',
+      'extramesorectalNodeDetails',
+    ),
+    positiveOrIndeterminate('Tumor deposits', 'tumorDeposits', 'tumorDepositDetails'),
+    positiveOrIndeterminate(
+      'Distant metastatic disease',
+      'distantMetastases',
+      'distantMetastasisDetails',
+    ),
+  ];
+  const allStagingNegatives = [
+    'sphincterInvolvement',
+    'levatorInvolvement',
+    'adjacentOrganInvasion',
+    'emvi',
+    'mesorectalNodes',
+    'extramesorectalNodes',
+    'tumorDeposits',
+    'distantMetastases',
+  ].every((key) => workflowValue(values, key) === 'absent');
+
+  const responseLines = [
+    workflowValue(values, 'intervalChange') &&
+    workflowValue(values, 'intervalChange') !== 'not assessed'
+      ? `Interval tumor change: ${workflowValue(values, 'intervalChange')}.`
+      : undefined,
+    workflowValue(values, 'userResponseSynthesis')
+      ? `User response synthesis: ${workflowValue(values, 'userResponseSynthesis')}.`
+      : undefined,
+  ];
+
+  const generatedFindings = cleanLines([
+    workflowValue(values, 'comparisonStudy') || workflowValue(values, 'comparisonDate')
+      ? `Comparison: ${workflowValue(values, 'comparisonStudy') || 'prior examination'}${
+          workflowValue(values, 'comparisonDate')
+            ? ` dated ${workflowValue(values, 'comparisonDate')}`
+            : ''
+        }.`
+      : undefined,
+    tumorFinding,
+    workflowValue(values, 'userAssignedTCategory')
+      ? `User-assigned T category: ${workflowValue(values, 'userAssignedTCategory')}.`
+      : undefined,
+    fasciaFinding,
+    ...stagingLines,
+    allStagingNegatives
+      ? 'No sphincter, levator, adjacent-organ, EMVI, suspicious nodal, tumor-deposit, or distant metastatic involvement is entered.'
+      : undefined,
+    ...responseLines,
+    workflowValue(values, 'additionalFindings')
+      ? `Additional findings: ${workflowValue(values, 'additionalFindings')}.`
+      : undefined,
+    limitationText ? `Limitations: ${limitationText}.` : undefined,
+  ]);
+
+  const keyPositiveFindings = [
+    fascia === 'threatened' || fascia === 'involved'
+      ? `Mesorectal fascia ${fascia}${workflowValue(values, 'fasciaThreatSite') ? ` at ${workflowValue(values, 'fasciaThreatSite')}` : ''}`
+      : '',
+    workflowValue(values, 'sphincterInvolvement') === 'present'
+      ? 'sphincter complex involvement'
+      : '',
+    workflowValue(values, 'levatorInvolvement') === 'present' ? 'levator involvement' : '',
+    workflowValue(values, 'adjacentOrganInvasion') === 'present'
+      ? `adjacent-organ invasion${workflowValue(values, 'adjacentOrganDetails') ? ` (${workflowValue(values, 'adjacentOrganDetails')})` : ''}`
+      : '',
+    workflowValue(values, 'emvi') === 'present' ? 'extramural venous invasion' : '',
+    workflowValue(values, 'mesorectalNodes') === 'present' ? 'suspicious mesorectal nodes' : '',
+    workflowValue(values, 'extramesorectalNodes') === 'present'
+      ? 'suspicious extramesorectal nodes'
+      : '',
+    workflowValue(values, 'tumorDeposits') === 'present' ? 'tumor deposits' : '',
+  ].filter(Boolean);
+  const tumorSummary =
+    tumorStatus === 'present'
+      ? `Rectal tumor${numberOrNull(values, 'distanceFromAnalVergeCm') !== null
+          ? ` with inferior margin ${numberOrNull(values, 'distanceFromAnalVergeCm')} cm from the anal verge`
+          : ''
+        }${numberOrNull(values, 'craniocaudalLengthMm') !== null
+          ? ` and length ${numberOrNull(values, 'craniocaudalLengthMm')} mm`
+          : ''
+        }.`
+      : tumorStatus === 'absent'
+        ? 'No visible rectal tumor is entered.'
+        : tumorStatus === 'indeterminate'
+          ? 'Indeterminate rectal abnormality.'
+          : 'Rectal tumor is not fully assessed from the entered findings.';
+  const limitationSummary =
+    quality === 'nondiagnostic'
+      ? `Nondiagnostic examination${limitationText ? `: ${limitationText}` : '.'}`
+      : quality === 'limited'
+        ? `Limited rectal MRI${limitationText ? `: ${limitationText}` : '.'}`
+        : undefined;
+
+  return {
+    indication: cleanLines([
+      workflowValue(values, 'clinicalIndication') || schema.clinicalQuestion,
+      purpose ? `Examination purpose: ${purpose}.` : undefined,
+      workflowValue(values, 'treatmentHistory')
+        ? `Treatment history: ${workflowValue(values, 'treatmentHistory')}.`
+        : undefined,
+      workflowValue(values, 'relevantClinicalContext')
+        ? `Relevant clinical context: ${workflowValue(values, 'relevantClinicalContext')}.`
+        : undefined,
+    ]),
+    technique: cleanLines([
+      workflowValue(values, 'modalityProtocol') || schema.techniqueDefault,
+      quality ? `Examination quality: ${quality}.` : undefined,
+      technicalLimitations ? `Technical limitations: ${technicalLimitations}.` : undefined,
+    ]),
+    findings: findingsOverride || generatedFindings,
+    impression: impressionOverride || cleanLines([
+      limitationSummary,
+      tumorSummary,
+      keyPositiveFindings.length
+        ? `Key local and regional findings: ${keyPositiveFindings.join('; ')}.`
+        : undefined,
+      workflowValue(values, 'distantMetastases') === 'present'
+        ? `Distant metastatic disease: ${workflowValue(values, 'distantMetastasisDetails') || 'present'}.`
+        : workflowValue(values, 'distantMetastases') === 'indeterminate'
+          ? 'Distant metastatic disease is indeterminate.'
+          : undefined,
+      workflowValue(values, 'userResponseSynthesis') || undefined,
+    ]),
+    incidentalFindings: workflowValue(values, 'incidentalFindings'),
+    recommendations:
+      'No stage, treatment, or management recommendation is generated. Verify surgical-plane measurements, nodal morphology, treatment history, and all user-assigned staging or response language before finalizing.',
+  };
+}

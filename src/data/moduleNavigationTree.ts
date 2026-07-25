@@ -293,7 +293,15 @@ export const moduleNavigationTree: NavigationModality[] = [
       {
         name: 'Pelvis/Rectal',
         description: 'Rectal cancer staging and pelvic lesion descriptors.',
-        workflows: [workflow('mri-rectal-cancer', 'Rectal Cancer Staging', 'Tumor height, T stage, MRF, EMVI, and nodes.')],
+        workflows: [
+          workflow(
+            'mri-rectal-cancer',
+            'Rectal Cancer MRI',
+            'Tumor height and extent, mesorectal fascia, sphincter complex, EMVI, nodes, deposits, and response.',
+            'implemented',
+            'rectalCancerMri',
+          ),
+        ],
       },
       {
         name: 'Breast',

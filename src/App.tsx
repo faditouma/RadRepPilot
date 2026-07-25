@@ -82,6 +82,7 @@ const moduleLabels: Record<ModuleType, string> = {
   ctpa: 'CTPA Pulmonary Embolism',
   lymphomaPetCt: 'Lymphoma PET-CT',
   pancreaticCancer: 'Pancreatic Cancer Staging',
+  rectalCancerMri: 'Rectal Cancer MRI',
   nodule: 'Pulmonary Nodule / Fleischner',
   stroke: 'CT Head Stroke / ASPECTS',
   chestXray: 'Chest X-ray: Infection / Dyspnea',

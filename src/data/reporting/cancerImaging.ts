@@ -596,3 +596,308 @@ export const pancreaticCancerWorkflowSchema: ReportingWorkflowSchema = {
     },
   ],
 };
+
+const rectalExamPurposeOptions: ReferralOption[] = [
+  { value: '', label: 'Select purpose…' },
+  { value: 'initial staging', label: 'Initial staging' },
+  { value: 'post-treatment restaging', label: 'Post-treatment restaging' },
+  { value: 'surveillance or suspected recurrence', label: 'Surveillance / suspected recurrence' },
+];
+
+const circumferentialLocationOptions: ReferralOption[] = [
+  { value: '', label: 'Select location…' },
+  { value: 'anterior', label: 'Anterior' },
+  { value: 'posterior', label: 'Posterior' },
+  { value: 'right lateral', label: 'Right lateral' },
+  { value: 'left lateral', label: 'Left lateral' },
+  { value: 'circumferential', label: 'Circumferential' },
+  { value: 'multifocal', label: 'Multifocal' },
+  { value: 'indeterminate', label: 'Indeterminate' },
+];
+
+const rectalTumorMorphologyOptions: ReferralOption[] = [
+  { value: '', label: 'Select morphology…' },
+  { value: 'polypoid', label: 'Polypoid' },
+  { value: 'semiannular', label: 'Semiannular' },
+  { value: 'annular', label: 'Annular' },
+  { value: 'infiltrative', label: 'Infiltrative' },
+  { value: 'mucinous features', label: 'Mucinous features' },
+  { value: 'indeterminate', label: 'Indeterminate' },
+];
+
+const fasciaRelationshipOptions: ReferralOption[] = [
+  { value: '', label: 'Select relationship…' },
+  { value: 'clear', label: 'Clear' },
+  { value: 'threatened', label: 'Threatened' },
+  { value: 'involved', label: 'Involved' },
+  { value: 'not applicable', label: 'Not applicable' },
+  { value: 'indeterminate', label: 'Indeterminate' },
+  { value: 'not assessed', label: 'Not assessed' },
+];
+
+const rectalCancerDefaults: WorkflowValues = {
+  clinicalIndication: '',
+  relevantClinicalContext: '',
+  examPurpose: '',
+  treatmentHistory: '',
+  comparisonStudy: '',
+  comparisonDate: '',
+  modalityProtocol: 'High-resolution rectal MRI',
+  examQuality: '',
+  technicalLimitations: '',
+  rectalTumor: '',
+  distanceFromAnalVergeCm: '',
+  relationToAnorectalJunction: '',
+  craniocaudalLengthMm: '',
+  circumferentialLocation: '',
+  tumorMorphology: '',
+  extramuralDepthMm: '',
+  userAssignedTCategory: '',
+  mesorectalFasciaRelationship: '',
+  minimumMesorectalFasciaDistanceMm: '',
+  fasciaThreatSite: '',
+  sphincterInvolvement: '',
+  sphincterDetails: '',
+  levatorInvolvement: '',
+  levatorDetails: '',
+  emvi: '',
+  emviDetails: '',
+  mesorectalNodes: '',
+  mesorectalNodeDetails: '',
+  extramesorectalNodes: '',
+  extramesorectalNodeDetails: '',
+  tumorDeposits: '',
+  tumorDepositDetails: '',
+  adjacentOrganInvasion: '',
+  adjacentOrganDetails: '',
+  distantMetastases: '',
+  distantMetastasisDetails: '',
+  intervalChange: '',
+  userResponseSynthesis: '',
+  additionalFindings: '',
+  incidentalFindings: '',
+  limitationsUncertainty: '',
+  findingsOverride: '',
+  impressionOverride: '',
+};
+
+export const rectalCancerMriWorkflowSchema: ReportingWorkflowSchema = {
+  moduleType: 'rectalCancerMri',
+  moduleId: 'mri-rectal-cancer',
+  title: 'Rectal Cancer MRI',
+  shortTitle: 'Rectal cancer MRI',
+  modality: 'MRI',
+  bodySystem: 'Oncology',
+  clinicalQuestion: 'Define rectal tumor location and extent, threatened surgical planes, nodal disease, deposits, and treatment response when applicable.',
+  techniqueDefault: 'High-resolution multiplanar pelvic MRI was performed using a rectal cancer protocol.',
+  badges: ['Implemented', 'Educational draft', 'Pelvic staging'],
+  insertTargets: ['findings', 'impression', 'incidentalFindings', 'recommendations'],
+  safetyNote:
+    'Educational reporting workflow. Verify tumor measurements, surgical-plane relationships, sphincter and levator involvement, nodal findings, treatment history, and final staging synthesis. No stage or treatment is assigned automatically.',
+  contentMetadata: {
+    sourceChapter: 'Chapter 7: Rectal cancer MRI',
+    sourceType: 'Private development reference',
+    guidelineOrClassificationName: 'Rectal cancer TNM and MRI response terminology',
+    guidelineVersion: 'Current versions require primary-source verification',
+    lastReviewedDate: '2026-07-24',
+    reviewStatus: 'needs_clinical_review',
+    clinicalValidationRequired: true,
+  },
+  defaultValues: rectalCancerDefaults,
+  sections: [
+    {
+      id: 'clinical-context',
+      title: 'Clinical context',
+      defaultOpen: true,
+      fields: [
+        area('clinicalIndication', 'Clinical indication', 'Known or suspected rectal malignancy and imaging question'),
+        area('relevantClinicalContext', 'Relevant clinical context', 'Pathology, symptoms, surgical history, or other relevant information'),
+        select('examPurpose', 'Examination purpose', rectalExamPurposeOptions),
+        area('treatmentHistory', 'Treatment history', 'Neoadjuvant therapy and completion date when applicable'),
+        text('comparisonStudy', 'Comparison examination', 'e.g. rectal MRI'),
+        { id: 'comparisonDate', label: 'Comparison date', type: 'date' },
+      ],
+    },
+    {
+      id: 'technical-quality',
+      title: 'Protocol and technical quality',
+      defaultOpen: true,
+      fields: [
+        text('modalityProtocol', 'MRI protocol', 'High-resolution rectal MRI', true),
+        select('examQuality', 'Examination quality', technicalQualityOptions),
+        area('technicalLimitations', 'Technical limitations', 'Motion, inadequate coverage or plane angulation, distention, or other limitation'),
+      ],
+    },
+    {
+      id: 'primary-tumor',
+      title: 'Primary tumor',
+      defaultOpen: true,
+      fields: [
+        select('rectalTumor', 'Rectal tumor', assessmentOptions),
+        {
+          ...number('distanceFromAnalVergeCm', 'Distance from anal verge', 'cm'),
+          visibleWhen: { field: 'rectalTumor', equals: ['present', 'indeterminate'] },
+        },
+        {
+          ...text('relationToAnorectalJunction', 'Relation to anorectal junction', 'Above, at, or below', true),
+          visibleWhen: { field: 'rectalTumor', equals: ['present', 'indeterminate'] },
+        },
+        {
+          ...number('craniocaudalLengthMm', 'Craniocaudal tumor length', 'mm'),
+          visibleWhen: { field: 'rectalTumor', equals: ['present', 'indeterminate'] },
+        },
+        {
+          ...select('circumferentialLocation', 'Circumferential location', circumferentialLocationOptions),
+          visibleWhen: { field: 'rectalTumor', equals: ['present', 'indeterminate'] },
+        },
+        {
+          ...select('tumorMorphology', 'Tumor morphology', rectalTumorMorphologyOptions),
+          visibleWhen: { field: 'rectalTumor', equals: ['present', 'indeterminate'] },
+        },
+        {
+          ...number('extramuralDepthMm', 'Maximum extramural depth', 'mm'),
+          visibleWhen: { field: 'rectalTumor', equals: ['present', 'indeterminate'] },
+        },
+        {
+          ...text('userAssignedTCategory', 'User-assigned T category', 'Optional; no category is calculated', true),
+          visibleWhen: { field: 'rectalTumor', equals: ['present', 'indeterminate'] },
+        },
+      ],
+    },
+    {
+      id: 'surgical-planes',
+      title: 'Mesorectal fascia and pelvic floor',
+      defaultOpen: true,
+      fields: [
+        select('mesorectalFasciaRelationship', 'Mesorectal fascia relationship', fasciaRelationshipOptions),
+        {
+          ...number('minimumMesorectalFasciaDistanceMm', 'Minimum tumor-to-fascia distance', 'mm'),
+          visibleWhen: {
+            field: 'mesorectalFasciaRelationship',
+            equals: ['clear', 'threatened', 'involved', 'indeterminate'],
+          },
+        },
+        {
+          ...text('fasciaThreatSite', 'Closest or involved fascia site', 'Clock-face location or anatomic site', true),
+          visibleWhen: {
+            field: 'mesorectalFasciaRelationship',
+            equals: ['threatened', 'involved', 'indeterminate'],
+          },
+        },
+        select('sphincterInvolvement', 'Sphincter complex involvement', assessmentOptions),
+        {
+          ...area('sphincterDetails', 'Sphincter involvement details', 'Internal/external sphincter, intersphincteric plane, and craniocaudal extent'),
+          visibleWhen: { field: 'sphincterInvolvement', equals: ['present', 'indeterminate'] },
+        },
+        select('levatorInvolvement', 'Levator involvement', assessmentOptions),
+        {
+          ...area('levatorDetails', 'Levator involvement details', 'Side, level, and extent'),
+          visibleWhen: { field: 'levatorInvolvement', equals: ['present', 'indeterminate'] },
+        },
+        select('adjacentOrganInvasion', 'Adjacent-organ invasion', assessmentOptions),
+        {
+          ...area('adjacentOrganDetails', 'Adjacent-organ invasion details', 'Structure, side, extent, and confidence'),
+          visibleWhen: { field: 'adjacentOrganInvasion', equals: ['present', 'indeterminate'] },
+        },
+      ],
+    },
+    {
+      id: 'emvi-nodes',
+      title: 'EMVI, nodes, and deposits',
+      defaultOpen: true,
+      fields: [
+        select('emvi', 'Extramural venous invasion', assessmentOptions),
+        {
+          ...area('emviDetails', 'EMVI details', 'Vessel, location, extent, and confidence'),
+          visibleWhen: { field: 'emvi', equals: ['present', 'indeterminate'] },
+        },
+        select('mesorectalNodes', 'Suspicious mesorectal nodes', assessmentOptions),
+        {
+          ...area('mesorectalNodeDetails', 'Mesorectal node details', 'Number, location, size, morphology, and fascia relationship'),
+          visibleWhen: { field: 'mesorectalNodes', equals: ['present', 'indeterminate'] },
+        },
+        select('extramesorectalNodes', 'Suspicious extramesorectal nodes', assessmentOptions),
+        {
+          ...area('extramesorectalNodeDetails', 'Extramesorectal node details', 'Stations, laterality, size, morphology, and confidence'),
+          visibleWhen: { field: 'extramesorectalNodes', equals: ['present', 'indeterminate'] },
+        },
+        select('tumorDeposits', 'Tumor deposits', assessmentOptions),
+        {
+          ...area('tumorDepositDetails', 'Tumor deposit details', 'Number, site, size, and fascia relationship'),
+          visibleWhen: { field: 'tumorDeposits', equals: ['present', 'indeterminate'] },
+        },
+        select('distantMetastases', 'Distant metastatic disease on this examination', assessmentOptions),
+        {
+          ...area('distantMetastasisDetails', 'Distant metastatic disease details', 'Sites, burden, measurements, and confidence'),
+          visibleWhen: { field: 'distantMetastases', equals: ['present', 'indeterminate'] },
+        },
+      ],
+    },
+    {
+      id: 'response-overrides',
+      title: 'Response and overrides',
+      defaultOpen: false,
+      fields: [
+        select('intervalChange', 'Interval tumor change', intervalChangeOptions),
+        area('userResponseSynthesis', 'User-assigned response synthesis', 'Optional descriptive response or regression assessment; no category is calculated'),
+        area('additionalFindings', 'Additional findings', 'Other clinically important pelvic findings'),
+        area('incidentalFindings', 'Incidental findings', 'Incidental findings requiring documentation'),
+        area('limitationsUncertainty', 'Additional uncertainty', 'Diagnostic uncertainty not already described'),
+        area('findingsOverride', 'Findings free-text override', 'When entered, this replaces generated findings'),
+        area('impressionOverride', 'Impression free-text override', 'When entered, this replaces generated impression'),
+      ],
+    },
+  ],
+  keyNegatives: [],
+  incidentalOptions: [],
+  quickFills: [
+    {
+      id: 'no-visible-tumor',
+      label: 'No visible tumor',
+      description: 'Diagnostic examination with no visible rectal tumor or suspicious disease entered.',
+      intent: 'normal',
+      values: {
+        examQuality: 'diagnostic',
+        rectalTumor: 'absent',
+        mesorectalFasciaRelationship: 'not applicable',
+        sphincterInvolvement: 'absent',
+        levatorInvolvement: 'absent',
+        adjacentOrganInvasion: 'absent',
+        emvi: 'absent',
+        mesorectalNodes: 'absent',
+        extramesorectalNodes: 'absent',
+        tumorDeposits: 'absent',
+        distantMetastases: 'absent',
+      },
+    },
+    {
+      id: 'rectal-tumor-staging',
+      label: 'Rectal tumor staging',
+      description: 'Positive pathway revealing tumor extent and surgical-plane fields.',
+      intent: 'positive',
+      values: {
+        examQuality: 'diagnostic',
+        rectalTumor: 'present',
+      },
+    },
+    {
+      id: 'limited-rectal-mri',
+      label: 'Limited examination',
+      description: 'Limited examination with staging structures not adequately assessed.',
+      intent: 'complicated',
+      values: {
+        examQuality: 'limited',
+        rectalTumor: 'indeterminate',
+        mesorectalFasciaRelationship: 'not assessed',
+        sphincterInvolvement: 'not assessed',
+        levatorInvolvement: 'not assessed',
+        adjacentOrganInvasion: 'not assessed',
+        emvi: 'not assessed',
+        mesorectalNodes: 'not assessed',
+        extramesorectalNodes: 'not assessed',
+        tumorDeposits: 'not assessed',
+        distantMetastases: 'not assessed',
+      },
+    },
+  ],
+};

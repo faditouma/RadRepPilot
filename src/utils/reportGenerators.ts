@@ -10,6 +10,7 @@ import type { ModuleType, ReportSections } from '../radrep/types';
 import {
   generateLymphomaPetCtReport,
   generatePancreaticCancerReport,
+  generateRectalCancerMriReport,
 } from './cancerImagingReportGenerators';
 import { cleanLines, formatMeasurement, numberOrNull, sentenceList, workflowList, workflowValue, yes } from './impressionGenerators';
 
@@ -819,6 +820,8 @@ export function generateReportingWorkflowReport(moduleType: ModuleType, values: 
       return generateLymphomaPetCtReport(schema, values);
     case 'pancreaticCancer':
       return generatePancreaticCancerReport(schema, values);
+    case 'rectalCancerMri':
+      return generateRectalCancerMriReport(schema, values);
     case 'ctpa':
       return generateCtpaWorkflowReport(schema, values);
     case 'nodule':

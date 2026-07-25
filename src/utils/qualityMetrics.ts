@@ -287,6 +287,89 @@ export function scoreReportCompleteness(moduleType: ModuleType, values: Record<s
     ]);
   }
 
+  if (moduleType === 'rectalCancerMri') {
+    const tumorStatus = textValue(values.rectalTumor);
+    const tumorDetailsComplete =
+      !['present', 'indeterminate'].includes(tumorStatus) ||
+      (hasAny(values, ['distanceFromAnalVergeCm']) &&
+        hasAny(values, ['craniocaudalLengthMm']) &&
+        addressed(values.circumferentialLocation) &&
+        addressed(values.tumorMorphology));
+    const statusDetailsComplete = (statusKey: string, detailsKey: string): boolean => {
+      const status = textValue(values[statusKey]);
+      return (
+        addressed(values[statusKey]) &&
+        (!['present', 'indeterminate'].includes(status) || hasMeaningfulText(values[detailsKey]))
+      );
+    };
+    const responseExam = /post-treatment|surveillance|recurrence/i.test(textValue(values.examPurpose));
+    const responseComplete =
+      !responseExam ||
+      (hasAny(values, ['comparisonStudy', 'comparisonDate']) &&
+        (addressed(values.intervalChange) || hasMeaningfulText(values.userResponseSynthesis)));
+
+    return score('Report completeness', [
+      {
+        label: 'Clinical indication and examination purpose addressed',
+        complete: hasMeaningfulText(values.clinicalIndication) && addressed(values.examPurpose),
+        missingLabel: 'Clinical indication or examination purpose missing',
+      },
+      {
+        label: 'Protocol and technical quality addressed',
+        complete: hasMeaningfulText(values.modalityProtocol) && addressed(values.examQuality),
+        missingLabel: 'MRI protocol or examination quality missing',
+      },
+      {
+        label: 'Primary tumor localized and measured',
+        complete: addressed(values.rectalTumor) && tumorDetailsComplete,
+        missingLabel:
+          tumorStatus === 'present' || tumorStatus === 'indeterminate'
+            ? 'Tumor height, length, circumferential location, or morphology missing'
+            : 'Rectal tumor assessment missing',
+      },
+      {
+        label: 'Mesorectal fascia and pelvic floor addressed',
+        complete:
+          addressed(values.mesorectalFasciaRelationship) &&
+          statusDetailsComplete('sphincterInvolvement', 'sphincterDetails') &&
+          statusDetailsComplete('levatorInvolvement', 'levatorDetails') &&
+          statusDetailsComplete('adjacentOrganInvasion', 'adjacentOrganDetails'),
+        missingLabel: 'Fascia, sphincter, levator, or adjacent-organ assessment incomplete',
+      },
+      {
+        label: 'EMVI, nodes, and deposits addressed',
+        complete:
+          statusDetailsComplete('emvi', 'emviDetails') &&
+          statusDetailsComplete('mesorectalNodes', 'mesorectalNodeDetails') &&
+          statusDetailsComplete('extramesorectalNodes', 'extramesorectalNodeDetails') &&
+          statusDetailsComplete('tumorDeposits', 'tumorDepositDetails'),
+        missingLabel: 'EMVI, nodal, or tumor-deposit assessment/details incomplete',
+      },
+      {
+        label: 'Distant metastatic disease addressed',
+        complete: statusDetailsComplete('distantMetastases', 'distantMetastasisDetails'),
+        missingLabel: 'Distant metastatic disease assessment/details incomplete',
+      },
+      {
+        label: 'Response assessment complete when applicable',
+        complete: responseComplete,
+        missingLabel: 'Comparison or interval response assessment missing',
+      },
+      {
+        label: 'Impression generated',
+        complete: hasMeaningfulText(report.impression),
+        missingLabel: 'Impression incomplete',
+      },
+      optionalFindingCheck(
+        'Incidental findings addressed',
+        values.incidentalFindings,
+        report.incidentalFindings,
+        'No incidental finding entered',
+        'Incidental finding documented',
+      ),
+    ]);
+  }
+
   if (moduleType === 'chestXray') {
     const airspaceAddressed = addressedAny(values, ['consolidation', 'atelectaticChange', 'interstitialEdema']) || hasFreeTextCoverage(values);
     const pleuraAddressed = addressedAny(values, ['pleuralEffusion', 'pneumothorax']) || hasFreeTextCoverage(values);

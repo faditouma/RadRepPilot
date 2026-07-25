@@ -2,6 +2,7 @@ import type { InsertTarget, ModuleType, ReferralOption } from '../radrep/types';
 import {
   lymphomaPetCtWorkflowSchema,
   pancreaticCancerWorkflowSchema,
+  rectalCancerMriWorkflowSchema,
 } from './reporting/cancerImaging';
 
 export type WorkflowFieldType = 'text' | 'textarea' | 'number' | 'date' | 'time' | 'select' | 'checkbox-group';
@@ -462,6 +463,7 @@ export const reportingWorkflowSchemas: Record<
   | 'ctpa'
   | 'lymphomaPetCt'
   | 'pancreaticCancer'
+  | 'rectalCancerMri'
   | 'nodule'
   | 'stroke'
   | 'chestXray'
@@ -475,6 +477,7 @@ export const reportingWorkflowSchemas: Record<
 > = {
   lymphomaPetCt: lymphomaPetCtWorkflowSchema,
   pancreaticCancer: pancreaticCancerWorkflowSchema,
+  rectalCancerMri: rectalCancerMriWorkflowSchema,
   ctpa: {
     moduleType: 'ctpa',
     moduleId: 'ctpa-pe',
