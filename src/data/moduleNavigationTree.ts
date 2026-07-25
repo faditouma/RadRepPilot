@@ -302,7 +302,14 @@ export const moduleNavigationTree: NavigationModality[] = [
         name: 'Liver/Abdomen',
         description: 'LI-RADS context, liver lesions, adrenal/renal characterization, and MRCP placeholders.',
         workflows: [
-          workflow('mri-liver-lirads', 'LI-RADS', 'HCC-risk context, observation size, major features, and category sentence.', 'partial', undefined, ['LI-RADS']),
+          workflow(
+            'mri-liver-lirads',
+            'Hepatocellular Carcinoma CT/MRI',
+            'Liver background, phase adequacy, observation features, tumor in vein, treatment response, portal hypertension, and extrahepatic disease.',
+            'implemented',
+            'hccLiver',
+            ['LI-RADS', 'OPTN'],
+          ),
           workflow('incidental-pancreatic-cyst', 'Pancreatic Cyst / MRCP Follow-up', 'Cyst size, duct dilation, mural nodule, and surveillance wording.', 'partial'),
         ],
       },

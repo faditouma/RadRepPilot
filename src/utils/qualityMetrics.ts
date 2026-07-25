@@ -492,6 +492,46 @@ export function scoreReportCompleteness(moduleType: ModuleType, values: Record<s
     ]);
   }
 
+  if (moduleType === 'hccLiver') {
+    const observationStatus = textValue(values.observationStatus);
+    const observationComplete =
+      !['present', 'indeterminate'].includes(observationStatus) ||
+      (hasMeaningfulText(values.observationNumber) &&
+        hasMeaningfulText(values.segment) &&
+        hasAny(values, ['sizeApMm', 'sizeTrMm', 'sizeCcMm']) &&
+        addressed(values.treatmentStatus) &&
+        addressed(values.arterialEnhancement) &&
+        addressed(values.washout) &&
+        addressed(values.capsule) &&
+        addressed(values.thresholdGrowth));
+    const statusDetailsComplete = (statusKey: string, detailsKey?: string) => {
+      const status = textValue(values[statusKey]);
+      return addressed(values[statusKey]) &&
+        (!detailsKey || !['present', 'indeterminate'].includes(status) || hasMeaningfulText(values[detailsKey]));
+    };
+    return score('Report completeness', [
+      { label: 'Clinical indication and HCC risk context addressed', complete: hasMeaningfulText(values.clinicalIndication) && hasMeaningfulText(values.riskContext), missingLabel: 'Clinical indication or HCC risk context missing' },
+      {
+        label: 'Protocol quality and phase adequacy addressed',
+        complete: hasMeaningfulText(values.modalityProtocol) && addressed(values.examQuality) &&
+          addressed(values.arterialPhaseAdequacy) && addressed(values.portalVenousPhaseAdequacy) &&
+          addressed(values.delayedPhaseAdequacy),
+        missingLabel: 'Protocol, quality, or phase adequacy missing',
+      },
+      { label: 'Dominant observation characterized', complete: addressed(values.observationStatus) && observationComplete, missingLabel: observationStatus === 'present' || observationStatus === 'indeterminate' ? 'Observation identifier, segment, size, treatment status, or major features missing' : 'Focal observation assessment missing' },
+      { label: 'Tumor in vein addressed', complete: statusDetailsComplete('tumorInVein', 'tumorInVeinDetails'), missingLabel: 'Tumor-in-vein assessment/details incomplete' },
+      { label: 'Portal hypertension addressed', complete: statusDetailsComplete('portalHypertension', 'portalHypertensionDetails'), missingLabel: 'Portal hypertension assessment/details incomplete' },
+      {
+        label: 'Nodes and extrahepatic disease addressed',
+        complete: statusDetailsComplete('suspiciousNodes', 'suspiciousNodeDetails') &&
+          statusDetailsComplete('extrahepaticMetastases', 'extrahepaticMetastasisDetails'),
+        missingLabel: 'Nodal or extrahepatic metastatic assessment/details incomplete',
+      },
+      { label: 'Impression generated', complete: hasMeaningfulText(report.impression), missingLabel: 'Impression incomplete' },
+      optionalFindingCheck('Incidental findings addressed', values.incidentalFindings, report.incidentalFindings, 'No incidental finding entered', 'Incidental finding documented'),
+    ]);
+  }
+
   if (moduleType === 'chestXray') {
     const airspaceAddressed = addressedAny(values, ['consolidation', 'atelectaticChange', 'interstitialEdema']) || hasFreeTextCoverage(values);
     const pleuraAddressed = addressedAny(values, ['pleuralEffusion', 'pneumothorax']) || hasFreeTextCoverage(values);

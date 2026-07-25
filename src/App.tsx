@@ -85,6 +85,7 @@ const moduleLabels: Record<ModuleType, string> = {
   rectalCancerMri: 'Rectal Cancer MRI',
   prostateMri: 'Prostate MRI',
   renalMass: 'Renal Mass CT/MRI',
+  hccLiver: 'Hepatocellular Carcinoma CT/MRI',
   nodule: 'Pulmonary Nodule / Fleischner',
   stroke: 'CT Head Stroke / ASPECTS',
   chestXray: 'Chest X-ray: Infection / Dyspnea',

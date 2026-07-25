@@ -6,6 +6,7 @@ import {
   renalMassWorkflowSchema,
   rectalCancerMriWorkflowSchema,
 } from './reporting/cancerImaging';
+import { hccLiverWorkflowSchema } from './reporting/cancerImagingRemaining';
 
 export type WorkflowFieldType = 'text' | 'textarea' | 'number' | 'date' | 'time' | 'select' | 'checkbox-group';
 export type WorkflowValue = string | string[];
@@ -468,6 +469,7 @@ export const reportingWorkflowSchemas: Record<
   | 'rectalCancerMri'
   | 'prostateMri'
   | 'renalMass'
+  | 'hccLiver'
   | 'nodule'
   | 'stroke'
   | 'chestXray'
@@ -484,6 +486,7 @@ export const reportingWorkflowSchemas: Record<
   rectalCancerMri: rectalCancerMriWorkflowSchema,
   prostateMri: prostateMriWorkflowSchema,
   renalMass: renalMassWorkflowSchema,
+  hccLiver: hccLiverWorkflowSchema,
   ctpa: {
     moduleType: 'ctpa',
     moduleId: 'ctpa-pe',
