@@ -11,6 +11,7 @@ import {
   generateLymphomaPetCtReport,
   generatePancreaticCancerReport,
   generateProstateMriReport,
+  generateRenalMassReport,
   generateRectalCancerMriReport,
 } from './cancerImagingReportGenerators';
 import { cleanLines, formatMeasurement, numberOrNull, sentenceList, workflowList, workflowValue, yes } from './impressionGenerators';
@@ -825,6 +826,8 @@ export function generateReportingWorkflowReport(moduleType: ModuleType, values: 
       return generateRectalCancerMriReport(schema, values);
     case 'prostateMri':
       return generateProstateMriReport(schema, values);
+    case 'renalMass':
+      return generateRenalMassReport(schema, values);
     case 'ctpa':
       return generateCtpaWorkflowReport(schema, values);
     case 'nodule':

@@ -449,6 +449,49 @@ export function scoreReportCompleteness(moduleType: ModuleType, values: Record<s
     ]);
   }
 
+  if (moduleType === 'renalMass') {
+    const massStatus = textValue(values.renalMass);
+    const massComplete =
+      !['present', 'indeterminate'].includes(massStatus) ||
+      (addressed(values.laterality) &&
+        addressed(values.poleLocation) &&
+        hasAny(values, ['massApMm', 'massTrMm', 'massCcMm']) &&
+        addressed(values.composition) &&
+        addressed(values.enhancement));
+    const statusDetailsComplete = (statusKey: string, detailsKey?: string): boolean => {
+      const status = textValue(values[statusKey]);
+      return addressed(values[statusKey]) &&
+        (!detailsKey || !['present', 'indeterminate'].includes(status) || hasMeaningfulText(values[detailsKey]));
+    };
+    return score('Report completeness', [
+      { label: 'Clinical indication addressed', complete: hasMeaningfulText(values.clinicalIndication), missingLabel: 'Clinical indication missing' },
+      { label: 'Protocol and technical quality addressed', complete: hasMeaningfulText(values.modalityProtocol) && addressed(values.examQuality), missingLabel: 'Protocol or examination quality missing' },
+      { label: 'Primary renal lesion characterized', complete: addressed(values.renalMass) && massComplete, missingLabel: massStatus === 'present' || massStatus === 'indeterminate' ? 'Lesion side, location, size, composition, or enhancement missing' : 'Renal mass assessment missing' },
+      {
+        label: 'Local extension and venous involvement addressed',
+        complete:
+          statusDetailsComplete('renalSinusInvolvement') &&
+          statusDetailsComplete('collectingSystemInvolvement') &&
+          statusDetailsComplete('renalVeinThrombus', 'renalVeinThrombusDetails') &&
+          statusDetailsComplete('ivcThrombus', 'ivcThrombusDetails') &&
+          statusDetailsComplete('perinephricExtension', 'perinephricExtensionDetails') &&
+          statusDetailsComplete('adjacentOrganInvasion', 'adjacentOrganDetails'),
+        missingLabel: 'Local extension or venous involvement assessment/details incomplete',
+      },
+      {
+        label: 'Multifocal disease, nodes, and metastases addressed',
+        complete:
+          statusDetailsComplete('multifocalDisease', 'multifocalDetails') &&
+          statusDetailsComplete('suspiciousNodes', 'suspiciousNodeDetails') &&
+          statusDetailsComplete('distantMetastases', 'distantMetastasisDetails'),
+        missingLabel: 'Multifocal, nodal, or metastatic assessment/details incomplete',
+      },
+      { label: 'Contralateral kidney addressed', complete: hasMeaningfulText(values.contralateralKidney), missingLabel: 'Contralateral kidney not documented' },
+      { label: 'Impression generated', complete: hasMeaningfulText(report.impression), missingLabel: 'Impression incomplete' },
+      optionalFindingCheck('Incidental findings addressed', values.incidentalFindings, report.incidentalFindings, 'No incidental finding entered', 'Incidental finding documented'),
+    ]);
+  }
+
   if (moduleType === 'chestXray') {
     const airspaceAddressed = addressedAny(values, ['consolidation', 'atelectaticChange', 'interstitialEdema']) || hasFreeTextCoverage(values);
     const pleuraAddressed = addressedAny(values, ['pleuralEffusion', 'pneumothorax']) || hasFreeTextCoverage(values);

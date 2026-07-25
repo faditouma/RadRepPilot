@@ -210,7 +210,14 @@ export const moduleNavigationTree: NavigationModality[] = [
         description: 'Renal colic, urinary obstruction, renal cysts/masses, and Bosniak context.',
         workflows: [
           workflow('ct-kub-renal-colic', 'CT KUB / Renal Colic', 'Stone size/location, obstruction, infection risk context, and alternatives.', 'implemented', 'renalColic'),
-          workflow('ct-renal-bosniak', 'Renal Mass / Cyst / Bosniak', 'Cystic renal lesion features and simplified Bosniak support.', 'partial', undefined, ['Bosniak']),
+          workflow(
+            'ct-renal-bosniak',
+            'Renal Mass CT/MRI',
+            'Mass composition and enhancement, local extension, venous thrombus, nodes, metastases, and surgical anatomy.',
+            'implemented',
+            'renalMass',
+            ['Bosniak'],
+          ),
         ],
       },
       {

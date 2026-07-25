@@ -3,6 +3,7 @@ import {
   lymphomaPetCtWorkflowSchema,
   pancreaticCancerWorkflowSchema,
   prostateMriWorkflowSchema,
+  renalMassWorkflowSchema,
   rectalCancerMriWorkflowSchema,
 } from './reporting/cancerImaging';
 
@@ -466,6 +467,7 @@ export const reportingWorkflowSchemas: Record<
   | 'pancreaticCancer'
   | 'rectalCancerMri'
   | 'prostateMri'
+  | 'renalMass'
   | 'nodule'
   | 'stroke'
   | 'chestXray'
@@ -481,6 +483,7 @@ export const reportingWorkflowSchemas: Record<
   pancreaticCancer: pancreaticCancerWorkflowSchema,
   rectalCancerMri: rectalCancerMriWorkflowSchema,
   prostateMri: prostateMriWorkflowSchema,
+  renalMass: renalMassWorkflowSchema,
   ctpa: {
     moduleType: 'ctpa',
     moduleId: 'ctpa-pe',

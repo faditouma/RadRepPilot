@@ -2,6 +2,10 @@ import type { ReportingWorkflowSchema, WorkflowValues } from '../data/reportingW
 import type { ReportSections } from '../radrep/types';
 import { cleanLines, numberOrNull, workflowValue } from './impressionGenerators';
 
+function capitalize(value: string): string {
+  return value ? `${value.charAt(0).toUpperCase()}${value.slice(1)}` : '';
+}
+
 function measuredSite(
   site: string,
   size: number | null,
@@ -856,5 +860,123 @@ export function generateProstateMriReport(
     incidentalFindings: workflowValue(values, 'incidentalFindings'),
     recommendations:
       'No PI-RADS category, stage, biopsy threshold, treatment, or management recommendation is calculated. Verify all sequence findings and user-assigned category before finalizing.',
+  };
+}
+
+export function generateRenalMassReport(
+  schema: ReportingWorkflowSchema,
+  values: WorkflowValues,
+): ReportSections {
+  const massStatus = workflowValue(values, 'renalMass');
+  const quality = workflowValue(values, 'examQuality');
+  const limitationText = [
+    workflowValue(values, 'technicalLimitations'),
+    workflowValue(values, 'limitationsUncertainty'),
+  ].filter(Boolean).join('; ');
+  const massDimensions = dimensions(values, ['massApMm', 'massTrMm', 'massCcMm']);
+  const findingsOverride = workflowValue(values, 'findingsOverride');
+  const impressionOverride = workflowValue(values, 'impressionOverride');
+  const massLine =
+    massStatus === 'absent'
+      ? 'No renal mass is entered.'
+      : massStatus === 'present'
+        ? `${capitalize(workflowValue(values, 'laterality')) || 'Renal'} ${workflowValue(values, 'poleLocation') || ''} ${
+            workflowValue(values, 'composition') || 'renal'
+          } mass${massDimensions ? ` measuring ${massDimensions}` : ''}${
+            workflowValue(values, 'enhancement') && workflowValue(values, 'enhancement') !== 'not assessed'
+              ? `; enhancement ${workflowValue(values, 'enhancement')}`
+              : ''
+          }${workflowValue(values, 'userAssignedBosniak') ? `; user-assigned Bosniak ${workflowValue(values, 'userAssignedBosniak')}` : ''}.`
+        : massStatus === 'indeterminate'
+          ? `Indeterminate ${workflowValue(values, 'laterality') || ''} renal lesion${massDimensions ? ` measuring ${massDimensions}` : ''}.`
+          : undefined;
+  const compositionLines =
+    ['present', 'indeterminate'].includes(massStatus)
+      ? [
+          assessmentSentence('Macroscopic fat', workflowValue(values, 'macroscopicFat')),
+          assessmentSentence('Hemorrhage', workflowValue(values, 'hemorrhage')),
+          assessmentSentence('Necrosis', workflowValue(values, 'necrosis')),
+          assessmentSentence('Calcification', workflowValue(values, 'calcification')),
+        ]
+      : [];
+  const positiveOrIndeterminate = (label: string, statusKey: string, detailsKey = '') => {
+    const status = workflowValue(values, statusKey);
+    if (!['present', 'indeterminate'].includes(status)) return undefined;
+    return `${label} is ${status}${detailsKey && workflowValue(values, detailsKey) ? `: ${workflowValue(values, detailsKey)}` : ''}.`;
+  };
+  const extensionLines = [
+    positiveOrIndeterminate('Renal sinus involvement', 'renalSinusInvolvement'),
+    positiveOrIndeterminate('Collecting-system involvement', 'collectingSystemInvolvement'),
+    positiveOrIndeterminate('Renal vein thrombus', 'renalVeinThrombus', 'renalVeinThrombusDetails'),
+    positiveOrIndeterminate('IVC thrombus', 'ivcThrombus', 'ivcThrombusDetails'),
+    positiveOrIndeterminate('Perinephric extension', 'perinephricExtension', 'perinephricExtensionDetails'),
+    positiveOrIndeterminate('Adjacent-organ invasion', 'adjacentOrganInvasion', 'adjacentOrganDetails'),
+    positiveOrIndeterminate('Multifocal renal disease', 'multifocalDisease', 'multifocalDetails'),
+    positiveOrIndeterminate('Suspicious nodal disease', 'suspiciousNodes', 'suspiciousNodeDetails'),
+    positiveOrIndeterminate('Distant metastatic disease', 'distantMetastases', 'distantMetastasisDetails'),
+  ];
+  const allExtensionNegative = [
+    'renalSinusInvolvement', 'collectingSystemInvolvement', 'renalVeinThrombus', 'ivcThrombus',
+    'perinephricExtension', 'adjacentOrganInvasion', 'multifocalDisease', 'suspiciousNodes',
+    'distantMetastases',
+  ].every((key) => workflowValue(values, key) === 'absent');
+  const generatedFindings = cleanLines([
+    massLine,
+    ...compositionLines,
+    ...extensionLines,
+    allExtensionNegative
+      ? 'No renal sinus, collecting-system, venous, perinephric, adjacent-organ, multifocal, nodal, or distant metastatic involvement is entered.'
+      : undefined,
+    workflowValue(values, 'contralateralKidney')
+      ? `Contralateral kidney: ${workflowValue(values, 'contralateralKidney')}.`
+      : undefined,
+    workflowValue(values, 'surgicalAnatomy')
+      ? `Surgically relevant anatomy: ${workflowValue(values, 'surgicalAnatomy')}.`
+      : undefined,
+    workflowValue(values, 'additionalFindings')
+      ? `Additional findings: ${workflowValue(values, 'additionalFindings')}.`
+      : undefined,
+    limitationText ? `Limitations: ${limitationText}.` : undefined,
+  ]);
+  const limitationSummary =
+    quality === 'nondiagnostic'
+      ? `Nondiagnostic examination${limitationText ? `: ${limitationText}` : '.'}`
+      : quality === 'limited'
+        ? `Limited renal mass examination${limitationText ? `: ${limitationText}` : '.'}`
+        : undefined;
+  const massSummary =
+    massStatus === 'present'
+      ? `${capitalize(workflowValue(values, 'laterality')) || 'Renal'} renal mass${massDimensions ? ` measuring ${massDimensions}` : ''}${
+          workflowValue(values, 'userAssignedBosniak') ? `, user-assigned Bosniak ${workflowValue(values, 'userAssignedBosniak')}` : ''
+        }.`
+      : massStatus === 'absent'
+        ? 'No renal mass is entered.'
+        : massStatus === 'indeterminate'
+          ? 'Indeterminate renal lesion.'
+          : 'Renal mass assessment is incomplete.';
+  return {
+    indication: cleanLines([
+      workflowValue(values, 'clinicalIndication') || schema.clinicalQuestion,
+      workflowValue(values, 'relevantClinicalContext')
+        ? `Relevant clinical context: ${workflowValue(values, 'relevantClinicalContext')}.`
+        : undefined,
+    ]),
+    technique: cleanLines([
+      workflowValue(values, 'modalityProtocol') || schema.techniqueDefault,
+      quality ? `Examination quality: ${quality}.` : undefined,
+      workflowValue(values, 'technicalLimitations')
+        ? `Technical limitations: ${workflowValue(values, 'technicalLimitations')}.`
+        : undefined,
+    ]),
+    findings: findingsOverride || generatedFindings,
+    impression: impressionOverride || cleanLines([
+      limitationSummary,
+      massSummary,
+      ...extensionLines,
+      workflowValue(values, 'userStagingSynthesis') || undefined,
+    ]),
+    incidentalFindings: workflowValue(values, 'incidentalFindings'),
+    recommendations:
+      'No Bosniak category, stage, treatment, or management recommendation is calculated. Verify enhancement, venous extent, local invasion, metastatic disease, and user-assigned classification before finalizing.',
   };
 }
