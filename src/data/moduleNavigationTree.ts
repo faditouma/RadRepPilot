@@ -279,8 +279,17 @@ export const moduleNavigationTree: NavigationModality[] = [
       },
       {
         name: 'Prostate',
-        description: 'PI-RADS preview support and staging descriptors.',
-        workflows: [workflow('mri-prostate-pirads', 'PI-RADS', 'Zone, DWI/T2/DCE, size, EPE, and report sentence.', 'partial', undefined, ['PI-RADS'])],
+        description: 'Multiparametric prostate MRI lesion characterization and local staging.',
+        workflows: [
+          workflow(
+            'mri-prostate-pirads',
+            'Prostate MRI',
+            'Gland volume, lesion location and sequences, user-assigned PI-RADS, local extension, nodes, and bone.',
+            'implemented',
+            'prostateMri',
+            ['PI-RADS'],
+          ),
+        ],
       },
       {
         name: 'Liver/Abdomen',

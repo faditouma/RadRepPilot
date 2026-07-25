@@ -21,6 +21,7 @@ const moduleLabels: Record<DraftType, string> = {
   lymphomaPetCt: 'Lymphoma PET-CT',
   pancreaticCancer: 'Pancreatic Cancer Staging',
   rectalCancerMri: 'Rectal Cancer MRI',
+  prostateMri: 'Prostate MRI',
   nodule: 'Pulmonary Nodule / Fleischner',
   stroke: 'CT Head Stroke / ASPECTS',
   chestXray: 'Chest X-ray: Infection / Dyspnea',

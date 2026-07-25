@@ -16,6 +16,7 @@ export type ModuleType =
   | 'lymphomaPetCt'
   | 'pancreaticCancer'
   | 'rectalCancerMri'
+  | 'prostateMri'
   | 'nodule'
   | 'stroke'
   | 'chestXray'

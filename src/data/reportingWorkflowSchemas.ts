@@ -2,6 +2,7 @@ import type { InsertTarget, ModuleType, ReferralOption } from '../radrep/types';
 import {
   lymphomaPetCtWorkflowSchema,
   pancreaticCancerWorkflowSchema,
+  prostateMriWorkflowSchema,
   rectalCancerMriWorkflowSchema,
 } from './reporting/cancerImaging';
 
@@ -464,6 +465,7 @@ export const reportingWorkflowSchemas: Record<
   | 'lymphomaPetCt'
   | 'pancreaticCancer'
   | 'rectalCancerMri'
+  | 'prostateMri'
   | 'nodule'
   | 'stroke'
   | 'chestXray'
@@ -478,6 +480,7 @@ export const reportingWorkflowSchemas: Record<
   lymphomaPetCt: lymphomaPetCtWorkflowSchema,
   pancreaticCancer: pancreaticCancerWorkflowSchema,
   rectalCancerMri: rectalCancerMriWorkflowSchema,
+  prostateMri: prostateMriWorkflowSchema,
   ctpa: {
     moduleType: 'ctpa',
     moduleId: 'ctpa-pe',

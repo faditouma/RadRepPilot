@@ -668,3 +668,193 @@ export function generateRectalCancerMriReport(
       'No stage, treatment, or management recommendation is generated. Verify surgical-plane measurements, nodal morphology, treatment history, and all user-assigned staging or response language before finalizing.',
   };
 }
+
+export function generateProstateMriReport(
+  schema: ReportingWorkflowSchema,
+  values: WorkflowValues,
+): ReportSections {
+  const lesionStatus = workflowValue(values, 'lesionAssessment');
+  const quality = workflowValue(values, 'examQuality');
+  const limitationText = [
+    workflowValue(values, 'technicalLimitations'),
+    workflowValue(values, 'limitationsUncertainty'),
+  ].filter(Boolean).join('; ');
+  const glandDimensions = dimensions(values, ['glandApMm', 'glandTrMm', 'glandCcMm']);
+  const lesionSize = numberOrNull(values, 'indexLesionSizeMm');
+  const userPirads = workflowValue(values, 'userAssignedPirads');
+  const findingsOverride = workflowValue(values, 'findingsOverride');
+  const impressionOverride = workflowValue(values, 'impressionOverride');
+
+  const glandLine =
+    glandDimensions ||
+    numberOrNull(values, 'prostateVolumeMl') !== null ||
+    numberOrNull(values, 'psaDensity') !== null
+      ? `Prostate gland: ${[
+          glandDimensions ? `${glandDimensions}` : '',
+          numberOrNull(values, 'prostateVolumeMl') !== null
+            ? `entered volume ${numberOrNull(values, 'prostateVolumeMl')} mL`
+            : '',
+          numberOrNull(values, 'psaDensity') !== null
+            ? `entered PSA density ${numberOrNull(values, 'psaDensity')} ng/mL/mL`
+            : '',
+        ].filter(Boolean).join('; ')}.`
+      : undefined;
+  const lesionLine =
+    lesionStatus === 'absent'
+      ? 'No suspicious prostate lesion is entered.'
+      : lesionStatus === 'present'
+        ? `Index lesion${workflowValue(values, 'indexLesionLocation') ? ` at ${workflowValue(values, 'indexLesionLocation')}` : ''}${
+            workflowValue(values, 'indexLesionZone') ? ` in the ${workflowValue(values, 'indexLesionZone')}` : ''
+          }${lesionSize !== null ? `, measuring ${lesionSize} mm` : ''}${
+            userPirads ? `; user-assigned PI-RADS ${userPirads}` : ''
+          }.`
+        : lesionStatus === 'indeterminate'
+          ? `Indeterminate prostate lesion${workflowValue(values, 'indexLesionLocation') ? ` at ${workflowValue(values, 'indexLesionLocation')}` : ''}${
+              lesionSize !== null ? `, measuring ${lesionSize} mm` : ''
+            }.`
+          : undefined;
+  const sequenceLines =
+    ['present', 'indeterminate'].includes(lesionStatus)
+      ? [
+          workflowValue(values, 't2Description')
+            ? `T2-weighted appearance: ${workflowValue(values, 't2Description')}.`
+            : undefined,
+          workflowValue(values, 'diffusionDescription')
+            ? `Diffusion-weighted appearance: ${workflowValue(values, 'diffusionDescription')}.`
+            : undefined,
+          workflowValue(values, 'adcDescription')
+            ? `ADC appearance: ${workflowValue(values, 'adcDescription')}.`
+            : undefined,
+          workflowValue(values, 'dceDescription')
+            ? `Dynamic contrast enhancement: ${workflowValue(values, 'dceDescription')}.`
+            : undefined,
+        ]
+      : [];
+  const positiveOrIndeterminate = (
+    label: string,
+    statusKey: string,
+    detailsKey: string,
+  ): string | undefined => {
+    const status = workflowValue(values, statusKey);
+    if (!['present', 'indeterminate'].includes(status)) return undefined;
+    return `${label} is ${status}${workflowValue(values, detailsKey) ? `: ${workflowValue(values, detailsKey)}` : ''}.`;
+  };
+  const extensionLines = [
+    positiveOrIndeterminate(
+      'Extraprostatic extension',
+      'extracapsularExtension',
+      'extracapsularExtensionDetails',
+    ),
+    positiveOrIndeterminate(
+      'Neurovascular bundle involvement',
+      'neurovascularBundleInvolvement',
+      'neurovascularBundleDetails',
+    ),
+    positiveOrIndeterminate(
+      'Seminal vesicle invasion',
+      'seminalVesicleInvasion',
+      'seminalVesicleDetails',
+    ),
+    positiveOrIndeterminate(
+      'Bladder neck invasion',
+      'bladderNeckInvasion',
+      'bladderNeckDetails',
+    ),
+    positiveOrIndeterminate('Suspicious pelvic nodes', 'suspiciousNodes', 'suspiciousNodeDetails'),
+    positiveOrIndeterminate(
+      'Osseous metastatic disease',
+      'osseousMetastases',
+      'osseousMetastasisDetails',
+    ),
+  ];
+  const allExtensionNegative = [
+    'extracapsularExtension',
+    'neurovascularBundleInvolvement',
+    'seminalVesicleInvasion',
+    'bladderNeckInvasion',
+    'suspiciousNodes',
+    'osseousMetastases',
+  ].every((key) => workflowValue(values, key) === 'absent');
+
+  const generatedFindings = cleanLines([
+    workflowValue(values, 'comparisonStudy') || workflowValue(values, 'comparisonDate')
+      ? `Comparison: ${workflowValue(values, 'comparisonStudy') || 'prior examination'}${
+          workflowValue(values, 'comparisonDate') ? ` dated ${workflowValue(values, 'comparisonDate')}` : ''
+        }.`
+      : undefined,
+    glandLine,
+    lesionLine,
+    ...sequenceLines,
+    assessmentSentence(
+      'Additional suspicious lesions',
+      workflowValue(values, 'additionalLesions'),
+      workflowValue(values, 'additionalLesionDetails'),
+    ),
+    ...extensionLines,
+    allExtensionNegative
+      ? 'No extraprostatic, neurovascular bundle, seminal vesicle, bladder neck, suspicious nodal, or osseous metastatic involvement is entered.'
+      : undefined,
+    workflowValue(values, 'treatmentRelatedChange')
+      ? `Biopsy or treatment-related change: ${workflowValue(values, 'treatmentRelatedChange')}.`
+      : undefined,
+    workflowValue(values, 'additionalFindings')
+      ? `Additional findings: ${workflowValue(values, 'additionalFindings')}.`
+      : undefined,
+    limitationText ? `Limitations: ${limitationText}.` : undefined,
+  ]);
+
+  const positiveExtension = extensionLines.filter(Boolean);
+  const lesionSummary =
+    lesionStatus === 'present'
+      ? `Suspicious index lesion${workflowValue(values, 'indexLesionLocation') ? ` at ${workflowValue(values, 'indexLesionLocation')}` : ''}${
+          lesionSize !== null ? ` measuring ${lesionSize} mm` : ''
+        }${userPirads ? `, user-assigned PI-RADS ${userPirads}` : ''}.`
+      : lesionStatus === 'absent'
+        ? 'No suspicious prostate lesion is entered.'
+        : lesionStatus === 'indeterminate'
+          ? 'Indeterminate prostate lesion; correlate with the detailed sequence findings.'
+          : 'Prostate lesion assessment is incomplete.';
+  const limitationSummary =
+    quality === 'nondiagnostic'
+      ? `Nondiagnostic examination${limitationText ? `: ${limitationText}` : '.'}`
+      : quality === 'limited'
+        ? `Limited prostate MRI${limitationText ? `: ${limitationText}` : '.'}`
+        : undefined;
+
+  return {
+    indication: cleanLines([
+      workflowValue(values, 'clinicalIndication') || schema.clinicalQuestion,
+      workflowValue(values, 'examPurpose')
+        ? `Examination purpose: ${workflowValue(values, 'examPurpose')}.`
+        : undefined,
+      numberOrNull(values, 'psa') !== null ? `PSA: ${numberOrNull(values, 'psa')} ng/mL.` : undefined,
+      workflowValue(values, 'biopsyHistory')
+        ? `Biopsy history: ${workflowValue(values, 'biopsyHistory')}.`
+        : undefined,
+      workflowValue(values, 'treatmentHistory')
+        ? `Treatment history: ${workflowValue(values, 'treatmentHistory')}.`
+        : undefined,
+      workflowValue(values, 'relevantClinicalContext')
+        ? `Relevant clinical context: ${workflowValue(values, 'relevantClinicalContext')}.`
+        : undefined,
+    ]),
+    technique: cleanLines([
+      workflowValue(values, 'modalityProtocol') || schema.techniqueDefault,
+      quality ? `Examination quality: ${quality}.` : undefined,
+      workflowValue(values, 'technicalLimitations')
+        ? `Technical limitations: ${workflowValue(values, 'technicalLimitations')}.`
+        : undefined,
+    ]),
+    findings: findingsOverride || generatedFindings,
+    impression: impressionOverride || cleanLines([
+      limitationSummary,
+      lesionSummary,
+      positiveExtension.length
+        ? `Local or metastatic staging findings: ${positiveExtension.map((line) => line?.replace(/\.$/, '')).join('; ')}.`
+        : undefined,
+    ]),
+    incidentalFindings: workflowValue(values, 'incidentalFindings'),
+    recommendations:
+      'No PI-RADS category, stage, biopsy threshold, treatment, or management recommendation is calculated. Verify all sequence findings and user-assigned category before finalizing.',
+  };
+}

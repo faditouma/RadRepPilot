@@ -370,6 +370,85 @@ export function scoreReportCompleteness(moduleType: ModuleType, values: Record<s
     ]);
   }
 
+  if (moduleType === 'prostateMri') {
+    const lesionStatus = textValue(values.lesionAssessment);
+    const lesionDetailsComplete =
+      !['present', 'indeterminate'].includes(lesionStatus) ||
+      (hasMeaningfulText(values.indexLesionLocation) &&
+        addressed(values.indexLesionZone) &&
+        hasAny(values, ['indexLesionSizeMm']) &&
+        hasMeaningfulText(values.t2Description) &&
+        (hasMeaningfulText(values.diffusionDescription) || hasMeaningfulText(values.adcDescription)));
+    const statusDetailsComplete = (statusKey: string, detailsKey: string): boolean => {
+      const status = textValue(values[statusKey]);
+      return (
+        addressed(values[statusKey]) &&
+        (!['present', 'indeterminate'].includes(status) || hasMeaningfulText(values[detailsKey]))
+      );
+    };
+
+    return score('Report completeness', [
+      {
+        label: 'Clinical indication and examination purpose addressed',
+        complete: hasMeaningfulText(values.clinicalIndication) && addressed(values.examPurpose),
+        missingLabel: 'Clinical indication or examination purpose missing',
+      },
+      {
+        label: 'Protocol and technical quality addressed',
+        complete: hasMeaningfulText(values.modalityProtocol) && addressed(values.examQuality),
+        missingLabel: 'MRI protocol or examination quality missing',
+      },
+      {
+        label: 'Prostate dimensions or volume entered',
+        complete:
+          hasAny(values, ['prostateVolumeMl']) ||
+          ['glandApMm', 'glandTrMm', 'glandCcMm'].every((key) => hasValue(values[key])),
+        missingLabel: 'Prostate dimensions or entered volume missing',
+      },
+      {
+        label: 'Index lesion characterized when applicable',
+        complete: addressed(values.lesionAssessment) && lesionDetailsComplete,
+        missingLabel:
+          lesionStatus === 'present' || lesionStatus === 'indeterminate'
+            ? 'Index lesion location, zone, size, or sequence findings missing'
+            : 'Prostate lesion assessment missing',
+      },
+      {
+        label: 'Additional lesions addressed',
+        complete: statusDetailsComplete('additionalLesions', 'additionalLesionDetails'),
+        missingLabel: 'Additional lesion assessment/details incomplete',
+      },
+      {
+        label: 'Local extension addressed',
+        complete:
+          statusDetailsComplete('extracapsularExtension', 'extracapsularExtensionDetails') &&
+          statusDetailsComplete('neurovascularBundleInvolvement', 'neurovascularBundleDetails') &&
+          statusDetailsComplete('seminalVesicleInvasion', 'seminalVesicleDetails') &&
+          statusDetailsComplete('bladderNeckInvasion', 'bladderNeckDetails'),
+        missingLabel: 'Extraprostatic, neurovascular, seminal vesicle, or bladder neck assessment incomplete',
+      },
+      {
+        label: 'Nodes and bone addressed',
+        complete:
+          statusDetailsComplete('suspiciousNodes', 'suspiciousNodeDetails') &&
+          statusDetailsComplete('osseousMetastases', 'osseousMetastasisDetails'),
+        missingLabel: 'Nodal or osseous metastatic assessment/details incomplete',
+      },
+      {
+        label: 'Impression generated',
+        complete: hasMeaningfulText(report.impression),
+        missingLabel: 'Impression incomplete',
+      },
+      optionalFindingCheck(
+        'Incidental findings addressed',
+        values.incidentalFindings,
+        report.incidentalFindings,
+        'No incidental finding entered',
+        'Incidental finding documented',
+      ),
+    ]);
+  }
+
   if (moduleType === 'chestXray') {
     const airspaceAddressed = addressedAny(values, ['consolidation', 'atelectaticChange', 'interstitialEdema']) || hasFreeTextCoverage(values);
     const pleuraAddressed = addressedAny(values, ['pleuralEffusion', 'pneumothorax']) || hasFreeTextCoverage(values);
