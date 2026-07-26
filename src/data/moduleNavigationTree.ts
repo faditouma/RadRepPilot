@@ -345,6 +345,13 @@ export const moduleNavigationTree: NavigationModality[] = [
             'implemented',
             'endometrialCancerMri',
           ),
+          workflow(
+            'mri-cervical-cancer',
+            'Cervical Cancer MRI',
+            'Primary tumor, vaginal and parametrial extent, pelvic sidewall, adjacent organs, urinary obstruction, nodes, and distant disease.',
+            'implemented',
+            'cervicalCancerMri',
+          ),
         ],
       },
       {

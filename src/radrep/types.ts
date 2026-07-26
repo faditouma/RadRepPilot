@@ -22,6 +22,7 @@ export type ModuleType =
   | 'hilarCholangiocarcinoma'
   | 'ovarianCancer'
   | 'endometrialCancerMri'
+  | 'cervicalCancerMri'
   | 'nodule'
   | 'stroke'
   | 'chestXray'

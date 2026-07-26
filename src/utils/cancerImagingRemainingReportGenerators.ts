@@ -251,3 +251,62 @@ export function generateEndometrialCancerMriReport(schema: ReportingWorkflowSche
     recommendations: 'No FIGO/TNM stage, treatment, or management recommendation is calculated. Verify tumor extent, nodes, metastases, and any user-assigned stage before finalizing.',
   };
 }
+
+export function generateCervicalCancerMriReport(schema: ReportingWorkflowSchema, values: WorkflowValues): ReportSections {
+  const status = workflowValue(values, 'cervicalTumor');
+  const quality = workflowValue(values, 'examQuality');
+  const limitation = [workflowValue(values, 'technicalLimitations'), workflowValue(values, 'limitationsUncertainty')].filter(Boolean).join('; ');
+  const size = dimensions(values, ['tumorApMm', 'tumorTrMm', 'tumorCcMm']);
+  const primary =
+    status === 'absent' ? 'No visible cervical tumor is entered.' :
+    status === 'present' ? `Cervical tumor${workflowValue(values, 'tumorEpicenter') ? ` centered at the ${workflowValue(values, 'tumorEpicenter')}` : ''}${size ? ` measuring ${size}` : ''}.` :
+    status === 'indeterminate' ? `Indeterminate cervical abnormality${size ? ` measuring ${size}` : ''}.` : undefined;
+  const localExtent = [
+    positiveOrIndeterminate(values, 'Extension into the uterine corpus', 'uterineExtension', 'uterineExtensionDetails'),
+    positiveOrIndeterminate(values, 'Vaginal involvement', 'vaginalInvolvement', 'vaginalInvolvementDetails'),
+    positiveOrIndeterminate(values, 'Parametrial involvement', 'parametrialInvolvement', 'parametrialDetails'),
+    positiveOrIndeterminate(values, 'Pelvic sidewall involvement', 'pelvicSidewallInvolvement', 'pelvicSidewallDetails'),
+    positiveOrIndeterminate(values, 'Bladder invasion', 'bladderInvasion', 'bladderInvasionDetails'),
+    positiveOrIndeterminate(values, 'Rectal invasion', 'rectalInvasion', 'rectalInvasionDetails'),
+    positiveOrIndeterminate(values, 'Ureteric obstruction or hydronephrosis', 'uretericObstruction', 'uretericObstructionDetails'),
+  ];
+  const metastatic = [
+    positiveOrIndeterminate(values, 'Suspicious pelvic nodal disease', 'pelvicNodes', 'pelvicNodeDetails'),
+    positiveOrIndeterminate(values, 'Suspicious para-aortic nodal disease', 'paraAorticNodes', 'paraAorticNodeDetails'),
+    positiveOrIndeterminate(values, 'Distant metastatic disease', 'distantMetastases', 'distantMetastasisDetails'),
+  ];
+  const localNegative = ['uterineExtension', 'vaginalInvolvement', 'parametrialInvolvement', 'pelvicSidewallInvolvement', 'bladderInvasion', 'rectalInvasion', 'uretericObstruction'].every((key) => workflowValue(values, key) === 'absent');
+  const spreadNegative = ['pelvicNodes', 'paraAorticNodes', 'distantMetastases'].every((key) => workflowValue(values, key) === 'absent');
+  const generatedFindings = cleanLines([
+    primary,
+    workflowValue(values, 'tumorMorphology') ? `Tumor morphology: ${workflowValue(values, 'tumorMorphology')}.` : undefined,
+    workflowValue(values, 'endocervicalCanalExtension') ? `Endocervical canal extent: ${workflowValue(values, 'endocervicalCanalExtension')}.` : undefined,
+    ...localExtent,
+    localNegative ? 'No uterine, vaginal, parametrial, pelvic sidewall, bladder, or rectal extension or ureteric obstruction is entered.' : undefined,
+    ...metastatic,
+    spreadNegative ? 'No suspicious pelvic or para-aortic nodes or distant metastases are entered.' : undefined,
+    workflowValue(values, 'userAssignedFigo') ? `User-assigned FIGO stage: ${workflowValue(values, 'userAssignedFigo')}.` : undefined,
+    workflowValue(values, 'additionalFindings') ? `Additional findings: ${workflowValue(values, 'additionalFindings')}.` : undefined,
+    limitation ? `Limitations: ${limitation}.` : undefined,
+  ]);
+  const limitationSummary =
+    quality === 'nondiagnostic' ? `Nondiagnostic pelvic MRI${limitation ? `: ${limitation}` : '.'}` :
+    quality === 'limited' ? `Limited cervical cancer MRI staging examination${limitation ? `: ${limitation}` : '.'}` : undefined;
+  return {
+    indication: cleanLines([
+      workflowValue(values, 'clinicalIndication') || schema.clinicalQuestion,
+      workflowValue(values, 'pathology') ? `Pathology: ${workflowValue(values, 'pathology')}.` : undefined,
+      workflowValue(values, 'clinicalContext') ? `Relevant clinical context: ${workflowValue(values, 'clinicalContext')}.` : undefined,
+      workflowValue(values, 'treatmentHistory') ? `Treatment history: ${workflowValue(values, 'treatmentHistory')}.` : undefined,
+    ]),
+    technique: cleanLines([
+      workflowValue(values, 'modalityProtocol') || schema.techniqueDefault,
+      quality ? `Examination quality: ${quality}.` : undefined,
+      workflowValue(values, 'technicalLimitations') ? `Technical limitations: ${workflowValue(values, 'technicalLimitations')}.` : undefined,
+    ]),
+    findings: workflowValue(values, 'findingsOverride') || generatedFindings,
+    impression: workflowValue(values, 'impressionOverride') || cleanLines([limitationSummary, primary, ...localExtent, ...metastatic]),
+    incidentalFindings: workflowValue(values, 'incidentalFindings'),
+    recommendations: 'No FIGO/TNM stage, treatment, or management recommendation is calculated. Verify tumor extent, urinary obstruction, nodes, metastases, and any user-assigned stage before finalizing.',
+  };
+}

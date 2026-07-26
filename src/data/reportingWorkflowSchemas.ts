@@ -10,6 +10,7 @@ import {
   hccLiverWorkflowSchema,
   hilarCholangiocarcinomaWorkflowSchema,
   endometrialCancerMriWorkflowSchema,
+  cervicalCancerMriWorkflowSchema,
   ovarianCancerWorkflowSchema,
 } from './reporting/cancerImagingRemaining';
 
@@ -478,6 +479,7 @@ export const reportingWorkflowSchemas: Record<
   | 'hilarCholangiocarcinoma'
   | 'ovarianCancer'
   | 'endometrialCancerMri'
+  | 'cervicalCancerMri'
   | 'nodule'
   | 'stroke'
   | 'chestXray'
@@ -498,6 +500,7 @@ export const reportingWorkflowSchemas: Record<
   hilarCholangiocarcinoma: hilarCholangiocarcinomaWorkflowSchema,
   ovarianCancer: ovarianCancerWorkflowSchema,
   endometrialCancerMri: endometrialCancerMriWorkflowSchema,
+  cervicalCancerMri: cervicalCancerMriWorkflowSchema,
   ctpa: {
     moduleType: 'ctpa',
     moduleId: 'ctpa-pe',

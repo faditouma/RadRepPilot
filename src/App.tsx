@@ -89,6 +89,7 @@ const moduleLabels: Record<ModuleType, string> = {
   hilarCholangiocarcinoma: 'Hilar Cholangiocarcinoma CT/MRI',
   ovarianCancer: 'Ovarian Cancer Staging',
   endometrialCancerMri: 'Endometrial Cancer MRI',
+  cervicalCancerMri: 'Cervical Cancer MRI',
   nodule: 'Pulmonary Nodule / Fleischner',
   stroke: 'CT Head Stroke / ASPECTS',
   chestXray: 'Chest X-ray: Infection / Dyspnea',
