@@ -647,6 +647,27 @@ export function scoreReportCompleteness(moduleType: ModuleType, values: Record<s
     ]);
   }
 
+  if (moduleType === 'thyroidUltrasound') {
+    const noduleStatus = textValue(values.dominantNodule);
+    const noduleComplete = !['present', 'indeterminate'].includes(noduleStatus) ||
+      (hasMeaningfulText(values.noduleIdentifier) && addressed(values.noduleSide) &&
+        hasMeaningfulText(values.noduleLocation) && hasAny(values, ['noduleApMm', 'noduleTrMm', 'noduleCcMm']) &&
+        addressedAny(values, ['composition']) && addressedAny(values, ['echogenicity']) &&
+        addressedAny(values, ['shape']) && addressedAny(values, ['margins']) && addressedAny(values, ['echogenicFoci']));
+    const nodeStatus = textValue(values.cervicalNodes);
+    const extensionStatus = textValue(values.extrathyroidalExtension);
+    const intervalStatus = textValue(values.intervalChange);
+    return score('Report completeness', [
+      { label: 'Clinical indication addressed', complete: hasMeaningfulText(values.clinicalIndication), missingLabel: 'Clinical indication missing' },
+      { label: 'Technique and examination quality addressed', complete: hasMeaningfulText(values.modalityProtocol) && addressed(values.examQuality), missingLabel: 'Technique or examination quality missing' },
+      { label: 'Thyroid gland background addressed', complete: hasMeaningfulText(values.glandBackground) && hasMeaningfulText(values.rightLobeSize) && hasMeaningfulText(values.leftLobeSize), missingLabel: 'Gland background or lobe measurements missing' },
+      { label: 'Clinically relevant nodule characterized', complete: addressed(values.dominantNodule) && noduleComplete, missingLabel: noduleStatus === 'present' || noduleStatus === 'indeterminate' ? 'Nodule identifier, location, size, or descriptors missing' : 'Nodule assessment missing' },
+      { label: 'Extrathyroidal extension and interval change addressed', complete: (!['present', 'indeterminate'].includes(noduleStatus) || (addressed(values.extrathyroidalExtension) && (!['present', 'indeterminate'].includes(extensionStatus) || hasMeaningfulText(values.extrathyroidalExtensionDetails)) && addressed(values.intervalChange) && (!['new', 'increased', 'stable', 'decreased'].includes(intervalStatus) || hasMeaningfulText(values.intervalChangeDetails)))), missingLabel: 'Extrathyroidal extension or interval change assessment/details incomplete' },
+      { label: 'Cervical lymph nodes addressed', complete: addressed(values.cervicalNodes) && (!['present', 'indeterminate'].includes(nodeStatus) || hasMeaningfulText(values.cervicalNodeDetails)), missingLabel: 'Cervical node assessment/details incomplete' },
+      { label: 'Impression generated', complete: hasMeaningfulText(report.impression), missingLabel: 'Impression incomplete' },
+    ]);
+  }
+
   if (moduleType === 'chestXray') {
     const airspaceAddressed = addressedAny(values, ['consolidation', 'atelectaticChange', 'interstitialEdema']) || hasFreeTextCoverage(values);
     const pleuraAddressed = addressedAny(values, ['pleuralEffusion', 'pneumothorax']) || hasFreeTextCoverage(values);

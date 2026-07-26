@@ -136,7 +136,7 @@ export const moduleNavigationTree: NavigationModality[] = [
       {
         name: 'Thyroid',
         description: 'Nodule descriptors, TI-RADS-style scoring, and follow-up-ready wording.',
-        workflows: [workflow('us-thyroid-tirads', 'Thyroid Nodule / TI-RADS', 'Composition, echogenicity, margins, foci, and size.', 'partial', undefined, ['TI-RADS'])],
+        workflows: [workflow('us-thyroid-tirads', 'Thyroid Ultrasound', 'Gland background, nodule location and size, complete sonographic descriptors, interval change, and cervical nodes.', 'implemented', 'thyroidUltrasound', ['TI-RADS'])],
       },
       {
         name: 'Scrotal',

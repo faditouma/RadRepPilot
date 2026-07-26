@@ -12,6 +12,7 @@ import {
   endometrialCancerMriWorkflowSchema,
   cervicalCancerMriWorkflowSchema,
   lungCancerCtWorkflowSchema,
+  thyroidUltrasoundWorkflowSchema,
   ovarianCancerWorkflowSchema,
 } from './reporting/cancerImagingRemaining';
 
@@ -482,6 +483,7 @@ export const reportingWorkflowSchemas: Record<
   | 'endometrialCancerMri'
   | 'cervicalCancerMri'
   | 'lungCancerCt'
+  | 'thyroidUltrasound'
   | 'nodule'
   | 'stroke'
   | 'chestXray'
@@ -504,6 +506,7 @@ export const reportingWorkflowSchemas: Record<
   endometrialCancerMri: endometrialCancerMriWorkflowSchema,
   cervicalCancerMri: cervicalCancerMriWorkflowSchema,
   lungCancerCt: lungCancerCtWorkflowSchema,
+  thyroidUltrasound: thyroidUltrasoundWorkflowSchema,
   ctpa: {
     moduleType: 'ctpa',
     moduleId: 'ctpa-pe',

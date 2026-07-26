@@ -378,3 +378,67 @@ export function generateLungCancerCtReport(schema: ReportingWorkflowSchema, valu
     recommendations: 'No TNM category, stage group, treatment, or management recommendation is calculated. Verify local invasion, nodal stations, metastatic disease, and all user-entered staging before finalizing.',
   };
 }
+
+export function generateThyroidUltrasoundReport(schema: ReportingWorkflowSchema, values: WorkflowValues): ReportSections {
+  const status = workflowValue(values, 'dominantNodule');
+  const quality = workflowValue(values, 'examQuality');
+  const limitation = [workflowValue(values, 'technicalLimitations'), workflowValue(values, 'limitationsUncertainty')].filter(Boolean).join('; ');
+  const size = dimensions(values, ['noduleApMm', 'noduleTrMm', 'noduleCcMm']);
+  const nodule =
+    status === 'absent' ? 'No clinically relevant thyroid nodule is entered.' :
+    status === 'present' ? `${workflowValue(values, 'noduleIdentifier') || 'Thyroid nodule'} in the ${[workflowValue(values, 'noduleSide'), workflowValue(values, 'noduleLocation')].filter(Boolean).join(' ') || 'thyroid'}${size ? ` measures ${size}` : ''}.` :
+    status === 'indeterminate' ? `Indeterminate thyroid nodule${size ? ` measuring ${size}` : ''}.` : undefined;
+  const descriptors = status === 'present' || status === 'indeterminate'
+    ? [
+        workflowValue(values, 'composition') ? `composition ${workflowValue(values, 'composition')}` : '',
+        workflowValue(values, 'echogenicity') ? `echogenicity ${workflowValue(values, 'echogenicity')}` : '',
+        workflowValue(values, 'shape') ? `shape ${workflowValue(values, 'shape')}` : '',
+        workflowValue(values, 'margins') ? `margins ${workflowValue(values, 'margins')}` : '',
+        workflowValue(values, 'echogenicFoci') ? `echogenic foci ${workflowValue(values, 'echogenicFoci')}` : '',
+      ].filter(Boolean).join('; ')
+    : '';
+  const interval = workflowValue(values, 'intervalChange');
+  const generatedFindings = cleanLines([
+    workflowValue(values, 'glandBackground') ? `Thyroid gland: ${workflowValue(values, 'glandBackground')}.` : undefined,
+    workflowValue(values, 'rightLobeSize') ? `Right lobe: ${workflowValue(values, 'rightLobeSize')}.` : undefined,
+    workflowValue(values, 'leftLobeSize') ? `Left lobe: ${workflowValue(values, 'leftLobeSize')}.` : undefined,
+    workflowValue(values, 'isthmusThicknessMm') ? `Isthmus thickness: ${workflowValue(values, 'isthmusThicknessMm')} mm.` : undefined,
+    workflowValue(values, 'glandVascularity') ? `Gland vascularity: ${workflowValue(values, 'glandVascularity')}.` : undefined,
+    nodule,
+    descriptors ? `Nodule descriptors: ${descriptors}.` : undefined,
+    workflowValue(values, 'noduleVascularity') ? `Nodule vascularity: ${workflowValue(values, 'noduleVascularity')}.` : undefined,
+    positiveOrIndeterminate(values, 'Extrathyroidal extension', 'extrathyroidalExtension', 'extrathyroidalExtensionDetails'),
+    interval ? `Interval change: ${interval}${workflowValue(values, 'intervalChangeDetails') ? `; ${workflowValue(values, 'intervalChangeDetails')}` : ''}.` : undefined,
+    workflowValue(values, 'userAssignedTirads') ? `User-entered TI-RADS category: ${workflowValue(values, 'userAssignedTirads')}.` : undefined,
+    workflowValue(values, 'additionalNodules') ? `Additional nodules: ${workflowValue(values, 'additionalNodules')}.` : undefined,
+    positiveOrIndeterminate(values, 'Suspicious cervical lymph nodes', 'cervicalNodes', 'cervicalNodeDetails'),
+    workflowValue(values, 'cervicalNodes') === 'absent' ? 'No suspicious cervical lymph nodes are entered.' : undefined,
+    workflowValue(values, 'additionalFindings') ? `Additional findings: ${workflowValue(values, 'additionalFindings')}.` : undefined,
+    limitation ? `Limitations: ${limitation}.` : undefined,
+  ]);
+  const limitationSummary =
+    quality === 'nondiagnostic' ? `Nondiagnostic thyroid ultrasound${limitation ? `: ${limitation}` : '.'}` :
+    quality === 'limited' ? `Limited thyroid ultrasound${limitation ? `: ${limitation}` : '.'}` : undefined;
+  return {
+    indication: cleanLines([
+      workflowValue(values, 'clinicalIndication') || schema.clinicalQuestion,
+      workflowValue(values, 'clinicalContext') ? `Relevant clinical context: ${workflowValue(values, 'clinicalContext')}.` : undefined,
+      workflowValue(values, 'priorBiopsy') ? `Prior biopsy/pathology: ${workflowValue(values, 'priorBiopsy')}.` : undefined,
+    ]),
+    technique: cleanLines([
+      workflowValue(values, 'modalityProtocol') || schema.techniqueDefault,
+      quality ? `Examination quality: ${quality}.` : undefined,
+      workflowValue(values, 'technicalLimitations') ? `Technical limitations: ${workflowValue(values, 'technicalLimitations')}.` : undefined,
+    ]),
+    findings: workflowValue(values, 'findingsOverride') || generatedFindings,
+    impression: workflowValue(values, 'impressionOverride') || cleanLines([
+      limitationSummary,
+      nodule,
+      descriptors ? `Sonographic descriptors: ${descriptors}.` : undefined,
+      positiveOrIndeterminate(values, 'Extrathyroidal extension', 'extrathyroidalExtension', 'extrathyroidalExtensionDetails'),
+      positiveOrIndeterminate(values, 'Suspicious cervical lymph nodes', 'cervicalNodes', 'cervicalNodeDetails'),
+    ]),
+    incidentalFindings: workflowValue(values, 'incidentalFindings'),
+    recommendations: 'No TI-RADS score/category, biopsy threshold, surveillance interval, treatment, or management recommendation is calculated. Verify every nodule, comparison, cervical nodes, and any user-entered category before finalizing.',
+  };
+}

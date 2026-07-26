@@ -760,3 +760,173 @@ export const lungCancerCtWorkflowSchema: ReportingWorkflowSchema = {
     { id: 'limited-lung-staging', label: 'Limited examination', description: 'Limited primary tumor and staging assessment.', intent: 'complicated', values: { examQuality: 'limited', primaryTumor: 'indeterminate', airwayObstruction: 'indeterminate', visceralPleuralInvasion: 'not assessed', chestWallInvasion: 'not assessed', mediastinalInvasion: 'not assessed', diaphragmaticInvasion: 'not assessed', cardiacGreatVesselInvasion: 'not assessed', sameLobeNodules: 'not assessed', ipsilateralOtherLobeNodules: 'not assessed', contralateralLungNodules: 'not assessed', suspiciousNodes: 'not assessed', pleuralDisease: 'not assessed', pericardialDisease: 'not assessed', adrenalMetastases: 'not assessed', liverMetastases: 'not assessed', boneMetastases: 'not assessed', otherDistantMetastases: 'not assessed' } },
   ],
 };
+
+const thyroidSide: ReferralOption[] = [
+  { value: '', label: 'Select side…' },
+  { value: 'right', label: 'Right' },
+  { value: 'left', label: 'Left' },
+  { value: 'isthmus', label: 'Isthmus' },
+  { value: 'midline or indeterminate', label: 'Midline / indeterminate' },
+];
+const thyroidComposition: ReferralOption[] = [
+  { value: '', label: 'Select composition…' },
+  { value: 'cystic or almost completely cystic', label: 'Cystic / almost completely cystic' },
+  { value: 'spongiform', label: 'Spongiform' },
+  { value: 'mixed cystic and solid', label: 'Mixed cystic and solid' },
+  { value: 'solid or almost completely solid', label: 'Solid / almost completely solid' },
+  { value: 'indeterminate', label: 'Indeterminate' },
+  { value: 'not assessed', label: 'Not assessed' },
+];
+const thyroidEchogenicity: ReferralOption[] = [
+  { value: '', label: 'Select echogenicity…' },
+  { value: 'anechoic', label: 'Anechoic' },
+  { value: 'hyperechoic or isoechoic', label: 'Hyperechoic / isoechoic' },
+  { value: 'hypoechoic', label: 'Hypoechoic' },
+  { value: 'very hypoechoic', label: 'Very hypoechoic' },
+  { value: 'indeterminate', label: 'Indeterminate' },
+  { value: 'not assessed', label: 'Not assessed' },
+];
+const thyroidShape: ReferralOption[] = [
+  { value: '', label: 'Select shape…' },
+  { value: 'wider than tall', label: 'Wider than tall' },
+  { value: 'taller than wide', label: 'Taller than wide' },
+  { value: 'indeterminate', label: 'Indeterminate' },
+  { value: 'not assessed', label: 'Not assessed' },
+];
+const thyroidMargins: ReferralOption[] = [
+  { value: '', label: 'Select margins…' },
+  { value: 'smooth', label: 'Smooth' },
+  { value: 'ill-defined', label: 'Ill-defined' },
+  { value: 'lobulated or irregular', label: 'Lobulated / irregular' },
+  { value: 'extrathyroidal extension', label: 'Extrathyroidal extension' },
+  { value: 'indeterminate', label: 'Indeterminate' },
+  { value: 'not assessed', label: 'Not assessed' },
+];
+const thyroidFoci: ReferralOption[] = [
+  { value: '', label: 'Select echogenic foci…' },
+  { value: 'none or comet-tail artifact', label: 'None / comet-tail artifact' },
+  { value: 'macrocalcifications', label: 'Macrocalcifications' },
+  { value: 'peripheral rim calcifications', label: 'Peripheral rim calcifications' },
+  { value: 'punctate echogenic foci', label: 'Punctate echogenic foci' },
+  { value: 'multiple types', label: 'Multiple types' },
+  { value: 'indeterminate', label: 'Indeterminate' },
+  { value: 'not assessed', label: 'Not assessed' },
+];
+const intervalChange: ReferralOption[] = [
+  { value: '', label: 'Select interval change…' },
+  { value: 'new', label: 'New' },
+  { value: 'increased', label: 'Increased' },
+  { value: 'stable', label: 'Stable' },
+  { value: 'decreased', label: 'Decreased' },
+  { value: 'comparison unavailable', label: 'Comparison unavailable' },
+  { value: 'not assessed', label: 'Not assessed' },
+];
+const thyroidDefaults: WorkflowValues = {
+  clinicalIndication: '', clinicalContext: '', priorBiopsy: '', comparisonStudy: '', comparisonDate: '',
+  modalityProtocol: '', examQuality: '', technicalLimitations: '', glandBackground: '', rightLobeSize: '',
+  leftLobeSize: '', isthmusThicknessMm: '', glandVascularity: '', dominantNodule: '', noduleIdentifier: '',
+  noduleSide: '', noduleLocation: '', noduleApMm: '', noduleTrMm: '', noduleCcMm: '', composition: '',
+  echogenicity: '', shape: '', margins: '', echogenicFoci: '', noduleVascularity: '', extrathyroidalExtension: '',
+  extrathyroidalExtensionDetails: '', intervalChange: '', intervalChangeDetails: '', userAssignedTirads: '',
+  additionalNodules: '', cervicalNodes: '', cervicalNodeDetails: '', additionalFindings: '', incidentalFindings: '',
+  limitationsUncertainty: '', findingsOverride: '', impressionOverride: '',
+};
+
+export const thyroidUltrasoundWorkflowSchema: ReportingWorkflowSchema = {
+  moduleType: 'thyroidUltrasound',
+  moduleId: 'us-thyroid-tirads',
+  title: 'Thyroid Ultrasound',
+  shortTitle: 'Thyroid ultrasound',
+  modality: 'Ultrasound',
+  bodySystem: 'Thyroid',
+  clinicalQuestion: 'Evaluate thyroid gland background, characterize clinically relevant nodules, assess interval change, and document cervical lymph nodes.',
+  techniqueDefault: 'Grayscale and color Doppler ultrasound of the thyroid and adjacent cervical soft tissues was performed.',
+  badges: ['Implemented', 'Educational draft', 'Nodule descriptors'],
+  insertTargets: ['findings', 'impression', 'incidentalFindings', 'recommendations'],
+  safetyNote: 'Verify every reported nodule, measurements, sonographic descriptors, comparison, cervical nodes, and any user-entered TI-RADS category. No TI-RADS score/category, biopsy threshold, surveillance interval, treatment, or management recommendation is generated automatically.',
+  contentMetadata: {
+    sourceChapter: 'Chapter 16: Thyroid ultrasound',
+    sourceType: 'Private development reference',
+    guidelineOrClassificationName: 'ACR TI-RADS',
+    guidelineVersion: 'Current official version requires primary-source verification',
+    lastReviewedDate: '2026-07-26',
+    reviewStatus: 'needs_clinical_review',
+    clinicalValidationRequired: true,
+  },
+  defaultValues: thyroidDefaults,
+  sections: [
+    {
+      id: 'clinical-context', title: 'Clinical context', defaultOpen: true,
+      fields: [
+        area('clinicalIndication', 'Clinical indication', 'Palpable abnormality, thyroid dysfunction, known nodule, surveillance, or other question'),
+        area('clinicalContext', 'Relevant clinical context', 'Symptoms, risk factors, laboratory context, surgery, or treatment'),
+        area('priorBiopsy', 'Prior biopsy or pathology'),
+        text('comparisonStudy', 'Comparison examination'), { id: 'comparisonDate', label: 'Comparison date', type: 'date' },
+      ],
+    },
+    {
+      id: 'technical-quality', title: 'Technique and quality', defaultOpen: true,
+      fields: [
+        text('modalityProtocol', 'Ultrasound technique', 'Grayscale and color Doppler thyroid ultrasound', true),
+        select('examQuality', 'Examination quality', quality),
+        area('technicalLimitations', 'Technical limitations', 'Body habitus, deep/posterior nodule, calcific shadowing, incomplete neck survey, or other issue'),
+      ],
+    },
+    {
+      id: 'gland-background', title: 'Thyroid gland', defaultOpen: true,
+      fields: [
+        area('glandBackground', 'Gland background', 'Size, echotexture, heterogeneity, focal inflammation, or postsurgical anatomy'),
+        text('rightLobeSize', 'Right lobe dimensions', 'Three dimensions with units', true),
+        text('leftLobeSize', 'Left lobe dimensions', 'Three dimensions with units', true),
+        number('isthmusThicknessMm', 'Isthmus thickness', 'mm'),
+        area('glandVascularity', 'Gland vascularity'),
+      ],
+    },
+    {
+      id: 'dominant-nodule', title: 'Dominant or clinically relevant nodule', defaultOpen: true,
+      fields: [
+        select('dominantNodule', 'Clinically relevant thyroid nodule', assessment),
+        { ...text('noduleIdentifier', 'Nodule identifier', 'e.g. Nodule 1', true), visibleWhen: { field: 'dominantNodule', equals: ['present', 'indeterminate'] } },
+        { ...select('noduleSide', 'Side', thyroidSide), visibleWhen: { field: 'dominantNodule', equals: ['present', 'indeterminate'] } },
+        { ...text('noduleLocation', 'Location', 'Upper/mid/lower pole, anterior/posterior, and image reference if useful', true), visibleWhen: { field: 'dominantNodule', equals: ['present', 'indeterminate'] } },
+        { ...number('noduleApMm', 'AP dimension', 'mm'), visibleWhen: { field: 'dominantNodule', equals: ['present', 'indeterminate'] } },
+        { ...number('noduleTrMm', 'Transverse dimension', 'mm'), visibleWhen: { field: 'dominantNodule', equals: ['present', 'indeterminate'] } },
+        { ...number('noduleCcMm', 'Craniocaudal dimension', 'mm'), visibleWhen: { field: 'dominantNodule', equals: ['present', 'indeterminate'] } },
+        { ...select('composition', 'Composition', thyroidComposition), visibleWhen: { field: 'dominantNodule', equals: ['present', 'indeterminate'] } },
+        { ...select('echogenicity', 'Echogenicity', thyroidEchogenicity), visibleWhen: { field: 'dominantNodule', equals: ['present', 'indeterminate'] } },
+        { ...select('shape', 'Shape', thyroidShape), visibleWhen: { field: 'dominantNodule', equals: ['present', 'indeterminate'] } },
+        { ...select('margins', 'Margins', thyroidMargins), visibleWhen: { field: 'dominantNodule', equals: ['present', 'indeterminate'] } },
+        { ...select('echogenicFoci', 'Echogenic foci', thyroidFoci), visibleWhen: { field: 'dominantNodule', equals: ['present', 'indeterminate'] } },
+        { ...area('noduleVascularity', 'Nodule vascularity'), visibleWhen: { field: 'dominantNodule', equals: ['present', 'indeterminate'] } },
+        { ...select('extrathyroidalExtension', 'Extrathyroidal extension', assessment), visibleWhen: { field: 'dominantNodule', equals: ['present', 'indeterminate'] } },
+        { ...area('extrathyroidalExtensionDetails', 'Extrathyroidal extension details'), visibleWhen: { field: 'extrathyroidalExtension', equals: ['present', 'indeterminate'] } },
+        { ...select('intervalChange', 'Interval change', intervalChange), visibleWhen: { field: 'dominantNodule', equals: ['present', 'indeterminate'] } },
+        { ...area('intervalChangeDetails', 'Interval change details', 'Prior dimensions, date, and qualitative change'), visibleWhen: { field: 'intervalChange', equals: ['new', 'increased', 'stable', 'decreased'] } },
+        { ...text('userAssignedTirads', 'User-entered TI-RADS category', 'Optional; no score or category is calculated', true), visibleWhen: { field: 'dominantNodule', equals: ['present', 'indeterminate'] } },
+        area('additionalNodules', 'Additional nodules', 'For each: identifier, side/location, three dimensions, descriptors, comparison, and user-entered category if used'),
+      ],
+    },
+    {
+      id: 'cervical-nodes', title: 'Cervical lymph nodes', defaultOpen: true,
+      fields: [
+        select('cervicalNodes', 'Suspicious cervical lymph nodes', assessment),
+        { ...area('cervicalNodeDetails', 'Cervical node details', 'Side, level, dimensions, shape, hilum, echogenic foci/cystic change, and vascularity'), visibleWhen: { field: 'cervicalNodes', equals: ['present', 'indeterminate'] } },
+      ],
+    },
+    {
+      id: 'additional-overrides', title: 'Additional findings and overrides', defaultOpen: false,
+      fields: [
+        area('additionalFindings', 'Additional findings'), area('incidentalFindings', 'Incidental findings'),
+        area('limitationsUncertainty', 'Additional uncertainty'),
+        area('findingsOverride', 'Findings free-text override', 'When entered, this replaces generated findings'),
+        area('impressionOverride', 'Impression free-text override', 'When entered, this replaces generated impression'),
+      ],
+    },
+  ],
+  keyNegatives: [], incidentalOptions: [],
+  quickFills: [
+    { id: 'no-thyroid-nodule', label: 'No clinically relevant nodule', description: 'Diagnostic ultrasound with no clinically relevant nodule or suspicious cervical nodes entered.', intent: 'normal', values: { examQuality: 'diagnostic', dominantNodule: 'absent', cervicalNodes: 'absent' } },
+    { id: 'thyroid-nodule-characterization', label: 'Thyroid nodule characterization', description: 'Positive pathway for full sonographic nodule descriptors.', intent: 'positive', values: { examQuality: 'diagnostic', dominantNodule: 'present', extrathyroidalExtension: 'absent', cervicalNodes: 'absent' } },
+    { id: 'limited-thyroid-ultrasound', label: 'Limited examination', description: 'Limited nodule and cervical-node assessment.', intent: 'complicated', values: { examQuality: 'limited', dominantNodule: 'indeterminate', extrathyroidalExtension: 'not assessed', intervalChange: 'not assessed', cervicalNodes: 'not assessed' } },
+  ],
+};
