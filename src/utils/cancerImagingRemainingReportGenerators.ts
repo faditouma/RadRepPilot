@@ -310,3 +310,71 @@ export function generateCervicalCancerMriReport(schema: ReportingWorkflowSchema,
     recommendations: 'No FIGO/TNM stage, treatment, or management recommendation is calculated. Verify tumor extent, urinary obstruction, nodes, metastases, and any user-assigned stage before finalizing.',
   };
 }
+
+export function generateLungCancerCtReport(schema: ReportingWorkflowSchema, values: WorkflowValues): ReportSections {
+  const status = workflowValue(values, 'primaryTumor');
+  const quality = workflowValue(values, 'examQuality');
+  const limitation = [workflowValue(values, 'technicalLimitations'), workflowValue(values, 'limitationsUncertainty')].filter(Boolean).join('; ');
+  const size = dimensions(values, ['tumorApMm', 'tumorTrMm', 'tumorCcMm']);
+  const primary =
+    status === 'absent' ? 'No primary lung tumor is entered.' :
+    status === 'present' ? `${workflowValue(values, 'primaryLobe') || 'Lung'} primary tumor${workflowValue(values, 'primaryLocation') ? ` at ${workflowValue(values, 'primaryLocation')}` : ''}${size ? ` measuring ${size}` : ''}.` :
+    status === 'indeterminate' ? `Indeterminate pulmonary primary${workflowValue(values, 'primaryLobe') ? ` in the ${workflowValue(values, 'primaryLobe')}` : ''}${size ? ` measuring ${size}` : ''}.` : undefined;
+  const localExtent = [
+    positiveOrIndeterminate(values, 'Airway obstruction or postobstructive change', 'airwayObstruction', 'airwayObstructionDetails'),
+    positiveOrIndeterminate(values, 'Visceral pleural invasion', 'visceralPleuralInvasion', 'visceralPleuralDetails'),
+    positiveOrIndeterminate(values, 'Chest wall invasion', 'chestWallInvasion', 'chestWallDetails'),
+    positiveOrIndeterminate(values, 'Mediastinal invasion', 'mediastinalInvasion', 'mediastinalDetails'),
+    positiveOrIndeterminate(values, 'Diaphragmatic invasion', 'diaphragmaticInvasion', 'diaphragmaticDetails'),
+    positiveOrIndeterminate(values, 'Cardiac or great-vessel invasion', 'cardiacGreatVesselInvasion', 'cardiacGreatVesselDetails'),
+  ];
+  const thoracicSpread = [
+    positiveOrIndeterminate(values, 'Separate same-lobe pulmonary nodules', 'sameLobeNodules', 'sameLobeNoduleDetails'),
+    positiveOrIndeterminate(values, 'Separate nodules in another ipsilateral lobe', 'ipsilateralOtherLobeNodules', 'ipsilateralOtherLobeDetails'),
+    positiveOrIndeterminate(values, 'Contralateral pulmonary nodules', 'contralateralLungNodules', 'contralateralNoduleDetails'),
+    positiveOrIndeterminate(values, 'Suspicious thoracic nodal disease', 'suspiciousNodes', 'suspiciousNodeDetails'),
+    positiveOrIndeterminate(values, 'Pleural disease', 'pleuralDisease', 'pleuralDiseaseDetails'),
+    positiveOrIndeterminate(values, 'Pericardial disease', 'pericardialDisease', 'pericardialDiseaseDetails'),
+  ];
+  const distant = [
+    positiveOrIndeterminate(values, 'Adrenal metastatic disease', 'adrenalMetastases', 'adrenalMetastasisDetails'),
+    positiveOrIndeterminate(values, 'Hepatic metastatic disease', 'liverMetastases', 'liverMetastasisDetails'),
+    positiveOrIndeterminate(values, 'Osseous metastatic disease', 'boneMetastases', 'boneMetastasisDetails'),
+    positiveOrIndeterminate(values, 'Other distant metastatic disease', 'otherDistantMetastases', 'otherDistantMetastasisDetails'),
+  ];
+  const thoracicNegative = ['sameLobeNodules', 'ipsilateralOtherLobeNodules', 'contralateralLungNodules', 'suspiciousNodes', 'pleuralDisease', 'pericardialDisease'].every((key) => workflowValue(values, key) === 'absent');
+  const distantNegative = ['adrenalMetastases', 'liverMetastases', 'boneMetastases', 'otherDistantMetastases'].every((key) => workflowValue(values, key) === 'absent');
+  const generatedFindings = cleanLines([
+    primary,
+    workflowValue(values, 'tumorMorphology') ? `Primary tumor morphology: ${workflowValue(values, 'tumorMorphology')}.` : undefined,
+    ...localExtent,
+    ...thoracicSpread,
+    thoracicNegative ? 'No separate pulmonary nodules, suspicious thoracic nodes, pleural disease, or pericardial disease are entered.' : undefined,
+    ...distant,
+    distantNegative ? 'No adrenal, hepatic, osseous, or other distant metastases are entered.' : undefined,
+    workflowValue(values, 'userAssignedTnm') ? `User-entered TNM: ${workflowValue(values, 'userAssignedTnm')}.` : undefined,
+    workflowValue(values, 'userAssignedStage') ? `User-entered stage group: ${workflowValue(values, 'userAssignedStage')}.` : undefined,
+    workflowValue(values, 'additionalFindings') ? `Additional findings: ${workflowValue(values, 'additionalFindings')}.` : undefined,
+    limitation ? `Limitations: ${limitation}.` : undefined,
+  ]);
+  const limitationSummary =
+    quality === 'nondiagnostic' ? `Nondiagnostic lung cancer staging CT${limitation ? `: ${limitation}` : '.'}` :
+    quality === 'limited' ? `Limited lung cancer staging CT${limitation ? `: ${limitation}` : '.'}` : undefined;
+  return {
+    indication: cleanLines([
+      workflowValue(values, 'clinicalIndication') || schema.clinicalQuestion,
+      workflowValue(values, 'pathology') ? `Pathology: ${workflowValue(values, 'pathology')}.` : undefined,
+      workflowValue(values, 'clinicalContext') ? `Relevant clinical context: ${workflowValue(values, 'clinicalContext')}.` : undefined,
+      workflowValue(values, 'treatmentHistory') ? `Treatment history: ${workflowValue(values, 'treatmentHistory')}.` : undefined,
+    ]),
+    technique: cleanLines([
+      workflowValue(values, 'modalityProtocol') || schema.techniqueDefault,
+      quality ? `Examination quality: ${quality}.` : undefined,
+      workflowValue(values, 'technicalLimitations') ? `Technical limitations: ${workflowValue(values, 'technicalLimitations')}.` : undefined,
+    ]),
+    findings: workflowValue(values, 'findingsOverride') || generatedFindings,
+    impression: workflowValue(values, 'impressionOverride') || cleanLines([limitationSummary, primary, ...localExtent, ...thoracicSpread, ...distant]),
+    incidentalFindings: workflowValue(values, 'incidentalFindings'),
+    recommendations: 'No TNM category, stage group, treatment, or management recommendation is calculated. Verify local invasion, nodal stations, metastatic disease, and all user-entered staging before finalizing.',
+  };
+}

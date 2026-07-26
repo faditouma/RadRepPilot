@@ -23,6 +23,7 @@ export type ModuleType =
   | 'ovarianCancer'
   | 'endometrialCancerMri'
   | 'cervicalCancerMri'
+  | 'lungCancerCt'
   | 'nodule'
   | 'stroke'
   | 'chestXray'

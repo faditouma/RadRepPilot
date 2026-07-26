@@ -19,6 +19,7 @@ import {
   generateHilarCholangiocarcinomaReport,
   generateEndometrialCancerMriReport,
   generateCervicalCancerMriReport,
+  generateLungCancerCtReport,
   generateOvarianCancerReport,
 } from './cancerImagingRemainingReportGenerators';
 import { cleanLines, formatMeasurement, numberOrNull, sentenceList, workflowList, workflowValue, yes } from './impressionGenerators';
@@ -845,6 +846,8 @@ export function generateReportingWorkflowReport(moduleType: ModuleType, values: 
       return generateEndometrialCancerMriReport(schema, values);
     case 'cervicalCancerMri':
       return generateCervicalCancerMriReport(schema, values);
+    case 'lungCancerCt':
+      return generateLungCancerCtReport(schema, values);
     case 'ctpa':
       return generateCtpaWorkflowReport(schema, values);
     case 'nodule':

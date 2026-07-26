@@ -28,6 +28,7 @@ const moduleLabels: Record<DraftType, string> = {
   ovarianCancer: 'Ovarian Cancer Staging',
   endometrialCancerMri: 'Endometrial Cancer MRI',
   cervicalCancerMri: 'Cervical Cancer MRI',
+  lungCancerCt: 'Lung Cancer CT Staging',
   nodule: 'Pulmonary Nodule / Fleischner',
   stroke: 'CT Head Stroke / ASPECTS',
   chestXray: 'Chest X-ray: Infection / Dyspnea',

@@ -625,6 +625,28 @@ export function scoreReportCompleteness(moduleType: ModuleType, values: Record<s
     ]);
   }
 
+  if (moduleType === 'lungCancerCt') {
+    const tumorStatus = textValue(values.primaryTumor);
+    const tumorComplete = !['present', 'indeterminate'].includes(tumorStatus) ||
+      (hasMeaningfulText(values.primaryLobe) && hasMeaningfulText(values.primaryLocation) &&
+        hasAny(values, ['tumorApMm', 'tumorTrMm', 'tumorCcMm']) && hasMeaningfulText(values.tumorMorphology));
+    const detail = (statusKey: string, detailsKey?: string) => {
+      const status = textValue(values[statusKey]);
+      return addressed(values[statusKey]) &&
+        (!detailsKey || !['present', 'indeterminate'].includes(status) || hasMeaningfulText(values[detailsKey]));
+    };
+    return score('Report completeness', [
+      { label: 'Clinical indication addressed', complete: hasMeaningfulText(values.clinicalIndication), missingLabel: 'Clinical indication missing' },
+      { label: 'Protocol and technical quality addressed', complete: hasMeaningfulText(values.modalityProtocol) && addressed(values.examQuality), missingLabel: 'Protocol or examination quality missing' },
+      { label: 'Primary lung tumor characterized', complete: addressed(values.primaryTumor) && tumorComplete, missingLabel: tumorStatus === 'present' || tumorStatus === 'indeterminate' ? 'Primary lobe, location, size, or morphology missing' : 'Primary tumor assessment missing' },
+      { label: 'Airway and local invasion addressed', complete: detail('airwayObstruction', 'airwayObstructionDetails') && detail('visceralPleuralInvasion', 'visceralPleuralDetails') && detail('chestWallInvasion', 'chestWallDetails') && detail('mediastinalInvasion', 'mediastinalDetails') && detail('diaphragmaticInvasion', 'diaphragmaticDetails') && detail('cardiacGreatVesselInvasion', 'cardiacGreatVesselDetails'), missingLabel: 'Airway or local invasion assessment/details incomplete' },
+      { label: 'Separate pulmonary nodules addressed', complete: detail('sameLobeNodules', 'sameLobeNoduleDetails') && detail('ipsilateralOtherLobeNodules', 'ipsilateralOtherLobeDetails') && detail('contralateralLungNodules', 'contralateralNoduleDetails'), missingLabel: 'Separate pulmonary nodule assessment/details incomplete' },
+      { label: 'Nodes, pleura, and pericardium addressed', complete: detail('suspiciousNodes', 'suspiciousNodeDetails') && detail('pleuralDisease', 'pleuralDiseaseDetails') && detail('pericardialDisease', 'pericardialDiseaseDetails'), missingLabel: 'Nodal, pleural, or pericardial assessment/details incomplete' },
+      { label: 'Distant metastatic sites addressed', complete: detail('adrenalMetastases', 'adrenalMetastasisDetails') && detail('liverMetastases', 'liverMetastasisDetails') && detail('boneMetastases', 'boneMetastasisDetails') && detail('otherDistantMetastases', 'otherDistantMetastasisDetails'), missingLabel: 'Distant metastatic site assessment/details incomplete' },
+      { label: 'Impression generated', complete: hasMeaningfulText(report.impression), missingLabel: 'Impression incomplete' },
+    ]);
+  }
+
   if (moduleType === 'chestXray') {
     const airspaceAddressed = addressedAny(values, ['consolidation', 'atelectaticChange', 'interstitialEdema']) || hasFreeTextCoverage(values);
     const pleuraAddressed = addressedAny(values, ['pleuralEffusion', 'pneumothorax']) || hasFreeTextCoverage(values);
