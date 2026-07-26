@@ -583,6 +583,27 @@ export function scoreReportCompleteness(moduleType: ModuleType, values: Record<s
     ]);
   }
 
+  if (moduleType === 'endometrialCancerMri') {
+    const tumorStatus = textValue(values.uterineTumor);
+    const tumorComplete = !['present', 'indeterminate'].includes(tumorStatus) ||
+      (hasMeaningfulText(values.tumorLocation) && hasAny(values, ['tumorApMm', 'tumorTrMm', 'tumorCcMm']) &&
+        hasMeaningfulText(values.tumorMorphology));
+    const detail = (statusKey: string, detailsKey?: string) => {
+      const status = textValue(values[statusKey]);
+      return addressed(values[statusKey]) &&
+        (!detailsKey || !['present', 'indeterminate'].includes(status) || hasMeaningfulText(values[detailsKey]));
+    };
+    return score('Report completeness', [
+      { label: 'Clinical indication addressed', complete: hasMeaningfulText(values.clinicalIndication), missingLabel: 'Clinical indication missing' },
+      { label: 'Protocol and technical quality addressed', complete: hasMeaningfulText(values.modalityProtocol) && addressed(values.examQuality), missingLabel: 'Protocol or examination quality missing' },
+      { label: 'Primary uterine tumor characterized', complete: addressed(values.uterineTumor) && tumorComplete, missingLabel: tumorStatus === 'present' || tumorStatus === 'indeterminate' ? 'Tumor location, size, or morphology missing' : 'Primary tumor assessment missing' },
+      { label: 'Myometrial and cervical stromal invasion addressed', complete: detail('myometrialInvasion', 'myometrialInvasionDetails') && detail('cervicalStromalInvasion', 'cervicalStromalDetails'), missingLabel: 'Myometrial or cervical stromal invasion assessment/details incomplete' },
+      { label: 'Extrauterine pelvic extension addressed', complete: detail('serosalExtension', 'serosalExtensionDetails') && detail('adnexalExtension', 'adnexalExtensionDetails') && detail('vaginalExtension', 'vaginalExtensionDetails') && detail('parametrialExtension', 'parametrialExtensionDetails') && detail('bladderRectalInvasion', 'bladderRectalDetails'), missingLabel: 'Extrauterine pelvic extension assessment/details incomplete' },
+      { label: 'Nodes and distant disease addressed', complete: detail('pelvicNodes', 'pelvicNodeDetails') && detail('paraAorticNodes', 'paraAorticNodeDetails') && detail('distantMetastases', 'distantMetastasisDetails'), missingLabel: 'Nodal or distant metastatic assessment/details incomplete' },
+      { label: 'Impression generated', complete: hasMeaningfulText(report.impression), missingLabel: 'Impression incomplete' },
+    ]);
+  }
+
   if (moduleType === 'chestXray') {
     const airspaceAddressed = addressedAny(values, ['consolidation', 'atelectaticChange', 'interstitialEdema']) || hasFreeTextCoverage(values);
     const pleuraAddressed = addressedAny(values, ['pleuralEffusion', 'pneumothorax']) || hasFreeTextCoverage(values);

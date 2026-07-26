@@ -26,6 +26,7 @@ const moduleLabels: Record<DraftType, string> = {
   hccLiver: 'Hepatocellular Carcinoma CT/MRI',
   hilarCholangiocarcinoma: 'Hilar Cholangiocarcinoma CT/MRI',
   ovarianCancer: 'Ovarian Cancer Staging',
+  endometrialCancerMri: 'Endometrial Cancer MRI',
   nodule: 'Pulmonary Nodule / Fleischner',
   stroke: 'CT Head Stroke / ASPECTS',
   chestXray: 'Chest X-ray: Infection / Dyspnea',

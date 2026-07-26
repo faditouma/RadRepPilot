@@ -393,3 +393,117 @@ export const ovarianCancerWorkflowSchema: ReportingWorkflowSchema = {
     { id: 'limited-ovarian-staging', label: 'Limited examination', description: 'Limited primary and metastatic assessment.', intent: 'complicated', values: { examQuality: 'limited', adnexalPrimary: 'indeterminate', ascites: 'not assessed', pelvicPeritoneum: 'not assessed', omentum: 'not assessed', upperAbdominalPeritoneum: 'not assessed', bowelMesentery: 'not assessed', abdominalWallDiaphragm: 'not assessed', suspiciousNodes: 'not assessed', pleuralDisease: 'not assessed', distantMetastases: 'not assessed' } },
   ],
 };
+
+const endometrialDefaults: WorkflowValues = {
+  clinicalIndication: '', clinicalContext: '', pathology: '', treatmentHistory: '', comparisonStudy: '', comparisonDate: '',
+  modalityProtocol: '', examQuality: '', technicalLimitations: '', uterineTumor: '', tumorLocation: '',
+  tumorApMm: '', tumorTrMm: '', tumorCcMm: '', tumorMorphology: '', myometrialInvasion: '',
+  myometrialInvasionDetails: '', cervicalStromalInvasion: '', cervicalStromalDetails: '',
+  serosalExtension: '', serosalExtensionDetails: '', adnexalExtension: '', adnexalExtensionDetails: '',
+  vaginalExtension: '', vaginalExtensionDetails: '', parametrialExtension: '', parametrialExtensionDetails: '',
+  bladderRectalInvasion: '', bladderRectalDetails: '', pelvicNodes: '', pelvicNodeDetails: '',
+  paraAorticNodes: '', paraAorticNodeDetails: '', distantMetastases: '', distantMetastasisDetails: '',
+  userAssignedFigo: '', additionalFindings: '', incidentalFindings: '', limitationsUncertainty: '',
+  findingsOverride: '', impressionOverride: '',
+};
+
+export const endometrialCancerMriWorkflowSchema: ReportingWorkflowSchema = {
+  moduleType: 'endometrialCancerMri',
+  moduleId: 'mri-endometrial-cancer',
+  title: 'Endometrial Cancer MRI',
+  shortTitle: 'Endometrial cancer MRI',
+  modality: 'MRI',
+  bodySystem: 'Oncology',
+  clinicalQuestion: 'Define endometrial tumor extent, depth of myometrial invasion, cervical stromal involvement, extrauterine extension, nodal disease, and distant metastases.',
+  techniqueDefault: 'Pelvic MRI was performed with multiplanar T2-weighted, diffusion-weighted, and postcontrast imaging as available.',
+  badges: ['Implemented', 'Educational draft', 'Pelvic staging'],
+  insertTargets: ['findings', 'impression', 'incidentalFindings', 'recommendations'],
+  safetyNote: 'Verify tumor measurements, myometrial and cervical stromal invasion, extrauterine extension, nodes, metastases, and any user-assigned stage. No FIGO/TNM stage, treatment, or management recommendation is generated automatically.',
+  contentMetadata: {
+    sourceChapter: 'Chapter 13: Endometrial cancer MRI staging',
+    sourceType: 'Private development reference',
+    guidelineOrClassificationName: 'FIGO and TNM endometrial cancer staging',
+    guidelineVersion: 'Current versions require primary-source verification',
+    lastReviewedDate: '2026-07-26',
+    reviewStatus: 'needs_clinical_review',
+    clinicalValidationRequired: true,
+  },
+  defaultValues: endometrialDefaults,
+  sections: [
+    {
+      id: 'clinical-context', title: 'Clinical context', defaultOpen: true,
+      fields: [
+        area('clinicalIndication', 'Clinical indication', 'Known or suspected endometrial malignancy and staging question'),
+        area('clinicalContext', 'Relevant clinical context', 'Symptoms, biopsy, prior surgery, or other relevant history'),
+        text('pathology', 'Pathology', 'If known', true),
+        area('treatmentHistory', 'Treatment history'),
+        text('comparisonStudy', 'Comparison examination'), { id: 'comparisonDate', label: 'Comparison date', type: 'date' },
+      ],
+    },
+    {
+      id: 'technical-quality', title: 'Protocol and technical quality', defaultOpen: true,
+      fields: [
+        text('modalityProtocol', 'MRI protocol', 'e.g. pelvic MRI with diffusion and dynamic postcontrast imaging', true),
+        select('examQuality', 'Examination quality', quality),
+        area('technicalLimitations', 'Technical limitations', 'Motion, incomplete sequences, suboptimal uterine orientation, or other issue'),
+      ],
+    },
+    {
+      id: 'primary-tumor', title: 'Primary uterine tumor', defaultOpen: true,
+      fields: [
+        select('uterineTumor', 'Endometrial tumor', assessment),
+        { ...text('tumorLocation', 'Tumor location', 'Fundus, corpus, lower uterine segment, or multifocal', true), visibleWhen: { field: 'uterineTumor', equals: ['present', 'indeterminate'] } },
+        { ...number('tumorApMm', 'AP dimension', 'mm'), visibleWhen: { field: 'uterineTumor', equals: ['present', 'indeterminate'] } },
+        { ...number('tumorTrMm', 'Transverse dimension', 'mm'), visibleWhen: { field: 'uterineTumor', equals: ['present', 'indeterminate'] } },
+        { ...number('tumorCcMm', 'Craniocaudal dimension', 'mm'), visibleWhen: { field: 'uterineTumor', equals: ['present', 'indeterminate'] } },
+        { ...area('tumorMorphology', 'Tumor morphology', 'Signal, enhancement, diffusion, polypoid/infiltrative appearance, and confidence'), visibleWhen: { field: 'uterineTumor', equals: ['present', 'indeterminate'] } },
+        select('myometrialInvasion', 'Myometrial invasion', assessment),
+        { ...area('myometrialInvasionDetails', 'Myometrial invasion details', 'Estimated depth or proportion, location, and confidence; describe rather than auto-stage'), visibleWhen: { field: 'myometrialInvasion', equals: ['present', 'indeterminate'] } },
+        select('cervicalStromalInvasion', 'Cervical stromal invasion', assessment),
+        { ...area('cervicalStromalDetails', 'Cervical stromal details'), visibleWhen: { field: 'cervicalStromalInvasion', equals: ['present', 'indeterminate'] } },
+      ],
+    },
+    {
+      id: 'extrauterine-extension', title: 'Extrauterine extension', defaultOpen: true,
+      fields: [
+        select('serosalExtension', 'Uterine serosal extension', assessment),
+        { ...area('serosalExtensionDetails', 'Serosal extension details'), visibleWhen: { field: 'serosalExtension', equals: ['present', 'indeterminate'] } },
+        select('adnexalExtension', 'Adnexal extension', assessment),
+        { ...area('adnexalExtensionDetails', 'Adnexal extension details'), visibleWhen: { field: 'adnexalExtension', equals: ['present', 'indeterminate'] } },
+        select('vaginalExtension', 'Vaginal extension', assessment),
+        { ...area('vaginalExtensionDetails', 'Vaginal extension details'), visibleWhen: { field: 'vaginalExtension', equals: ['present', 'indeterminate'] } },
+        select('parametrialExtension', 'Parametrial extension', assessment),
+        { ...area('parametrialExtensionDetails', 'Parametrial extension details'), visibleWhen: { field: 'parametrialExtension', equals: ['present', 'indeterminate'] } },
+        select('bladderRectalInvasion', 'Bladder or rectal invasion', assessment),
+        { ...area('bladderRectalDetails', 'Bladder/rectal invasion details', 'Organ, layer involved, and confidence'), visibleWhen: { field: 'bladderRectalInvasion', equals: ['present', 'indeterminate'] } },
+      ],
+    },
+    {
+      id: 'nodes-distant', title: 'Nodes and distant disease', defaultOpen: true,
+      fields: [
+        select('pelvicNodes', 'Suspicious pelvic nodes', assessment),
+        { ...area('pelvicNodeDetails', 'Pelvic node details', 'Stations, size, morphology, and confidence'), visibleWhen: { field: 'pelvicNodes', equals: ['present', 'indeterminate'] } },
+        select('paraAorticNodes', 'Suspicious para-aortic nodes', assessment),
+        { ...area('paraAorticNodeDetails', 'Para-aortic node details'), visibleWhen: { field: 'paraAorticNodes', equals: ['present', 'indeterminate'] } },
+        select('distantMetastases', 'Distant metastases', assessment),
+        { ...area('distantMetastasisDetails', 'Distant metastatic disease details'), visibleWhen: { field: 'distantMetastases', equals: ['present', 'indeterminate'] } },
+        text('userAssignedFigo', 'User-assigned FIGO stage', 'Optional; no stage is calculated', true),
+      ],
+    },
+    {
+      id: 'additional-overrides', title: 'Additional findings and overrides', defaultOpen: false,
+      fields: [
+        area('additionalFindings', 'Additional findings'), area('incidentalFindings', 'Incidental findings'),
+        area('limitationsUncertainty', 'Additional uncertainty'),
+        area('findingsOverride', 'Findings free-text override', 'When entered, this replaces generated findings'),
+        area('impressionOverride', 'Impression free-text override', 'When entered, this replaces generated impression'),
+      ],
+    },
+  ],
+  keyNegatives: [], incidentalOptions: [],
+  quickFills: [
+    { id: 'no-visible-tumor', label: 'No visible tumor', description: 'Diagnostic MRI with no visible uterine tumor or metastatic disease entered.', intent: 'normal', values: { examQuality: 'diagnostic', uterineTumor: 'absent', myometrialInvasion: 'absent', cervicalStromalInvasion: 'absent', serosalExtension: 'absent', adnexalExtension: 'absent', vaginalExtension: 'absent', parametrialExtension: 'absent', bladderRectalInvasion: 'absent', pelvicNodes: 'absent', paraAorticNodes: 'absent', distantMetastases: 'absent' } },
+    { id: 'endometrial-tumor-staging', label: 'Endometrial tumor staging', description: 'Positive pathway for primary tumor and extension mapping.', intent: 'positive', values: { examQuality: 'diagnostic', uterineTumor: 'present' } },
+    { id: 'limited-endometrial-mri', label: 'Limited examination', description: 'Limited assessment of the primary tumor and extrauterine disease.', intent: 'complicated', values: { examQuality: 'limited', uterineTumor: 'indeterminate', myometrialInvasion: 'indeterminate', cervicalStromalInvasion: 'not assessed', serosalExtension: 'not assessed', adnexalExtension: 'not assessed', vaginalExtension: 'not assessed', parametrialExtension: 'not assessed', bladderRectalInvasion: 'not assessed', pelvicNodes: 'not assessed', paraAorticNodes: 'not assessed', distantMetastases: 'not assessed' } },
+  ],
+};
