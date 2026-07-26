@@ -246,6 +246,13 @@ export const moduleNavigationTree: NavigationModality[] = [
             'implemented',
             'pancreaticCancer',
           ),
+          workflow(
+            'ct-mri-ovarian-cancer',
+            'Ovarian Cancer Staging',
+            'Adnexal primary, peritoneal disease by compartment, nodes, bowel/mesentery, pleural and distant disease, and surgical limiting sites.',
+            'implemented',
+            'ovarianCancer',
+          ),
           workflow('oncology-recist', 'RECIST 1.1 Measurement Tracker', 'Target lesion sums, percent change, and simplified category.', 'partial', undefined, ['RECIST']),
           workflow('oncology-response', 'Treatment Response Comparison', 'Tumor burden, new lesions, non-target disease, and overall impression.'),
         ],

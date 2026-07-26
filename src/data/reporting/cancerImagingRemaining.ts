@@ -276,3 +276,120 @@ export const hilarCholangiocarcinomaWorkflowSchema: ReportingWorkflowSchema = {
     { id: 'limited-hilar-study', label: 'Limited examination', description: 'Limited ductal and vascular assessment.', intent: 'complicated', values: { examQuality: 'limited', hilarLesion: 'indeterminate', intrahepaticDuctDilation: 'not assessed', lobarAtrophy: 'not assessed', portalVeinRelationship: 'not assessed', hepaticArteryRelationship: 'not assessed', liverInvasion: 'not assessed', adjacentOrganInvasion: 'not assessed', suspiciousNodes: 'not assessed', peritonealMetastases: 'not assessed', distantMetastases: 'not assessed' } },
   ],
 };
+
+const laterality: ReferralOption[] = [
+  { value: '', label: 'Select laterality…' },
+  { value: 'right', label: 'Right' },
+  { value: 'left', label: 'Left' },
+  { value: 'bilateral', label: 'Bilateral' },
+  { value: 'midline or indeterminate origin', label: 'Midline / indeterminate origin' },
+];
+const ovarianDefaults: WorkflowValues = {
+  clinicalIndication: '', clinicalContext: '', pathology: '', comparisonStudy: '', comparisonDate: '',
+  modalityProtocol: '', examQuality: '', technicalLimitations: '', adnexalPrimary: '', laterality: '',
+  primarySite: '', sizeApMm: '', sizeTrMm: '', sizeCcMm: '', morphology: '', solidComponents: '',
+  contralateralAdnexa: '', ascites: '', pelvicPeritoneum: '', pelvicPeritoneumDetails: '',
+  omentum: '', omentumDetails: '', upperAbdominalPeritoneum: '', upperAbdominalDetails: '',
+  bowelMesentery: '', bowelMesenteryDetails: '', abdominalWallDiaphragm: '', abdominalWallDiaphragmDetails: '',
+  suspiciousNodes: '', suspiciousNodeDetails: '', pleuralDisease: '', pleuralDiseaseDetails: '',
+  distantMetastases: '', distantMetastasisDetails: '', cytoreductionLimitingSites: '',
+  userAssignedFigo: '', additionalFindings: '', incidentalFindings: '', limitationsUncertainty: '',
+  findingsOverride: '', impressionOverride: '',
+};
+export const ovarianCancerWorkflowSchema: ReportingWorkflowSchema = {
+  moduleType: 'ovarianCancer',
+  moduleId: 'ct-mri-ovarian-cancer',
+  title: 'Ovarian Cancer Staging',
+  shortTitle: 'Ovarian cancer staging',
+  modality: 'CT/MRI',
+  bodySystem: 'Oncology',
+  clinicalQuestion: 'Characterize the adnexal primary and map peritoneal, nodal, pleural, and distant disease relevant to staging and surgical planning.',
+  techniqueDefault: 'Cross-sectional abdomen and pelvis imaging was performed with multiplanar review.',
+  badges: ['Implemented', 'Educational draft', 'Peritoneal mapping'],
+  insertTargets: ['findings', 'impression', 'incidentalFindings', 'recommendations'],
+  safetyNote: 'Verify the primary site, disease distribution by surgical compartment, bowel and mesenteric involvement, nodes, pleural/distant disease, and any user-assigned staging. No stage, cytoreduction assessment, treatment, or management advice is generated automatically.',
+  contentMetadata: {
+    sourceChapter: 'Chapter 12: Ovarian cancer staging', sourceType: 'Private development reference',
+    guidelineOrClassificationName: 'FIGO and TNM ovarian cancer staging',
+    guidelineVersion: 'Current versions require primary-source verification', lastReviewedDate: '2026-07-26',
+    reviewStatus: 'needs_clinical_review', clinicalValidationRequired: true,
+  },
+  defaultValues: ovarianDefaults,
+  sections: [
+    {
+      id: 'clinical-context', title: 'Clinical context', defaultOpen: true,
+      fields: [
+        area('clinicalIndication', 'Clinical indication', 'Suspected or confirmed ovarian malignancy and staging question'),
+        area('clinicalContext', 'Relevant clinical context', 'Symptoms, tumor markers, surgery, treatment, or hereditary risk'),
+        text('pathology', 'Pathology', 'If known', true), text('comparisonStudy', 'Comparison examination'),
+        { id: 'comparisonDate', label: 'Comparison date', type: 'date' },
+      ],
+    },
+    {
+      id: 'technical-quality', title: 'Protocol and technical quality', defaultOpen: true,
+      fields: [
+        text('modalityProtocol', 'Modality and protocol', 'e.g. contrast-enhanced CT chest/abdomen/pelvis', true),
+        select('examQuality', 'Examination quality', quality),
+        area('technicalLimitations', 'Technical limitations', 'Motion, incomplete coverage, absent contrast, or other issue'),
+      ],
+    },
+    {
+      id: 'primary-tumor', title: 'Primary adnexal tumor', defaultOpen: true,
+      fields: [
+        select('adnexalPrimary', 'Adnexal primary tumor', assessment),
+        { ...select('laterality', 'Laterality', laterality), visibleWhen: { field: 'adnexalPrimary', equals: ['present', 'indeterminate'] } },
+        { ...text('primarySite', 'Primary site/origin', 'Ovary, fallopian tube, peritoneal, or indeterminate', true), visibleWhen: { field: 'adnexalPrimary', equals: ['present', 'indeterminate'] } },
+        { ...number('sizeApMm', 'AP dimension', 'mm'), visibleWhen: { field: 'adnexalPrimary', equals: ['present', 'indeterminate'] } },
+        { ...number('sizeTrMm', 'Transverse dimension', 'mm'), visibleWhen: { field: 'adnexalPrimary', equals: ['present', 'indeterminate'] } },
+        { ...number('sizeCcMm', 'Craniocaudal dimension', 'mm'), visibleWhen: { field: 'adnexalPrimary', equals: ['present', 'indeterminate'] } },
+        { ...area('morphology', 'Primary tumor morphology', 'Solid/cystic components, septa, papillary projections, necrosis, enhancement, and invasion'), visibleWhen: { field: 'adnexalPrimary', equals: ['present', 'indeterminate'] } },
+        { ...area('solidComponents', 'Solid component details', 'Size, enhancement, and diffusion if applicable'), visibleWhen: { field: 'adnexalPrimary', equals: ['present', 'indeterminate'] } },
+        area('contralateralAdnexa', 'Contralateral adnexa'),
+        select('ascites', 'Ascites', assessment),
+      ],
+    },
+    {
+      id: 'peritoneal-map', title: 'Peritoneal disease by compartment', defaultOpen: true,
+      fields: [
+        select('pelvicPeritoneum', 'Pelvic peritoneal disease', assessment),
+        { ...area('pelvicPeritoneumDetails', 'Pelvic peritoneal details'), visibleWhen: { field: 'pelvicPeritoneum', equals: ['present', 'indeterminate'] } },
+        select('omentum', 'Omental disease', assessment),
+        { ...area('omentumDetails', 'Omental disease details'), visibleWhen: { field: 'omentum', equals: ['present', 'indeterminate'] } },
+        select('upperAbdominalPeritoneum', 'Upper abdominal peritoneal disease', assessment),
+        { ...area('upperAbdominalDetails', 'Upper abdominal disease details', 'Diaphragmatic, hepatic/splenic surface, lesser sac, porta hepatis, or other sites'), visibleWhen: { field: 'upperAbdominalPeritoneum', equals: ['present', 'indeterminate'] } },
+        select('bowelMesentery', 'Bowel or mesenteric involvement', assessment),
+        { ...area('bowelMesenteryDetails', 'Bowel/mesenteric details', 'Segments, serosal versus transmural disease, obstruction, mesenteric root, or multifocal involvement'), visibleWhen: { field: 'bowelMesentery', equals: ['present', 'indeterminate'] } },
+        select('abdominalWallDiaphragm', 'Abdominal wall or diaphragmatic invasion', assessment),
+        { ...area('abdominalWallDiaphragmDetails', 'Wall/diaphragm details'), visibleWhen: { field: 'abdominalWallDiaphragm', equals: ['present', 'indeterminate'] } },
+      ],
+    },
+    {
+      id: 'nodes-distant', title: 'Nodes, pleura, and distant disease', defaultOpen: true,
+      fields: [
+        select('suspiciousNodes', 'Suspicious nodes', assessment),
+        { ...area('suspiciousNodeDetails', 'Suspicious node details', 'Stations, size, morphology, and confidence'), visibleWhen: { field: 'suspiciousNodes', equals: ['present', 'indeterminate'] } },
+        select('pleuralDisease', 'Pleural disease or effusion suspicious for involvement', assessment),
+        { ...area('pleuralDiseaseDetails', 'Pleural disease details'), visibleWhen: { field: 'pleuralDisease', equals: ['present', 'indeterminate'] } },
+        select('distantMetastases', 'Other distant metastases', assessment),
+        { ...area('distantMetastasisDetails', 'Distant metastatic disease details'), visibleWhen: { field: 'distantMetastases', equals: ['present', 'indeterminate'] } },
+        area('cytoreductionLimitingSites', 'Potentially surgery-limiting sites', 'Describe observed anatomy only; no operability conclusion is generated'),
+        text('userAssignedFigo', 'User-assigned FIGO stage', 'Optional; no stage is calculated', true),
+      ],
+    },
+    {
+      id: 'additional-overrides', title: 'Additional findings and overrides', defaultOpen: false,
+      fields: [
+        area('additionalFindings', 'Additional findings'), area('incidentalFindings', 'Incidental findings'),
+        area('limitationsUncertainty', 'Additional uncertainty'),
+        area('findingsOverride', 'Findings free-text override', 'When entered, this replaces generated findings'),
+        area('impressionOverride', 'Impression free-text override', 'When entered, this replaces generated impression'),
+      ],
+    },
+  ],
+  keyNegatives: [], incidentalOptions: [],
+  quickFills: [
+    { id: 'no-staging-disease', label: 'No staging disease', description: 'Diagnostic exam with no adnexal primary or metastatic disease entered.', intent: 'normal', values: { examQuality: 'diagnostic', adnexalPrimary: 'absent', ascites: 'absent', pelvicPeritoneum: 'absent', omentum: 'absent', upperAbdominalPeritoneum: 'absent', bowelMesentery: 'absent', abdominalWallDiaphragm: 'absent', suspiciousNodes: 'absent', pleuralDisease: 'absent', distantMetastases: 'absent' } },
+    { id: 'ovarian-primary-staging', label: 'Adnexal primary staging', description: 'Positive pathway for primary and compartment mapping.', intent: 'positive', values: { examQuality: 'diagnostic', adnexalPrimary: 'present' } },
+    { id: 'limited-ovarian-staging', label: 'Limited examination', description: 'Limited primary and metastatic assessment.', intent: 'complicated', values: { examQuality: 'limited', adnexalPrimary: 'indeterminate', ascites: 'not assessed', pelvicPeritoneum: 'not assessed', omentum: 'not assessed', upperAbdominalPeritoneum: 'not assessed', bowelMesentery: 'not assessed', abdominalWallDiaphragm: 'not assessed', suspiciousNodes: 'not assessed', pleuralDisease: 'not assessed', distantMetastases: 'not assessed' } },
+  ],
+};

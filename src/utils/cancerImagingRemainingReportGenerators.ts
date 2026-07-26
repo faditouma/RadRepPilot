@@ -149,3 +149,47 @@ export function generateHilarCholangiocarcinomaReport(schema: ReportingWorkflowS
     recommendations: 'No ductal classification, TNM stage, operability, treatment, or management recommendation is calculated. Verify ductal and vascular anatomy, local invasion, nodes, metastases, and user-assigned synthesis before finalizing.',
   };
 }
+
+export function generateOvarianCancerReport(schema: ReportingWorkflowSchema, values: WorkflowValues): ReportSections {
+  const status = workflowValue(values, 'adnexalPrimary');
+  const quality = workflowValue(values, 'examQuality');
+  const limitation = [workflowValue(values, 'technicalLimitations'), workflowValue(values, 'limitationsUncertainty')].filter(Boolean).join('; ');
+  const size = dimensions(values, ['sizeApMm', 'sizeTrMm', 'sizeCcMm']);
+  const primary =
+    status === 'absent' ? 'No adnexal primary tumor is entered.' :
+    status === 'present' ? `${workflowValue(values, 'laterality') ? `${workflowValue(values, 'laterality')} ` : ''}${workflowValue(values, 'primarySite') || 'adnexal'} primary tumor${size ? ` measuring ${size}` : ''}.` :
+    status === 'indeterminate' ? `Indeterminate adnexal primary${size ? ` measuring ${size}` : ''}.` : undefined;
+  const disease = [
+    positiveOrIndeterminate(values, 'Pelvic peritoneal disease', 'pelvicPeritoneum', 'pelvicPeritoneumDetails'),
+    positiveOrIndeterminate(values, 'Omental disease', 'omentum', 'omentumDetails'),
+    positiveOrIndeterminate(values, 'Upper abdominal peritoneal disease', 'upperAbdominalPeritoneum', 'upperAbdominalDetails'),
+    positiveOrIndeterminate(values, 'Bowel or mesenteric involvement', 'bowelMesentery', 'bowelMesenteryDetails'),
+    positiveOrIndeterminate(values, 'Abdominal wall or diaphragmatic invasion', 'abdominalWallDiaphragm', 'abdominalWallDiaphragmDetails'),
+    positiveOrIndeterminate(values, 'Suspicious nodal disease', 'suspiciousNodes', 'suspiciousNodeDetails'),
+    positiveOrIndeterminate(values, 'Pleural disease', 'pleuralDisease', 'pleuralDiseaseDetails'),
+    positiveOrIndeterminate(values, 'Other distant metastatic disease', 'distantMetastases', 'distantMetastasisDetails'),
+  ];
+  const allNegative = ['pelvicPeritoneum', 'omentum', 'upperAbdominalPeritoneum', 'bowelMesentery', 'abdominalWallDiaphragm', 'suspiciousNodes', 'pleuralDisease', 'distantMetastases'].every((key) => workflowValue(values, key) === 'absent');
+  const findings = cleanLines([
+    primary,
+    workflowValue(values, 'morphology') ? `Primary morphology: ${workflowValue(values, 'morphology')}.` : undefined,
+    workflowValue(values, 'solidComponents') ? `Solid components: ${workflowValue(values, 'solidComponents')}.` : undefined,
+    workflowValue(values, 'contralateralAdnexa') ? `Contralateral adnexa: ${workflowValue(values, 'contralateralAdnexa')}.` : undefined,
+    positiveOrIndeterminate(values, 'Ascites', 'ascites'),
+    ...disease,
+    allNegative ? 'No peritoneal, bowel/mesenteric, nodal, pleural, or distant metastatic disease is entered.' : undefined,
+    workflowValue(values, 'cytoreductionLimitingSites') ? `Potentially surgery-limiting sites: ${workflowValue(values, 'cytoreductionLimitingSites')}.` : undefined,
+    workflowValue(values, 'userAssignedFigo') ? `User-assigned FIGO stage: ${workflowValue(values, 'userAssignedFigo')}.` : undefined,
+    workflowValue(values, 'additionalFindings') ? `Additional findings: ${workflowValue(values, 'additionalFindings')}.` : undefined,
+    limitation ? `Limitations: ${limitation}.` : undefined,
+  ]);
+  const limitationSummary = quality === 'nondiagnostic' ? `Nondiagnostic examination${limitation ? `: ${limitation}` : '.'}` : quality === 'limited' ? `Limited ovarian cancer staging examination${limitation ? `: ${limitation}` : '.'}` : undefined;
+  return {
+    indication: cleanLines([workflowValue(values, 'clinicalIndication') || schema.clinicalQuestion, workflowValue(values, 'pathology') ? `Pathology: ${workflowValue(values, 'pathology')}.` : undefined, workflowValue(values, 'clinicalContext') ? `Relevant clinical context: ${workflowValue(values, 'clinicalContext')}.` : undefined]),
+    technique: cleanLines([workflowValue(values, 'modalityProtocol') || schema.techniqueDefault, quality ? `Examination quality: ${quality}.` : undefined, workflowValue(values, 'technicalLimitations') ? `Technical limitations: ${workflowValue(values, 'technicalLimitations')}.` : undefined]),
+    findings: workflowValue(values, 'findingsOverride') || findings,
+    impression: workflowValue(values, 'impressionOverride') || cleanLines([limitationSummary, primary, ...disease, workflowValue(values, 'cytoreductionLimitingSites') ? `Observed potentially surgery-limiting anatomy: ${workflowValue(values, 'cytoreductionLimitingSites')}.` : undefined]),
+    incidentalFindings: workflowValue(values, 'incidentalFindings'),
+    recommendations: 'No FIGO/TNM stage, cytoreduction assessment, treatment, or management recommendation is calculated. Verify all disease compartments and any user-assigned stage before finalizing.',
+  };
+}

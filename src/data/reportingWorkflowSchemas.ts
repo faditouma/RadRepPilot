@@ -9,6 +9,7 @@ import {
 import {
   hccLiverWorkflowSchema,
   hilarCholangiocarcinomaWorkflowSchema,
+  ovarianCancerWorkflowSchema,
 } from './reporting/cancerImagingRemaining';
 
 export type WorkflowFieldType = 'text' | 'textarea' | 'number' | 'date' | 'time' | 'select' | 'checkbox-group';
@@ -474,6 +475,7 @@ export const reportingWorkflowSchemas: Record<
   | 'renalMass'
   | 'hccLiver'
   | 'hilarCholangiocarcinoma'
+  | 'ovarianCancer'
   | 'nodule'
   | 'stroke'
   | 'chestXray'
@@ -492,6 +494,7 @@ export const reportingWorkflowSchemas: Record<
   renalMass: renalMassWorkflowSchema,
   hccLiver: hccLiverWorkflowSchema,
   hilarCholangiocarcinoma: hilarCholangiocarcinomaWorkflowSchema,
+  ovarianCancer: ovarianCancerWorkflowSchema,
   ctpa: {
     moduleType: 'ctpa',
     moduleId: 'ctpa-pe',

@@ -562,6 +562,27 @@ export function scoreReportCompleteness(moduleType: ModuleType, values: Record<s
     ]);
   }
 
+  if (moduleType === 'ovarianCancer') {
+    const primaryStatus = textValue(values.adnexalPrimary);
+    const primaryComplete = !['present', 'indeterminate'].includes(primaryStatus) ||
+      (addressed(values.laterality) && hasMeaningfulText(values.primarySite) &&
+        hasAny(values, ['sizeApMm', 'sizeTrMm', 'sizeCcMm']) && hasMeaningfulText(values.morphology));
+    const detail = (statusKey: string, detailsKey?: string) => {
+      const status = textValue(values[statusKey]);
+      return addressed(values[statusKey]) &&
+        (!detailsKey || !['present', 'indeterminate'].includes(status) || hasMeaningfulText(values[detailsKey]));
+    };
+    return score('Report completeness', [
+      { label: 'Clinical indication addressed', complete: hasMeaningfulText(values.clinicalIndication), missingLabel: 'Clinical indication missing' },
+      { label: 'Protocol and technical quality addressed', complete: hasMeaningfulText(values.modalityProtocol) && addressed(values.examQuality), missingLabel: 'Protocol or examination quality missing' },
+      { label: 'Primary adnexal tumor characterized', complete: addressed(values.adnexalPrimary) && primaryComplete, missingLabel: primaryStatus === 'present' || primaryStatus === 'indeterminate' ? 'Primary side, origin, size, or morphology missing' : 'Primary tumor assessment missing' },
+      { label: 'Pelvic, omental, and upper abdominal disease addressed', complete: detail('pelvicPeritoneum', 'pelvicPeritoneumDetails') && detail('omentum', 'omentumDetails') && detail('upperAbdominalPeritoneum', 'upperAbdominalDetails'), missingLabel: 'Peritoneal compartment assessment/details incomplete' },
+      { label: 'Bowel, mesentery, wall, and diaphragm addressed', complete: detail('bowelMesentery', 'bowelMesenteryDetails') && detail('abdominalWallDiaphragm', 'abdominalWallDiaphragmDetails'), missingLabel: 'Bowel/mesenteric or wall/diaphragm assessment incomplete' },
+      { label: 'Nodes, pleura, and distant disease addressed', complete: detail('suspiciousNodes', 'suspiciousNodeDetails') && detail('pleuralDisease', 'pleuralDiseaseDetails') && detail('distantMetastases', 'distantMetastasisDetails'), missingLabel: 'Nodal, pleural, or distant metastatic assessment incomplete' },
+      { label: 'Impression generated', complete: hasMeaningfulText(report.impression), missingLabel: 'Impression incomplete' },
+    ]);
+  }
+
   if (moduleType === 'chestXray') {
     const airspaceAddressed = addressedAny(values, ['consolidation', 'atelectaticChange', 'interstitialEdema']) || hasFreeTextCoverage(values);
     const pleuraAddressed = addressedAny(values, ['pleuralEffusion', 'pneumothorax']) || hasFreeTextCoverage(values);

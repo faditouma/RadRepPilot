@@ -17,6 +17,7 @@ import {
 import {
   generateHccLiverReport,
   generateHilarCholangiocarcinomaReport,
+  generateOvarianCancerReport,
 } from './cancerImagingRemainingReportGenerators';
 import { cleanLines, formatMeasurement, numberOrNull, sentenceList, workflowList, workflowValue, yes } from './impressionGenerators';
 
@@ -836,6 +837,8 @@ export function generateReportingWorkflowReport(moduleType: ModuleType, values: 
       return generateHccLiverReport(schema, values);
     case 'hilarCholangiocarcinoma':
       return generateHilarCholangiocarcinomaReport(schema, values);
+    case 'ovarianCancer':
+      return generateOvarianCancerReport(schema, values);
     case 'ctpa':
       return generateCtpaWorkflowReport(schema, values);
     case 'nodule':

@@ -20,6 +20,7 @@ export type ModuleType =
   | 'renalMass'
   | 'hccLiver'
   | 'hilarCholangiocarcinoma'
+  | 'ovarianCancer'
   | 'nodule'
   | 'stroke'
   | 'chestXray'
