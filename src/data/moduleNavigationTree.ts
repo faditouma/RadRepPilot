@@ -56,7 +56,6 @@ export const moduleNavigationTree: NavigationModality[] = [
           workflow('xray-cxr-chf', 'CHF / Pulmonary Edema', 'Congestion, edema, effusions, and cardiac size.'),
           workflow('xray-cxr-pneumothorax', 'Pneumothorax', 'Side, size estimate, tension features, and chest tube status.'),
           workflow('xray-cxr-effusion', 'Pleural Effusion', 'Laterality, size, loculation clues, and adjacent opacity.'),
-          workflow('xray-cxr-lines', 'Line / Tube Placement', 'Support device positions and complication check.'),
         ],
       },
       {
@@ -111,8 +110,7 @@ export const moduleNavigationTree: NavigationModality[] = [
             'ruqUltrasound',
             ['Incidental liver/renal support'],
           ),
-          workflow('incidental-liver-lesion', 'Liver Lesion', 'Incidental liver lesion descriptors and follow-up-safe wording.', 'partial', undefined, ['LI-RADS context']),
-          workflow('us-ruq-biliary', 'Abnormal LFTs / Biliary Dilation', 'Biliary dilation, duct measurement, and cholestatic lab correlation.'),
+          workflow('us-liver-lesion-incidental', 'Liver Lesion', 'Ultrasound liver lesion descriptors and follow-up-safe wording.', 'partial', undefined, ['LI-RADS context']),
           workflow('incidental-ascites', 'Ascites', 'Ascites volume and clinically useful caveats.'),
         ],
       },
@@ -122,7 +120,7 @@ export const moduleNavigationTree: NavigationModality[] = [
         workflows: [
           workflow('us-kidney-transplant', 'Kidney-Transplant Ultrasound', 'Graft morphology, collecting system, collections, arterial and venous Doppler, waveforms, and bladder.', 'implemented', 'kidneyTransplantUltrasound'),
           workflow('us-renal-bladder', 'Hydronephrosis / Stone / Retention', 'Hydronephrosis grade, stones, renal size, bladder volume, and PVR.'),
-          workflow('incidental-renal-lesion', 'Incidental Renal Finding', 'Renal cyst/mass follow-up language and Bosniak context.', 'partial', undefined, ['Bosniak']),
+          workflow('us-renal-lesion-incidental', 'Incidental Renal Finding', 'Ultrasound renal cyst/mass characterization and follow-up-safe wording.', 'partial', undefined, ['Bosniak']),
         ],
       },
       {
@@ -164,7 +162,6 @@ export const moduleNavigationTree: NavigationModality[] = [
             'implemented',
             'dvtUltrasound',
           ),
-          workflow('us-dvt-superficial', 'Superficial Thrombophlebitis', 'Superficial venous thrombus and assessed deep vein exclusions.', 'partial'),
         ],
       },
       {
@@ -212,7 +209,6 @@ export const moduleNavigationTree: NavigationModality[] = [
           workflow('lung-rads', 'Lung Cancer Screening / Lung-RADS', 'Screening nodule category preview and follow-up sentence.', 'partial', undefined, ['Lung-RADS']),
           workflow('ct-chest-pneumonia-ild-mass', 'Pneumonia / ILD / Mass', 'Parenchymal pattern, distribution, airway/pleura, and mass concern.'),
           workflow('incidental-thyroid-nodule', 'Incidental Thyroid Nodule', 'Size, suspicious features, lymph nodes, and ultrasound consideration.', 'partial', undefined, ['TI-RADS']),
-          workflow('incidental-adrenal-nodule', 'Incidental Adrenal Nodule', 'Adrenal size, HU, homogeneity, stability, and washout context.', 'partial', undefined, ['Adrenal washout']),
         ],
       },
       {
@@ -238,7 +234,6 @@ export const moduleNavigationTree: NavigationModality[] = [
           workflow('ct-ap-diverticulitis', 'Diverticulitis', 'Segment, inflammation, abscess, perforation, fistula, and obstruction.'),
           workflow('ct-ap-bowel-obstruction', 'Bowel Obstruction', 'Transition point, grade, cause, ischemia, closed loop, and perforation.', 'implemented', 'bowelObstruction'),
           workflow('ct-ap-abdominal-pain', 'Abdominal Pain General', 'Bowel, solid organs, free fluid/air, urinary tract, and alternative diagnosis.'),
-          workflow('ct-trauma-cap', 'Trauma Abdomen/Pelvis', 'Solid organ injury, bowel/mesentery, active bleeding, pelvis, and spine.'),
           workflow('incidental-adrenal-nodule', 'Incidental Adrenal Lesion', 'Adrenal follow-up wording and washout context.', 'partial', undefined, ['Adrenal washout']),
           workflow(
             'ct-mri-adrenal-incidentaloma',
@@ -247,8 +242,8 @@ export const moduleNavigationTree: NavigationModality[] = [
             'implemented',
             'adrenalIncidentaloma',
           ),
-          workflow('incidental-renal-lesion', 'Incidental Renal Lesion', 'Renal cyst/mass characterization language.', 'partial', undefined, ['Bosniak']),
-          workflow('incidental-liver-lesion', 'Incidental Liver Lesion', 'Risk-based liver lesion follow-up wording.', 'partial', undefined, ['LI-RADS context']),
+          workflow('ct-renal-lesion-incidental', 'Incidental Renal Lesion', 'CT renal cyst/mass characterization language.', 'partial', undefined, ['Bosniak']),
+          workflow('ct-liver-lesion-incidental', 'Incidental Liver Lesion', 'CT liver lesion characterization and follow-up-safe wording.', 'partial', undefined, ['LI-RADS context']),
           workflow('incidental-pancreatic-cyst', 'Incidental Pancreatic Cyst', 'Cyst size and high-risk feature language.', 'partial'),
           workflow(
             'ct-mri-pancreatic-cyst',
@@ -328,8 +323,6 @@ export const moduleNavigationTree: NavigationModality[] = [
             'implemented',
             'ovarianCancer',
           ),
-          workflow('oncology-recist', 'RECIST 1.1 Measurement Tracker', 'Target lesion sums, percent change, and simplified category.', 'partial', undefined, ['RECIST']),
-          workflow('oncology-response', 'Treatment Response Comparison', 'Tumor burden, new lesions, non-target disease, and overall impression.'),
         ],
       },
     ],
@@ -409,7 +402,6 @@ export const moduleNavigationTree: NavigationModality[] = [
             'implemented',
             'hilarCholangiocarcinoma',
           ),
-          workflow('incidental-pancreatic-cyst', 'Pancreatic Cyst / MRCP Follow-up', 'Cyst size, duct dilation, mural nodule, and surveillance wording.', 'partial'),
         ],
       },
       {
@@ -475,11 +467,6 @@ export const moduleNavigationTree: NavigationModality[] = [
           ),
         ],
       },
-      {
-        name: 'Breast',
-        description: 'Breast MRI descriptors and BI-RADS context.',
-        workflows: [workflow('breast-birads', 'Breast MRI / BI-RADS', 'Enhancement pattern, lesion type, comparison, and category placeholder.', 'partial', undefined, ['BI-RADS'])],
-      },
     ],
   },
   {
@@ -495,7 +482,7 @@ export const moduleNavigationTree: NavigationModality[] = [
       {
         name: 'Diagnostic Mammography',
         description: 'Mass, calcification, distortion, asymmetry, and assessment language.',
-        workflows: [workflow('breast-birads', 'Diagnostic BI-RADS', 'Finding descriptors and category placeholder.', 'partial', undefined, ['BI-RADS'])],
+        workflows: [workflow('mammo-diagnostic-birads', 'Diagnostic BI-RADS', 'Finding descriptors and category placeholder.', 'partial', undefined, ['BI-RADS'])],
       },
       {
         name: 'Breast Ultrasound',
@@ -505,12 +492,12 @@ export const moduleNavigationTree: NavigationModality[] = [
       {
         name: 'Breast MRI',
         description: 'MRI finding descriptors and BI-RADS context.',
-        workflows: [workflow('breast-birads', 'Breast MRI BI-RADS', 'Mass or non-mass enhancement descriptors and comparison.', 'partial', undefined, ['BI-RADS'])],
+        workflows: [workflow('mri-breast-birads', 'Breast MRI BI-RADS', 'Mass or non-mass enhancement descriptors and comparison.', 'partial', undefined, ['BI-RADS'])],
       },
       {
         name: 'BI-RADS',
         description: 'Clickable prototype category support with strict verification warning.',
-        workflows: [workflow('breast-birads', 'BI-RADS Preview Helper', 'Prototype category suggestion from user-entered breast imaging descriptors.', 'partial', undefined, ['BI-RADS'])],
+        workflows: [workflow('breast-birads-preview', 'BI-RADS Preview Helper', 'Prototype category suggestion from user-entered breast imaging descriptors.', 'partial', undefined, ['BI-RADS'])],
       },
     ],
   },
