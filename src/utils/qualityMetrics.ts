@@ -131,12 +131,28 @@ export function scoreRequisitionCompleteness(form: ReferralFormState): QualitySc
 }
 
 export function scoreReportCompleteness(moduleType: ModuleType, values: Record<string, unknown>, report: ReportSections): QualityScore {
-  if (['tracheobronchomalacia', 'fibroticLungDisease', 'pulmonaryHypertensionCtpa', 'copdCt'].includes(moduleType)) {
+  if (moduleType === 'brainTumorMri') {
+    const lesion = textValue(values.dominantLesion);
+    return score('Report completeness', [
+      { label: 'Clinical, diagnosis, and treatment context addressed', complete: hasMeaningfulText(values.clinicalIndication) && hasMeaningfulText(values.diagnosisContext) && hasMeaningfulText(values.treatmentHistory) },
+      { label: 'Protocol and quality addressed', complete: hasMeaningfulText(values.modalityProtocol) && addressed(values.examQuality) },
+      { label: 'Dominant lesion characterized', complete: addressed(values.dominantLesion) && (!['present', 'indeterminate'].includes(lesion) || (hasMeaningfulText(values.lesionLocation) && hasAny(values, ['lesionApMm', 'lesionTrMm', 'lesionCcMm']) && hasMeaningfulText(values.enhancement) && hasMeaningfulText(values.nonEnhancingDisease))) },
+      { label: 'Advanced imaging addressed', complete: ['diffusion', 'susceptibility', 'perfusion', 'spectroscopy'].every((key) => hasMeaningfulText(values[key])) },
+      { label: 'Mass effect and spread addressed', complete: ['edema', 'massEffect', 'herniation', 'hydrocephalus', 'leptomeningealSpread', 'ependymalSpread'].every((key) => addressed(values[key])) },
+      { label: 'Comparison and confidence addressed', complete: hasMeaningfulText(values.intervalChange) && hasMeaningfulText(values.diagnosticConfidence) },
+      { label: 'Impression generated', complete: hasMeaningfulText(report.impression) },
+    ]);
+  }
+
+  if (['tracheobronchomalacia', 'fibroticLungDisease', 'pulmonaryHypertensionCtpa', 'copdCt', 'cysticLungDisease', 'lungCancerScreening', 'viralPneumoniaCt'].includes(moduleType)) {
     const requiredByModule: Partial<Record<ModuleType, string[]>> = {
       tracheobronchomalacia: ['respiratoryEffort', 'airwayCollapse', 'distribution', 'airTrapping', 'diagnosticConfidence'],
       fibroticLungDisease: ['fibrosis', 'axialDistribution', 'craniocaudalDistribution', 'reticulation', 'tractionBronchiectasis', 'honeycombing', 'airTrapping', 'intervalProgression', 'acuteAbnormality', 'diagnosticConfidence'],
       pulmonaryHypertensionCtpa: ['contrastQuality', 'mainPaMm', 'chronicThromboembolicSigns', 'rvLvRatio', 'septalFlattening', 'contrastReflux', 'mosaicPerfusion', 'diagnosticConfidence'],
       copdCt: ['emphysema', 'airTrapping', 'bullae', 'airwayWallThickening', 'mucusPlugging', 'bronchiectasis'],
+      cysticLungDisease: ['cysts', 'cystCount', 'cystSizeRange', 'cystWall', 'cystMorphology', 'axialDistribution', 'craniocaudalDistribution', 'pneumothorax', 'diagnosticConfidence'],
+      lungCancerScreening: ['screeningContext', 'eligibilityExclusions', 'dominantNodule', 'growth'],
+      viralPneumoniaCt: ['infectionMode', 'groundGlass', 'consolidation', 'axialDistribution', 'craniocaudalDistribution', 'extent', 'pleuralEffusion', 'pneumothorax', 'diagnosticConfidence'],
     };
     const required = requiredByModule[moduleType] || [];
     return score('Report completeness', [
@@ -976,6 +992,7 @@ export function scoreReportCompleteness(moduleType: ModuleType, values: Record<s
   if (moduleType === 'chestXray') {
     const airspaceAddressed = addressedAny(values, ['consolidation', 'atelectaticChange', 'interstitialEdema']) || hasFreeTextCoverage(values);
     const pleuraAddressed = addressedAny(values, ['pleuralEffusion', 'pneumothorax']) || hasFreeTextCoverage(values);
+    const viralMode = /viral|covid/i.test(textValue(values.reportingMode));
     return score('Report completeness', [
       {
         label: 'Study quality or technique addressed',
@@ -996,6 +1013,11 @@ export function scoreReportCompleteness(moduleType: ModuleType, values: Record<s
         label: 'Pleura/pneumothorax addressed',
         complete: pleuraAddressed,
         missingLabel: 'Pleural effusion/pneumothorax not addressed',
+      },
+      {
+        label: 'Distribution, extent, and comparison addressed when relevant',
+        complete: !viralMode || (hasMeaningfulText(values.opacityDistribution) && hasMeaningfulText(values.opacityPredominance) && hasMeaningfulText(values.diseaseExtent) && (hasAny(values, ['comparisonStudy', 'comparisonDate']) || hasMeaningfulText(values.intervalChange))),
+        missingLabel: 'Viral-pneumonia distribution, extent, or comparison missing',
       },
       {
         label: 'Impression generated',

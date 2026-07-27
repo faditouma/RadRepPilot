@@ -27,6 +27,7 @@ import { generatePancreaticCystReport, generatePancreatitisReport, generatePlace
 import { generateKidneyTransplantUltrasoundReport, generateLiverTransplantUltrasoundReport, generateLivingDonorLiverReport } from './transplantImagingReportGenerators';
 import { generateIncidentalNoduleReport } from './incidentalNoduleReportGenerator';
 import { generateThoracicImagingReport } from './thoracicImagingReportGenerator';
+import { generateBrainTumorMriReport } from './neuroradiologyImagingReportGenerator';
 import { cleanLines, formatMeasurement, numberOrNull, sentenceList, workflowList, workflowValue, yes } from './impressionGenerators';
 
 function keyNegativeSentence(values: WorkflowValues, suppressPhrases: string[] = []): string | undefined {
@@ -318,6 +319,11 @@ function generateChestXrayReport(schema: ReportingWorkflowSchema, values: Workfl
   const pneumothorax = workflowValue(values, 'pneumothorax');
   const pneumothoraxSideSize = workflowValue(values, 'pneumothoraxSideSize');
   const devices = workflowValue(values, 'linesTubesDevices');
+  const distribution = workflowValue(values, 'opacityDistribution');
+  const predominance = workflowValue(values, 'opacityPredominance');
+  const extent = workflowValue(values, 'diseaseExtent');
+  const atypical = workflowValue(values, 'atypicalFindings');
+  const intervalChange = workflowValue(values, 'intervalChange');
 
   const consolidationPresent = Boolean(consolidation) && consolidation !== 'not specified' && consolidation !== 'none';
   const consolidationAbsent = consolidation === 'none';
@@ -393,6 +399,11 @@ function generateChestXrayReport(schema: ReportingWorkflowSchema, values: Workfl
     effusionSentence,
     pneumothoraxSentence,
     devices ? `Lines/tubes/devices: ${devices}.` : undefined,
+    distribution ? `Opacity distribution: ${distribution}.` : undefined,
+    predominance ? `Craniocaudal predominance: ${predominance}.` : undefined,
+    extent ? `Extent: ${extent}.` : undefined,
+    atypical ? `Atypical/alternative findings: ${atypical}.` : undefined,
+    intervalChange ? `Interval change: ${intervalChange}.` : undefined,
   ]);
 
   const impressionLines = [
@@ -416,14 +427,19 @@ function generateChestXrayReport(schema: ReportingWorkflowSchema, values: Workfl
   return {
     indication: workflowValue(values, 'indication'),
     technique: workflowValue(values, 'technique') || schema.techniqueDefault,
-    findings: cleanLines([
+    findings: workflowValue(values, 'findingsOverride') || cleanLines([
       findings || 'No specific chest radiograph finding has been entered.',
       workflowValue(values, 'additionalFindings')
         ? `Additional findings/radiologist comment: ${workflowValue(values, 'additionalFindings')}`
         : undefined,
       workflowValue(values, 'limitationsUncertainty') ? `Limitations/uncertainty: ${workflowValue(values, 'limitationsUncertainty')}` : undefined,
     ]),
-    impression: cleanLines(impressionLines),
+    impression: workflowValue(values, 'impressionOverride') || cleanLines([
+      ...impressionLines,
+      distribution ? `Airspace opacity distribution: ${distribution}${predominance ? `, ${predominance}` : ''}${extent ? `; extent ${extent}` : ''}.` : undefined,
+      atypical ? `Atypical or alternative-diagnosis findings: ${atypical}.` : undefined,
+      intervalChange ? `Interval change: ${intervalChange}.` : undefined,
+    ]),
     incidentalFindings: workflowValue(values, 'incidentalFindings'),
     recommendations: 'Educational draft only. Verify all user-entered radiographic findings and final wording before use.',
   };
@@ -887,7 +903,12 @@ export function generateReportingWorkflowReport(moduleType: ModuleType, values: 
     case 'fibroticLungDisease':
     case 'pulmonaryHypertensionCtpa':
     case 'copdCt':
+    case 'cysticLungDisease':
+    case 'lungCancerScreening':
+    case 'viralPneumoniaCt':
       return generateThoracicImagingReport(schema, values);
+    case 'brainTumorMri':
+      return generateBrainTumorMriReport(schema, values);
     case 'ctpa':
       return generateCtpaWorkflowReport(schema, values);
     case 'nodule':

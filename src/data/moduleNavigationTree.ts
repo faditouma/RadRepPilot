@@ -197,6 +197,9 @@ export const moduleNavigationTree: NavigationModality[] = [
           workflow('ct-fibrotic-lung-disease', 'Fibrotic Lung Disease HRCT', 'Distribution, fibrotic features, air trapping, emphysema, progression, and acute abnormalities.', 'implemented', 'fibroticLungDisease'),
           workflow('ctpa-pulmonary-hypertension', 'Pulmonary Hypertension CTPA', 'Pulmonary arteries, chronic thromboembolic signs, right heart, reflux, parenchymal and left-heart clues.', 'implemented', 'pulmonaryHypertensionCtpa'),
           workflow('ct-copd', 'COPD CT', 'Emphysema, airway disease, air trapping, bullae, fissures, nodules, and associated disease.', 'implemented', 'copdCt'),
+          workflow('ct-cystic-lung-disease', 'Cystic Lung Disease HRCT', 'Cyst morphology, walls, size, distribution, associated lung and extrapulmonary findings, and differential.', 'implemented', 'cysticLungDisease'),
+          workflow('ct-lung-cancer-screening', 'Lung Cancer Screening CT', 'Screening context, dominant and additional nodules, size/volume, image reference, growth, and incidentals.', 'implemented', 'lungCancerScreening', ['Lung-RADS user entry']),
+          workflow('ct-viral-pneumonia', 'Viral-Pneumonia Chest CT', 'Adaptable viral pattern, distribution, extent, atypical findings, pleura, embolic assessment, and complications.', 'implemented', 'viralPneumoniaCt'),
           workflow('ct-chest-nodule', 'Pulmonary Nodule / Fleischner', 'Nodule type, size, risk, stability, and simplified follow-up.', 'implemented', 'nodule', ['Fleischner']),
           workflow(
             'ct-lung-cancer-staging',
@@ -325,6 +328,7 @@ export const moduleNavigationTree: NavigationModality[] = [
         name: 'Brain',
         description: 'Stroke, mass, demyelination, seizure, and comparison-ready descriptors.',
         workflows: [
+          workflow('mri-brain-tumor', 'Brain Tumor MRI', 'Enhancing and nonenhancing disease, advanced imaging, edema, mass effect, spread, and interval response.', 'implemented', 'brainTumorMri'),
           workflow('mri-brain-stroke', 'Brain Stroke', 'DWI/ADC, hemorrhage-sensitive sequence, vascular territory, and chronic disease.'),
           workflow('mri-brain-mass', 'Brain Mass', 'Enhancement, edema, mass effect, and location.'),
           workflow('mri-brain-ms', 'Demyelination / MS', 'Distribution, enhancement, and comparison.'),

@@ -18,7 +18,8 @@ import {
 import { adrenalIncidentalomaWorkflowSchema, adnexalCystUltrasoundWorkflowSchema, ctColonographyWorkflowSchema, endometriosisMriWorkflowSchema, enterographyWorkflowSchema, fibroidMriWorkflowSchema, pelvicFloorImagingWorkflowSchema, perianalFistulaMriWorkflowSchema } from './reporting/abdominalPelvicImaging';
 import { pancreaticCystWorkflowSchema, pancreatitisWorkflowSchema, placentaAccretaMriWorkflowSchema } from './reporting/abdominalPelvicImagingPart2';
 import { kidneyTransplantUltrasoundWorkflowSchema, liverTransplantUltrasoundWorkflowSchema, livingDonorLiverWorkflowSchema } from './reporting/transplantImaging';
-import { copdCtWorkflowSchema, fibroticLungDiseaseWorkflowSchema, pulmonaryHypertensionCtpaWorkflowSchema, tracheobronchomalaciaWorkflowSchema } from './reporting/thoracicImaging';
+import { copdCtWorkflowSchema, cysticLungDiseaseWorkflowSchema, fibroticLungDiseaseWorkflowSchema, lungCancerScreeningWorkflowSchema, pulmonaryHypertensionCtpaWorkflowSchema, tracheobronchomalaciaWorkflowSchema, viralPneumoniaCtWorkflowSchema } from './reporting/thoracicImaging';
+import { brainTumorMriWorkflowSchema } from './reporting/neuroradiologyImaging';
 
 export type WorkflowFieldType = 'text' | 'textarea' | 'number' | 'date' | 'time' | 'select' | 'checkbox-group';
 export type WorkflowValue = string | string[];
@@ -86,6 +87,7 @@ export interface ReportingWorkflowSchema {
     lastReviewedDate: string;
     reviewStatus: 'needs_clinical_review' | 'manually_curated' | 'reviewed';
     clinicalValidationRequired: boolean;
+    historicalStatus?: boolean;
   };
 }
 
@@ -506,6 +508,10 @@ export const reportingWorkflowSchemas: Record<
   | 'fibroticLungDisease'
   | 'pulmonaryHypertensionCtpa'
   | 'copdCt'
+  | 'cysticLungDisease'
+  | 'lungCancerScreening'
+  | 'viralPneumoniaCt'
+  | 'brainTumorMri'
   | 'nodule'
   | 'stroke'
   | 'chestXray'
@@ -547,6 +553,10 @@ export const reportingWorkflowSchemas: Record<
   fibroticLungDisease: fibroticLungDiseaseWorkflowSchema,
   pulmonaryHypertensionCtpa: pulmonaryHypertensionCtpaWorkflowSchema,
   copdCt: copdCtWorkflowSchema,
+  cysticLungDisease: cysticLungDiseaseWorkflowSchema,
+  lungCancerScreening: lungCancerScreeningWorkflowSchema,
+  viralPneumoniaCt: viralPneumoniaCtWorkflowSchema,
+  brainTumorMri: brainTumorMriWorkflowSchema,
   ctpa: {
     moduleType: 'ctpa',
     moduleId: 'ctpa-pe',
@@ -1067,9 +1077,22 @@ export const reportingWorkflowSchemas: Record<
     badges: ['Implemented', 'Educational draft', 'Primary care / ED'],
     insertTargets: ['findings', 'impression', 'recommendations'],
     safetyNote: prototypeSafety,
+    contentMetadata: {
+      sourceChapter: 'Chapter 40: COVID-related chest radiograph reporting',
+      sourceType: 'Private development reference',
+      guidelineOrClassificationName: 'Historical COVID-era and adaptable viral-pneumonia radiograph terminology',
+      guidelineVersion: 'Current clinical use requires review',
+      lastReviewedDate: '2026-07-27',
+      reviewStatus: 'needs_clinical_review',
+      clinicalValidationRequired: true,
+      historicalStatus: true,
+    },
     defaultValues: {
       indication: '',
       technique: 'Chest radiographs obtained.',
+      reportingMode: '',
+      comparisonStudy: '',
+      comparisonDate: '',
       templateMode: 'blank',
       studyQuality: 'not specified',
       cardiomediastinalSilhouette: 'not specified',
@@ -1086,6 +1109,13 @@ export const reportingWorkflowSchemas: Record<
       incidentalFindings: '',
       additionalFindings: '',
       limitationsUncertainty: '',
+      opacityDistribution: '',
+      opacityPredominance: '',
+      diseaseExtent: '',
+      atypicalFindings: '',
+      intervalChange: '',
+      findingsOverride: '',
+      impressionOverride: '',
     },
     sections: [
       {
@@ -1095,6 +1125,9 @@ export const reportingWorkflowSchemas: Record<
         fields: [
           area('indication', 'Indication', 'Cough, fever, dyspnea, hypoxia, chest pain, or follow-up question'),
           text('technique', 'Technique', 'Chest radiographs obtained.', true),
+          text('reportingMode', 'Reporting mode', 'General infection/dyspnea, viral pneumonia, historical COVID-specific, or other', true),
+          text('comparisonStudy', 'Comparison examination'),
+          { id: 'comparisonDate', label: 'Comparison date', type: 'date' },
         ],
       },
       {
@@ -1122,6 +1155,13 @@ export const reportingWorkflowSchemas: Record<
           select('pneumothorax', 'Pneumothorax', cxrPneumothoraxOptions),
           text('pneumothoraxSideSize', 'Pneumothorax side/size if present', 'e.g. small left apical pneumothorax', true),
           area('linesTubesDevices', 'Lines/tubes/devices', 'e.g. right IJ central line tip overlies the SVC; left chest wall pacemaker'),
+          text('opacityDistribution', 'Opacity distribution', 'Peripheral/central, unilateral/bilateral, focal/multifocal'),
+          text('opacityPredominance', 'Craniocaudal predominance', 'Upper, mid, lower, diffuse'),
+          text('diseaseExtent', 'Extent of involvement'),
+          area('atypicalFindings', 'Atypical or alternative-diagnosis findings'),
+          area('intervalChange', 'Interval change'),
+          area('findingsOverride', 'Findings free-text override'),
+          area('impressionOverride', 'Impression free-text override'),
         ],
       },
     ],
