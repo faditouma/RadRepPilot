@@ -27,7 +27,7 @@ const moduleKeys: Record<string, string[]> = {
 };
 export function generateNeuroradiologyWorkflowReport(schema: ReportingWorkflowSchema, values: WorkflowValues): ReportSections {
   const v = (key: string) => workflowValue(values, key);
-  const lines = (moduleKeys[schema.moduleType] || []).filter((key) => v(key)).map((key) => `${key.replace(/([A-Z])/g, ' $1').replace(/^./, (c) => c.toUpperCase())}: ${v(key)}.`);
+  const lines = (moduleKeys[schema.moduleType] || []).filter((key) => v(key)).map((key) => `${key.replace(/([A-Z])/g, ' $1').replace(/^./, (c) => c.toUpperCase())}: ${v(key).replace(/[.;:\s]+$/, '')}.`);
   const limitation = [v('technicalLimitations'), v('limitationsUncertainty')].filter(Boolean).join('; ');
   return {
     indication: cleanLines([v('clinicalIndication') || schema.clinicalQuestion, v('clinicalContext') ? `Context: ${v('clinicalContext')}.` : undefined]),

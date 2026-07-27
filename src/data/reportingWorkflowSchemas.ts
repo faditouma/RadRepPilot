@@ -26,6 +26,15 @@ import {
   niRadsWorkflowSchema,
   traumaticBrainInjuryWorkflowSchema,
 } from './reporting/neuroradiologyImaging';
+import {
+  aaaPostprocedureWorkflowSchema,
+  aaaPreprocedureWorkflowSchema,
+  calciumScoreWorkflowSchema,
+  cardiomyopathyMriWorkflowSchema,
+  coronaryCtaWorkflowSchema,
+  ffrCtWorkflowSchema,
+  taviPlanningCtaWorkflowSchema,
+} from './reporting/cardiovascularImaging';
 
 export type WorkflowFieldType = 'text' | 'textarea' | 'number' | 'date' | 'time' | 'select' | 'checkbox-group';
 export type WorkflowValue = string | string[];
@@ -110,6 +119,13 @@ const yesNoUnknown = [
   { value: 'unknown', label: 'Unknown' },
   { value: 'no', label: 'No' },
   { value: 'yes', label: 'Yes' },
+];
+
+const examQualityOptions = [
+  { value: '', label: 'Select…' },
+  { value: 'diagnostic', label: 'Diagnostic' },
+  { value: 'limited', label: 'Limited' },
+  { value: 'nondiagnostic', label: 'Nondiagnostic' },
 ];
 
 const yesNo = [
@@ -522,6 +538,13 @@ export const reportingWorkflowSchemas: Record<
   | 'traumaticBrainInjury'
   | 'niRads'
   | 'dementiaMri'
+  | 'coronaryCta'
+  | 'taviPlanningCta'
+  | 'cardiomyopathyMri'
+  | 'aaaPostprocedure'
+  | 'aaaPreprocedure'
+  | 'calciumScore'
+  | 'ffrCt'
   | 'nodule'
   | 'stroke'
   | 'chestXray'
@@ -571,6 +594,13 @@ export const reportingWorkflowSchemas: Record<
   traumaticBrainInjury: traumaticBrainInjuryWorkflowSchema,
   niRads: niRadsWorkflowSchema,
   dementiaMri: dementiaMriWorkflowSchema,
+  coronaryCta: coronaryCtaWorkflowSchema,
+  taviPlanningCta: taviPlanningCtaWorkflowSchema,
+  cardiomyopathyMri: cardiomyopathyMriWorkflowSchema,
+  aaaPostprocedure: aaaPostprocedureWorkflowSchema,
+  aaaPreprocedure: aaaPreprocedureWorkflowSchema,
+  calciumScore: calciumScoreWorkflowSchema,
+  ffrCt: ffrCtWorkflowSchema,
   ctpa: {
     moduleType: 'ctpa',
     moduleId: 'ctpa-pe',

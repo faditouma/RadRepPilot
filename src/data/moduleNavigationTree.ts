@@ -289,7 +289,21 @@ export const moduleNavigationTree: NavigationModality[] = [
       {
         name: 'Vascular/Aorta',
         description: 'Aortic syndrome, aneurysm, rupture, and follow-up language.',
-        workflows: [workflow('ct-aorta', 'Dissection / Aneurysm', 'Aortic segments, dissection flap, branch involvement, rupture signs.', 'partial', undefined, ['CAD-RADS context'])],
+        workflows: [
+          workflow('ct-aorta', 'Dissection / Aneurysm', 'Aortic segments, dissection flap, branch involvement, rupture signs.', 'partial'),
+          workflow('ct-aaa-postprocedure', 'AAA Postprocedural Surveillance', 'Sac change, graft integrity, endoleak, branch patency, and complications.', 'implemented', 'aaaPostprocedure'),
+          workflow('ct-aaa-preprocedure', 'AAA Preprocedural Evaluation', 'Aneurysm, neck, branches, landing zones, access vessels, and rupture signs.', 'implemented', 'aaaPreprocedure'),
+        ],
+      },
+      {
+        name: 'Cardiovascular',
+        description: 'Coronary, valve-planning, calcium, and functional coronary CT workflows.',
+        workflows: [
+          workflow('ct-coronary-angiography', 'Coronary CT Angiography', 'Origins, dominance, segment plaque and stenosis, stents, grafts, and cardiac findings.', 'implemented', 'coronaryCta', ['CAD-RADS user entry']),
+          workflow('ct-tavi-planning', 'TAVI Planning CTA', 'Annulus, coronary heights, root, fluoroscopic angle, and access anatomy.', 'implemented', 'taviPlanningCta'),
+          workflow('ct-coronary-calcium-score', 'Coronary Artery Calcium Scoring', 'Vessel and total Agatston scores, optional percentile, and incidental findings.', 'implemented', 'calciumScore', ['CAC category user entry']),
+          workflow('ct-fractional-flow-reserve', 'Fractional Flow Reserve CT', 'Source adequacy, lesion, standardized value, nadir, and pressure-drop pattern.', 'implemented', 'ffrCt'),
+        ],
       },
       {
         name: 'Trauma',
@@ -335,6 +349,13 @@ export const moduleNavigationTree: NavigationModality[] = [
           workflow('mri-multiple-sclerosis', 'Multiple Sclerosis MRI', 'Protocol, lesion distribution, activity, comparison, and spine findings.', 'implemented', 'multipleSclerosisMri'),
           workflow('mri-dementia', 'Dementia MRI', 'Atrophy pattern, vascular burden, microbleeds, hydrocephalus, and cautious synthesis.', 'implemented', 'dementiaMri'),
           workflow('mri-brain-seizure', 'Seizure', 'Hippocampi, cortical malformation, mass, and gliosis.'),
+        ],
+      },
+      {
+        name: 'Cardiac',
+        description: 'Chamber function, wall motion, tissue characterization, and cardiomyopathy phenotype.',
+        workflows: [
+          workflow('mri-cardiomyopathy', 'Cardiac MRI for Adult Cardiomyopathy', 'Indexed ventricular function, tissue characterization, thrombus, and phenotype synthesis.', 'implemented', 'cardiomyopathyMri'),
         ],
       },
       {

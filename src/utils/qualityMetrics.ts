@@ -161,6 +161,26 @@ export function scoreReportCompleteness(moduleType: ModuleType, values: Record<s
     ]);
   }
 
+  if (['coronaryCta', 'taviPlanningCta', 'cardiomyopathyMri', 'aaaPostprocedure', 'aaaPreprocedure', 'calciumScore', 'ffrCt'].includes(moduleType)) {
+    const requiredByModule: Partial<Record<ModuleType, string[]>> = {
+      coronaryCta: ['coronaryOrigins', 'dominance', 'segmentAssessment', 'nondiagnosticSegments', 'plaqueBurden', 'maximalStenosis'],
+      taviPlanningCta: ['valveMorphology', 'annularAreaMm2', 'annularPerimeterMm', 'leftCoronaryHeightMm', 'rightCoronaryHeightMm', 'iliofemoralDiameters', 'accessCalcification', 'accessTortuosity'],
+      cardiomyopathyMri: ['lvEdvi', 'lvEsvi', 'lvEf', 'rvEdvi', 'rvEsvi', 'rvEf', 'wallMotion', 'lateGadoliniumEnhancement', 'thrombus'],
+      aaaPostprocedure: ['repairType', 'sacApMm', 'sacTrMm', 'sacChange', 'graftPosition', 'graftPatency', 'endoleakStatus', 'branchPatency'],
+      aaaPreprocedure: ['aneurysmLocation', 'aneurysmMorphology', 'maxDiameterMm', 'neckLengthMm', 'neckDiameterMm', 'branchAnatomy', 'iliacLandingZones', 'accessDiameters'],
+      calciumScore: ['lmScore', 'ladScore', 'lcxScore', 'rcaScore', 'totalAgatston', 'involvedVesselCount'],
+      ffrCt: ['sourceCtaAdequacy', 'vessel', 'lesionLocation', 'plaqueStenosis', 'analyzability', 'standardLocation', 'standardValue', 'lowestValue'],
+    };
+    const required = requiredByModule[moduleType] || [];
+    return score('Report completeness', [
+      { label: 'Clinical context addressed', complete: hasMeaningfulText(values.clinicalIndication) },
+      { label: 'Protocol and quality addressed', complete: hasMeaningfulText(values.modalityProtocol) && addressed(values.examQuality) },
+      { label: 'Core cardiovascular measurements and findings addressed', complete: required.every((key) => addressed(values[key])) },
+      { label: 'Comparison or baseline status addressed', complete: hasAny(values, ['comparisonStudy', 'comparisonDate']) || ['taviPlanningCta', 'aaaPreprocedure', 'calciumScore'].includes(moduleType) },
+      { label: 'Impression generated', complete: hasMeaningfulText(report.impression) },
+    ]);
+  }
+
   if (['tracheobronchomalacia', 'fibroticLungDisease', 'pulmonaryHypertensionCtpa', 'copdCt', 'cysticLungDisease', 'lungCancerScreening', 'viralPneumoniaCt'].includes(moduleType)) {
     const requiredByModule: Partial<Record<ModuleType, string[]>> = {
       tracheobronchomalacia: ['respiratoryEffort', 'airwayCollapse', 'distribution', 'airTrapping', 'diagnosticConfidence'],

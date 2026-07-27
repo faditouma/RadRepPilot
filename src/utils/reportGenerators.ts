@@ -28,6 +28,7 @@ import { generateKidneyTransplantUltrasoundReport, generateLiverTransplantUltras
 import { generateIncidentalNoduleReport } from './incidentalNoduleReportGenerator';
 import { generateThoracicImagingReport } from './thoracicImagingReportGenerator';
 import { generateBrainTumorMriReport, generateNeuroradiologyWorkflowReport } from './neuroradiologyImagingReportGenerator';
+import { generateCardiovascularImagingReport } from './cardiovascularImagingReportGenerator';
 import { cleanLines, formatMeasurement, numberOrNull, sentenceList, workflowList, workflowValue, yes } from './impressionGenerators';
 
 function keyNegativeSentence(values: WorkflowValues, suppressPhrases: string[] = []): string | undefined {
@@ -947,6 +948,14 @@ export function generateReportingWorkflowReport(moduleType: ModuleType, values: 
     case 'niRads':
     case 'dementiaMri':
       return generateNeuroradiologyWorkflowReport(schema, values);
+    case 'coronaryCta':
+    case 'taviPlanningCta':
+    case 'cardiomyopathyMri':
+    case 'aaaPostprocedure':
+    case 'aaaPreprocedure':
+    case 'calciumScore':
+    case 'ffrCt':
+      return generateCardiovascularImagingReport(schema, values);
     case 'ctpa':
       return generateCtpaWorkflowReport(schema, values);
     case 'nodule':
