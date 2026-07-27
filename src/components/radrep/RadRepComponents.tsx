@@ -32,6 +32,7 @@ const moduleLabels: Record<DraftType, string> = {
   thyroidUltrasound: 'Thyroid Ultrasound',
   ctColonography: 'CT Colonography',
   enterography: 'CT/MR Enterography',
+  perianalFistulaMri: 'Perianal Fistulizing Disease MRI',
   nodule: 'Pulmonary Nodule / Fleischner',
   stroke: 'CT Head Stroke / ASPECTS',
   chestXray: 'Chest X-ray: Infection / Dyspnea',

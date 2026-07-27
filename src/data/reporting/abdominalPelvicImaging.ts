@@ -302,3 +302,111 @@ export const enterographyWorkflowSchema: ReportingWorkflowSchema = {
     },
   ],
 };
+
+const perianalDefaults: WorkflowValues = {
+  clinicalIndication: '', clinicalContext: '', comparisonStudy: '', comparisonDate: '',
+  modalityProtocol: '', examQuality: '', technicalLimitations: '', primaryFistula: '',
+  internalOpeningClock: '', internalOpeningHeightCm: '', tractClassification: '',
+  tractCourse: '', externalOpening: '', tractActivity: '', secondaryTracts: '',
+  secondaryTractDetails: '', abscess: '', abscessLocation: '', abscessApMm: '',
+  abscessTrMm: '', abscessCcMm: '', horseshoeExtension: '', supralevatorExtension: '',
+  translevatorExtension: '', proctitis: '', proctitisDetails: '', additionalFindings: '',
+  incidentalFindings: '', userAssignedClassification: '', limitationsUncertainty: '',
+  findingsOverride: '', impressionOverride: '',
+};
+
+export const perianalFistulaMriWorkflowSchema: ReportingWorkflowSchema = {
+  moduleType: 'perianalFistulaMri',
+  moduleId: 'mri-perianal-fistula',
+  title: 'Perianal Fistulizing Disease MRI',
+  shortTitle: 'Perianal fistula MRI',
+  modality: 'MRI',
+  bodySystem: 'Pelvis',
+  clinicalQuestion: 'Map perianal fistula openings, sphincter relationships, secondary tracts, collections, extension, and inflammatory activity.',
+  techniqueDefault: 'Multiplanar pelvic MRI was performed with dedicated small-field-of-view perianal sequences and intravenous contrast as available.',
+  badges: ['Implemented', 'Educational draft', 'Tract mapping'],
+  insertTargets: ['findings', 'impression', 'incidentalFindings', 'recommendations'],
+  safetyNote: 'Verify internal and external openings, tract course relative to the sphincter complex, every secondary tract and collection, supralevator extension, and activity. Classification and management are not calculated automatically.',
+  contentMetadata: {
+    sourceChapter: 'Chapter 19: Perianal fistulizing disease MRI',
+    sourceType: 'Private development reference',
+    guidelineOrClassificationName: 'Parks and St James classifications',
+    guidelineVersion: 'Current terminology requires primary-source verification',
+    lastReviewedDate: '2026-07-27',
+    reviewStatus: 'needs_clinical_review',
+    clinicalValidationRequired: true,
+  },
+  defaultValues: perianalDefaults,
+  sections: [
+    {
+      id: 'clinical-context', title: 'Clinical context', defaultOpen: true,
+      fields: [
+        area('clinicalIndication', 'Clinical indication', 'Suspected or known perianal fistula, drainage, pain, or treatment response'),
+        area('clinicalContext', 'Relevant clinical context', 'Inflammatory bowel disease, prior drainage, seton, surgery, or treatment'),
+        text('comparisonStudy', 'Comparison examination'), { id: 'comparisonDate', label: 'Comparison date', type: 'date' },
+      ],
+    },
+    {
+      id: 'technical-quality', title: 'Protocol and technical quality', defaultOpen: true,
+      fields: [
+        text('modalityProtocol', 'MRI protocol', 'e.g. dedicated perianal MRI with contrast', true),
+        select('examQuality', 'Examination quality', quality),
+        area('technicalLimitations', 'Technical limitations', 'Motion, incomplete coverage, susceptibility, missing contrast, or other issue'),
+      ],
+    },
+    {
+      id: 'primary-tract', title: 'Primary fistula tract', defaultOpen: true,
+      fields: [
+        select('primaryFistula', 'Primary fistula tract', assessment),
+        { ...text('internalOpeningClock', 'Internal opening clock-face', 'e.g. 6 o’clock'), visibleWhen: { field: 'primaryFistula', equals: ['present', 'indeterminate'] } },
+        { ...number('internalOpeningHeightCm', 'Internal opening height above anal verge', 'cm'), visibleWhen: { field: 'primaryFistula', equals: ['present', 'indeterminate'] } },
+        { ...text('tractClassification', 'Anatomic tract type', 'Intersphincteric, transsphincteric, suprasphincteric, extrasphincteric, or indeterminate'), visibleWhen: { field: 'primaryFistula', equals: ['present', 'indeterminate'] } },
+        { ...area('tractCourse', 'Tract course', 'Origin, relationship to internal/external sphincters, direction, and length'), visibleWhen: { field: 'primaryFistula', equals: ['present', 'indeterminate'] } },
+        { ...text('externalOpening', 'External opening', 'Clock-face and skin location'), visibleWhen: { field: 'primaryFistula', equals: ['present', 'indeterminate'] } },
+        { ...text('tractActivity', 'Activity or fibrosis', 'Active, predominantly fibrotic, mixed, indeterminate, or not assessed'), visibleWhen: { field: 'primaryFistula', equals: ['present', 'indeterminate'] } },
+        { ...text('userAssignedClassification', 'User-assigned classification', 'Optional; no class is calculated'), visibleWhen: { field: 'primaryFistula', equals: ['present', 'indeterminate'] } },
+      ],
+    },
+    {
+      id: 'extensions-collections', title: 'Secondary tracts and collections', defaultOpen: true,
+      fields: [
+        select('secondaryTracts', 'Secondary tracts', assessment),
+        { ...area('secondaryTractDetails', 'Secondary tract details', 'Clock-face, level, course, sphincter relationship, and activity'), visibleWhen: { field: 'secondaryTracts', equals: ['present', 'indeterminate'] } },
+        select('abscess', 'Abscess or drainable collection', assessment),
+        { ...text('abscessLocation', 'Collection location'), visibleWhen: { field: 'abscess', equals: ['present', 'indeterminate'] } },
+        { ...number('abscessApMm', 'AP dimension', 'mm'), visibleWhen: { field: 'abscess', equals: ['present', 'indeterminate'] } },
+        { ...number('abscessTrMm', 'Transverse dimension', 'mm'), visibleWhen: { field: 'abscess', equals: ['present', 'indeterminate'] } },
+        { ...number('abscessCcMm', 'Craniocaudal dimension', 'mm'), visibleWhen: { field: 'abscess', equals: ['present', 'indeterminate'] } },
+        select('horseshoeExtension', 'Horseshoe component', assessment),
+        select('supralevatorExtension', 'Supralevator extension', assessment),
+        select('translevatorExtension', 'Translevator extension', assessment),
+      ],
+    },
+    {
+      id: 'associated-findings', title: 'Associated findings and overrides', defaultOpen: true,
+      fields: [
+        select('proctitis', 'Proctitis', assessment),
+        { ...area('proctitisDetails', 'Proctitis details'), visibleWhen: { field: 'proctitis', equals: ['present', 'indeterminate'] } },
+        area('additionalFindings', 'Additional pelvic findings'), area('incidentalFindings', 'Incidental findings'),
+        area('limitationsUncertainty', 'Additional uncertainty'),
+        area('findingsOverride', 'Findings free-text override', 'When entered, this replaces generated findings'),
+        area('impressionOverride', 'Impression free-text override', 'When entered, this replaces generated impression'),
+      ],
+    },
+  ],
+  keyNegatives: [], incidentalOptions: [],
+  quickFills: [
+    {
+      id: 'no-fistula', label: 'No fistula identified', description: 'Diagnostic examination without fistula or collection.', intent: 'normal',
+      values: { examQuality: 'diagnostic', primaryFistula: 'absent', secondaryTracts: 'absent', abscess: 'absent', horseshoeExtension: 'absent', supralevatorExtension: 'absent', translevatorExtension: 'absent', proctitis: 'absent' },
+    },
+    {
+      id: 'primary-fistula', label: 'Primary fistula', description: 'Open the detailed tract-mapping pathway.', intent: 'positive',
+      values: { examQuality: 'diagnostic', primaryFistula: 'present', secondaryTracts: 'absent', abscess: 'absent', horseshoeExtension: 'absent', supralevatorExtension: 'absent', translevatorExtension: 'absent' },
+    },
+    {
+      id: 'limited-assessment', label: 'Limited examination', description: 'Document an incompletely assessed fistula and complications.', intent: 'complicated',
+      values: { examQuality: 'limited', primaryFistula: 'indeterminate', secondaryTracts: 'not assessed', abscess: 'not assessed', horseshoeExtension: 'not assessed', supralevatorExtension: 'not assessed', translevatorExtension: 'not assessed', proctitis: 'not assessed' },
+    },
+  ],
+};

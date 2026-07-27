@@ -131,6 +131,35 @@ export function scoreRequisitionCompleteness(form: ReferralFormState): QualitySc
 }
 
 export function scoreReportCompleteness(moduleType: ModuleType, values: Record<string, unknown>, report: ReportSections): QualityScore {
+  if (moduleType === 'perianalFistulaMri') {
+    const tractStatus = textValue(values.primaryFistula);
+    const tractComplete =
+      !['present', 'indeterminate'].includes(tractStatus) ||
+      (hasMeaningfulText(values.internalOpeningClock) && hasMeaningfulText(values.internalOpeningHeightCm) &&
+        hasMeaningfulText(values.tractClassification) && hasMeaningfulText(values.tractCourse) &&
+        hasMeaningfulText(values.externalOpening) && hasMeaningfulText(values.tractActivity));
+    const detail = (statusKey: string, detailsKey?: string) => {
+      const status = textValue(values[statusKey]);
+      return addressed(values[statusKey]) &&
+        (!detailsKey || !['present', 'indeterminate'].includes(status) || hasMeaningfulText(values[detailsKey]));
+    };
+    const abscessStatus = textValue(values.abscess);
+    const abscessComplete =
+      addressed(values.abscess) &&
+      (!['present', 'indeterminate'].includes(abscessStatus) ||
+        (hasMeaningfulText(values.abscessLocation) && hasAny(values, ['abscessApMm', 'abscessTrMm', 'abscessCcMm'])));
+    return score('Report completeness', [
+      { label: 'Clinical indication addressed', complete: hasMeaningfulText(values.clinicalIndication), missingLabel: 'Clinical indication missing' },
+      { label: 'Protocol and technical quality addressed', complete: hasMeaningfulText(values.modalityProtocol) && addressed(values.examQuality), missingLabel: 'Protocol or examination quality missing' },
+      { label: 'Primary tract fully mapped when present', complete: addressed(values.primaryFistula) && tractComplete, missingLabel: tractStatus === 'present' || tractStatus === 'indeterminate' ? 'Internal opening, height, classification, course, external opening, or activity missing' : 'Primary tract assessment missing' },
+      { label: 'Secondary tracts addressed', complete: detail('secondaryTracts', 'secondaryTractDetails'), missingLabel: 'Secondary tract assessment/details incomplete' },
+      { label: 'Abscess or collection addressed', complete: abscessComplete, missingLabel: 'Collection location or measurement missing' },
+      { label: 'Horseshoe and superior extension addressed', complete: detail('horseshoeExtension') && detail('supralevatorExtension') && detail('translevatorExtension'), missingLabel: 'Horseshoe, supralevator, or translevator assessment missing' },
+      { label: 'Proctitis addressed', complete: detail('proctitis', 'proctitisDetails'), missingLabel: 'Proctitis assessment/details incomplete' },
+      { label: 'Impression generated', complete: hasMeaningfulText(report.impression), missingLabel: 'Impression incomplete' },
+    ]);
+  }
+
   if (moduleType === 'enterography') {
     const activityStatus = textValue(values.activeInflammation);
     const activityComplete =

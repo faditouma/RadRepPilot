@@ -354,6 +354,13 @@ export const moduleNavigationTree: NavigationModality[] = [
         description: 'Rectal cancer staging and pelvic lesion descriptors.',
         workflows: [
           workflow(
+            'mri-perianal-fistula',
+            'Perianal Fistulizing Disease MRI',
+            'Internal and external openings, sphincter relationships, secondary tracts, collections, extensions, and activity.',
+            'implemented',
+            'perianalFistulaMri',
+          ),
+          workflow(
             'mri-rectal-cancer',
             'Rectal Cancer MRI',
             'Tumor height and extent, mesorectal fascia, sphincter complex, EMVI, nodes, deposits, and response.',

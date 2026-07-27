@@ -27,6 +27,7 @@ export type ModuleType =
   | 'thyroidUltrasound'
   | 'ctColonography'
   | 'enterography'
+  | 'perianalFistulaMri'
   | 'nodule'
   | 'stroke'
   | 'chestXray'

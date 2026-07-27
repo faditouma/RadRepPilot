@@ -151,3 +151,50 @@ export function generateEnterographyReport(schema: ReportingWorkflowSchema, valu
     recommendations: 'No disease-activity score, treatment, surveillance interval, or management recommendation is calculated. Verify bowel distention, involved segments, strictures, penetrating complications, and comparison before finalizing.',
   };
 }
+
+export function generatePerianalFistulaMriReport(schema: ReportingWorkflowSchema, values: WorkflowValues): ReportSections {
+  const quality = workflowValue(values, 'examQuality');
+  const status = workflowValue(values, 'primaryFistula');
+  const limitation = [workflowValue(values, 'technicalLimitations'), workflowValue(values, 'limitationsUncertainty')].filter(Boolean).join('; ');
+  const collectionSize = dimensions(values, ['abscessApMm', 'abscessTrMm', 'abscessCcMm']);
+  const tractLine =
+    status === 'absent' ? 'No perianal fistula tract is identified.' :
+    status === 'present' ? `${workflowValue(values, 'tractClassification') || 'Perianal fistula tract'} with internal opening at ${workflowValue(values, 'internalOpeningClock') || 'an unspecified clock-face position'}${workflowValue(values, 'internalOpeningHeightCm') ? `, ${workflowValue(values, 'internalOpeningHeightCm')} cm above the anal verge` : ''}. ${workflowValue(values, 'tractCourse') || ''}${workflowValue(values, 'externalOpening') ? ` External opening: ${workflowValue(values, 'externalOpening')}.` : ''}${workflowValue(values, 'tractActivity') ? ` Appearance: ${workflowValue(values, 'tractActivity')}.` : ''}` :
+    status === 'indeterminate' ? `Indeterminate perianal tract${workflowValue(values, 'internalOpeningClock') ? ` with possible internal opening at ${workflowValue(values, 'internalOpeningClock')}` : ''}.` :
+    status === 'not assessed' ? 'Perianal fistula was not adequately assessed.' : undefined;
+  const abscessStatus = workflowValue(values, 'abscess');
+  const collectionLine =
+    abscessStatus === 'present' ? `Perianal collection at ${workflowValue(values, 'abscessLocation') || 'an unspecified location'}${collectionSize ? ` measuring ${collectionSize}` : ''}.` :
+    abscessStatus === 'indeterminate' ? `Indeterminate perianal collection${workflowValue(values, 'abscessLocation') ? ` at ${workflowValue(values, 'abscessLocation')}` : ''}${collectionSize ? ` measuring ${collectionSize}` : ''}.` :
+    abscessStatus === 'not assessed' ? 'Perianal collection was not adequately assessed.' : undefined;
+  const extensions = [
+    assessedFinding(values, 'Secondary tracts', 'secondaryTracts', 'secondaryTractDetails'),
+    assessedFinding(values, 'Horseshoe component', 'horseshoeExtension'),
+    assessedFinding(values, 'Supralevator extension', 'supralevatorExtension'),
+    assessedFinding(values, 'Translevator extension', 'translevatorExtension'),
+    assessedFinding(values, 'Proctitis', 'proctitis', 'proctitisDetails'),
+  ];
+  const noComplication = ['secondaryTracts', 'abscess', 'horseshoeExtension', 'supralevatorExtension', 'translevatorExtension'].every((key) => workflowValue(values, key) === 'absent');
+  const generatedFindings = cleanLines([
+    tractLine, collectionLine, ...extensions,
+    noComplication ? 'No secondary tract, collection, horseshoe component, or supralevator/translevator extension.' : undefined,
+    workflowValue(values, 'userAssignedClassification') ? `User-entered classification: ${workflowValue(values, 'userAssignedClassification')}.` : undefined,
+    workflowValue(values, 'additionalFindings') ? `Additional findings: ${workflowValue(values, 'additionalFindings')}.` : undefined,
+    limitation ? `Limitations: ${limitation}.` : undefined,
+  ]);
+  const limitationSummary =
+    quality === 'nondiagnostic' ? `Nondiagnostic perianal MRI${limitation ? `: ${limitation}` : '.'}` :
+    quality === 'limited' ? `Limited perianal MRI${limitation ? `: ${limitation}` : '.'}` : undefined;
+  const summary =
+    status === 'absent' ? 'No perianal fistula or abscess.' :
+    status === 'present' ? `${workflowValue(values, 'tractClassification') || 'Perianal fistula'}${workflowValue(values, 'internalOpeningClock') ? ` with internal opening at ${workflowValue(values, 'internalOpeningClock')}` : ''}${workflowValue(values, 'tractActivity') ? `; ${workflowValue(values, 'tractActivity')}` : ''}.` :
+    status === 'indeterminate' ? 'Indeterminate perianal fistula tract.' : 'Perianal fistula assessment is incomplete.';
+  return {
+    indication: cleanLines([workflowValue(values, 'clinicalIndication') || schema.clinicalQuestion, workflowValue(values, 'clinicalContext') ? `Relevant clinical context: ${workflowValue(values, 'clinicalContext')}.` : undefined]),
+    technique: cleanLines([workflowValue(values, 'modalityProtocol') || schema.techniqueDefault, quality ? `Examination quality: ${quality}.` : undefined, limitation ? `Technical limitations: ${limitation}.` : undefined]),
+    findings: workflowValue(values, 'findingsOverride') || generatedFindings,
+    impression: workflowValue(values, 'impressionOverride') || cleanLines([limitationSummary, summary, collectionLine, ...extensions.slice(0, 4)]),
+    incidentalFindings: workflowValue(values, 'incidentalFindings'),
+    recommendations: 'No fistula classification, surgical plan, treatment, or management recommendation is calculated. Verify all openings, tract relationships, secondary extensions, collections, and activity before finalizing.',
+  };
+}
