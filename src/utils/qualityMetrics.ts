@@ -131,6 +131,24 @@ export function scoreRequisitionCompleteness(form: ReferralFormState): QualitySc
 }
 
 export function scoreReportCompleteness(moduleType: ModuleType, values: Record<string, unknown>, report: ReportSections): QualityScore {
+  if (moduleType === 'endometriosisMri') {
+    const detail = (statusKey: string, detailsKey?: string) => {
+      const status = textValue(values[statusKey]);
+      return addressed(values[statusKey]) && (!detailsKey || !['present', 'indeterminate'].includes(status) || hasMeaningfulText(values[detailsKey]));
+    };
+    const bowel = textValue(values.bowelInvolvement);
+    return score('Report completeness', [
+      { label: 'Clinical indication and surgery history addressed', complete: hasMeaningfulText(values.clinicalIndication) && hasMeaningfulText(values.surgeryTreatmentHistory), missingLabel: 'Clinical indication or surgery/treatment history missing' },
+      { label: 'Protocol and technical quality addressed', complete: hasMeaningfulText(values.modalityProtocol) && addressed(values.examQuality), missingLabel: 'Protocol or examination quality missing' },
+      { label: 'Ovaries and three compartments mapped', complete: detail('endometrioma', 'endometriomaDetails') && detail('anteriorCompartment', 'anteriorDetails') && detail('middleCompartment', 'middleDetails') && detail('posteriorCompartment', 'posteriorDetails'), missingLabel: 'Ovarian or compartment assessment/details incomplete' },
+      { label: 'Uterosacral and rectovaginal regions mapped', complete: detail('uterosacralTorus', 'uterosacralTorusDetails') && detail('rectovaginalVaginal', 'rectovaginalVaginalDetails'), missingLabel: 'Uterosacral/torus or rectovaginal assessment/details incomplete' },
+      { label: 'Urinary tract and hydronephrosis addressed', complete: detail('bladderUreter', 'bladderUreterDetails') && detail('hydronephrosis', 'hydronephrosisDetails'), missingLabel: 'Urinary tract or hydronephrosis assessment/details incomplete' },
+      { label: 'Bowel involvement mapped when present', complete: addressed(values.bowelInvolvement) && (!['present', 'indeterminate'].includes(bowel) || (hasMeaningfulText(values.bowelSegment) && hasMeaningfulText(values.bowelLesionLengthMm) && hasMeaningfulText(values.bowelDepth) && hasMeaningfulText(values.bowelCircumference))), missingLabel: 'Bowel segment, length, depth, or circumference missing' },
+      { label: 'Pouch of Douglas and adhesions addressed', complete: hasMeaningfulText(values.pouchDouglas) && hasMeaningfulText(values.adhesions), missingLabel: 'Pouch of Douglas or adhesions missing' },
+      { label: 'Impression generated', complete: hasMeaningfulText(report.impression), missingLabel: 'Impression incomplete' },
+    ]);
+  }
+
   if (moduleType === 'pelvicFloorImaging') {
     const detail = (statusKey: string, detailsKey?: string) => {
       const status = textValue(values[statusKey]);

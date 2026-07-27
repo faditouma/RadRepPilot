@@ -32,6 +32,7 @@ export type ModuleType =
   | 'adnexalCystUltrasound'
   | 'fibroidMri'
   | 'pelvicFloorImaging'
+  | 'endometriosisMri'
   | 'nodule'
   | 'stroke'
   | 'chestXray'

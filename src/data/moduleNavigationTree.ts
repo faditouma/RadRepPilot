@@ -384,6 +384,13 @@ export const moduleNavigationTree: NavigationModality[] = [
             'pelvicFloorImaging',
           ),
           workflow(
+            'mri-endometriosis',
+            'Endometriosis MRI',
+            'Endometriomas, deep disease by compartment, bowel and urinary involvement, adhesions, obstruction, and surgical mapping.',
+            'implemented',
+            'endometriosisMri',
+          ),
+          workflow(
             'mri-perianal-fistula',
             'Perianal Fistulizing Disease MRI',
             'Internal and external openings, sphincter relationships, secondary tracts, collections, extensions, and activity.',

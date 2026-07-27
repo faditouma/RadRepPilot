@@ -375,3 +375,38 @@ export function generatePelvicFloorImagingReport(schema: ReportingWorkflowSchema
     recommendations: 'No prolapse severity category, measurement threshold interpretation, treatment, or management recommendation is calculated. Verify patient effort, reference convention, dynamic phases, and all compartments.',
   };
 }
+
+export function generateEndometriosisMriReport(schema: ReportingWorkflowSchema, values: WorkflowValues): ReportSections {
+  const quality = workflowValue(values, 'examQuality');
+  const limitation = [workflowValue(values, 'technicalLimitations'), workflowValue(values, 'limitationsUncertainty')].filter(Boolean).join('; ');
+  const mapped = [
+    assessedFinding(values, 'Ovarian endometrioma', 'endometrioma', 'endometriomaDetails'),
+    assessedFinding(values, 'Anterior compartment disease', 'anteriorCompartment', 'anteriorDetails'),
+    assessedFinding(values, 'Middle compartment disease', 'middleCompartment', 'middleDetails'),
+    assessedFinding(values, 'Posterior compartment disease', 'posteriorCompartment', 'posteriorDetails'),
+    assessedFinding(values, 'Uterosacral ligament/torus disease', 'uterosacralTorus', 'uterosacralTorusDetails'),
+    assessedFinding(values, 'Rectovaginal or vaginal disease', 'rectovaginalVaginal', 'rectovaginalVaginalDetails'),
+    assessedFinding(values, 'Bladder or ureter involvement', 'bladderUreter', 'bladderUreterDetails'),
+  ];
+  const bowelStatus = workflowValue(values, 'bowelInvolvement');
+  const bowel = ['present', 'indeterminate'].includes(bowelStatus) ? `Bowel involvement: ${bowelStatus}; ${workflowValue(values, 'bowelSegment') || 'segment not entered'}${workflowValue(values, 'bowelLesionLengthMm') ? ` over ${workflowValue(values, 'bowelLesionLengthMm')} mm` : ''}${workflowValue(values, 'bowelDepth') ? `; depth ${workflowValue(values, 'bowelDepth')}` : ''}${workflowValue(values, 'bowelCircumference') ? `; circumference ${workflowValue(values, 'bowelCircumference')}` : ''}.` : bowelStatus === 'not assessed' ? 'Bowel involvement was not adequately assessed.' : undefined;
+  const allNegative = ['endometrioma', 'anteriorCompartment', 'middleCompartment', 'posteriorCompartment', 'uterosacralTorus', 'rectovaginalVaginal', 'bladderUreter', 'bowelInvolvement'].every((key) => workflowValue(values, key) === 'absent');
+  const findings = cleanLines([
+    ...mapped, bowel, allNegative ? 'No ovarian endometrioma or deep endometriosis is identified.' : undefined,
+    workflowValue(values, 'pouchDouglas') ? `Pouch of Douglas: ${workflowValue(values, 'pouchDouglas')}.` : undefined,
+    workflowValue(values, 'adhesions') ? `Adhesions/tethering: ${workflowValue(values, 'adhesions')}.` : undefined,
+    assessedFinding(values, 'Hydronephrosis', 'hydronephrosis', 'hydronephrosisDetails'),
+    assessedFinding(values, 'Adenomyosis', 'adenomyosis', 'adenomyosisDetails'),
+    workflowValue(values, 'additionalPelvicFindings') ? `Additional pelvic findings: ${workflowValue(values, 'additionalPelvicFindings')}.` : undefined,
+    limitation ? `Limitations: ${limitation}.` : undefined,
+  ]);
+  const limit = quality === 'nondiagnostic' ? `Nondiagnostic endometriosis MRI${limitation ? `: ${limitation}` : '.'}` : quality === 'limited' ? `Limited endometriosis mapping${limitation ? `: ${limitation}` : '.'}` : undefined;
+  return {
+    indication: cleanLines([workflowValue(values, 'clinicalIndication') || schema.clinicalQuestion, workflowValue(values, 'clinicalContext') ? `Relevant clinical context: ${workflowValue(values, 'clinicalContext')}.` : undefined, workflowValue(values, 'surgeryTreatmentHistory') ? `Surgery/treatment history: ${workflowValue(values, 'surgeryTreatmentHistory')}.` : undefined]),
+    technique: cleanLines([workflowValue(values, 'modalityProtocol') || schema.techniqueDefault, quality ? `Examination quality: ${quality}.` : undefined, limitation ? `Technical limitations: ${limitation}.` : undefined]),
+    findings: workflowValue(values, 'findingsOverride') || findings,
+    impression: workflowValue(values, 'impressionOverride') || cleanLines([limit, allNegative ? 'No MRI evidence of endometrioma or deep endometriosis.' : undefined, ...mapped.filter(Boolean), bowel, assessedFinding(values, 'Hydronephrosis', 'hydronephrosis', 'hydronephrosisDetails'), workflowValue(values, 'userSurgicalSynthesis') || undefined]),
+    incidentalFindings: workflowValue(values, 'incidentalFindings'),
+    recommendations: 'No endometriosis classification, surgical eligibility, treatment, or management recommendation is calculated. Verify every compartment, bowel and urinary involvement, obstruction, adhesions, and user-entered surgical map.',
+  };
+}
