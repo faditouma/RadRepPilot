@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState, type ReactNode } from 'react';
-import { moduleNavigationTree, type NavigationWorkflow } from '../../data/moduleNavigationTree';
+import { publicModuleNavigationTree, type NavigationWorkflow } from '../../data/moduleNavigationTree';
 import { reportingModules } from '../../data/reportingModules';
 import { bodySystemIconName } from '../../data/iconMap';
 import type { ModuleType } from '../../radrep/types';
@@ -60,7 +60,7 @@ export function BranchingModuleNavigator({
 
   useEffect(() => {
     if (!initialWorkflowId) return;
-    for (const modality of moduleNavigationTree) {
+    for (const modality of publicModuleNavigationTree) {
       for (const bodySystem of modality.bodySystems) {
         const workflow = bodySystem.workflows.find((item) => item.id === initialWorkflowId || item.moduleType === initialWorkflowId);
         if (workflow) {
@@ -74,7 +74,7 @@ export function BranchingModuleNavigator({
     }
   }, [initialWorkflowId, onInitialWorkflowOpened]);
 
-  const selectedModality = moduleNavigationTree.find((item) => item.name === selectedModalityName);
+  const selectedModality = publicModuleNavigationTree.find((item) => item.name === selectedModalityName);
   const selectedBodySystem = selectedModality?.bodySystems.find((item) => item.name === selectedBodySystemName);
   const selectedWorkflow = selectedBodySystem?.workflows.find((item) => item.id === selectedWorkflowId);
 
@@ -169,7 +169,7 @@ export function BranchingModuleNavigator({
 
       {!selectedModality ? (
         <div className="branch-grid modality-grid">
-          {moduleNavigationTree.map((modality) => (
+          {publicModuleNavigationTree.map((modality) => (
             <button className="branch-card modality-card" onClick={() => selectModality(modality.name)} type="button" key={modality.name}>
               <span>Modality</span>
               <strong>

@@ -561,3 +561,20 @@ export const moduleNavigationTree: NavigationModality[] = [
     ],
   },
 ];
+
+/**
+ * Public navigation excludes planned scaffolding. Partial entries remain visible
+ * as clearly labeled, non-functional previews; the full registry remains
+ * available internally for implementation planning and reconciliation.
+ */
+export const publicModuleNavigationTree: NavigationModality[] = moduleNavigationTree
+  .map((modality) => ({
+    ...modality,
+    bodySystems: modality.bodySystems
+      .map((bodySystem) => ({
+        ...bodySystem,
+        workflows: bodySystem.workflows.filter((workflowEntry) => workflowEntry.status !== 'planned'),
+      }))
+      .filter((bodySystem) => bodySystem.workflows.length > 0),
+  }))
+  .filter((modality) => modality.bodySystems.length > 0);

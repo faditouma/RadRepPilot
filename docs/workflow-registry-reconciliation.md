@@ -76,7 +76,20 @@ Decision terms:
 - Removed the duplicated breast-MRI card and assigned distinct canonical IDs to mammography, ultrasound, MRI, and preview pathways.
 - Split liver-lesion and renal-lesion IDs by modality because their reporting requirements differ.
 
-The reconciliation resolved **2 former IDs through existing workflow reuse** and removed **9 duplicate navigation cards**. The reconciled registry has **15 partial** and **34 planned** canonical entries: **49 genuinely unfinished workflows**.
+### Definitive count reconciliation
+
+The counts use two different units and are reconciled as follows:
+
+1. The decision tables contain **47 original IDs**: 12 previously partial plus 35 previously planned.
+2. **2 original IDs** were resolved through completed workflow reuse, leaving 45 unresolved original IDs.
+3. Three ambiguous source IDs represented clinically distinct workflows and were split:
+   - liver lesion: one ID became US and CT IDs (**+1**);
+   - renal lesion: one ID became US and CT IDs (**+1**);
+   - breast BI-RADS: one ID became mammography, MRI, and preview IDs (**+2**).
+4. Therefore, **45 + 4 = 49 genuinely unfinished canonical workflows**.
+5. The **9 removed duplicate cards** were repeated navigation occurrences, not additional original IDs, so they do not reduce the 47-row decision-table count.
+
+The final internal registry contains **55 completed**, **15 partial**, and **34 planned** canonical entries. Planned entries are retained only in the internal registry and are excluded from ordinary user navigation. Partial entries remain visible solely as explicitly labeled, non-functional previews.
 
 ## Recommended implementation priority
 
