@@ -27,7 +27,7 @@ import { generatePancreaticCystReport, generatePancreatitisReport, generatePlace
 import { generateKidneyTransplantUltrasoundReport, generateLiverTransplantUltrasoundReport, generateLivingDonorLiverReport } from './transplantImagingReportGenerators';
 import { generateIncidentalNoduleReport } from './incidentalNoduleReportGenerator';
 import { generateThoracicImagingReport } from './thoracicImagingReportGenerator';
-import { generateBrainTumorMriReport } from './neuroradiologyImagingReportGenerator';
+import { generateBrainTumorMriReport, generateNeuroradiologyWorkflowReport } from './neuroradiologyImagingReportGenerator';
 import { cleanLines, formatMeasurement, numberOrNull, sentenceList, workflowList, workflowValue, yes } from './impressionGenerators';
 
 function keyNegativeSentence(values: WorkflowValues, suppressPhrases: string[] = []): string | undefined {
@@ -55,6 +55,39 @@ function commonReport(schema: ReportingWorkflowSchema, values: WorkflowValues, f
     recommendations:
       recommendations ??
       'Draft language only. Verify all user-entered findings, measurements, complications, comparisons, and final wording.',
+  };
+}
+
+function generateAcuteStrokeReport(schema: ReportingWorkflowSchema, values: WorkflowValues): ReportSections {
+  const legacy = generateLegacyStrokeReport(values as unknown as Parameters<typeof generateLegacyStrokeReport>[0]);
+  const v = (key: string) => workflowValue(values, key);
+  const vascular = v('ctaPerformed') === 'yes'
+    ? cleanLines([
+        `CTA: ${v('occlusionStatus') || 'assessment not entered'}${v('occlusionSite') ? ` at ${v('occlusionSite')}` : ''}.`,
+        v('tandemLesion') ? `Tandem lesion: ${v('tandemLesion')}.` : undefined,
+        v('collaterals') ? `Collaterals: ${v('collaterals')}.` : undefined,
+        v('stenosisDissection') ? `Additional vascular findings: ${v('stenosisDissection')}.` : undefined,
+      ])
+    : '';
+  const perfusion = v('perfusionPerformed') === 'yes'
+    ? cleanLines([`Perfusion dataset: ${v('perfusionValidity') || 'validity not entered'}.`, v('perfusionFindings') ? `Perfusion findings: ${v('perfusionFindings')}.` : undefined])
+    : '';
+  const limitation = [v('examQuality'), v('limitationsUncertainty')].filter(Boolean).join('; ');
+  const impressionAdditions = [
+    v('occlusionStatus') === 'present' ? `Large-vessel occlusion at ${v('occlusionSite') || 'an unspecified site'}.` : undefined,
+    v('occlusionStatus') === 'indeterminate' ? `Indeterminate vascular filling abnormality at ${v('occlusionSite') || 'an unspecified site'}.` : undefined,
+    v('perfusionFindings') || undefined,
+    limitation && v('examQuality') !== 'diagnostic' ? `Technical limitation: ${limitation}.` : undefined,
+  ];
+  return {
+    indication: cleanLines([v('clinicalIndication') || schema.clinicalQuestion, v('clinicalContext'), v('lastKnownWell') ? `Last known well/onset: ${v('lastKnownWell')}.` : undefined]),
+    technique: cleanLines([v('modalityProtocol') || schema.techniqueDefault, limitation ? `Quality/limitations: ${limitation}.` : undefined]),
+    findings: v('findingsOverride') || cleanLines([legacy.findings, vascular, perfusion, v('additionalFindings')]),
+    impression: v('impressionOverride') || cleanLines([legacy.impression, ...impressionAdditions]),
+    incidentalFindings: v('incidentalFindings'),
+    recommendations: v('communicationOccurred') === 'yes'
+      ? `Critical-result communication documented by the user: ${v('communicationDetails') || 'details not entered'}.`
+      : 'No treatment recommendation is generated. Urgent findings require user-directed communication and documentation.',
   };
 }
 
@@ -909,12 +942,17 @@ export function generateReportingWorkflowReport(moduleType: ModuleType, values: 
       return generateThoracicImagingReport(schema, values);
     case 'brainTumorMri':
       return generateBrainTumorMriReport(schema, values);
+    case 'multipleSclerosisMri':
+    case 'traumaticBrainInjury':
+    case 'niRads':
+    case 'dementiaMri':
+      return generateNeuroradiologyWorkflowReport(schema, values);
     case 'ctpa':
       return generateCtpaWorkflowReport(schema, values);
     case 'nodule':
       return generateIncidentalNoduleReport(schema, values);
     case 'stroke':
-      return generateLegacyStrokeReport(values as unknown as Parameters<typeof generateLegacyStrokeReport>[0]);
+      return generateAcuteStrokeReport(schema, values);
     case 'chestXray':
       return generateChestXrayReport(schema, values);
     case 'mskXrayFracture':

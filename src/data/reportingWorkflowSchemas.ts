@@ -19,7 +19,13 @@ import { adrenalIncidentalomaWorkflowSchema, adnexalCystUltrasoundWorkflowSchema
 import { pancreaticCystWorkflowSchema, pancreatitisWorkflowSchema, placentaAccretaMriWorkflowSchema } from './reporting/abdominalPelvicImagingPart2';
 import { kidneyTransplantUltrasoundWorkflowSchema, liverTransplantUltrasoundWorkflowSchema, livingDonorLiverWorkflowSchema } from './reporting/transplantImaging';
 import { copdCtWorkflowSchema, cysticLungDiseaseWorkflowSchema, fibroticLungDiseaseWorkflowSchema, lungCancerScreeningWorkflowSchema, pulmonaryHypertensionCtpaWorkflowSchema, tracheobronchomalaciaWorkflowSchema, viralPneumoniaCtWorkflowSchema } from './reporting/thoracicImaging';
-import { brainTumorMriWorkflowSchema } from './reporting/neuroradiologyImaging';
+import {
+  brainTumorMriWorkflowSchema,
+  dementiaMriWorkflowSchema,
+  multipleSclerosisMriWorkflowSchema,
+  niRadsWorkflowSchema,
+  traumaticBrainInjuryWorkflowSchema,
+} from './reporting/neuroradiologyImaging';
 
 export type WorkflowFieldType = 'text' | 'textarea' | 'number' | 'date' | 'time' | 'select' | 'checkbox-group';
 export type WorkflowValue = string | string[];
@@ -512,6 +518,10 @@ export const reportingWorkflowSchemas: Record<
   | 'lungCancerScreening'
   | 'viralPneumoniaCt'
   | 'brainTumorMri'
+  | 'multipleSclerosisMri'
+  | 'traumaticBrainInjury'
+  | 'niRads'
+  | 'dementiaMri'
   | 'nodule'
   | 'stroke'
   | 'chestXray'
@@ -557,6 +567,10 @@ export const reportingWorkflowSchemas: Record<
   lungCancerScreening: lungCancerScreeningWorkflowSchema,
   viralPneumoniaCt: viralPneumoniaCtWorkflowSchema,
   brainTumorMri: brainTumorMriWorkflowSchema,
+  multipleSclerosisMri: multipleSclerosisMriWorkflowSchema,
+  traumaticBrainInjury: traumaticBrainInjuryWorkflowSchema,
+  niRads: niRadsWorkflowSchema,
+  dementiaMri: dementiaMriWorkflowSchema,
   ctpa: {
     moduleType: 'ctpa',
     moduleId: 'ctpa-pe',
@@ -983,8 +997,23 @@ export const reportingWorkflowSchemas: Record<
     badges: ['Implemented', 'Educational draft', 'ASPECTS helper'],
     insertTargets: ['findings', 'impression', 'incidentalFindings', 'recommendations'],
     safetyNote: prototypeSafety,
+    contentMetadata: {
+      sourceChapter: 'Chapter 43: Acute stroke CT/CTA',
+      sourceType: 'Private development reference',
+      guidelineOrClassificationName: 'ASPECTS; user-entered vascular and perfusion assessment',
+      guidelineVersion: 'Current criteria require primary-source verification',
+      lastReviewedDate: '2026-07-27',
+      reviewStatus: 'needs_clinical_review',
+      clinicalValidationRequired: true,
+    },
     defaultValues: {
       clinicalIndication: '',
+      clinicalContext: '',
+      lastKnownWell: '',
+      modalityProtocol: 'Noncontrast CT head; document CTA and perfusion components when performed.',
+      examQuality: '',
+      comparisonStudy: '',
+      comparisonDate: '',
       side: 'right',
       hemorrhagePresent: 'no',
       largeVesselOcclusionSuspected: 'unknown',
@@ -996,6 +1025,20 @@ export const reportingWorkflowSchemas: Record<
       incidentalFindings: '',
       additionalFindings: '',
       limitationsUncertainty: '',
+      ctaPerformed: '',
+      occlusionStatus: '',
+      occlusionSite: '',
+      tandemLesion: '',
+      collaterals: '',
+      stenosisDissection: '',
+      perfusionPerformed: '',
+      perfusionValidity: '',
+      perfusionFindings: '',
+      urgentFinding: '',
+      communicationOccurred: '',
+      communicationDetails: '',
+      findingsOverride: '',
+      impressionOverride: '',
     },
     sections: [
       {
@@ -1004,6 +1047,45 @@ export const reportingWorkflowSchemas: Record<
         defaultOpen: true,
         fields: [
           area('clinicalIndication', 'Indication', 'Acute neurologic deficit, stroke code, aphasia, weakness, or altered mental status'),
+          area('clinicalContext', 'Relevant clinical context', 'Symptoms, treatment context, prior stroke, or vascular history'),
+          text('lastKnownWell', 'Last known well / onset context'),
+          area('modalityProtocol', 'Protocol performed', 'Noncontrast CT, CTA head/neck, and/or perfusion'),
+          select('examQuality', 'Technical quality', [
+            { value: 'diagnostic', label: 'Diagnostic' },
+            { value: 'limited', label: 'Limited' },
+            { value: 'nondiagnostic', label: 'Nondiagnostic' },
+          ]),
+          text('comparisonStudy', 'Comparison examination'),
+          { id: 'comparisonDate', label: 'Comparison date', type: 'date' },
+        ],
+      },
+      {
+        id: 'vascular-perfusion',
+        title: 'CTA and perfusion',
+        fields: [
+          select('ctaPerformed', 'CTA performed', [{ value: 'no', label: 'No' }, { value: 'yes', label: 'Yes' }]),
+          { ...select('occlusionStatus', 'Large-vessel occlusion', [{ value: 'absent', label: 'Absent' }, { value: 'present', label: 'Present' }, { value: 'indeterminate', label: 'Indeterminate' }, { value: 'not-assessed', label: 'Not adequately assessed' }]), visibleWhen: { field: 'ctaPerformed', equals: 'yes' } },
+          { ...text('occlusionSite', 'Occlusion site'), visibleWhen: { field: 'occlusionStatus', equals: ['present', 'indeterminate'] } },
+          { ...text('tandemLesion', 'Tandem lesion'), visibleWhen: { field: 'ctaPerformed', equals: 'yes' } },
+          { ...area('collaterals', 'Collateral circulation (descriptive or user-entered scale)'), visibleWhen: { field: 'ctaPerformed', equals: 'yes' } },
+          { ...area('stenosisDissection', 'Stenosis, dissection, or other vascular finding'), visibleWhen: { field: 'ctaPerformed', equals: 'yes' } },
+          select('perfusionPerformed', 'Perfusion imaging performed', [{ value: 'no', label: 'No' }, { value: 'yes', label: 'Yes' }]),
+          { ...select('perfusionValidity', 'Perfusion dataset validity', [{ value: 'diagnostic', label: 'Diagnostic' }, { value: 'limited', label: 'Limited' }, { value: 'nondiagnostic', label: 'Nondiagnostic' }]), visibleWhen: { field: 'perfusionPerformed', equals: 'yes' } },
+          { ...area('perfusionFindings', 'Perfusion findings', 'User-entered core/penumbra or qualitative assessment'), visibleWhen: { field: 'perfusionPerformed', equals: 'yes' } },
+        ],
+      },
+      {
+        id: 'communication-overrides',
+        title: 'Communication and report control',
+        fields: [
+          select('urgentFinding', 'Urgent finding requiring communication', [{ value: 'no', label: 'No' }, { value: 'yes', label: 'Yes' }]),
+          { ...select('communicationOccurred', 'Communication occurred', [{ value: 'no', label: 'No / not documented' }, { value: 'yes', label: 'Yes' }]), visibleWhen: { field: 'urgentFinding', equals: 'yes' } },
+          { ...area('communicationDetails', 'Recipient, date/time, and method'), visibleWhen: { field: 'communicationOccurred', equals: 'yes' } },
+          area('limitationsUncertainty', 'Technical limitations or uncertainty'),
+          area('additionalFindings', 'Additional findings'),
+          area('incidentalFindings', 'Incidental findings'),
+          area('findingsOverride', 'Findings override'),
+          area('impressionOverride', 'Impression override'),
         ],
       },
       {

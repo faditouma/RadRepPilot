@@ -136,10 +136,27 @@ export function scoreReportCompleteness(moduleType: ModuleType, values: Record<s
     return score('Report completeness', [
       { label: 'Clinical, diagnosis, and treatment context addressed', complete: hasMeaningfulText(values.clinicalIndication) && hasMeaningfulText(values.diagnosisContext) && hasMeaningfulText(values.treatmentHistory) },
       { label: 'Protocol and quality addressed', complete: hasMeaningfulText(values.modalityProtocol) && addressed(values.examQuality) },
-      { label: 'Dominant lesion characterized', complete: addressed(values.dominantLesion) && (!['present', 'indeterminate'].includes(lesion) || (hasMeaningfulText(values.lesionLocation) && hasAny(values, ['lesionApMm', 'lesionTrMm', 'lesionCcMm']) && hasMeaningfulText(values.enhancement) && hasMeaningfulText(values.nonEnhancingDisease))) },
+      { label: 'Dominant lesion characterized', complete: addressed(values.dominantLesion) && (!['present', 'indeterminate'].includes(lesion) || (hasMeaningfulText(values.lesionLocation) && hasAny(values, ['lesionApMm', 'lesionTrMm', 'lesionCcMm']) && hasMeaningfulText(values.enhancement) && hasMeaningfulText(values.nonenhancingDisease))) },
       { label: 'Advanced imaging addressed', complete: ['diffusion', 'susceptibility', 'perfusion', 'spectroscopy'].every((key) => hasMeaningfulText(values[key])) },
       { label: 'Mass effect and spread addressed', complete: ['edema', 'massEffect', 'herniation', 'hydrocephalus', 'leptomeningealSpread', 'ependymalSpread'].every((key) => addressed(values[key])) },
       { label: 'Comparison and confidence addressed', complete: hasMeaningfulText(values.intervalChange) && hasMeaningfulText(values.diagnosticConfidence) },
+      { label: 'Impression generated', complete: hasMeaningfulText(report.impression) },
+    ]);
+  }
+
+  if (['multipleSclerosisMri', 'traumaticBrainInjury', 'niRads', 'dementiaMri'].includes(moduleType)) {
+    const requiredByModule: Partial<Record<ModuleType, string[]>> = {
+      multipleSclerosisMri: ['examMode', 'protocolCompleteness', 'periventricular', 'juxtacorticalCortical', 'infratentorial', 'enhancingLesions', 'newEnlargingLesions', 'diagnosticConfidence'],
+      traumaticBrainInjury: ['hemorrhage', 'contusion', 'massEffect', 'basalCisterns', 'herniation', 'fracture', 'vascularInjuryConcern', 'urgentFinding'],
+      niRads: ['cancerTreatmentHistory', 'primarySiteStatus', 'nodalBedStatus', 'postTreatmentChange', 'intervalChange', 'diagnosticConfidence'],
+      dementiaMri: ['globalAtrophy', 'medialTemporalAtrophy', 'whiteMatterDisease', 'infarcts', 'microbleeds', 'hydrocephalus', 'massLesion', 'diagnosticConfidence'],
+    };
+    const required = requiredByModule[moduleType] || [];
+    return score('Report completeness', [
+      { label: 'Clinical context addressed', complete: hasMeaningfulText(values.clinicalIndication) },
+      { label: 'Protocol and quality addressed', complete: hasMeaningfulText(values.modalityProtocol) && addressed(values.examQuality) },
+      { label: 'Core disease-specific findings addressed', complete: required.every((key) => addressed(values[key])) },
+      { label: 'Comparison addressed', complete: hasAny(values, ['comparisonStudy', 'comparisonDate']) || addressed(values.intervalChange) },
       { label: 'Impression generated', complete: hasMeaningfulText(report.impression) },
     ]);
   }
@@ -1196,9 +1213,24 @@ export function scoreReportCompleteness(moduleType: ModuleType, values: Record<s
         missingLabel: 'Mass effect/shift not addressed',
       },
       {
-        label: 'LVO/clinical context addressed',
-        complete: addressed(values.largeVesselOcclusionSuspected) || hasAny(values, ['clinicalIndication']) || hasFreeTextCoverage(values),
-        missingLabel: 'LVO/context not addressed',
+        label: 'Clinical onset and technical quality addressed',
+        complete: hasMeaningfulText(values.clinicalIndication) && hasAny(values, ['lastKnownWell', 'clinicalContext']) && addressed(values.examQuality),
+        missingLabel: 'Clinical onset or quality not addressed',
+      },
+      {
+        label: 'CTA findings addressed when performed',
+        complete: textValue(values.ctaPerformed) !== 'yes' || (addressed(values.occlusionStatus) && hasAny(values, ['collaterals', 'stenosisDissection'])),
+        missingLabel: 'CTA occlusion/collateral findings not addressed',
+      },
+      {
+        label: 'Perfusion validity addressed when performed',
+        complete: textValue(values.perfusionPerformed) !== 'yes' || (addressed(values.perfusionValidity) && hasMeaningfulText(values.perfusionFindings)),
+        missingLabel: 'Perfusion validity/findings not addressed',
+      },
+      {
+        label: 'Urgent communication addressed',
+        complete: addressed(values.urgentFinding) && (textValue(values.urgentFinding) !== 'yes' || addressed(values.communicationOccurred)),
+        missingLabel: 'Urgent communication status not addressed',
       },
       {
         label: 'Impression generated',
