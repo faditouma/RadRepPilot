@@ -252,3 +252,44 @@ export function generateAdrenalIncidentalomaReport(schema: ReportingWorkflowSche
     recommendations: 'No washout calculation, adrenal diagnosis, hormonal conclusion, follow-up interval, biopsy, treatment, or management recommendation is generated. Verify protocol timing, measurements, clinical context, interval change, and user-entered synthesis before finalizing.',
   };
 }
+
+export function generateAdnexalCystUltrasoundReport(schema: ReportingWorkflowSchema, values: WorkflowValues): ReportSections {
+  const quality = workflowValue(values, 'examQuality');
+  const status = workflowValue(values, 'adnexalLesion');
+  const limitation = [workflowValue(values, 'technicalLimitations'), workflowValue(values, 'limitationsUncertainty')].filter(Boolean).join('; ');
+  const size = dimensions(values, ['lesionApMm', 'lesionTrMm', 'lesionCcMm']);
+  const lesion =
+    status === 'absent' ? 'No adnexal cystic lesion is identified.' :
+    ['present', 'indeterminate'].includes(status) ? `${status === 'indeterminate' ? 'Indeterminate ' : ''}${workflowValue(values, 'laterality') ? `${workflowValue(values, 'laterality')} ` : ''}${workflowValue(values, 'lesionOrigin') || 'adnexal'} lesion${size ? ` measuring ${size}` : ''}. ${[
+      workflowValue(values, 'architecture') ? `Architecture: ${workflowValue(values, 'architecture')}` : '',
+      workflowValue(values, 'septa') ? `septa: ${workflowValue(values, 'septa')}` : '',
+      workflowValue(values, 'wallSurface') ? `wall: ${workflowValue(values, 'wallSurface')}` : '',
+      workflowValue(values, 'dopplerFlow') ? `Doppler flow: ${workflowValue(values, 'dopplerFlow')}` : '',
+      workflowValue(values, 'internalContents') ? `contents: ${workflowValue(values, 'internalContents')}` : '',
+    ].filter(Boolean).join('; ')}.` :
+    status === 'not assessed' ? 'Adnexa were not adequately assessed.' : undefined;
+  const concerning = [
+    assessedFinding(values, 'Papillary projections', 'papillaryProjections', 'papillaryDetails'),
+    assessedFinding(values, 'Solid component', 'solidComponent', 'solidDetails'),
+    assessedFinding(values, 'Ascites', 'ascites'),
+    assessedFinding(values, 'Peritoneal abnormality', 'peritonealFindings', 'peritonealDetails'),
+  ];
+  const findings = cleanLines([
+    lesion, ...concerning,
+    workflowValue(values, 'acousticShadowing') ? `Acoustic shadowing: ${workflowValue(values, 'acousticShadowing')}.` : undefined,
+    workflowValue(values, 'contralateralOvary') ? `Contralateral ovary/adnexa: ${workflowValue(values, 'contralateralOvary')}.` : undefined,
+    workflowValue(values, 'intervalChange') ? `Interval change: ${workflowValue(values, 'intervalChange')}.` : undefined,
+    workflowValue(values, 'userAssignedOrads') ? `User-entered O-RADS category: ${workflowValue(values, 'userAssignedOrads')}.` : undefined,
+    workflowValue(values, 'additionalFindings') ? `Additional findings: ${workflowValue(values, 'additionalFindings')}.` : undefined,
+    limitation ? `Limitations: ${limitation}.` : undefined,
+  ]);
+  const limitationSummary = quality === 'nondiagnostic' ? `Nondiagnostic pelvic ultrasound${limitation ? `: ${limitation}` : '.'}` : quality === 'limited' ? `Limited adnexal assessment${limitation ? `: ${limitation}` : '.'}` : undefined;
+  return {
+    indication: cleanLines([workflowValue(values, 'clinicalIndication') || schema.clinicalQuestion, workflowValue(values, 'menopausalStatus') ? `Menopausal status: ${workflowValue(values, 'menopausalStatus')}.` : undefined, workflowValue(values, 'clinicalContext') ? `Relevant clinical context: ${workflowValue(values, 'clinicalContext')}.` : undefined]),
+    technique: cleanLines([workflowValue(values, 'modalityProtocol') || schema.techniqueDefault, quality ? `Examination quality: ${quality}.` : undefined, limitation ? `Technical limitations: ${limitation}.` : undefined]),
+    findings: workflowValue(values, 'findingsOverride') || findings,
+    impression: workflowValue(values, 'impressionOverride') || cleanLines([limitationSummary, lesion, ...concerning.filter(Boolean), workflowValue(values, 'userAssignedOrads') ? `User-entered O-RADS category: ${workflowValue(values, 'userAssignedOrads')}.` : undefined]),
+    incidentalFindings: workflowValue(values, 'incidentalFindings'),
+    recommendations: 'No O-RADS category, follow-up interval, biopsy, surgery, treatment, or management recommendation is calculated. Verify lesion origin, morphology, Doppler technique, menopausal context, associated findings, and any user-entered category.',
+  };
+}

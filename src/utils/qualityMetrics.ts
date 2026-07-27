@@ -131,6 +131,29 @@ export function scoreRequisitionCompleteness(form: ReferralFormState): QualitySc
 }
 
 export function scoreReportCompleteness(moduleType: ModuleType, values: Record<string, unknown>, report: ReportSections): QualityScore {
+  if (moduleType === 'adnexalCystUltrasound') {
+    const lesionStatus = textValue(values.adnexalLesion);
+    const lesionComplete =
+      !['present', 'indeterminate'].includes(lesionStatus) ||
+      (hasMeaningfulText(values.laterality) && hasMeaningfulText(values.lesionOrigin) &&
+        hasAny(values, ['lesionApMm', 'lesionTrMm', 'lesionCcMm']) &&
+        hasMeaningfulText(values.architecture) && hasMeaningfulText(values.wallSurface) &&
+        hasMeaningfulText(values.dopplerFlow));
+    const detail = (statusKey: string, detailsKey?: string) => {
+      const status = textValue(values[statusKey]);
+      return addressed(values[statusKey]) && (!detailsKey || !['present', 'indeterminate'].includes(status) || hasMeaningfulText(values[detailsKey]));
+    };
+    return score('Report completeness', [
+      { label: 'Clinical indication and menopausal context addressed', complete: hasMeaningfulText(values.clinicalIndication) && hasMeaningfulText(values.menopausalStatus), missingLabel: 'Clinical indication or menopausal status missing' },
+      { label: 'Protocol and technical quality addressed', complete: hasMeaningfulText(values.modalityProtocol) && addressed(values.examQuality), missingLabel: 'Protocol or examination quality missing' },
+      { label: 'Adnexal lesion fully characterized when present', complete: addressed(values.adnexalLesion) && lesionComplete, missingLabel: lesionStatus === 'present' || lesionStatus === 'indeterminate' ? 'Origin, laterality, size, architecture, wall, or Doppler flow missing' : 'Adnexal lesion assessment missing' },
+      { label: 'Papillary and solid components addressed', complete: detail('papillaryProjections', 'papillaryDetails') && detail('solidComponent', 'solidDetails'), missingLabel: 'Papillary or solid component assessment/details incomplete' },
+      { label: 'Ascites and peritoneum addressed', complete: detail('ascites') && detail('peritonealFindings', 'peritonealDetails'), missingLabel: 'Ascites or peritoneal assessment/details incomplete' },
+      { label: 'Contralateral adnexa addressed', complete: hasMeaningfulText(values.contralateralOvary), missingLabel: 'Contralateral ovary/adnexa missing' },
+      { label: 'Impression generated', complete: hasMeaningfulText(report.impression), missingLabel: 'Impression incomplete' },
+    ]);
+  }
+
   if (moduleType === 'adrenalIncidentaloma') {
     const lesionStatus = textValue(values.adrenalLesion);
     const lesionComplete =

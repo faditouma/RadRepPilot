@@ -96,6 +96,7 @@ const moduleLabels: Record<ModuleType, string> = {
   enterography: 'CT/MR Enterography',
   perianalFistulaMri: 'Perianal Fistulizing Disease MRI',
   adrenalIncidentaloma: 'Adrenal Incidentaloma CT/MRI',
+  adnexalCystUltrasound: 'Ovarian and Adnexal Cyst Ultrasound',
   nodule: 'Pulmonary Nodule / Fleischner',
   stroke: 'CT Head Stroke / ASPECTS',
   chestXray: 'Chest X-ray: Infection / Dyspnea',

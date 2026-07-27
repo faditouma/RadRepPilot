@@ -15,7 +15,7 @@ import {
   thyroidUltrasoundWorkflowSchema,
   ovarianCancerWorkflowSchema,
 } from './reporting/cancerImagingRemaining';
-import { adrenalIncidentalomaWorkflowSchema, ctColonographyWorkflowSchema, enterographyWorkflowSchema, perianalFistulaMriWorkflowSchema } from './reporting/abdominalPelvicImaging';
+import { adrenalIncidentalomaWorkflowSchema, adnexalCystUltrasoundWorkflowSchema, ctColonographyWorkflowSchema, enterographyWorkflowSchema, perianalFistulaMriWorkflowSchema } from './reporting/abdominalPelvicImaging';
 
 export type WorkflowFieldType = 'text' | 'textarea' | 'number' | 'date' | 'time' | 'select' | 'checkbox-group';
 export type WorkflowValue = string | string[];
@@ -489,6 +489,7 @@ export const reportingWorkflowSchemas: Record<
   | 'enterography'
   | 'perianalFistulaMri'
   | 'adrenalIncidentaloma'
+  | 'adnexalCystUltrasound'
   | 'nodule'
   | 'stroke'
   | 'chestXray'
@@ -516,6 +517,7 @@ export const reportingWorkflowSchemas: Record<
   enterography: enterographyWorkflowSchema,
   perianalFistulaMri: perianalFistulaMriWorkflowSchema,
   adrenalIncidentaloma: adrenalIncidentalomaWorkflowSchema,
+  adnexalCystUltrasound: adnexalCystUltrasoundWorkflowSchema,
   ctpa: {
     moduleType: 'ctpa',
     moduleId: 'ctpa-pe',

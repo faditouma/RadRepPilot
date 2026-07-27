@@ -131,6 +131,14 @@ export const moduleNavigationTree: NavigationModality[] = [
           workflow('us-pelvic-aub', 'Abnormal Uterine Bleeding', 'Endometrium, fibroids/polyps, ovaries, and menopausal context.'),
           workflow('us-early-pregnancy', 'Early Pregnancy / Ectopic Concern', 'Pregnancy location, viability markers, adnexa, and free fluid.'),
           workflow('incidental-adnexal-cyst', 'Incidental Adnexal Cyst', 'Adnexal cyst wording and O-RADS context.', 'partial', undefined, ['O-RADS']),
+          workflow(
+            'us-adnexal-cyst',
+            'Ovarian and Adnexal Cyst Ultrasound',
+            'Origin, dimensions, cyst architecture, wall and solid features, Doppler flow, ascites, and peritoneal findings.',
+            'implemented',
+            'adnexalCystUltrasound',
+            ['O-RADS user entry'],
+          ),
         ],
       },
       {

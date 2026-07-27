@@ -29,6 +29,7 @@ export type ModuleType =
   | 'enterography'
   | 'perianalFistulaMri'
   | 'adrenalIncidentaloma'
+  | 'adnexalCystUltrasound'
   | 'nodule'
   | 'stroke'
   | 'chestXray'
