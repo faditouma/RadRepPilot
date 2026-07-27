@@ -25,6 +25,7 @@ export type ModuleType =
   | 'cervicalCancerMri'
   | 'lungCancerCt'
   | 'thyroidUltrasound'
+  | 'ctColonography'
   | 'nodule'
   | 'stroke'
   | 'chestXray'

@@ -92,6 +92,7 @@ const moduleLabels: Record<ModuleType, string> = {
   cervicalCancerMri: 'Cervical Cancer MRI',
   lungCancerCt: 'Lung Cancer CT Staging',
   thyroidUltrasound: 'Thyroid Ultrasound',
+  ctColonography: 'CT Colonography',
   nodule: 'Pulmonary Nodule / Fleischner',
   stroke: 'CT Head Stroke / ASPECTS',
   chestXray: 'Chest X-ray: Infection / Dyspnea',

@@ -131,6 +131,35 @@ export function scoreRequisitionCompleteness(form: ReferralFormState): QualitySc
 }
 
 export function scoreReportCompleteness(moduleType: ModuleType, values: Record<string, unknown>, report: ReportSections): QualityScore {
+  if (moduleType === 'ctColonography') {
+    const lesionStatus = textValue(values.colonicLesion);
+    const completeStatus = textValue(values.completeColonAssessment);
+    const lesionComplete =
+      !['present', 'indeterminate'].includes(lesionStatus) ||
+      (hasMeaningfulText(values.lesionSegment) &&
+        hasAny(values, ['lesionApMm', 'lesionTrMm', 'lesionCcMm']) &&
+        addressed(values.lesionMorphology) &&
+        addressed(values.lesionMobility) &&
+        addressed(values.lesionConfidence));
+    const incompleteSegmentsComplete =
+      !['absent', 'indeterminate', 'not assessed'].includes(completeStatus) ||
+      hasMeaningfulText(values.incompleteSegments);
+    const strictureStatus = textValue(values.stricture);
+    const strictureComplete =
+      addressed(values.stricture) &&
+      (!['present', 'indeterminate'].includes(strictureStatus) || hasMeaningfulText(values.strictureDetails));
+    return score('Report completeness', [
+      { label: 'Clinical indication addressed', complete: hasMeaningfulText(values.clinicalIndication), missingLabel: 'Clinical indication missing' },
+      { label: 'Protocol, preparation, and overall quality addressed', complete: hasMeaningfulText(values.modalityProtocol) && addressed(values.examQuality) && addressed(values.preparationQuality), missingLabel: 'Protocol, preparation, or examination quality missing' },
+      { label: 'Distention addressed for every colonic segment', complete: ['rectosigmoidDistention', 'descendingDistention', 'transverseDistention', 'ascendingCecalDistention'].every((key) => addressed(values[key])), missingLabel: 'Segmental colonic distention assessment incomplete' },
+      { label: 'Complete visualization or incomplete segments documented', complete: addressed(values.completeColonAssessment) && incompleteSegmentsComplete, missingLabel: 'Colonic completeness or incomplete segments missing' },
+      { label: 'Dominant lesion characterized when present', complete: addressed(values.colonicLesion) && lesionComplete, missingLabel: lesionStatus === 'present' || lesionStatus === 'indeterminate' ? 'Dominant lesion location, size, morphology, mobility, or confidence missing' : 'Colonic lesion assessment missing' },
+      { label: 'Stricture addressed', complete: strictureComplete, missingLabel: 'Stricture assessment or details incomplete' },
+      { label: 'Extracolonic findings addressed', complete: hasValue(values.extracolonicFindings) || hasValue(values.incidentalFindings) || completeStatus === 'present', missingLabel: 'Extracolonic findings not addressed' },
+      { label: 'Impression generated', complete: hasMeaningfulText(report.impression), missingLabel: 'Impression incomplete' },
+    ]);
+  }
+
   if (moduleType === 'lymphomaPetCt') {
     const nodalStatus = textValue(values.nodalDisease);
     const extranodalStatus = textValue(values.extranodalDisease);

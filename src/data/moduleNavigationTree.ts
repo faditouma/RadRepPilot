@@ -201,6 +201,14 @@ export const moduleNavigationTree: NavigationModality[] = [
         name: 'Abdomen/Pelvis',
         description: 'Acute abdomen workflows plus integrated incidental follow-up language.',
         workflows: [
+          workflow(
+            'ct-colonography',
+            'CT Colonography',
+            'Preparation and segmental distention quality, polyps or masses, strictures, incomplete segments, and extracolonic findings.',
+            'implemented',
+            'ctColonography',
+            ['C-RADS user entry'],
+          ),
           workflow('ct-ap-appendicitis', 'Appendicitis', 'Appendix visualization, diameter, inflammatory change, and complications.', 'implemented', 'appendicitis'),
           workflow('ct-ap-diverticulitis', 'Diverticulitis', 'Segment, inflammation, abscess, perforation, fistula, and obstruction.'),
           workflow('ct-ap-bowel-obstruction', 'Bowel Obstruction', 'Transition point, grade, cause, ischemia, closed loop, and perforation.', 'implemented', 'bowelObstruction'),
