@@ -33,6 +33,7 @@ export type ModuleType =
   | 'fibroidMri'
   | 'pelvicFloorImaging'
   | 'endometriosisMri'
+  | 'pancreaticCyst'
   | 'nodule'
   | 'stroke'
   | 'chestXray'

@@ -240,6 +240,13 @@ export const moduleNavigationTree: NavigationModality[] = [
           workflow('incidental-renal-lesion', 'Incidental Renal Lesion', 'Renal cyst/mass characterization language.', 'partial', undefined, ['Bosniak']),
           workflow('incidental-liver-lesion', 'Incidental Liver Lesion', 'Risk-based liver lesion follow-up wording.', 'partial', undefined, ['LI-RADS context']),
           workflow('incidental-pancreatic-cyst', 'Incidental Pancreatic Cyst', 'Cyst size and high-risk feature language.', 'partial'),
+          workflow(
+            'ct-mri-pancreatic-cyst',
+            'Cystic Pancreatic Lesions CT/MRI',
+            'Cyst morphology and size, duct communication, enhancing components, growth, obstruction, atrophy, and nodes.',
+            'implemented',
+            'pancreaticCyst',
+          ),
         ],
       },
       {

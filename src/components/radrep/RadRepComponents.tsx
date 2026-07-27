@@ -38,6 +38,7 @@ const moduleLabels: Record<DraftType, string> = {
   fibroidMri: 'Fibroid MRI',
   pelvicFloorImaging: 'Pelvic Floor Dysfunction Imaging',
   endometriosisMri: 'Endometriosis MRI',
+  pancreaticCyst: 'Cystic Pancreatic Lesions CT/MRI',
   nodule: 'Pulmonary Nodule / Fleischner',
   stroke: 'CT Head Stroke / ASPECTS',
   chestXray: 'Chest X-ray: Infection / Dyspnea',

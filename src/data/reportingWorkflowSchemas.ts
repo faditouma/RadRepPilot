@@ -16,6 +16,7 @@ import {
   ovarianCancerWorkflowSchema,
 } from './reporting/cancerImagingRemaining';
 import { adrenalIncidentalomaWorkflowSchema, adnexalCystUltrasoundWorkflowSchema, ctColonographyWorkflowSchema, endometriosisMriWorkflowSchema, enterographyWorkflowSchema, fibroidMriWorkflowSchema, pelvicFloorImagingWorkflowSchema, perianalFistulaMriWorkflowSchema } from './reporting/abdominalPelvicImaging';
+import { pancreaticCystWorkflowSchema } from './reporting/abdominalPelvicImagingPart2';
 
 export type WorkflowFieldType = 'text' | 'textarea' | 'number' | 'date' | 'time' | 'select' | 'checkbox-group';
 export type WorkflowValue = string | string[];
@@ -493,6 +494,7 @@ export const reportingWorkflowSchemas: Record<
   | 'fibroidMri'
   | 'pelvicFloorImaging'
   | 'endometriosisMri'
+  | 'pancreaticCyst'
   | 'nodule'
   | 'stroke'
   | 'chestXray'
@@ -524,6 +526,7 @@ export const reportingWorkflowSchemas: Record<
   fibroidMri: fibroidMriWorkflowSchema,
   pelvicFloorImaging: pelvicFloorImagingWorkflowSchema,
   endometriosisMri: endometriosisMriWorkflowSchema,
+  pancreaticCyst: pancreaticCystWorkflowSchema,
   ctpa: {
     moduleType: 'ctpa',
     moduleId: 'ctpa-pe',

@@ -131,6 +131,28 @@ export function scoreRequisitionCompleteness(form: ReferralFormState): QualitySc
 }
 
 export function scoreReportCompleteness(moduleType: ModuleType, values: Record<string, unknown>, report: ReportSections): QualityScore {
+  if (moduleType === 'pancreaticCyst') {
+    const status = textValue(values.cysticLesion);
+    const lesionComplete = !['present', 'indeterminate'].includes(status) ||
+      (hasMeaningfulText(values.multiplicity) && hasMeaningfulText(values.dominantCystSite) &&
+        hasAny(values, ['cystApMm', 'cystTrMm', 'cystCcMm']) && hasMeaningfulText(values.cystMorphology) &&
+        addressed(values.ductCommunication) && hasMeaningfulText(values.mainDuctDiameterMm));
+    const detail = (statusKey: string, detailsKey?: string) => {
+      const itemStatus = textValue(values[statusKey]);
+      return addressed(values[statusKey]) && (!detailsKey || !['present', 'indeterminate'].includes(itemStatus) || hasMeaningfulText(values[detailsKey]));
+    };
+    return score('Report completeness', [
+      { label: 'Clinical indication and pancreatitis history addressed', complete: hasMeaningfulText(values.clinicalIndication) && hasMeaningfulText(values.pancreatitisHistory), missingLabel: 'Clinical indication or pancreatitis history missing' },
+      { label: 'Protocol and technical quality addressed', complete: hasMeaningfulText(values.modalityProtocol) && addressed(values.examQuality), missingLabel: 'Protocol or examination quality missing' },
+      { label: 'Dominant cyst and duct relationship characterized', complete: addressed(values.cysticLesion) && lesionComplete, missingLabel: status === 'present' || status === 'indeterminate' ? 'Multiplicity, site, size, morphology, duct communication, or duct caliber missing' : 'Cyst assessment missing' },
+      { label: 'Mural nodule and solid component addressed', complete: detail('muralNodule', 'muralNoduleDetails') && detail('solidComponent', 'solidComponentDetails'), missingLabel: 'Mural nodule or solid component assessment/details incomplete' },
+      { label: 'Wall, septa, and growth addressed', complete: detail('wallEnhancement') && detail('septalEnhancement') && detail('intervalGrowth', 'intervalGrowthDetails'), missingLabel: 'Wall, septal, or growth assessment/details incomplete' },
+      { label: 'Pancreatitis, obstruction, and atrophy addressed', complete: detail('pancreatitis') && detail('biliaryObstruction') && detail('parenchymalAtrophy'), missingLabel: 'Pancreatitis, biliary obstruction, or atrophy missing' },
+      { label: 'Suspicious nodes addressed', complete: detail('suspiciousNodes', 'suspiciousNodeDetails'), missingLabel: 'Nodal assessment/details incomplete' },
+      { label: 'Impression generated', complete: hasMeaningfulText(report.impression), missingLabel: 'Impression incomplete' },
+    ]);
+  }
+
   if (moduleType === 'endometriosisMri') {
     const detail = (statusKey: string, detailsKey?: string) => {
       const status = textValue(values[statusKey]);
