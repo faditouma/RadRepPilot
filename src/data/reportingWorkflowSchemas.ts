@@ -16,7 +16,7 @@ import {
   ovarianCancerWorkflowSchema,
 } from './reporting/cancerImagingRemaining';
 import { adrenalIncidentalomaWorkflowSchema, adnexalCystUltrasoundWorkflowSchema, ctColonographyWorkflowSchema, endometriosisMriWorkflowSchema, enterographyWorkflowSchema, fibroidMriWorkflowSchema, pelvicFloorImagingWorkflowSchema, perianalFistulaMriWorkflowSchema } from './reporting/abdominalPelvicImaging';
-import { pancreaticCystWorkflowSchema, pancreatitisWorkflowSchema } from './reporting/abdominalPelvicImagingPart2';
+import { pancreaticCystWorkflowSchema, pancreatitisWorkflowSchema, placentaAccretaMriWorkflowSchema } from './reporting/abdominalPelvicImagingPart2';
 
 export type WorkflowFieldType = 'text' | 'textarea' | 'number' | 'date' | 'time' | 'select' | 'checkbox-group';
 export type WorkflowValue = string | string[];
@@ -496,6 +496,7 @@ export const reportingWorkflowSchemas: Record<
   | 'endometriosisMri'
   | 'pancreaticCyst'
   | 'pancreatitis'
+  | 'placentaAccretaMri'
   | 'nodule'
   | 'stroke'
   | 'chestXray'
@@ -529,6 +530,7 @@ export const reportingWorkflowSchemas: Record<
   endometriosisMri: endometriosisMriWorkflowSchema,
   pancreaticCyst: pancreaticCystWorkflowSchema,
   pancreatitis: pancreatitisWorkflowSchema,
+  placentaAccretaMri: placentaAccretaMriWorkflowSchema,
   ctpa: {
     moduleType: 'ctpa',
     moduleId: 'ctpa-pe',

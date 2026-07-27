@@ -405,6 +405,13 @@ export const moduleNavigationTree: NavigationModality[] = [
             'endometriosisMri',
           ),
           workflow(
+            'mri-placenta-accreta',
+            'Placenta Accreta Spectrum MRI',
+            'Placental location and previa, myometrial and vascular signs, bladder/parametrial/cervical interfaces, orientation, and confidence.',
+            'implemented',
+            'placentaAccretaMri',
+          ),
+          workflow(
             'mri-perianal-fistula',
             'Perianal Fistulizing Disease MRI',
             'Internal and external openings, sphincter relationships, secondary tracts, collections, extensions, and activity.',

@@ -89,3 +89,39 @@ export function generatePancreatitisReport(schema: ReportingWorkflowSchema, valu
     recommendations: 'No Atlanta category, collection maturity class, intervention, treatment, or management recommendation is calculated. Verify clinical timing, enhancement, necrosis, collections, duct integrity, vascular and biliary complications.',
   };
 }
+
+export function generatePlacentaAccretaMriReport(schema: ReportingWorkflowSchema, values: WorkflowValues): ReportSections {
+  const quality = workflowValue(values, 'examQuality');
+  const limitation = [workflowValue(values, 'technicalLimitations'), workflowValue(values, 'limitationsUncertainty')].filter(Boolean).join('; ');
+  const signs = [
+    assessed(values, 'Placental heterogeneity', 'placentalHeterogeneity'),
+    assessed(values, 'Dark intraplacental T2 bands', 'darkBands'),
+    assessed(values, 'Uterine bulge', 'uterineBulge'),
+    assessed(values, 'Myometrial thinning', 'myometrialThinning'),
+    assessed(values, 'Myometrial interruption', 'myometrialInterruption'),
+    assessed(values, 'Abnormal placental/subplacental vascularity', 'abnormalVascularity'),
+  ];
+  const extension = [
+    assessed(values, 'Bladder interface abnormality', 'bladderInterface', 'bladderDetails'),
+    assessed(values, 'Parametrial involvement', 'parametrialExtension', 'parametrialDetails'),
+    assessed(values, 'Cervical involvement', 'cervicalInvolvement', 'cervicalDetails'),
+    assessed(values, 'Other extrauterine extension', 'extrauterineExtension', 'extrauterineDetails'),
+  ];
+  const allNegative = ['placentalHeterogeneity', 'darkBands', 'uterineBulge', 'myometrialThinning', 'myometrialInterruption', 'abnormalVascularity', 'bladderInterface', 'parametrialExtension', 'cervicalInvolvement', 'extrauterineExtension'].every((key) => workflowValue(values, key) === 'absent');
+  const findings = cleanLines([
+    workflowValue(values, 'placentalLocation') ? `Placenta: ${workflowValue(values, 'placentalLocation')}.` : undefined,
+    assessed(values, 'Placenta previa', 'placentaPrevia'), ...signs, ...extension,
+    allNegative ? 'No entered MRI feature associated with placenta accreta spectrum or extrauterine extension.' : undefined,
+    workflowValue(values, 'additionalObstetricFindings') ? `Additional obstetric findings: ${workflowValue(values, 'additionalObstetricFindings')}.` : undefined,
+    limitation ? `Limitations: ${limitation}.` : undefined,
+  ]);
+  const limit = quality === 'nondiagnostic' ? `Nondiagnostic placental MRI${limitation ? `: ${limitation}` : '.'}` : quality === 'limited' ? `Limited placenta accreta spectrum assessment${limitation ? `: ${limitation}` : '.'}` : undefined;
+  return {
+    indication: cleanLines([workflowValue(values, 'clinicalIndication') || schema.clinicalQuestion, workflowValue(values, 'gestationalAge') ? `Gestational age: ${workflowValue(values, 'gestationalAge')}.` : undefined, workflowValue(values, 'priorUterineSurgery') ? `Prior uterine surgery: ${workflowValue(values, 'priorUterineSurgery')}.` : undefined]),
+    technique: cleanLines([workflowValue(values, 'modalityProtocol') || schema.techniqueDefault, quality ? `Examination quality: ${quality}.` : undefined, workflowValue(values, 'fetalOrientation') ? `Fetal orientation: ${workflowValue(values, 'fetalOrientation')}.` : undefined, workflowValue(values, 'uterineOrientation') ? `Uterine orientation: ${workflowValue(values, 'uterineOrientation')}.` : undefined]),
+    findings: workflowValue(values, 'findingsOverride') || findings,
+    impression: workflowValue(values, 'impressionOverride') || cleanLines([limit, workflowValue(values, 'userPasSynthesis') || (allNegative ? 'No MRI features entered to suggest placenta accreta spectrum.' : 'MRI features associated with abnormal placental adherence are present; see mapped findings.'), workflowValue(values, 'diagnosticConfidence') ? `Diagnostic confidence: ${workflowValue(values, 'diagnosticConfidence')}.` : undefined, ...extension.filter(Boolean)]),
+    incidentalFindings: workflowValue(values, 'incidentalFindings'),
+    recommendations: 'No PAS depth, operative plan, delivery plan, treatment, or management recommendation is calculated. Verify clinical risk, placental and uterine interfaces, possible extension, orientation, and confidence with the multidisciplinary team.',
+  };
+}

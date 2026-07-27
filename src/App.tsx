@@ -102,6 +102,7 @@ const moduleLabels: Record<ModuleType, string> = {
   endometriosisMri: 'Endometriosis MRI',
   pancreaticCyst: 'Cystic Pancreatic Lesions CT/MRI',
   pancreatitis: 'Acute and Chronic Pancreatitis CT/MRI',
+  placentaAccretaMri: 'Placenta Accreta Spectrum MRI',
   nodule: 'Pulmonary Nodule / Fleischner',
   stroke: 'CT Head Stroke / ASPECTS',
   chestXray: 'Chest X-ray: Infection / Dyspnea',

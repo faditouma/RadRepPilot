@@ -35,6 +35,7 @@ export type ModuleType =
   | 'endometriosisMri'
   | 'pancreaticCyst'
   | 'pancreatitis'
+  | 'placentaAccretaMri'
   | 'nodule'
   | 'stroke'
   | 'chestXray'

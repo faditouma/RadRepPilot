@@ -131,6 +131,23 @@ export function scoreRequisitionCompleteness(form: ReferralFormState): QualitySc
 }
 
 export function scoreReportCompleteness(moduleType: ModuleType, values: Record<string, unknown>, report: ReportSections): QualityScore {
+  if (moduleType === 'placentaAccretaMri') {
+    const detail = (statusKey: string, detailsKey?: string) => {
+      const status = textValue(values[statusKey]);
+      return addressed(values[statusKey]) && (!detailsKey || !['present', 'indeterminate'].includes(status) || hasMeaningfulText(values[detailsKey]));
+    };
+    return score('Report completeness', [
+      { label: 'Indication, gestational age, and uterine surgery addressed', complete: hasMeaningfulText(values.clinicalIndication) && hasMeaningfulText(values.gestationalAge) && hasMeaningfulText(values.priorUterineSurgery), missingLabel: 'Indication, gestational age, or prior uterine surgery missing' },
+      { label: 'Protocol, quality, and orientation addressed', complete: hasMeaningfulText(values.modalityProtocol) && addressed(values.examQuality) && hasMeaningfulText(values.fetalOrientation) && hasMeaningfulText(values.uterineOrientation), missingLabel: 'Protocol, quality, fetal orientation, or uterine orientation missing' },
+      { label: 'Placental location and previa addressed', complete: hasMeaningfulText(values.placentalLocation) && detail('placentaPrevia'), missingLabel: 'Placental location or previa assessment missing' },
+      { label: 'Placental and myometrial signs addressed', complete: ['placentalHeterogeneity', 'darkBands', 'uterineBulge', 'myometrialThinning', 'myometrialInterruption', 'abnormalVascularity'].every((key) => addressed(values[key])), missingLabel: 'One or more placental/myometrial signs not assessed' },
+      { label: 'Bladder and parametrial interfaces addressed', complete: detail('bladderInterface', 'bladderDetails') && detail('parametrialExtension', 'parametrialDetails'), missingLabel: 'Bladder or parametrial assessment/details incomplete' },
+      { label: 'Cervical and extrauterine extension addressed', complete: detail('cervicalInvolvement', 'cervicalDetails') && detail('extrauterineExtension', 'extrauterineDetails'), missingLabel: 'Cervical or extrauterine assessment/details incomplete' },
+      { label: 'Diagnostic confidence entered', complete: hasMeaningfulText(values.diagnosticConfidence), missingLabel: 'Diagnostic confidence missing' },
+      { label: 'Impression generated', complete: hasMeaningfulText(report.impression), missingLabel: 'Impression incomplete' },
+    ]);
+  }
+
   if (moduleType === 'pancreatitis') {
     const detail = (statusKey: string, detailsKey?: string) => {
       const status = textValue(values[statusKey]);

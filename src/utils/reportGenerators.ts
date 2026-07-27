@@ -24,7 +24,7 @@ import {
   generateOvarianCancerReport,
 } from './cancerImagingRemainingReportGenerators';
 import { generateAdnexalCystUltrasoundReport, generateAdrenalIncidentalomaReport, generateCtColonographyReport, generateEndometriosisMriReport, generateEnterographyReport, generateFibroidMriReport, generatePelvicFloorImagingReport, generatePerianalFistulaMriReport } from './abdominalPelvicImagingReportGenerators';
-import { generatePancreaticCystReport, generatePancreatitisReport } from './abdominalPelvicImagingPart2ReportGenerators';
+import { generatePancreaticCystReport, generatePancreatitisReport, generatePlacentaAccretaMriReport } from './abdominalPelvicImagingPart2ReportGenerators';
 import { cleanLines, formatMeasurement, numberOrNull, sentenceList, workflowList, workflowValue, yes } from './impressionGenerators';
 
 function keyNegativeSentence(values: WorkflowValues, suppressPhrases: string[] = []): string | undefined {
@@ -873,6 +873,8 @@ export function generateReportingWorkflowReport(moduleType: ModuleType, values: 
       return generatePancreaticCystReport(schema, values);
     case 'pancreatitis':
       return generatePancreatitisReport(schema, values);
+    case 'placentaAccretaMri':
+      return generatePlacentaAccretaMriReport(schema, values);
     case 'ctpa':
       return generateCtpaWorkflowReport(schema, values);
     case 'nodule':
