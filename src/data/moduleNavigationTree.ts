@@ -369,6 +369,14 @@ export const moduleNavigationTree: NavigationModality[] = [
         description: 'Rectal cancer staging and pelvic lesion descriptors.',
         workflows: [
           workflow(
+            'mri-fibroid',
+            'Fibroid MRI',
+            'Uterine and dominant fibroid measurements, endometrial and serosal relationships, morphology, adenomyosis, and treatment-planning anatomy.',
+            'implemented',
+            'fibroidMri',
+            ['FIGO user entry'],
+          ),
+          workflow(
             'mri-perianal-fistula',
             'Perianal Fistulizing Disease MRI',
             'Internal and external openings, sphincter relationships, secondary tracts, collections, extensions, and activity.',

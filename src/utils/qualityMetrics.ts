@@ -131,6 +131,26 @@ export function scoreRequisitionCompleteness(form: ReferralFormState): QualitySc
 }
 
 export function scoreReportCompleteness(moduleType: ModuleType, values: Record<string, unknown>, report: ReportSections): QualityScore {
+  if (moduleType === 'fibroidMri') {
+    const status = textValue(values.dominantFibroid);
+    const lesionComplete = !['present', 'indeterminate'].includes(status) ||
+      (hasMeaningfulText(values.fibroidLocation) && hasAny(values, ['fibroidApMm', 'fibroidTrMm', 'fibroidCcMm']) &&
+        hasMeaningfulText(values.endometrialRelationship) && hasMeaningfulText(values.serosalRelationship) &&
+        hasMeaningfulText(values.enhancement) && hasMeaningfulText(values.diffusion));
+    const pedunculated = textValue(values.pedunculated);
+    const adenomyosis = textValue(values.adenomyosis);
+    return score('Report completeness', [
+      { label: 'Clinical indication and treatment history addressed', complete: hasMeaningfulText(values.clinicalIndication) && hasMeaningfulText(values.treatmentHistory), missingLabel: 'Clinical indication or treatment history missing' },
+      { label: 'Protocol and technical quality addressed', complete: hasMeaningfulText(values.modalityProtocol) && addressed(values.examQuality), missingLabel: 'Protocol or examination quality missing' },
+      { label: 'Uterus measured and fibroid burden described', complete: ['uterusApMm', 'uterusTrMm', 'uterusCcMm'].every((key) => hasMeaningfulText(values[key])) && hasMeaningfulText(values.fibroidBurden), missingLabel: 'Uterine dimensions or fibroid burden missing' },
+      { label: 'Dominant fibroid characterized when present', complete: addressed(values.dominantFibroid) && lesionComplete, missingLabel: status === 'present' || status === 'indeterminate' ? 'Fibroid location, size, relationships, enhancement, or diffusion missing' : 'Dominant fibroid assessment missing' },
+      { label: 'Pedunculation and stalk addressed', complete: addressed(values.pedunculated) && (!['present', 'indeterminate'].includes(pedunculated) || hasMeaningfulText(values.stalkDetails)), missingLabel: 'Pedunculation or stalk details incomplete' },
+      { label: 'Adenomyosis addressed', complete: addressed(values.adenomyosis) && (!['present', 'indeterminate'].includes(adenomyosis) || hasMeaningfulText(values.adenomyosisDetails)), missingLabel: 'Adenomyosis assessment/details incomplete' },
+      { label: 'Endometrium and adnexa addressed', complete: hasMeaningfulText(values.endometrium) && hasMeaningfulText(values.ovariesAdnexa), missingLabel: 'Endometrium or adnexa missing' },
+      { label: 'Impression generated', complete: hasMeaningfulText(report.impression), missingLabel: 'Impression incomplete' },
+    ]);
+  }
+
   if (moduleType === 'adnexalCystUltrasound') {
     const lesionStatus = textValue(values.adnexalLesion);
     const lesionComplete =

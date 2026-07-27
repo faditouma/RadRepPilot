@@ -293,3 +293,45 @@ export function generateAdnexalCystUltrasoundReport(schema: ReportingWorkflowSch
     recommendations: 'No O-RADS category, follow-up interval, biopsy, surgery, treatment, or management recommendation is calculated. Verify lesion origin, morphology, Doppler technique, menopausal context, associated findings, and any user-entered category.',
   };
 }
+
+export function generateFibroidMriReport(schema: ReportingWorkflowSchema, values: WorkflowValues): ReportSections {
+  const quality = workflowValue(values, 'examQuality');
+  const status = workflowValue(values, 'dominantFibroid');
+  const limitation = [workflowValue(values, 'technicalLimitations'), workflowValue(values, 'limitationsUncertainty')].filter(Boolean).join('; ');
+  const uterusSize = dimensions(values, ['uterusApMm', 'uterusTrMm', 'uterusCcMm']);
+  const fibroidSize = dimensions(values, ['fibroidApMm', 'fibroidTrMm', 'fibroidCcMm']);
+  const fibroid =
+    status === 'absent' ? 'No uterine fibroid is identified.' :
+    ['present', 'indeterminate'].includes(status) ? `${status === 'indeterminate' ? 'Indeterminate uterine lesion' : workflowValue(values, 'fibroidIdentifier') || 'Dominant fibroid'} at the ${workflowValue(values, 'fibroidLocation') || 'unspecified uterine location'}${fibroidSize ? ` measures ${fibroidSize}` : ''}. ${[
+      workflowValue(values, 'endometrialRelationship') ? `Endometrial relationship: ${workflowValue(values, 'endometrialRelationship')}` : '',
+      workflowValue(values, 'serosalRelationship') ? `serosal relationship: ${workflowValue(values, 'serosalRelationship')}` : '',
+      workflowValue(values, 'enhancement') ? `enhancement: ${workflowValue(values, 'enhancement')}` : '',
+      workflowValue(values, 'diffusion') ? `diffusion: ${workflowValue(values, 'diffusion')}` : '',
+    ].filter(Boolean).join('; ')}.` :
+    status === 'not assessed' ? 'Fibroids were not adequately assessed.' : undefined;
+  const findings = cleanLines([
+    uterusSize ? `Uterus measures ${uterusSize}${workflowValue(values, 'uterineOrientation') ? ` and is ${workflowValue(values, 'uterineOrientation')}` : ''}.` : undefined,
+    workflowValue(values, 'fibroidBurden') ? `Fibroid burden: ${workflowValue(values, 'fibroidBurden')}.` : undefined,
+    fibroid,
+    workflowValue(values, 'userAssignedFigoType') ? `User-entered FIGO type: ${workflowValue(values, 'userAssignedFigoType')}.` : undefined,
+    workflowValue(values, 'pedunculated') && workflowValue(values, 'pedunculated') !== 'absent' ? `Pedunculated appearance: ${workflowValue(values, 'pedunculated')}${workflowValue(values, 'stalkDetails') ? `; ${workflowValue(values, 'stalkDetails')}` : ''}.` : undefined,
+    workflowValue(values, 'degeneration') ? `Degeneration: ${workflowValue(values, 'degeneration')}.` : undefined,
+    workflowValue(values, 'hemorrhageCalcification') ? `Hemorrhage/calcification: ${workflowValue(values, 'hemorrhageCalcification')}.` : undefined,
+    workflowValue(values, 'additionalFibroids') ? `Additional fibroids: ${workflowValue(values, 'additionalFibroids')}.` : undefined,
+    assessedFinding(values, 'Adenomyosis', 'adenomyosis', 'adenomyosisDetails'),
+    workflowValue(values, 'endometrium') ? `Endometrium/cavity: ${workflowValue(values, 'endometrium')}.` : undefined,
+    workflowValue(values, 'ovariesAdnexa') ? `Ovaries/adnexa: ${workflowValue(values, 'ovariesAdnexa')}.` : undefined,
+    workflowValue(values, 'treatmentPlanningFindings') ? `Treatment-planning anatomy: ${workflowValue(values, 'treatmentPlanningFindings')}.` : undefined,
+    workflowValue(values, 'additionalFindings') ? `Additional findings: ${workflowValue(values, 'additionalFindings')}.` : undefined,
+    limitation ? `Limitations: ${limitation}.` : undefined,
+  ]);
+  const limitationSummary = quality === 'nondiagnostic' ? `Nondiagnostic pelvic MRI${limitation ? `: ${limitation}` : '.'}` : quality === 'limited' ? `Limited fibroid characterization${limitation ? `: ${limitation}` : '.'}` : undefined;
+  return {
+    indication: cleanLines([workflowValue(values, 'clinicalIndication') || schema.clinicalQuestion, workflowValue(values, 'clinicalContext') ? `Relevant clinical context: ${workflowValue(values, 'clinicalContext')}.` : undefined, workflowValue(values, 'treatmentHistory') ? `Treatment history: ${workflowValue(values, 'treatmentHistory')}.` : undefined]),
+    technique: cleanLines([workflowValue(values, 'modalityProtocol') || schema.techniqueDefault, quality ? `Examination quality: ${quality}.` : undefined, limitation ? `Technical limitations: ${limitation}.` : undefined]),
+    findings: workflowValue(values, 'findingsOverride') || findings,
+    impression: workflowValue(values, 'impressionOverride') || cleanLines([limitationSummary, fibroid, workflowValue(values, 'fibroidBurden') ? `Overall fibroid burden: ${workflowValue(values, 'fibroidBurden')}.` : undefined, assessedFinding(values, 'Adenomyosis', 'adenomyosis', 'adenomyosisDetails'), workflowValue(values, 'treatmentPlanningFindings') || undefined]),
+    incidentalFindings: workflowValue(values, 'incidentalFindings'),
+    recommendations: 'No FIGO type, malignancy determination, embolization or surgical eligibility, treatment, or management recommendation is calculated. Verify all fibroids, relationships, morphology, adenomyosis, and treatment-planning anatomy.',
+  };
+}
