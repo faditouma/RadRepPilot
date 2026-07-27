@@ -410,3 +410,118 @@ export const perianalFistulaMriWorkflowSchema: ReportingWorkflowSchema = {
     },
   ],
 };
+
+const adrenalDefaults: WorkflowValues = {
+  clinicalIndication: '', clinicalContext: '', cancerHistory: '', hormonalContext: '',
+  comparisonStudy: '', comparisonDate: '', modalityProtocol: '', examQuality: '',
+  adrenalLesion: '', laterality: '', lesionApMm: '', lesionTrMm: '', lesionCcMm: '',
+  homogeneity: '', unenhancedHu: '', postcontrastHu: '', delayedHu: '', delayMinutes: '',
+  userEnteredWashout: '', chemicalShiftLoss: '', macroscopicFat: '', calcification: '',
+  hemorrhage: '', necrosis: '', growthStatus: '', growthDetails: '', localInvasion: '',
+  localInvasionDetails: '', metastaticDisease: '', metastaticDiseaseDetails: '',
+  contralateralAdrenal: '', additionalFindings: '', incidentalFindings: '',
+  userImagingSynthesis: '', technicalLimitations: '', limitationsUncertainty: '',
+  findingsOverride: '', impressionOverride: '',
+};
+
+export const adrenalIncidentalomaWorkflowSchema: ReportingWorkflowSchema = {
+  moduleType: 'adrenalIncidentaloma',
+  moduleId: 'ct-mri-adrenal-incidentaloma',
+  title: 'Adrenal Incidentaloma CT/MRI',
+  shortTitle: 'Adrenal incidentaloma',
+  modality: 'CT/MRI',
+  bodySystem: 'Adrenal',
+  clinicalQuestion: 'Characterize an adrenal lesion using morphology, attenuation or chemical-shift features, interval change, and signs of aggressive disease.',
+  techniqueDefault: 'Adrenal CT or MRI was performed with noncontrast and postcontrast phases or chemical-shift imaging as available.',
+  badges: ['Implemented', 'Educational draft', 'User-controlled synthesis'],
+  insertTargets: ['findings', 'impression', 'incidentalFindings', 'recommendations'],
+  safetyNote: 'Verify protocol and timing, attenuation measurements, chemical-shift behavior, size and growth, cancer and hormonal context, and aggressive features. No diagnosis, washout calculation, or management recommendation is generated automatically.',
+  contentMetadata: {
+    sourceChapter: 'Chapter 20: Adrenal incidentaloma',
+    sourceType: 'Private development reference',
+    guidelineOrClassificationName: 'Adrenal incidentaloma imaging guidance',
+    guidelineVersion: 'Current primary guidance and washout caveats require verification',
+    lastReviewedDate: '2026-07-27',
+    reviewStatus: 'needs_clinical_review',
+    clinicalValidationRequired: true,
+  },
+  defaultValues: adrenalDefaults,
+  sections: [
+    {
+      id: 'clinical-context', title: 'Clinical context', defaultOpen: true,
+      fields: [
+        area('clinicalIndication', 'Clinical indication'),
+        area('clinicalContext', 'Relevant clinical context', 'Symptoms, prior imaging, surgery, or known adrenal disorder'),
+        area('cancerHistory', 'Cancer history', 'Known malignancy, none known, or not available'),
+        area('hormonalContext', 'Hormonal evaluation context', 'Known functional lesion, biochemical work-up, symptoms, or not available'),
+        text('comparisonStudy', 'Comparison examination'), { id: 'comparisonDate', label: 'Comparison date', type: 'date' },
+      ],
+    },
+    {
+      id: 'technical-quality', title: 'Protocol and technical quality', defaultOpen: true,
+      fields: [
+        text('modalityProtocol', 'Modality and protocol', 'e.g. adrenal-protocol CT or chemical-shift MRI', true),
+        select('examQuality', 'Examination quality', quality),
+        area('technicalLimitations', 'Technical limitations', 'Missing phase, timing uncertainty, motion, small-lesion measurement limits, or other issue'),
+      ],
+    },
+    {
+      id: 'lesion', title: 'Adrenal lesion', defaultOpen: true,
+      fields: [
+        select('adrenalLesion', 'Adrenal lesion', assessment),
+        { ...text('laterality', 'Laterality', 'Right, left, or bilateral'), visibleWhen: { field: 'adrenalLesion', equals: ['present', 'indeterminate'] } },
+        { ...number('lesionApMm', 'AP dimension', 'mm'), visibleWhen: { field: 'adrenalLesion', equals: ['present', 'indeterminate'] } },
+        { ...number('lesionTrMm', 'Transverse dimension', 'mm'), visibleWhen: { field: 'adrenalLesion', equals: ['present', 'indeterminate'] } },
+        { ...number('lesionCcMm', 'Craniocaudal dimension', 'mm'), visibleWhen: { field: 'adrenalLesion', equals: ['present', 'indeterminate'] } },
+        { ...text('homogeneity', 'Homogeneity and margins', 'Homogeneous/heterogeneous, smooth/irregular'), visibleWhen: { field: 'adrenalLesion', equals: ['present', 'indeterminate'] } },
+        { ...number('unenhancedHu', 'Unenhanced attenuation', 'HU'), visibleWhen: { field: 'adrenalLesion', equals: ['present', 'indeterminate'] } },
+        { ...number('postcontrastHu', 'Postcontrast attenuation', 'HU'), visibleWhen: { field: 'adrenalLesion', equals: ['present', 'indeterminate'] } },
+        { ...number('delayedHu', 'Delayed attenuation', 'HU'), visibleWhen: { field: 'adrenalLesion', equals: ['present', 'indeterminate'] } },
+        { ...number('delayMinutes', 'Delay time', 'min'), visibleWhen: { field: 'adrenalLesion', equals: ['present', 'indeterminate'] } },
+        { ...text('userEnteredWashout', 'User-entered washout result', 'Optional value and method; not calculated here'), visibleWhen: { field: 'adrenalLesion', equals: ['present', 'indeterminate'] } },
+        { ...select('chemicalShiftLoss', 'Signal loss on opposed-phase imaging', assessment), visibleWhen: { field: 'adrenalLesion', equals: ['present', 'indeterminate'] } },
+        { ...select('macroscopicFat', 'Macroscopic fat', assessment), visibleWhen: { field: 'adrenalLesion', equals: ['present', 'indeterminate'] } },
+        { ...select('calcification', 'Calcification', assessment), visibleWhen: { field: 'adrenalLesion', equals: ['present', 'indeterminate'] } },
+        { ...select('hemorrhage', 'Hemorrhage', assessment), visibleWhen: { field: 'adrenalLesion', equals: ['present', 'indeterminate'] } },
+        { ...select('necrosis', 'Necrosis', assessment), visibleWhen: { field: 'adrenalLesion', equals: ['present', 'indeterminate'] } },
+      ],
+    },
+    {
+      id: 'comparison-aggressive', title: 'Interval change and aggressive features', defaultOpen: true,
+      fields: [
+        select('growthStatus', 'Interval growth', assessment),
+        { ...area('growthDetails', 'Growth details', 'Prior and current dimensions with dates'), visibleWhen: { field: 'growthStatus', equals: ['present', 'indeterminate'] } },
+        select('localInvasion', 'Local invasion', assessment),
+        { ...area('localInvasionDetails', 'Local invasion details'), visibleWhen: { field: 'localInvasion', equals: ['present', 'indeterminate'] } },
+        select('metastaticDisease', 'Metastatic disease', assessment),
+        { ...area('metastaticDiseaseDetails', 'Metastatic disease details'), visibleWhen: { field: 'metastaticDisease', equals: ['present', 'indeterminate'] } },
+        area('contralateralAdrenal', 'Contralateral adrenal gland'),
+        area('userImagingSynthesis', 'User-entered imaging synthesis', 'Optional descriptive conclusion; no diagnosis is calculated'),
+      ],
+    },
+    {
+      id: 'additional-overrides', title: 'Additional findings and overrides', defaultOpen: false,
+      fields: [
+        area('additionalFindings', 'Additional findings'), area('incidentalFindings', 'Incidental findings'),
+        area('limitationsUncertainty', 'Additional uncertainty'),
+        area('findingsOverride', 'Findings free-text override', 'When entered, this replaces generated findings'),
+        area('impressionOverride', 'Impression free-text override', 'When entered, this replaces generated impression'),
+      ],
+    },
+  ],
+  keyNegatives: [], incidentalOptions: [],
+  quickFills: [
+    {
+      id: 'no-adrenal-lesion', label: 'No adrenal lesion', description: 'Diagnostic examination without an adrenal lesion.', intent: 'normal',
+      values: { examQuality: 'diagnostic', adrenalLesion: 'absent', growthStatus: 'not assessed', localInvasion: 'absent', metastaticDisease: 'absent' },
+    },
+    {
+      id: 'adrenal-lesion', label: 'Adrenal lesion', description: 'Open detailed adrenal characterization.', intent: 'positive',
+      values: { examQuality: 'diagnostic', adrenalLesion: 'present', growthStatus: 'not assessed', localInvasion: 'absent', metastaticDisease: 'absent' },
+    },
+    {
+      id: 'limited-adrenal-study', label: 'Limited characterization', description: 'Document an incompletely characterized lesion.', intent: 'complicated',
+      values: { examQuality: 'limited', adrenalLesion: 'indeterminate', growthStatus: 'not assessed', localInvasion: 'not assessed', metastaticDisease: 'not assessed' },
+    },
+  ],
+};

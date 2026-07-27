@@ -198,3 +198,57 @@ export function generatePerianalFistulaMriReport(schema: ReportingWorkflowSchema
     recommendations: 'No fistula classification, surgical plan, treatment, or management recommendation is calculated. Verify all openings, tract relationships, secondary extensions, collections, and activity before finalizing.',
   };
 }
+
+export function generateAdrenalIncidentalomaReport(schema: ReportingWorkflowSchema, values: WorkflowValues): ReportSections {
+  const quality = workflowValue(values, 'examQuality');
+  const status = workflowValue(values, 'adrenalLesion');
+  const limitation = [workflowValue(values, 'technicalLimitations'), workflowValue(values, 'limitationsUncertainty')].filter(Boolean).join('; ');
+  const size = dimensions(values, ['lesionApMm', 'lesionTrMm', 'lesionCcMm']);
+  const lesionLine =
+    status === 'absent' ? 'No adrenal lesion is identified.' :
+    status === 'present' ? `${workflowValue(values, 'laterality') || 'Adrenal'} lesion${size ? ` measuring ${size}` : ''}${workflowValue(values, 'homogeneity') ? `, ${workflowValue(values, 'homogeneity')}` : ''}.` :
+    status === 'indeterminate' ? `Indeterminate ${workflowValue(values, 'laterality') || 'adrenal'} lesion${size ? ` measuring ${size}` : ''}.` :
+    status === 'not assessed' ? 'Adrenal glands were not adequately assessed.' : undefined;
+  const characterization = status === 'present' || status === 'indeterminate' ? [
+    workflowValue(values, 'unenhancedHu') ? `Unenhanced attenuation: ${workflowValue(values, 'unenhancedHu')} HU.` : undefined,
+    workflowValue(values, 'postcontrastHu') ? `Postcontrast attenuation: ${workflowValue(values, 'postcontrastHu')} HU.` : undefined,
+    workflowValue(values, 'delayedHu') ? `Delayed attenuation: ${workflowValue(values, 'delayedHu')} HU${workflowValue(values, 'delayMinutes') ? ` at ${workflowValue(values, 'delayMinutes')} minutes` : ''}.` : undefined,
+    workflowValue(values, 'userEnteredWashout') ? `User-entered washout result: ${workflowValue(values, 'userEnteredWashout')}.` : undefined,
+    workflowValue(values, 'chemicalShiftLoss') ? `Opposed-phase signal loss: ${workflowValue(values, 'chemicalShiftLoss')}.` : undefined,
+    workflowValue(values, 'macroscopicFat') ? `Macroscopic fat: ${workflowValue(values, 'macroscopicFat')}.` : undefined,
+    workflowValue(values, 'calcification') ? `Calcification: ${workflowValue(values, 'calcification')}.` : undefined,
+    workflowValue(values, 'hemorrhage') ? `Hemorrhage: ${workflowValue(values, 'hemorrhage')}.` : undefined,
+    workflowValue(values, 'necrosis') ? `Necrosis: ${workflowValue(values, 'necrosis')}.` : undefined,
+  ] : [];
+  const aggressive = [
+    assessedFinding(values, 'Interval growth', 'growthStatus', 'growthDetails'),
+    assessedFinding(values, 'Local invasion', 'localInvasion', 'localInvasionDetails'),
+    assessedFinding(values, 'Metastatic disease', 'metastaticDisease', 'metastaticDiseaseDetails'),
+  ];
+  const generatedFindings = cleanLines([
+    lesionLine, ...characterization, ...aggressive,
+    workflowValue(values, 'contralateralAdrenal') ? `Contralateral adrenal: ${workflowValue(values, 'contralateralAdrenal')}.` : undefined,
+    workflowValue(values, 'additionalFindings') ? `Additional findings: ${workflowValue(values, 'additionalFindings')}.` : undefined,
+    limitation ? `Limitations: ${limitation}.` : undefined,
+  ]);
+  const limitationSummary =
+    quality === 'nondiagnostic' ? `Nondiagnostic adrenal examination${limitation ? `: ${limitation}` : '.'}` :
+    quality === 'limited' ? `Limited adrenal characterization${limitation ? `: ${limitation}` : '.'}` : undefined;
+  return {
+    indication: cleanLines([
+      workflowValue(values, 'clinicalIndication') || schema.clinicalQuestion,
+      workflowValue(values, 'clinicalContext') ? `Relevant clinical context: ${workflowValue(values, 'clinicalContext')}.` : undefined,
+      workflowValue(values, 'cancerHistory') ? `Cancer history: ${workflowValue(values, 'cancerHistory')}.` : undefined,
+      workflowValue(values, 'hormonalContext') ? `Hormonal context: ${workflowValue(values, 'hormonalContext')}.` : undefined,
+    ]),
+    technique: cleanLines([workflowValue(values, 'modalityProtocol') || schema.techniqueDefault, quality ? `Examination quality: ${quality}.` : undefined, limitation ? `Technical limitations: ${limitation}.` : undefined]),
+    findings: workflowValue(values, 'findingsOverride') || generatedFindings,
+    impression: workflowValue(values, 'impressionOverride') || cleanLines([
+      limitationSummary, lesionLine,
+      workflowValue(values, 'userImagingSynthesis') || undefined,
+      ...aggressive.filter(Boolean),
+    ]),
+    incidentalFindings: workflowValue(values, 'incidentalFindings'),
+    recommendations: 'No washout calculation, adrenal diagnosis, hormonal conclusion, follow-up interval, biopsy, treatment, or management recommendation is generated. Verify protocol timing, measurements, clinical context, interval change, and user-entered synthesis before finalizing.',
+  };
+}

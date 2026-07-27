@@ -28,6 +28,7 @@ export type ModuleType =
   | 'ctColonography'
   | 'enterography'
   | 'perianalFistulaMri'
+  | 'adrenalIncidentaloma'
   | 'nodule'
   | 'stroke'
   | 'chestXray'

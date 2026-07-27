@@ -131,6 +131,30 @@ export function scoreRequisitionCompleteness(form: ReferralFormState): QualitySc
 }
 
 export function scoreReportCompleteness(moduleType: ModuleType, values: Record<string, unknown>, report: ReportSections): QualityScore {
+  if (moduleType === 'adrenalIncidentaloma') {
+    const lesionStatus = textValue(values.adrenalLesion);
+    const lesionComplete =
+      !['present', 'indeterminate'].includes(lesionStatus) ||
+      (hasMeaningfulText(values.laterality) && hasAny(values, ['lesionApMm', 'lesionTrMm', 'lesionCcMm']) &&
+        hasMeaningfulText(values.homogeneity) &&
+        addressedAny(values, ['unenhancedHu', 'chemicalShiftLoss', 'macroscopicFat', 'userEnteredWashout']));
+    const detail = (statusKey: string, detailsKey?: string) => {
+      const status = textValue(values[statusKey]);
+      return addressed(values[statusKey]) &&
+        (!detailsKey || !['present', 'indeterminate'].includes(status) || hasMeaningfulText(values[detailsKey]));
+    };
+    return score('Report completeness', [
+      { label: 'Clinical indication and cancer context addressed', complete: hasMeaningfulText(values.clinicalIndication) && hasMeaningfulText(values.cancerHistory), missingLabel: 'Clinical indication or cancer history missing' },
+      { label: 'Protocol and technical quality addressed', complete: hasMeaningfulText(values.modalityProtocol) && addressed(values.examQuality), missingLabel: 'Protocol or examination quality missing' },
+      { label: 'Adrenal lesion characterized when present', complete: addressed(values.adrenalLesion) && lesionComplete, missingLabel: lesionStatus === 'present' || lesionStatus === 'indeterminate' ? 'Laterality, size, homogeneity, or characterization feature missing' : 'Adrenal lesion assessment missing' },
+      { label: 'Interval growth addressed', complete: detail('growthStatus', 'growthDetails'), missingLabel: 'Growth assessment/details incomplete' },
+      { label: 'Local invasion addressed', complete: detail('localInvasion', 'localInvasionDetails'), missingLabel: 'Local invasion assessment/details incomplete' },
+      { label: 'Metastatic disease addressed', complete: detail('metastaticDisease', 'metastaticDiseaseDetails'), missingLabel: 'Metastatic disease assessment/details incomplete' },
+      { label: 'Contralateral adrenal addressed', complete: hasMeaningfulText(values.contralateralAdrenal), missingLabel: 'Contralateral adrenal not addressed' },
+      { label: 'Impression generated', complete: hasMeaningfulText(report.impression), missingLabel: 'Impression incomplete' },
+    ]);
+  }
+
   if (moduleType === 'perianalFistulaMri') {
     const tractStatus = textValue(values.primaryFistula);
     const tractComplete =

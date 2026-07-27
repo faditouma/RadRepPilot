@@ -222,6 +222,13 @@ export const moduleNavigationTree: NavigationModality[] = [
           workflow('ct-ap-abdominal-pain', 'Abdominal Pain General', 'Bowel, solid organs, free fluid/air, urinary tract, and alternative diagnosis.'),
           workflow('ct-trauma-cap', 'Trauma Abdomen/Pelvis', 'Solid organ injury, bowel/mesentery, active bleeding, pelvis, and spine.'),
           workflow('incidental-adrenal-nodule', 'Incidental Adrenal Lesion', 'Adrenal follow-up wording and washout context.', 'partial', undefined, ['Adrenal washout']),
+          workflow(
+            'ct-mri-adrenal-incidentaloma',
+            'Adrenal Incidentaloma CT/MRI',
+            'Adrenal morphology, attenuation or chemical shift, interval change, and aggressive features with user-controlled synthesis.',
+            'implemented',
+            'adrenalIncidentaloma',
+          ),
           workflow('incidental-renal-lesion', 'Incidental Renal Lesion', 'Renal cyst/mass characterization language.', 'partial', undefined, ['Bosniak']),
           workflow('incidental-liver-lesion', 'Incidental Liver Lesion', 'Risk-based liver lesion follow-up wording.', 'partial', undefined, ['LI-RADS context']),
           workflow('incidental-pancreatic-cyst', 'Incidental Pancreatic Cyst', 'Cyst size and high-risk feature language.', 'partial'),
