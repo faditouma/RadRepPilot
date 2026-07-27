@@ -131,6 +131,23 @@ export function scoreRequisitionCompleteness(form: ReferralFormState): QualitySc
 }
 
 export function scoreReportCompleteness(moduleType: ModuleType, values: Record<string, unknown>, report: ReportSections): QualityScore {
+  if (['tracheobronchomalacia', 'fibroticLungDisease', 'pulmonaryHypertensionCtpa', 'copdCt'].includes(moduleType)) {
+    const requiredByModule: Partial<Record<ModuleType, string[]>> = {
+      tracheobronchomalacia: ['respiratoryEffort', 'airwayCollapse', 'distribution', 'airTrapping', 'diagnosticConfidence'],
+      fibroticLungDisease: ['fibrosis', 'axialDistribution', 'craniocaudalDistribution', 'reticulation', 'tractionBronchiectasis', 'honeycombing', 'airTrapping', 'intervalProgression', 'acuteAbnormality', 'diagnosticConfidence'],
+      pulmonaryHypertensionCtpa: ['contrastQuality', 'mainPaMm', 'chronicThromboembolicSigns', 'rvLvRatio', 'septalFlattening', 'contrastReflux', 'mosaicPerfusion', 'diagnosticConfidence'],
+      copdCt: ['emphysema', 'airTrapping', 'bullae', 'airwayWallThickening', 'mucusPlugging', 'bronchiectasis'],
+    };
+    const required = requiredByModule[moduleType] || [];
+    return score('Report completeness', [
+      { label: 'Clinical context addressed', complete: hasMeaningfulText(values.clinicalIndication) },
+      { label: 'Protocol and technical quality addressed', complete: hasMeaningfulText(values.modalityProtocol) && addressed(values.examQuality) },
+      { label: 'Core disease-specific findings addressed', complete: required.every((key) => addressed(values[key])) },
+      { label: 'Comparison addressed', complete: hasAny(values, ['comparisonStudy', 'comparisonDate']) || addressed(values.intervalProgression) },
+      { label: 'Impression generated', complete: hasMeaningfulText(report.impression) },
+    ]);
+  }
+
   if (moduleType === 'liverTransplantUltrasound') {
     return score('Report completeness', [
       { label: 'Clinical and transplant context addressed', complete: hasMeaningfulText(values.clinicalIndication) && hasMeaningfulText(values.transplantHistory) },
@@ -1113,28 +1130,28 @@ export function scoreReportCompleteness(moduleType: ModuleType, values: Record<s
     return score('Report completeness', [
       {
         label: 'Guideline applicability context addressed',
-        complete: hasAny(values, ['patientAge', 'knownMalignancy', 'immunocompromised', 'patientRisk']),
+        complete: hasAny(values, ['patientAge', 'knownMalignancy', 'immunocompromised', 'patientRisk']) && hasMeaningfulText(values.guidelineEligibility),
         missingLabel: 'Applicability context not addressed',
       },
       {
-        label: 'Nodule type/count addressed',
-        complete: addressed(values.noduleType) && addressed(values.numberOfNodules),
+        label: 'Protocol, quality, nodule type/count addressed',
+        complete: hasMeaningfulText(values.modalityProtocol) && addressed(values.examQuality) && addressed(values.noduleType) && addressed(values.numberOfNodules),
         missingLabel: 'Nodule type/count not addressed',
       },
       {
         label: 'Size/location addressed',
-        complete: hasAny(values, ['sizeMm', 'location']) || hasFreeTextCoverage(values),
+        complete: hasAny(values, ['sizeMm', 'longAxisMm', 'shortAxisMm', 'volumeMm3']) && hasMeaningfulText(values.location) && hasMeaningfulText(values.seriesImage),
         missingLabel: 'Nodule size/location not addressed',
       },
       {
-        label: 'Morphology or stability addressed',
-        complete: addressed(values.morphology) || addressed(values.stability) || hasFreeTextCoverage(values),
-        missingLabel: 'Morphology/stability not addressed',
+        label: 'Morphology and dated comparison addressed',
+        complete: addressed(values.morphology) && addressed(values.stability) && (textValue(values.priorImagingAvailable) !== 'yes' || hasAny(values, ['comparisonStudy', 'comparisonDate'])),
+        missingLabel: 'Morphology, stability, or dated comparison not addressed',
       },
       {
-        label: 'Follow-up language generated',
-        complete: hasMeaningfulText(report.impression) || hasMeaningfulText(report.recommendations),
-        missingLabel: 'Follow-up language incomplete',
+        label: 'Impression generated',
+        complete: hasMeaningfulText(report.impression),
+        missingLabel: 'Impression incomplete',
       },
     ]);
   }

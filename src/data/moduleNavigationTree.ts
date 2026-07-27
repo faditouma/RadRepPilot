@@ -193,6 +193,10 @@ export const moduleNavigationTree: NavigationModality[] = [
         description: 'PE, nodules, infection, screening categories, and chest incidental findings.',
         workflows: [
           workflow('ctpa-pe', 'CT Pulmonary Angiography', 'Technical quality, PE distribution and chronicity, right-heart findings, complications, and communication.', 'implemented', 'ctpa', ['RV/LV']),
+          workflow('ct-tracheobronchomalacia', 'Tracheobronchomalacia CT', 'Dynamic airway caliber, collapse, morphology, distribution, air trapping, and confidence.', 'implemented', 'tracheobronchomalacia'),
+          workflow('ct-fibrotic-lung-disease', 'Fibrotic Lung Disease HRCT', 'Distribution, fibrotic features, air trapping, emphysema, progression, and acute abnormalities.', 'implemented', 'fibroticLungDisease'),
+          workflow('ctpa-pulmonary-hypertension', 'Pulmonary Hypertension CTPA', 'Pulmonary arteries, chronic thromboembolic signs, right heart, reflux, parenchymal and left-heart clues.', 'implemented', 'pulmonaryHypertensionCtpa'),
+          workflow('ct-copd', 'COPD CT', 'Emphysema, airway disease, air trapping, bullae, fissures, nodules, and associated disease.', 'implemented', 'copdCt'),
           workflow('ct-chest-nodule', 'Pulmonary Nodule / Fleischner', 'Nodule type, size, risk, stability, and simplified follow-up.', 'implemented', 'nodule', ['Fleischner']),
           workflow(
             'ct-lung-cancer-staging',

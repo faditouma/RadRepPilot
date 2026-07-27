@@ -3,7 +3,6 @@ export * from '../radrep/reportGenerators';
 import { reportingWorkflowSchemas, type ReportingWorkflowSchema, type WorkflowValues } from '../data/reportingWorkflowSchemas';
 import {
   calculateRvLvRatio,
-  generateNoduleReport as generateLegacyNoduleReport,
   generateStrokeReport as generateLegacyStrokeReport,
 } from '../radrep/reportGenerators';
 import type { ModuleType, ReportSections } from '../radrep/types';
@@ -26,6 +25,8 @@ import {
 import { generateAdnexalCystUltrasoundReport, generateAdrenalIncidentalomaReport, generateCtColonographyReport, generateEndometriosisMriReport, generateEnterographyReport, generateFibroidMriReport, generatePelvicFloorImagingReport, generatePerianalFistulaMriReport } from './abdominalPelvicImagingReportGenerators';
 import { generatePancreaticCystReport, generatePancreatitisReport, generatePlacentaAccretaMriReport } from './abdominalPelvicImagingPart2ReportGenerators';
 import { generateKidneyTransplantUltrasoundReport, generateLiverTransplantUltrasoundReport, generateLivingDonorLiverReport } from './transplantImagingReportGenerators';
+import { generateIncidentalNoduleReport } from './incidentalNoduleReportGenerator';
+import { generateThoracicImagingReport } from './thoracicImagingReportGenerator';
 import { cleanLines, formatMeasurement, numberOrNull, sentenceList, workflowList, workflowValue, yes } from './impressionGenerators';
 
 function keyNegativeSentence(values: WorkflowValues, suppressPhrases: string[] = []): string | undefined {
@@ -882,10 +883,15 @@ export function generateReportingWorkflowReport(moduleType: ModuleType, values: 
       return generateKidneyTransplantUltrasoundReport(schema, values);
     case 'livingDonorLiver':
       return generateLivingDonorLiverReport(schema, values);
+    case 'tracheobronchomalacia':
+    case 'fibroticLungDisease':
+    case 'pulmonaryHypertensionCtpa':
+    case 'copdCt':
+      return generateThoracicImagingReport(schema, values);
     case 'ctpa':
       return generateCtpaWorkflowReport(schema, values);
     case 'nodule':
-      return generateLegacyNoduleReport(values as unknown as Parameters<typeof generateLegacyNoduleReport>[0]);
+      return generateIncidentalNoduleReport(schema, values);
     case 'stroke':
       return generateLegacyStrokeReport(values as unknown as Parameters<typeof generateLegacyStrokeReport>[0]);
     case 'chestXray':

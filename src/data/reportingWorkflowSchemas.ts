@@ -18,6 +18,7 @@ import {
 import { adrenalIncidentalomaWorkflowSchema, adnexalCystUltrasoundWorkflowSchema, ctColonographyWorkflowSchema, endometriosisMriWorkflowSchema, enterographyWorkflowSchema, fibroidMriWorkflowSchema, pelvicFloorImagingWorkflowSchema, perianalFistulaMriWorkflowSchema } from './reporting/abdominalPelvicImaging';
 import { pancreaticCystWorkflowSchema, pancreatitisWorkflowSchema, placentaAccretaMriWorkflowSchema } from './reporting/abdominalPelvicImagingPart2';
 import { kidneyTransplantUltrasoundWorkflowSchema, liverTransplantUltrasoundWorkflowSchema, livingDonorLiverWorkflowSchema } from './reporting/transplantImaging';
+import { copdCtWorkflowSchema, fibroticLungDiseaseWorkflowSchema, pulmonaryHypertensionCtpaWorkflowSchema, tracheobronchomalaciaWorkflowSchema } from './reporting/thoracicImaging';
 
 export type WorkflowFieldType = 'text' | 'textarea' | 'number' | 'date' | 'time' | 'select' | 'checkbox-group';
 export type WorkflowValue = string | string[];
@@ -501,6 +502,10 @@ export const reportingWorkflowSchemas: Record<
   | 'liverTransplantUltrasound'
   | 'kidneyTransplantUltrasound'
   | 'livingDonorLiver'
+  | 'tracheobronchomalacia'
+  | 'fibroticLungDisease'
+  | 'pulmonaryHypertensionCtpa'
+  | 'copdCt'
   | 'nodule'
   | 'stroke'
   | 'chestXray'
@@ -538,6 +543,10 @@ export const reportingWorkflowSchemas: Record<
   liverTransplantUltrasound: liverTransplantUltrasoundWorkflowSchema,
   kidneyTransplantUltrasound: kidneyTransplantUltrasoundWorkflowSchema,
   livingDonorLiver: livingDonorLiverWorkflowSchema,
+  tracheobronchomalacia: tracheobronchomalaciaWorkflowSchema,
+  fibroticLungDisease: fibroticLungDiseaseWorkflowSchema,
+  pulmonaryHypertensionCtpa: pulmonaryHypertensionCtpaWorkflowSchema,
+  copdCt: copdCtWorkflowSchema,
   ctpa: {
     moduleType: 'ctpa',
     moduleId: 'ctpa-pe',
@@ -806,21 +815,47 @@ export const reportingWorkflowSchemas: Record<
     badges: ['Implemented', 'Educational draft', 'Fleischner helper'],
     insertTargets: ['findings', 'impression', 'recommendations'],
     safetyNote: prototypeSafety,
+    contentMetadata: {
+      sourceChapter: 'Chapter 31: Incidental pulmonary nodules',
+      sourceType: 'Private development reference',
+      guidelineOrClassificationName: 'Fleischner Society pulmonary nodule guidance',
+      guidelineVersion: 'Current primary guidance and applicability criteria require verification',
+      lastReviewedDate: '2026-07-27',
+      reviewStatus: 'needs_clinical_review',
+      clinicalValidationRequired: true,
+    },
     defaultValues: {
+      clinicalIndication: '',
       patientAge: '',
       knownMalignancy: 'no',
       immunocompromised: 'no',
+      modalityProtocol: '',
+      examQuality: '',
+      technicalLimitations: '',
       noduleType: 'solid',
       numberOfNodules: 'solitary',
       sizeMm: '',
+      longAxisMm: '',
+      shortAxisMm: '',
+      volumeMm3: '',
       location: '',
+      seriesImage: '',
+      dominantNodule: 'yes',
       morphology: 'smooth',
       patientRisk: 'low risk',
       priorImagingAvailable: 'no',
+      comparisonStudy: '',
+      comparisonDate: '',
       stability: 'unknown',
+      growthDetails: '',
+      additionalNodules: '',
+      guidelineEligibility: '',
+      userFollowupSynthesis: '',
       incidentalFindings: '',
       additionalFindings: '',
       limitationsUncertainty: '',
+      findingsOverride: '',
+      impressionOverride: '',
     },
     sections: [
       {
@@ -832,6 +867,19 @@ export const reportingWorkflowSchemas: Record<
           yn('knownMalignancy', 'Known malignancy'),
           yn('immunocompromised', 'Immunocompromised'),
           select('patientRisk', 'Patient risk', patientRiskOptions),
+          text('guidelineEligibility', 'Guideline eligibility or exclusions', 'Document applicability; no recommendation is generated', true),
+          text('comparisonStudy', 'Comparison examination'),
+          { id: 'comparisonDate', label: 'Comparison date', type: 'date' },
+        ],
+      },
+      {
+        id: 'technical-quality',
+        title: 'Protocol and technical quality',
+        defaultOpen: true,
+        fields: [
+          text('modalityProtocol', 'CT protocol', 'Slice thickness, contrast, dose, and reconstruction', true),
+          select('examQuality', 'Examination quality', examQualityOptions),
+          area('technicalLimitations', 'Technical limitations', 'Motion, thick sections, incomplete coverage, or other issue'),
         ],
       },
       {
@@ -842,10 +890,23 @@ export const reportingWorkflowSchemas: Record<
           select('noduleType', 'Nodule type', noduleTypeOptions),
           select('numberOfNodules', 'Number of nodules', noduleCountOptions),
           number('sizeMm', 'Size', 'mm'),
+          number('longAxisMm', 'Long-axis diameter', 'mm'),
+          number('shortAxisMm', 'Short-axis diameter', 'mm'),
+          number('volumeMm3', 'Volume', 'mm³'),
           text('location', 'Location', 'e.g. right upper lobe', true),
+          text('seriesImage', 'Series and image reference', 'e.g. series 4, image 126', true),
+          yn('dominantNodule', 'Dominant / most suspicious nodule'),
           select('morphology', 'Morphology', noduleMorphologyOptions),
           yn('priorImagingAvailable', 'Prior imaging available'),
           select('stability', 'Stability vs prior', stabilityOptions),
+          area('growthDetails', 'Growth details', 'Prior/current measurements, volume, and dates'),
+          area('additionalNodules', 'Additional nodules', 'Location, type, size/volume, image reference, and stability'),
+          area('userFollowupSynthesis', 'User-entered follow-up synthesis', 'Optional; no interval or management is calculated'),
+          area('additionalFindings', 'Additional findings'),
+          area('incidentalFindings', 'Incidental findings'),
+          area('limitationsUncertainty', 'Additional uncertainty'),
+          area('findingsOverride', 'Findings free-text override'),
+          area('impressionOverride', 'Impression free-text override'),
         ],
       },
     ],
