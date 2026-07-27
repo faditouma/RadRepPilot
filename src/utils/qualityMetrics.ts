@@ -131,6 +131,41 @@ export function scoreRequisitionCompleteness(form: ReferralFormState): QualitySc
 }
 
 export function scoreReportCompleteness(moduleType: ModuleType, values: Record<string, unknown>, report: ReportSections): QualityScore {
+  if (moduleType === 'liverTransplantUltrasound') {
+    return score('Report completeness', [
+      { label: 'Clinical and transplant context addressed', complete: hasMeaningfulText(values.clinicalIndication) && hasMeaningfulText(values.transplantHistory) },
+      { label: 'Protocol and quality addressed', complete: hasMeaningfulText(values.modalityProtocol) && addressed(values.examQuality) },
+      { label: 'Graft and biliary tree addressed', complete: hasMeaningfulText(values.graftAppearance) && addressed(values.biliaryDilation) },
+      { label: 'Hepatic artery documented', complete: addressed(values.hepaticArteryPatency) && hasMeaningfulText(values.hepaticArteryWaveform) && hasMeaningfulText(values.hepaticArteryRi) },
+      { label: 'Portal and venous flow documented', complete: addressed(values.portalVeinPatency) && hasMeaningfulText(values.portalFlowDirection) && addressed(values.hepaticVeinPatency) && addressed(values.ivcPatency) },
+      { label: 'Collections and urgent findings addressed', complete: addressed(values.collection) && addressed(values.urgentFinding) },
+      { label: 'Impression generated', complete: hasMeaningfulText(report.impression) },
+    ]);
+  }
+  if (moduleType === 'kidneyTransplantUltrasound') {
+    return score('Report completeness', [
+      { label: 'Clinical and transplant context addressed', complete: hasMeaningfulText(values.clinicalIndication) && hasMeaningfulText(values.transplantHistory) },
+      { label: 'Protocol and quality addressed', complete: hasMeaningfulText(values.modalityProtocol) && addressed(values.examQuality) },
+      { label: 'Graft measurements and morphology documented', complete: ['graftLengthCm', 'graftApCm', 'graftTrCm'].every((key) => hasMeaningfulText(values[key])) && hasMeaningfulText(values.graftEchogenicity) },
+      { label: 'Collecting system, collection, and bladder addressed', complete: addressed(values.collectingSystemDilation) && addressed(values.collection) && hasMeaningfulText(values.bladderFindings) },
+      { label: 'Artery, vein, and Doppler documented', complete: addressed(values.renalArteryPatency) && addressed(values.renalVeinPatency) && hasMeaningfulText(values.anastomoticPsv) && ['riUpper', 'riMid', 'riLower'].every((key) => hasMeaningfulText(values[key])) },
+      { label: 'Waveform and urgent findings addressed', complete: addressed(values.waveformAbnormality) && addressed(values.urgentFinding) },
+      { label: 'Impression generated', complete: hasMeaningfulText(report.impression) },
+    ]);
+  }
+  if (moduleType === 'livingDonorLiver') {
+    return score('Report completeness', [
+      { label: 'Clinical and operative context addressed', complete: hasMeaningfulText(values.clinicalIndication) && hasMeaningfulText(values.transplantHistory) },
+      { label: 'Protocol and quality addressed', complete: hasMeaningfulText(values.modalityProtocol) && addressed(values.examQuality) },
+      { label: 'Parenchyma, lesions, and steatosis addressed', complete: hasMeaningfulText(values.liverMorphology) && addressed(values.liverLesion) && addressed(values.steatosis) },
+      { label: 'Total, graft, and remnant volumes documented', complete: ['totalLiverVolumeMl', 'proposedGraft', 'graftVolumeMl', 'remnantVolumeMl'].every((key) => hasMeaningfulText(values[key])) },
+      { label: 'Arterial and portal anatomy documented', complete: hasMeaningfulText(values.arterialAnatomy) && hasMeaningfulText(values.portalAnatomy) },
+      { label: 'Venous and biliary anatomy documented', complete: hasMeaningfulText(values.hepaticVenousAnatomy) && hasMeaningfulText(values.biliaryAnatomy) },
+      { label: 'Surgical planes and drainage documented', complete: hasMeaningfulText(values.surgicalPlanes) && hasMeaningfulText(values.venousDrainage) },
+      { label: 'Impression generated', complete: hasMeaningfulText(report.impression) },
+    ]);
+  }
+
   if (moduleType === 'placentaAccretaMri') {
     const detail = (statusKey: string, detailsKey?: string) => {
       const status = textValue(values[statusKey]);

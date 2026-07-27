@@ -17,6 +17,7 @@ import {
 } from './reporting/cancerImagingRemaining';
 import { adrenalIncidentalomaWorkflowSchema, adnexalCystUltrasoundWorkflowSchema, ctColonographyWorkflowSchema, endometriosisMriWorkflowSchema, enterographyWorkflowSchema, fibroidMriWorkflowSchema, pelvicFloorImagingWorkflowSchema, perianalFistulaMriWorkflowSchema } from './reporting/abdominalPelvicImaging';
 import { pancreaticCystWorkflowSchema, pancreatitisWorkflowSchema, placentaAccretaMriWorkflowSchema } from './reporting/abdominalPelvicImagingPart2';
+import { kidneyTransplantUltrasoundWorkflowSchema, liverTransplantUltrasoundWorkflowSchema, livingDonorLiverWorkflowSchema } from './reporting/transplantImaging';
 
 export type WorkflowFieldType = 'text' | 'textarea' | 'number' | 'date' | 'time' | 'select' | 'checkbox-group';
 export type WorkflowValue = string | string[];
@@ -497,6 +498,9 @@ export const reportingWorkflowSchemas: Record<
   | 'pancreaticCyst'
   | 'pancreatitis'
   | 'placentaAccretaMri'
+  | 'liverTransplantUltrasound'
+  | 'kidneyTransplantUltrasound'
+  | 'livingDonorLiver'
   | 'nodule'
   | 'stroke'
   | 'chestXray'
@@ -531,6 +535,9 @@ export const reportingWorkflowSchemas: Record<
   pancreaticCyst: pancreaticCystWorkflowSchema,
   pancreatitis: pancreatitisWorkflowSchema,
   placentaAccretaMri: placentaAccretaMriWorkflowSchema,
+  liverTransplantUltrasound: liverTransplantUltrasoundWorkflowSchema,
+  kidneyTransplantUltrasound: kidneyTransplantUltrasoundWorkflowSchema,
+  livingDonorLiver: livingDonorLiverWorkflowSchema,
   ctpa: {
     moduleType: 'ctpa',
     moduleId: 'ctpa-pe',

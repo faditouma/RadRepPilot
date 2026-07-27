@@ -102,6 +102,7 @@ export const moduleNavigationTree: NavigationModality[] = [
         name: 'Abdomen/RUQ',
         description: 'Gallbladder, biliary tree, liver, ascites, and visualized renal findings.',
         workflows: [
+          workflow('us-liver-transplant', 'Liver-Transplant Ultrasound', 'Graft morphology, transplant Doppler, biliary tree, collections, and urgent vascular findings.', 'implemented', 'liverTransplantUltrasound'),
           workflow(
             'us-ruq-biliary',
             'RUQ Pain / Cholecystitis',
@@ -119,6 +120,7 @@ export const moduleNavigationTree: NavigationModality[] = [
         name: 'Renal/Bladder',
         description: 'Hydronephrosis, stones, renal parenchyma, cysts/masses, and bladder volume.',
         workflows: [
+          workflow('us-kidney-transplant', 'Kidney-Transplant Ultrasound', 'Graft morphology, collecting system, collections, arterial and venous Doppler, waveforms, and bladder.', 'implemented', 'kidneyTransplantUltrasound'),
           workflow('us-renal-bladder', 'Hydronephrosis / Stone / Retention', 'Hydronephrosis grade, stones, renal size, bladder volume, and PVR.'),
           workflow('incidental-renal-lesion', 'Incidental Renal Finding', 'Renal cyst/mass follow-up language and Bosniak context.', 'partial', undefined, ['Bosniak']),
         ],
@@ -360,6 +362,7 @@ export const moduleNavigationTree: NavigationModality[] = [
         name: 'Liver/Abdomen',
         description: 'LI-RADS context, liver lesions, adrenal/renal characterization, and MRCP placeholders.',
         workflows: [
+          workflow('ct-mri-living-donor-liver', 'Living-Donor Liver Evaluation', 'Liver volumetry, vascular and biliary variants, surgical planes, and venous drainage.', 'implemented', 'livingDonorLiver'),
           workflow(
             'mri-liver-lirads',
             'Hepatocellular Carcinoma CT/MRI',
