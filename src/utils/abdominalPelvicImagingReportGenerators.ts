@@ -335,3 +335,43 @@ export function generateFibroidMriReport(schema: ReportingWorkflowSchema, values
     recommendations: 'No FIGO type, malignancy determination, embolization or surgical eligibility, treatment, or management recommendation is calculated. Verify all fibroids, relationships, morphology, adenomyosis, and treatment-planning anatomy.',
   };
 }
+
+export function generatePelvicFloorImagingReport(schema: ReportingWorkflowSchema, values: WorkflowValues): ReportSections {
+  const quality = workflowValue(values, 'examQuality');
+  const limitation = [workflowValue(values, 'technicalLimitations'), workflowValue(values, 'limitationsUncertainty')].filter(Boolean).join('; ');
+  const compartmentLines = [
+    assessedFinding(values, 'Cystocele', 'cystocele', 'cystoceleDetails'),
+    assessedFinding(values, 'Uterine/vaginal-vault prolapse', 'uterineVaultProlapse', 'uterineVaultDetails'),
+    assessedFinding(values, 'Enterocele/peritoneocele', 'enterocele', 'enteroceleDetails'),
+    workflowValue(values, 'rectocele') === 'present' || workflowValue(values, 'rectocele') === 'indeterminate'
+      ? `Rectocele: ${workflowValue(values, 'rectocele')}${workflowValue(values, 'rectoceleDepthCm') ? `, ${workflowValue(values, 'rectoceleDepthCm')} cm deep` : ''}${workflowValue(values, 'rectoceleEmptying') ? `; emptying ${workflowValue(values, 'rectoceleEmptying')}` : ''}.` : undefined,
+    assessedFinding(values, 'Rectal intussusception', 'intussusception', 'intussusceptionDetails'),
+    assessedFinding(values, 'External rectal prolapse', 'rectalProlapse', 'rectalProlapseDetails'),
+  ];
+  const allNegative = ['cystocele', 'uterineVaultProlapse', 'enterocele', 'rectocele', 'intussusception', 'rectalProlapse'].every((key) => workflowValue(values, key) === 'absent');
+  const measurements = [
+    workflowValue(values, 'restHLineCm') ? `rest H line ${workflowValue(values, 'restHLineCm')} cm` : '',
+    workflowValue(values, 'restMLineCm') ? `rest M line ${workflowValue(values, 'restMLineCm')} cm` : '',
+    workflowValue(values, 'evacuationHLineCm') ? `evacuation H line ${workflowValue(values, 'evacuationHLineCm')} cm` : '',
+    workflowValue(values, 'evacuationMLineCm') ? `evacuation M line ${workflowValue(values, 'evacuationMLineCm')} cm` : '',
+    workflowValue(values, 'bladderDescentCm') ? `bladder-base descent ${workflowValue(values, 'bladderDescentCm')} cm` : '',
+  ].filter(Boolean).join('; ');
+  const findings = cleanLines([
+    measurements ? `Dynamic measurements using ${workflowValue(values, 'referenceLine') || 'the entered reference line'}: ${measurements}.` : undefined,
+    workflowValue(values, 'pelvicFloorMotion') ? `Pelvic-floor motion: ${workflowValue(values, 'pelvicFloorMotion')}.` : undefined,
+    ...compartmentLines, allNegative ? 'No cystocele, middle-compartment prolapse, enterocele, rectocele, intussusception, or external rectal prolapse.' : undefined,
+    workflowValue(values, 'evacuationCompleteness') ? `Evacuation: ${workflowValue(values, 'evacuationCompleteness')}.` : undefined,
+    workflowValue(values, 'puborectalisBehavior') ? `Puborectalis: ${workflowValue(values, 'puborectalisBehavior')}.` : undefined,
+    workflowValue(values, 'additionalFindings') ? `Additional findings: ${workflowValue(values, 'additionalFindings')}.` : undefined,
+    limitation ? `Limitations: ${limitation}.` : undefined,
+  ]);
+  const limit = quality === 'nondiagnostic' ? `Nondiagnostic dynamic pelvic-floor examination${limitation ? `: ${limitation}` : '.'}` : quality === 'limited' ? `Limited dynamic pelvic-floor assessment${limitation ? `: ${limitation}` : '.'}` : undefined;
+  return {
+    indication: cleanLines([workflowValue(values, 'clinicalIndication') || schema.clinicalQuestion, workflowValue(values, 'clinicalContext') ? `Relevant clinical context: ${workflowValue(values, 'clinicalContext')}.` : undefined, workflowValue(values, 'priorSurgery') ? `Prior surgery: ${workflowValue(values, 'priorSurgery')}.` : undefined]),
+    technique: cleanLines([workflowValue(values, 'modalityProtocol') || schema.techniqueDefault, quality ? `Examination quality: ${quality}.` : undefined, workflowValue(values, 'patientEffort') ? `Patient effort: ${workflowValue(values, 'patientEffort')}.` : undefined, workflowValue(values, 'referenceLine') ? `Reference line: ${workflowValue(values, 'referenceLine')}.` : undefined]),
+    findings: workflowValue(values, 'findingsOverride') || findings,
+    impression: workflowValue(values, 'impressionOverride') || cleanLines([limit, allNegative ? 'No dynamic pelvic-floor prolapse or obstructed evacuation is identified.' : undefined, ...compartmentLines, workflowValue(values, 'userSynthesis') || undefined]),
+    incidentalFindings: workflowValue(values, 'incidentalFindings'),
+    recommendations: 'No prolapse severity category, measurement threshold interpretation, treatment, or management recommendation is calculated. Verify patient effort, reference convention, dynamic phases, and all compartments.',
+  };
+}

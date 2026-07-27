@@ -23,7 +23,7 @@ import {
   generateThyroidUltrasoundReport,
   generateOvarianCancerReport,
 } from './cancerImagingRemainingReportGenerators';
-import { generateAdnexalCystUltrasoundReport, generateAdrenalIncidentalomaReport, generateCtColonographyReport, generateEnterographyReport, generateFibroidMriReport, generatePerianalFistulaMriReport } from './abdominalPelvicImagingReportGenerators';
+import { generateAdnexalCystUltrasoundReport, generateAdrenalIncidentalomaReport, generateCtColonographyReport, generateEnterographyReport, generateFibroidMriReport, generatePelvicFloorImagingReport, generatePerianalFistulaMriReport } from './abdominalPelvicImagingReportGenerators';
 import { cleanLines, formatMeasurement, numberOrNull, sentenceList, workflowList, workflowValue, yes } from './impressionGenerators';
 
 function keyNegativeSentence(values: WorkflowValues, suppressPhrases: string[] = []): string | undefined {
@@ -864,6 +864,8 @@ export function generateReportingWorkflowReport(moduleType: ModuleType, values: 
       return generateAdnexalCystUltrasoundReport(schema, values);
     case 'fibroidMri':
       return generateFibroidMriReport(schema, values);
+    case 'pelvicFloorImaging':
+      return generatePelvicFloorImagingReport(schema, values);
     case 'ctpa':
       return generateCtpaWorkflowReport(schema, values);
     case 'nodule':

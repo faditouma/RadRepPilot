@@ -377,6 +377,13 @@ export const moduleNavigationTree: NavigationModality[] = [
             ['FIGO user entry'],
           ),
           workflow(
+            'mri-pelvic-floor-dysfunction',
+            'Pelvic Floor Dysfunction Imaging',
+            'Dynamic measurements, anterior/middle/posterior compartment descent, evacuation, and puborectalis behavior.',
+            'implemented',
+            'pelvicFloorImaging',
+          ),
+          workflow(
             'mri-perianal-fistula',
             'Perianal Fistulizing Disease MRI',
             'Internal and external openings, sphincter relationships, secondary tracts, collections, extensions, and activity.',

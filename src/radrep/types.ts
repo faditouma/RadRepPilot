@@ -31,6 +31,7 @@ export type ModuleType =
   | 'adrenalIncidentaloma'
   | 'adnexalCystUltrasound'
   | 'fibroidMri'
+  | 'pelvicFloorImaging'
   | 'nodule'
   | 'stroke'
   | 'chestXray'

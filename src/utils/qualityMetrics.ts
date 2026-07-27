@@ -131,6 +131,24 @@ export function scoreRequisitionCompleteness(form: ReferralFormState): QualitySc
 }
 
 export function scoreReportCompleteness(moduleType: ModuleType, values: Record<string, unknown>, report: ReportSections): QualityScore {
+  if (moduleType === 'pelvicFloorImaging') {
+    const detail = (statusKey: string, detailsKey?: string) => {
+      const status = textValue(values[statusKey]);
+      return addressed(values[statusKey]) && (!detailsKey || !['present', 'indeterminate'].includes(status) || hasMeaningfulText(values[detailsKey]));
+    };
+    const rectocele = textValue(values.rectocele);
+    return score('Report completeness', [
+      { label: 'Clinical indication and prior surgery addressed', complete: hasMeaningfulText(values.clinicalIndication) && hasMeaningfulText(values.priorSurgery), missingLabel: 'Clinical indication or prior surgery missing' },
+      { label: 'Protocol, effort, quality, and reference line addressed', complete: hasMeaningfulText(values.modalityProtocol) && addressed(values.examQuality) && hasMeaningfulText(values.patientEffort) && hasMeaningfulText(values.referenceLine), missingLabel: 'Protocol, effort, quality, or reference line missing' },
+      { label: 'Rest and evacuation measurements entered', complete: ['restHLineCm', 'restMLineCm', 'evacuationHLineCm', 'evacuationMLineCm'].every((key) => hasMeaningfulText(values[key])), missingLabel: 'Rest or evacuation measurements missing' },
+      { label: 'Anterior and middle compartments addressed', complete: detail('cystocele', 'cystoceleDetails') && detail('uterineVaultProlapse', 'uterineVaultDetails') && detail('enterocele', 'enteroceleDetails'), missingLabel: 'Anterior or middle compartment assessment/details incomplete' },
+      { label: 'Rectocele characterized when present', complete: addressed(values.rectocele) && (!['present', 'indeterminate'].includes(rectocele) || (hasMeaningfulText(values.rectoceleDepthCm) && hasMeaningfulText(values.rectoceleEmptying))), missingLabel: 'Rectocele depth or emptying missing' },
+      { label: 'Intussusception and prolapse addressed', complete: detail('intussusception', 'intussusceptionDetails') && detail('rectalProlapse', 'rectalProlapseDetails'), missingLabel: 'Intussusception or rectal prolapse assessment/details incomplete' },
+      { label: 'Evacuation and puborectalis addressed', complete: hasMeaningfulText(values.evacuationCompleteness) && hasMeaningfulText(values.puborectalisBehavior), missingLabel: 'Evacuation or puborectalis behavior missing' },
+      { label: 'Impression generated', complete: hasMeaningfulText(report.impression), missingLabel: 'Impression incomplete' },
+    ]);
+  }
+
   if (moduleType === 'fibroidMri') {
     const status = textValue(values.dominantFibroid);
     const lesionComplete = !['present', 'indeterminate'].includes(status) ||

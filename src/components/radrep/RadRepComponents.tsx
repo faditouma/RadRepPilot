@@ -36,6 +36,7 @@ const moduleLabels: Record<DraftType, string> = {
   adrenalIncidentaloma: 'Adrenal Incidentaloma CT/MRI',
   adnexalCystUltrasound: 'Ovarian and Adnexal Cyst Ultrasound',
   fibroidMri: 'Fibroid MRI',
+  pelvicFloorImaging: 'Pelvic Floor Dysfunction Imaging',
   nodule: 'Pulmonary Nodule / Fleischner',
   stroke: 'CT Head Stroke / ASPECTS',
   chestXray: 'Chest X-ray: Infection / Dyspnea',
