@@ -247,6 +247,13 @@ export const moduleNavigationTree: NavigationModality[] = [
             'implemented',
             'pancreaticCyst',
           ),
+          workflow(
+            'ct-mri-pancreatitis',
+            'Acute and Chronic Pancreatitis CT/MRI',
+            'Parenchymal enhancement and necrosis, collections, ductal disease, calcification, vascular and biliary complications.',
+            'implemented',
+            'pancreatitis',
+          ),
         ],
       },
       {

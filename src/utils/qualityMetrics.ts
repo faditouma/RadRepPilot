@@ -131,6 +131,25 @@ export function scoreRequisitionCompleteness(form: ReferralFormState): QualitySc
 }
 
 export function scoreReportCompleteness(moduleType: ModuleType, values: Record<string, unknown>, report: ReportSections): QualityScore {
+  if (moduleType === 'pancreatitis') {
+    const detail = (statusKey: string, detailsKey?: string) => {
+      const status = textValue(values[statusKey]);
+      return addressed(values[statusKey]) && (!detailsKey || !['present', 'indeterminate'].includes(status) || hasMeaningfulText(values[detailsKey]));
+    };
+    const necrosis = textValue(values.necrosis);
+    const collection = textValue(values.collection);
+    return score('Report completeness', [
+      { label: 'Clinical indication and reporting mode addressed', complete: hasMeaningfulText(values.clinicalIndication) && hasMeaningfulText(values.pancreatitisMode), missingLabel: 'Clinical indication or acute/chronic mode missing' },
+      { label: 'Protocol and technical quality addressed', complete: hasMeaningfulText(values.modalityProtocol) && addressed(values.examQuality), missingLabel: 'Protocol or examination quality missing' },
+      { label: 'Parenchyma and necrosis characterized', complete: hasMeaningfulText(values.pancreasSize) && hasMeaningfulText(values.enhancementPattern) && detail('necrosis', 'necrosisDistribution') && (!['present', 'indeterminate'].includes(necrosis) || hasMeaningfulText(values.necrosisPercent)), missingLabel: 'Parenchymal size, enhancement, necrosis extent, or distribution missing' },
+      { label: 'Dominant collection characterized when present', complete: addressed(values.collection) && (!['present', 'indeterminate'].includes(collection) || (hasMeaningfulText(values.collectionType) && hasMeaningfulText(values.collectionLocation) && hasAny(values, ['collectionApMm', 'collectionTrMm', 'collectionCcMm']) && hasMeaningfulText(values.collectionWall) && hasMeaningfulText(values.collectionContents))), missingLabel: 'Collection type, location, dimensions, wall, or contents missing' },
+      { label: 'Duct dilation, disruption, and stones addressed', complete: detail('ductDilation') && detail('ductDisruption') && detail('ductStones'), missingLabel: 'Duct dilation, disruption, or stones assessment missing' },
+      { label: 'Vascular complication addressed', complete: detail('vascularComplication', 'vascularDetails'), missingLabel: 'Vascular complication assessment/details incomplete' },
+      { label: 'Biliary cause or obstruction addressed', complete: detail('biliaryCause', 'biliaryDetails'), missingLabel: 'Biliary assessment/details incomplete' },
+      { label: 'Impression generated', complete: hasMeaningfulText(report.impression), missingLabel: 'Impression incomplete' },
+    ]);
+  }
+
   if (moduleType === 'pancreaticCyst') {
     const status = textValue(values.cysticLesion);
     const lesionComplete = !['present', 'indeterminate'].includes(status) ||

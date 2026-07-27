@@ -51,3 +51,41 @@ export function generatePancreaticCystReport(schema: ReportingWorkflowSchema, va
     recommendations: 'No pancreatic-cyst category, surveillance interval, procedure, treatment, or management recommendation is calculated. Verify every cyst, duct anatomy, enhancing components, growth, associated findings, and user-entered guideline/version.',
   };
 }
+
+export function generatePancreatitisReport(schema: ReportingWorkflowSchema, values: WorkflowValues): ReportSections {
+  const quality = workflowValue(values, 'examQuality');
+  const limitation = [workflowValue(values, 'technicalLimitations'), workflowValue(values, 'limitationsUncertainty')].filter(Boolean).join('; ');
+  const collectionSize = dimensions(values, ['collectionApMm', 'collectionTrMm', 'collectionCcMm']);
+  const necrosis = assessed(values, 'Pancreatic/peripancreatic necrosis', 'necrosis', 'necrosisDistribution');
+  const collectionStatus = workflowValue(values, 'collection');
+  const collection = ['present', 'indeterminate'].includes(collectionStatus)
+    ? `${collectionStatus === 'indeterminate' ? 'Indeterminate ' : ''}${workflowValue(values, 'collectionType') || 'pancreatic/peripancreatic collection'} at ${workflowValue(values, 'collectionLocation') || 'an unspecified location'}${collectionSize ? ` measuring ${collectionSize}` : ''}${workflowValue(values, 'collectionWall') ? `; wall ${workflowValue(values, 'collectionWall')}` : ''}${workflowValue(values, 'collectionContents') ? `; contents ${workflowValue(values, 'collectionContents')}` : ''}.`
+    : collectionStatus === 'not assessed' ? 'Pancreatic collections were not adequately assessed.' : undefined;
+  const complications = [
+    assessed(values, 'Main pancreatic duct dilation', 'ductDilation'),
+    assessed(values, 'Duct disruption/disconnected segment', 'ductDisruption'),
+    assessed(values, 'Intraductal stones', 'ductStones'),
+    assessed(values, 'Vascular complication', 'vascularComplication', 'vascularDetails'),
+    assessed(values, 'Biliary cause or obstruction', 'biliaryCause', 'biliaryDetails'),
+  ];
+  const findings = cleanLines([
+    workflowValue(values, 'pancreasSize') ? `Pancreas: ${workflowValue(values, 'pancreasSize')}.` : undefined,
+    workflowValue(values, 'enhancementPattern') ? `Enhancement: ${workflowValue(values, 'enhancementPattern')}.` : undefined,
+    necrosis, workflowValue(values, 'necrosisPercent') ? `Estimated necrosis: ${workflowValue(values, 'necrosisPercent')}%.` : undefined,
+    workflowValue(values, 'inflammatoryChange') ? `Inflammatory change: ${workflowValue(values, 'inflammatoryChange')}.` : undefined,
+    assessed(values, 'Parenchymal atrophy', 'parenchymalAtrophy'), assessed(values, 'Pancreatic calcification', 'calcification'),
+    collection, workflowValue(values, 'additionalCollections') ? `Additional collections: ${workflowValue(values, 'additionalCollections')}.` : undefined,
+    ...complications, workflowValue(values, 'ductDiameterMm') ? `Main duct diameter: ${workflowValue(values, 'ductDiameterMm')} mm.` : undefined,
+    workflowValue(values, 'organComplications') ? `Other organ complications: ${workflowValue(values, 'organComplications')}.` : undefined,
+    limitation ? `Limitations: ${limitation}.` : undefined,
+  ]);
+  const limit = quality === 'nondiagnostic' ? `Nondiagnostic pancreatic examination${limitation ? `: ${limitation}` : '.'}` : quality === 'limited' ? `Limited pancreatitis assessment${limitation ? `: ${limitation}` : '.'}` : undefined;
+  return {
+    indication: cleanLines([workflowValue(values, 'clinicalIndication') || schema.clinicalQuestion, workflowValue(values, 'pancreatitisMode') ? `Reporting mode: ${workflowValue(values, 'pancreatitisMode')}.` : undefined, workflowValue(values, 'clinicalContext') ? `Relevant clinical context: ${workflowValue(values, 'clinicalContext')}.` : undefined]),
+    technique: cleanLines([workflowValue(values, 'modalityProtocol') || schema.techniqueDefault, quality ? `Examination quality: ${quality}.` : undefined, limitation ? `Technical limitations: ${limitation}.` : undefined]),
+    findings: workflowValue(values, 'findingsOverride') || findings,
+    impression: workflowValue(values, 'impressionOverride') || cleanLines([limit, workflowValue(values, 'userTerminologySynthesis') || (workflowValue(values, 'pancreatitisMode') ? `${workflowValue(values, 'pancreatitisMode')} pancreatitis imaging findings.` : 'Pancreatitis assessment is incomplete.'), necrosis, collection, ...complications.filter(Boolean)]),
+    incidentalFindings: workflowValue(values, 'incidentalFindings'),
+    recommendations: 'No Atlanta category, collection maturity class, intervention, treatment, or management recommendation is calculated. Verify clinical timing, enhancement, necrosis, collections, duct integrity, vascular and biliary complications.',
+  };
+}
