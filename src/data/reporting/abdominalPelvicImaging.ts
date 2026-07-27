@@ -175,3 +175,130 @@ export const ctColonographyWorkflowSchema: ReportingWorkflowSchema = {
     },
   ],
 };
+
+const enterographyDefaults: WorkflowValues = {
+  clinicalIndication: '', clinicalContext: '', comparisonStudy: '', comparisonDate: '',
+  modalityProtocol: '', examQuality: '', bowelDistention: '', incompleteSegments: '',
+  technicalLimitations: '', activeInflammation: '', involvedSegment: '', involvedLengthCm: '',
+  muralThicknessMm: '', muralEnhancement: '', muralEdema: '', diffusionRestriction: '',
+  ulceration: '', stricture: '', strictureLocation: '', strictureLengthCm: '',
+  upstreamDilation: '', upstreamDiameterMm: '', penetratingDisease: '', fistulaDetails: '',
+  abscessPhlegmon: '', abscessPhlegmonDetails: '', mesentericInflammation: '',
+  mesentericDetails: '', suspiciousNodes: '', suspiciousNodeDetails: '',
+  extraintestinalFindings: '', intervalChange: '', userActivitySynthesis: '',
+  additionalBowelFindings: '', incidentalFindings: '', limitationsUncertainty: '',
+  findingsOverride: '', impressionOverride: '',
+};
+
+export const enterographyWorkflowSchema: ReportingWorkflowSchema = {
+  moduleType: 'enterography',
+  moduleId: 'ct-mr-enterography',
+  title: 'CT/MR Enterography',
+  shortTitle: 'Enterography',
+  modality: 'CT/MRI',
+  bodySystem: 'Gastrointestinal',
+  clinicalQuestion: 'Assess small-bowel distention, active mural inflammation, stricturing or penetrating disease, complications, and extraintestinal findings.',
+  techniqueDefault: 'CT or MR enterography was performed after enteric contrast administration with intravenous contrast as applicable. Multiplanar images were reviewed.',
+  badges: ['Implemented', 'Educational draft', 'Conditional disease mapping'],
+  insertTargets: ['findings', 'impression', 'incidentalFindings', 'recommendations'],
+  safetyNote: 'Verify bowel distention, every involved segment and length, inflammatory features, strictures, penetrating complications, and comparison. Disease activity and management are not calculated automatically.',
+  contentMetadata: {
+    sourceChapter: 'Chapter 18: CT/MR enterography',
+    sourceType: 'Private development reference',
+    guidelineOrClassificationName: 'Standardized inflammatory bowel disease imaging terminology',
+    guidelineVersion: 'Current consensus terminology requires primary-source verification',
+    lastReviewedDate: '2026-07-27',
+    reviewStatus: 'needs_clinical_review',
+    clinicalValidationRequired: true,
+  },
+  defaultValues: enterographyDefaults,
+  sections: [
+    {
+      id: 'clinical-context', title: 'Clinical context', defaultOpen: true,
+      fields: [
+        area('clinicalIndication', 'Clinical indication', 'Suspected or known inflammatory bowel disease, obstruction, bleeding, or other question'),
+        area('clinicalContext', 'Relevant clinical context', 'Symptoms, diagnosis, surgery, medications, or treatment'),
+        text('comparisonStudy', 'Comparison examination'), { id: 'comparisonDate', label: 'Comparison date', type: 'date' },
+      ],
+    },
+    {
+      id: 'technical-quality', title: 'Protocol and technical quality', defaultOpen: true,
+      fields: [
+        text('modalityProtocol', 'Modality and protocol', 'e.g. MR enterography with enteric and intravenous contrast', true),
+        select('examQuality', 'Examination quality', quality),
+        select('bowelDistention', 'Small-bowel distention', distention),
+        { ...area('incompleteSegments', 'Incompletely assessed segments', 'Segments and reason for incomplete assessment'), visibleWhen: { field: 'bowelDistention', equals: ['limited', 'collapsed', 'not assessed'] } },
+        area('technicalLimitations', 'Technical limitations', 'Motion, incomplete distention, missing sequences/phases, or other issue'),
+      ],
+    },
+    {
+      id: 'mural-disease', title: 'Dominant bowel segment', defaultOpen: true,
+      fields: [
+        select('activeInflammation', 'Active mural inflammation', assessment),
+        { ...text('involvedSegment', 'Involved segment', 'e.g. terminal ileum'), visibleWhen: { field: 'activeInflammation', equals: ['present', 'indeterminate'] } },
+        { ...number('involvedLengthCm', 'Involved length', 'cm'), visibleWhen: { field: 'activeInflammation', equals: ['present', 'indeterminate'] } },
+        { ...number('muralThicknessMm', 'Maximum mural thickness', 'mm'), visibleWhen: { field: 'activeInflammation', equals: ['present', 'indeterminate'] } },
+        { ...text('muralEnhancement', 'Mural enhancement', 'Pattern and degree'), visibleWhen: { field: 'activeInflammation', equals: ['present', 'indeterminate'] } },
+        { ...select('muralEdema', 'Mural edema', assessment), visibleWhen: { field: 'activeInflammation', equals: ['present', 'indeterminate'] } },
+        { ...select('diffusionRestriction', 'Diffusion restriction', assessment), visibleWhen: { field: 'activeInflammation', equals: ['present', 'indeterminate'] } },
+        { ...select('ulceration', 'Ulceration', assessment), visibleWhen: { field: 'activeInflammation', equals: ['present', 'indeterminate'] } },
+        area('additionalBowelFindings', 'Additional bowel findings', 'Other involved segments, chronic changes, motility, or colonic findings'),
+      ],
+    },
+    {
+      id: 'complications', title: 'Stricturing and penetrating complications', defaultOpen: true,
+      fields: [
+        select('stricture', 'Stricture', assessment),
+        { ...text('strictureLocation', 'Stricture location'), visibleWhen: { field: 'stricture', equals: ['present', 'indeterminate'] } },
+        { ...number('strictureLengthCm', 'Stricture length', 'cm'), visibleWhen: { field: 'stricture', equals: ['present', 'indeterminate'] } },
+        { ...select('upstreamDilation', 'Upstream bowel dilation', assessment), visibleWhen: { field: 'stricture', equals: ['present', 'indeterminate'] } },
+        { ...number('upstreamDiameterMm', 'Maximum upstream caliber', 'mm'), visibleWhen: { field: 'upstreamDilation', equals: ['present', 'indeterminate'] } },
+        select('penetratingDisease', 'Fistula or sinus tract', assessment),
+        { ...area('fistulaDetails', 'Fistula or sinus details', 'Origin, course, destination, and activity'), visibleWhen: { field: 'penetratingDisease', equals: ['present', 'indeterminate'] } },
+        select('abscessPhlegmon', 'Abscess or phlegmon', assessment),
+        { ...area('abscessPhlegmonDetails', 'Abscess or phlegmon details', 'Location, dimensions, drainability descriptors, and relationships'), visibleWhen: { field: 'abscessPhlegmon', equals: ['present', 'indeterminate'] } },
+      ],
+    },
+    {
+      id: 'mesentery-extraintestinal', title: 'Mesenteric and extraintestinal findings', defaultOpen: true,
+      fields: [
+        select('mesentericInflammation', 'Mesenteric inflammatory change', assessment),
+        { ...area('mesentericDetails', 'Mesenteric details', 'Hyperemia, edema, fibrofatty proliferation, or other finding'), visibleWhen: { field: 'mesentericInflammation', equals: ['present', 'indeterminate'] } },
+        select('suspiciousNodes', 'Suspicious lymph nodes', assessment),
+        { ...area('suspiciousNodeDetails', 'Lymph-node details'), visibleWhen: { field: 'suspiciousNodes', equals: ['present', 'indeterminate'] } },
+        area('extraintestinalFindings', 'Extraintestinal manifestations or complications'),
+        area('intervalChange', 'Interval change', 'Improved, stable, progressed, new complication, or other comparison'),
+        area('userActivitySynthesis', 'User-entered activity synthesis', 'Optional descriptive synthesis; no score is calculated'),
+        area('incidentalFindings', 'Incidental findings'),
+      ],
+    },
+    {
+      id: 'overrides', title: 'Uncertainty and overrides', defaultOpen: false,
+      fields: [
+        area('limitationsUncertainty', 'Additional uncertainty'),
+        area('findingsOverride', 'Findings free-text override', 'When entered, this replaces generated findings'),
+        area('impressionOverride', 'Impression free-text override', 'When entered, this replaces generated impression'),
+      ],
+    },
+  ],
+  keyNegatives: [],
+  incidentalOptions: [],
+  quickFills: [
+    {
+      id: 'diagnostic-negative', label: 'No active bowel inflammation', description: 'Diagnostic examination without active mural, stricturing, or penetrating disease.', intent: 'normal',
+      values: {
+        examQuality: 'diagnostic', bowelDistention: 'adequate', activeInflammation: 'absent',
+        stricture: 'absent', penetratingDisease: 'absent', abscessPhlegmon: 'absent',
+        mesentericInflammation: 'absent', suspiciousNodes: 'absent',
+      },
+    },
+    {
+      id: 'active-segment', label: 'Active segmental inflammation', description: 'Open the active mural disease pathway.', intent: 'positive',
+      values: { examQuality: 'diagnostic', bowelDistention: 'adequate', activeInflammation: 'present', stricture: 'absent', penetratingDisease: 'absent', abscessPhlegmon: 'absent' },
+    },
+    {
+      id: 'limited-enterography', label: 'Limited examination', description: 'Document incomplete bowel assessment.', intent: 'complicated',
+      values: { examQuality: 'limited', bowelDistention: 'limited', activeInflammation: 'not assessed', stricture: 'not assessed', penetratingDisease: 'not assessed', abscessPhlegmon: 'not assessed', mesentericInflammation: 'not assessed', suspiciousNodes: 'not assessed' },
+    },
+  ],
+};

@@ -131,6 +131,40 @@ export function scoreRequisitionCompleteness(form: ReferralFormState): QualitySc
 }
 
 export function scoreReportCompleteness(moduleType: ModuleType, values: Record<string, unknown>, report: ReportSections): QualityScore {
+  if (moduleType === 'enterography') {
+    const activityStatus = textValue(values.activeInflammation);
+    const activityComplete =
+      !['present', 'indeterminate'].includes(activityStatus) ||
+      (hasMeaningfulText(values.involvedSegment) &&
+        hasMeaningfulText(values.involvedLengthCm) &&
+        hasMeaningfulText(values.muralThicknessMm) &&
+        hasMeaningfulText(values.muralEnhancement) &&
+        addressed(values.muralEdema));
+    const detail = (statusKey: string, detailsKey?: string) => {
+      const status = textValue(values[statusKey]);
+      return addressed(values[statusKey]) &&
+        (!detailsKey || !['present', 'indeterminate'].includes(status) || hasMeaningfulText(values[detailsKey]));
+    };
+    const strictureStatus = textValue(values.stricture);
+    const strictureComplete =
+      addressed(values.stricture) &&
+      (!['present', 'indeterminate'].includes(strictureStatus) ||
+        (hasMeaningfulText(values.strictureLocation) && hasMeaningfulText(values.strictureLengthCm) && addressed(values.upstreamDilation)));
+    const distention = textValue(values.bowelDistention);
+    const limitationComplete =
+      !['limited', 'collapsed', 'not assessed'].includes(distention) || hasMeaningfulText(values.incompleteSegments);
+    return score('Report completeness', [
+      { label: 'Clinical indication addressed', complete: hasMeaningfulText(values.clinicalIndication), missingLabel: 'Clinical indication missing' },
+      { label: 'Protocol, quality, and bowel distention addressed', complete: hasMeaningfulText(values.modalityProtocol) && addressed(values.examQuality) && addressed(values.bowelDistention) && limitationComplete, missingLabel: 'Protocol, quality, bowel distention, or incomplete segments missing' },
+      { label: 'Dominant inflammatory segment characterized', complete: addressed(values.activeInflammation) && activityComplete, missingLabel: activityStatus === 'present' || activityStatus === 'indeterminate' ? 'Inflammatory segment, length, thickness, enhancement, or edema missing' : 'Active inflammation assessment missing' },
+      { label: 'Stricture and upstream dilation addressed', complete: strictureComplete, missingLabel: 'Stricture location, length, or upstream dilation assessment missing' },
+      { label: 'Penetrating disease addressed', complete: detail('penetratingDisease', 'fistulaDetails'), missingLabel: 'Fistula or sinus assessment/details incomplete' },
+      { label: 'Abscess or phlegmon addressed', complete: detail('abscessPhlegmon', 'abscessPhlegmonDetails'), missingLabel: 'Abscess or phlegmon assessment/details incomplete' },
+      { label: 'Mesentery and lymph nodes addressed', complete: detail('mesentericInflammation', 'mesentericDetails') && detail('suspiciousNodes', 'suspiciousNodeDetails'), missingLabel: 'Mesenteric or lymph-node assessment/details incomplete' },
+      { label: 'Impression generated', complete: hasMeaningfulText(report.impression), missingLabel: 'Impression incomplete' },
+    ]);
+  }
+
   if (moduleType === 'ctColonography') {
     const lesionStatus = textValue(values.colonicLesion);
     const completeStatus = textValue(values.completeColonAssessment);

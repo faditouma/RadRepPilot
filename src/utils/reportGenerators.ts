@@ -23,7 +23,7 @@ import {
   generateThyroidUltrasoundReport,
   generateOvarianCancerReport,
 } from './cancerImagingRemainingReportGenerators';
-import { generateCtColonographyReport } from './abdominalPelvicImagingReportGenerators';
+import { generateCtColonographyReport, generateEnterographyReport } from './abdominalPelvicImagingReportGenerators';
 import { cleanLines, formatMeasurement, numberOrNull, sentenceList, workflowList, workflowValue, yes } from './impressionGenerators';
 
 function keyNegativeSentence(values: WorkflowValues, suppressPhrases: string[] = []): string | undefined {
@@ -854,6 +854,8 @@ export function generateReportingWorkflowReport(moduleType: ModuleType, values: 
       return generateThyroidUltrasoundReport(schema, values);
     case 'ctColonography':
       return generateCtColonographyReport(schema, values);
+    case 'enterography':
+      return generateEnterographyReport(schema, values);
     case 'ctpa':
       return generateCtpaWorkflowReport(schema, values);
     case 'nodule':

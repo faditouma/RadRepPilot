@@ -81,3 +81,73 @@ export function generateCtColonographyReport(schema: ReportingWorkflowSchema, va
     recommendations: 'No colonic or extracolonic category, surveillance interval, or management recommendation is calculated. Verify preparation, segmental distention, complete colonic visualization, all lesions, and user-entered categories before finalizing.',
   };
 }
+
+const assessedFinding = (values: WorkflowValues, label: string, statusKey: string, detailsKey = '') => {
+  const status = workflowValue(values, statusKey);
+  if (status === 'absent') return undefined;
+  if (!['present', 'indeterminate', 'not assessed'].includes(status)) return undefined;
+  return `${label}: ${status}${detailsKey && workflowValue(values, detailsKey) ? `; ${workflowValue(values, detailsKey)}` : ''}.`;
+};
+
+export function generateEnterographyReport(schema: ReportingWorkflowSchema, values: WorkflowValues): ReportSections {
+  const quality = workflowValue(values, 'examQuality');
+  const activity = workflowValue(values, 'activeInflammation');
+  const limitation = [workflowValue(values, 'technicalLimitations'), workflowValue(values, 'limitationsUncertainty')].filter(Boolean).join('; ');
+  const muralLine =
+    activity === 'absent' ? 'No active mural small-bowel inflammation is identified.' :
+    ['present', 'indeterminate'].includes(activity) ? `${activity === 'present' ? 'Active inflammatory changes' : 'Indeterminate mural abnormality'} involving the ${workflowValue(values, 'involvedSegment') || 'unspecified bowel segment'}${workflowValue(values, 'involvedLengthCm') ? ` over ${workflowValue(values, 'involvedLengthCm')} cm` : ''}${workflowValue(values, 'muralThicknessMm') ? `, with mural thickness up to ${workflowValue(values, 'muralThicknessMm')} mm` : ''}. ${[
+      workflowValue(values, 'muralEnhancement') ? `Enhancement: ${workflowValue(values, 'muralEnhancement')}` : '',
+      workflowValue(values, 'muralEdema') ? `edema: ${workflowValue(values, 'muralEdema')}` : '',
+      workflowValue(values, 'diffusionRestriction') ? `diffusion restriction: ${workflowValue(values, 'diffusionRestriction')}` : '',
+      workflowValue(values, 'ulceration') ? `ulceration: ${workflowValue(values, 'ulceration')}` : '',
+    ].filter(Boolean).join('; ')}.` :
+    activity === 'not assessed' ? 'Active mural inflammation was not adequately assessed.' : undefined;
+  const strictureStatus = workflowValue(values, 'stricture');
+  const strictureLine =
+    ['present', 'indeterminate'].includes(strictureStatus)
+      ? `${strictureStatus === 'present' ? 'Stricture' : 'Indeterminate stricture'} at the ${workflowValue(values, 'strictureLocation') || 'unspecified location'}${workflowValue(values, 'strictureLengthCm') ? ` spanning ${workflowValue(values, 'strictureLengthCm')} cm` : ''}${workflowValue(values, 'upstreamDilation') ? `; upstream dilation ${workflowValue(values, 'upstreamDilation')}${workflowValue(values, 'upstreamDiameterMm') ? ` to ${workflowValue(values, 'upstreamDiameterMm')} mm` : ''}` : ''}.`
+      : strictureStatus === 'not assessed' ? 'Stricture was not adequately assessed.' : undefined;
+  const complicationLines = [
+    assessedFinding(values, 'Fistula or sinus tract', 'penetratingDisease', 'fistulaDetails'),
+    assessedFinding(values, 'Abscess or phlegmon', 'abscessPhlegmon', 'abscessPhlegmonDetails'),
+    assessedFinding(values, 'Mesenteric inflammatory change', 'mesentericInflammation', 'mesentericDetails'),
+    assessedFinding(values, 'Suspicious lymph nodes', 'suspiciousNodes', 'suspiciousNodeDetails'),
+  ];
+  const negativeComplications = ['stricture', 'penetratingDisease', 'abscessPhlegmon'].every((key) => workflowValue(values, key) === 'absent');
+  const generatedFindings = cleanLines([
+    muralLine, strictureLine, ...complicationLines,
+    negativeComplications ? 'No stricture, penetrating disease, abscess, or phlegmon is identified.' : undefined,
+    workflowValue(values, 'additionalBowelFindings') ? `Additional bowel findings: ${workflowValue(values, 'additionalBowelFindings')}.` : undefined,
+    workflowValue(values, 'extraintestinalFindings') ? `Extraintestinal findings: ${workflowValue(values, 'extraintestinalFindings')}.` : undefined,
+    workflowValue(values, 'intervalChange') ? `Interval change: ${workflowValue(values, 'intervalChange')}.` : undefined,
+    limitation ? `Limitations: ${limitation}.` : undefined,
+  ]);
+  const limitationSummary =
+    quality === 'nondiagnostic' ? `Nondiagnostic enterography examination${limitation ? `: ${limitation}` : '.'}` :
+    quality === 'limited' ? `Limited enterography examination${workflowValue(values, 'incompleteSegments') ? `: ${workflowValue(values, 'incompleteSegments')}` : limitation ? `: ${limitation}` : '.'}` : undefined;
+  const activitySummary =
+    activity === 'absent' ? 'No active small-bowel inflammation.' :
+    activity === 'present' ? `Active inflammation involving the ${workflowValue(values, 'involvedSegment') || 'specified bowel segment'}${workflowValue(values, 'involvedLengthCm') ? ` over ${workflowValue(values, 'involvedLengthCm')} cm` : ''}.` :
+    activity === 'indeterminate' ? `Indeterminate inflammatory change involving the ${workflowValue(values, 'involvedSegment') || 'specified bowel segment'}.` :
+    activity === 'not assessed' ? 'Bowel inflammatory activity is not adequately assessed.' : 'Bowel inflammatory activity is not entered.';
+  return {
+    indication: cleanLines([
+      workflowValue(values, 'clinicalIndication') || schema.clinicalQuestion,
+      workflowValue(values, 'clinicalContext') ? `Relevant clinical context: ${workflowValue(values, 'clinicalContext')}.` : undefined,
+    ]),
+    technique: cleanLines([
+      workflowValue(values, 'modalityProtocol') || schema.techniqueDefault,
+      quality ? `Examination quality: ${quality}.` : undefined,
+      workflowValue(values, 'bowelDistention') ? `Small-bowel distention: ${workflowValue(values, 'bowelDistention')}.` : undefined,
+      limitation ? `Technical limitations: ${limitation}.` : undefined,
+    ]),
+    findings: workflowValue(values, 'findingsOverride') || generatedFindings,
+    impression: workflowValue(values, 'impressionOverride') || cleanLines([
+      limitationSummary, activitySummary, strictureLine, ...complicationLines.slice(0, 2),
+      workflowValue(values, 'userActivitySynthesis') || undefined,
+      workflowValue(values, 'extraintestinalFindings') ? `Relevant extraintestinal findings: ${workflowValue(values, 'extraintestinalFindings')}.` : undefined,
+    ]),
+    incidentalFindings: workflowValue(values, 'incidentalFindings'),
+    recommendations: 'No disease-activity score, treatment, surveillance interval, or management recommendation is calculated. Verify bowel distention, involved segments, strictures, penetrating complications, and comparison before finalizing.',
+  };
+}

@@ -209,6 +209,13 @@ export const moduleNavigationTree: NavigationModality[] = [
             'ctColonography',
             ['C-RADS user entry'],
           ),
+          workflow(
+            'ct-mr-enterography',
+            'CT/MR Enterography',
+            'Bowel distention, segmental mural inflammation, strictures, penetrating complications, mesentery, and extraintestinal findings.',
+            'implemented',
+            'enterography',
+          ),
           workflow('ct-ap-appendicitis', 'Appendicitis', 'Appendix visualization, diameter, inflammatory change, and complications.', 'implemented', 'appendicitis'),
           workflow('ct-ap-diverticulitis', 'Diverticulitis', 'Segment, inflammation, abscess, perforation, fistula, and obstruction.'),
           workflow('ct-ap-bowel-obstruction', 'Bowel Obstruction', 'Transition point, grade, cause, ischemia, closed loop, and perforation.', 'implemented', 'bowelObstruction'),

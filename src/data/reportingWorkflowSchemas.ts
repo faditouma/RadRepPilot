@@ -15,7 +15,7 @@ import {
   thyroidUltrasoundWorkflowSchema,
   ovarianCancerWorkflowSchema,
 } from './reporting/cancerImagingRemaining';
-import { ctColonographyWorkflowSchema } from './reporting/abdominalPelvicImaging';
+import { ctColonographyWorkflowSchema, enterographyWorkflowSchema } from './reporting/abdominalPelvicImaging';
 
 export type WorkflowFieldType = 'text' | 'textarea' | 'number' | 'date' | 'time' | 'select' | 'checkbox-group';
 export type WorkflowValue = string | string[];
@@ -486,6 +486,7 @@ export const reportingWorkflowSchemas: Record<
   | 'lungCancerCt'
   | 'thyroidUltrasound'
   | 'ctColonography'
+  | 'enterography'
   | 'nodule'
   | 'stroke'
   | 'chestXray'
@@ -510,6 +511,7 @@ export const reportingWorkflowSchemas: Record<
   lungCancerCt: lungCancerCtWorkflowSchema,
   thyroidUltrasound: thyroidUltrasoundWorkflowSchema,
   ctColonography: ctColonographyWorkflowSchema,
+  enterography: enterographyWorkflowSchema,
   ctpa: {
     moduleType: 'ctpa',
     moduleId: 'ctpa-pe',
