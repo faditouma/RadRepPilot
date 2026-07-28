@@ -78,3 +78,11 @@ export const calculatorNavigationTree: CalculatorCategory[] = [
     calculatorIds: ['tirads'],
   },
 ];
+
+export const publicCalculatorNavigationTree: CalculatorCategory[] = calculatorNavigationTree
+  .map((category) => ({
+    ...category,
+    calculatorIds: category.calculatorIds.filter((id) => publicCalculatorRegistry.some((calculator) => calculator.id === id)),
+  }))
+  .filter((category) => category.calculatorIds.length > 0);
+import { publicCalculatorRegistry } from './calculatorRegistry';

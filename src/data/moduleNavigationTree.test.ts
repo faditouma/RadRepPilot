@@ -16,18 +16,17 @@ describe('workflow navigation registry reconciliation', () => {
     expect(new Set(internalEntries.map((entry) => entry.moduleId)).size).toBe(internalEntries.length);
   });
 
-  it('hides every planned workflow from ordinary navigation', () => {
+  it('hides every unfinished workflow from ordinary navigation', () => {
     expect(publicEntries.some((entry) => entry.status === 'planned')).toBe(false);
+    expect(publicEntries.some((entry) => entry.status === 'partial')).toBe(false);
     expect(publicEntries.some((entry) => entry.moduleId === 'ct-ap-diverticulitis')).toBe(false);
     expect(publicModuleNavigationTree.some((modality) => modality.name === 'Interventional Radiology')).toBe(false);
   });
 
-  it('keeps partial entries explicitly unavailable and implemented entries routable', () => {
-    const partialEntries = publicEntries.filter((entry) => entry.status === 'partial');
-    expect(partialEntries).toHaveLength(15);
-    expect(partialEntries.every((entry) => entry.moduleType === undefined)).toBe(true);
-
+  it('keeps all public entries functional and routable', () => {
     const implementedEntries = publicEntries.filter((entry) => entry.status === 'implemented');
+    expect(implementedEntries).toHaveLength(55);
+    expect(publicEntries).toHaveLength(implementedEntries.length);
     expect(implementedEntries.every((entry) => entry.moduleType && reportingWorkflowSchemas[entry.moduleType])).toBe(true);
   });
 

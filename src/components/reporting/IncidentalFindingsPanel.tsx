@@ -240,7 +240,6 @@ export function IncidentalFindingsPanel({ options, value, onChange, onOpenHelper
             <div className="incidental-mini-form">
               <div className="card-topline">
                 <span>{selectedRegistryFinding?.organSystem ?? 'Context-aware helper'}</span>
-                <span className="status-badge partial">Educational draft</span>
               </div>
               <h4>{selectedRegistryFinding?.name ?? selectedOption.label}</h4>
               {selectedRegistryFinding ? (

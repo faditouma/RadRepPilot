@@ -296,10 +296,7 @@ export function CalculatorCard({ title, description, status = 'Ready', children 
   return (
     <article className={`calculator-card ${status === 'Coming soon' ? 'placeholder-card' : ''}`}>
       <div className="calculator-heading">
-        <div>
-          <span>{status}</span>
-          <h3>{title}</h3>
-        </div>
+        <h3>{title}</h3>
       </div>
       <p>{description}</p>
       {children ? <div className="calculator-body">{children}</div> : null}

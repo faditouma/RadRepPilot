@@ -563,9 +563,8 @@ export const moduleNavigationTree: NavigationModality[] = [
 ];
 
 /**
- * Public navigation excludes planned scaffolding. Partial entries remain visible
- * as clearly labeled, non-functional previews; the full registry remains
- * available internally for implementation planning and reconciliation.
+ * Public navigation contains functional workflows only. Partial and planned
+ * records remain in the internal registry for implementation planning.
  */
 export const publicModuleNavigationTree: NavigationModality[] = moduleNavigationTree
   .map((modality) => ({
@@ -573,7 +572,7 @@ export const publicModuleNavigationTree: NavigationModality[] = moduleNavigation
     bodySystems: modality.bodySystems
       .map((bodySystem) => ({
         ...bodySystem,
-        workflows: bodySystem.workflows.filter((workflowEntry) => workflowEntry.status !== 'planned'),
+        workflows: bodySystem.workflows.filter((workflowEntry) => workflowEntry.status === 'implemented'),
       }))
       .filter((bodySystem) => bodySystem.workflows.length > 0),
   }))

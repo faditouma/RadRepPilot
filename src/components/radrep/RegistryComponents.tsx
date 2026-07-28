@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useState } from 'react';
-import { calculatorRegistry } from '../../data/calculatorRegistry';
-import { calculatorNavigationTree } from '../../data/calculatorNavigationTree';
+import { publicCalculatorRegistry } from '../../data/calculatorRegistry';
+import { publicCalculatorNavigationTree } from '../../data/calculatorNavigationTree';
 import { RequisitionAppropriatenessPanel } from '../appropriateness/RequisitionAppropriatenessPanel';
 import { incidentalFindingsRegistry } from '../../data/incidentalFindingsRegistry';
 import { primaryCareContentRegistry } from '../../data/primaryCareContentRegistry';
@@ -25,15 +25,12 @@ import type {
   ModuleType,
   PrimaryCareContentTemplate,
   PrimaryCareFieldDefinition,
-  RadsStatus,
   RadsSystemDefinition,
   ReferralFormState,
   RequisitionOutputStyle,
   ReportingModuleDefinition,
 } from '../../radrep/types';
 import { CopyButton } from './RadRepComponents';
-
-type RegistryStatus = 'implemented' | 'placeholder' | 'partial' | 'planned';
 
 interface GeneratedTextPanelProps {
   title: string;
@@ -56,18 +53,6 @@ const insertTargets: Array<{ target: InsertTarget; label: string }> = [
   { target: 'recommendations', label: 'Recommendations' },
   { target: 'internalNotes', label: 'Internal notes' },
 ];
-
-export function StatusBadge({ status }: { status: RegistryStatus | RadsStatus }) {
-  const label =
-    status === 'implemented'
-      ? 'Implemented'
-      : status === 'partial'
-        ? 'Partial'
-        : status === 'planned'
-          ? 'Planned'
-          : 'Coming soon';
-  return <span className={`status-badge ${status}`}>{label}</span>;
-}
 
 export function InsertToReportButton({ onInsert }: { onInsert: () => void }) {
   return (
@@ -131,11 +116,11 @@ export function ModuleLibrary({ onOpenImplemented }: ModuleLibraryProps) {
   const [search, setSearch] = useState('');
   const [modality, setModality] = useState<'All' | Modality>('All');
   const [bodySystem, setBodySystem] = useState<'All' | BodySystem>('All');
-  const [status, setStatus] = useState<'All' | 'implemented' | 'placeholder'>('All');
 
   const filtered = useMemo(() => {
     const query = search.trim().toLowerCase();
     return reportingModules.filter((module) => {
+      if (module.status !== 'implemented' || !module.implementedModuleType) return false;
       const searchText = [
         module.title,
         module.description,
@@ -150,11 +135,10 @@ export function ModuleLibrary({ onOpenImplemented }: ModuleLibraryProps) {
       return (
         (!query || searchText.includes(query)) &&
         (modality === 'All' || module.modality === modality) &&
-        (bodySystem === 'All' || module.bodySystem === bodySystem) &&
-        (status === 'All' || module.status === status)
+        (bodySystem === 'All' || module.bodySystem === bodySystem)
       );
     });
-  }, [bodySystem, modality, search, status]);
+  }, [bodySystem, modality, search]);
 
   return (
     <section className="registry-panel">
@@ -165,7 +149,6 @@ export function ModuleLibrary({ onOpenImplemented }: ModuleLibraryProps) {
         </label>
         <FilterSelect label="Modality" value={modality} values={['All', ...modalities]} onChange={(value) => setModality(value as never)} />
         <FilterSelect label="Body system" value={bodySystem} values={['All', ...bodySystems]} onChange={(value) => setBodySystem(value as never)} />
-        <FilterSelect label="Status" value={status} values={['All', 'implemented', 'placeholder']} onChange={(value) => setStatus(value as never)} />
       </div>
 
       <div className="library-grid">
@@ -190,7 +173,6 @@ function ReportingModuleCard({
         <span>
           {module.modality} · {module.bodySystem}
         </span>
-        <StatusBadge status={module.status} />
       </div>
       <h3>{module.title}</h3>
       <p>{module.description}</p>
@@ -200,7 +182,7 @@ function ReportingModuleCard({
         ))}
       </div>
       <details className="preview-details">
-        <summary>View planned workflow</summary>
+        <summary>Review workflow details</summary>
         <PreviewList title="Clinical scenario" items={module.clinicalScenario ? [module.clinicalScenario] : []} />
         <PreviewList title="Key findings" items={module.keyFindings ?? []} />
         <PreviewList title="Key negatives" items={module.keyNegatives ?? []} />
@@ -215,15 +197,9 @@ function ReportingModuleCard({
         ) : null}
         <SourceBadges names={module.sourceNames ?? []} links={module.sourceLinks ?? []} />
       </details>
-      {module.status === 'implemented' && module.implementedModuleType ? (
-        <button className="primary-button" onClick={() => onOpenImplemented(module.implementedModuleType!)} type="button">
-          Open workflow
-        </button>
-      ) : (
-        <button className="secondary-button" disabled type="button">
-          Coming soon
-        </button>
-      )}
+      <button className="primary-button" onClick={() => onOpenImplemented(module.implementedModuleType!)} type="button">
+        Open workflow
+      </button>
     </article>
   );
 }
@@ -237,43 +213,45 @@ interface CalculatorRegistryProps {
 
 export function CalculatorRegistry({ onInsertSentence, onSaveText, initialHelperId, onHelperOpened }: CalculatorRegistryProps) {
   const [search, setSearch] = useState('');
-  const [status, setStatus] = useState<'All' | 'implemented' | 'partial' | 'placeholder'>('All');
   const [selectedCategoryId, setSelectedCategoryId] = useState('');
   const [selectedCalculatorId, setSelectedCalculatorId] = useState('');
   const [valuesById, setValuesById] = useState<Record<string, CalculatorValueMap>>(() =>
-    Object.fromEntries(calculatorRegistry.map((calculator) => [calculator.id, calculator.defaultValues ?? {}])),
+    Object.fromEntries(publicCalculatorRegistry.map((calculator) => [calculator.id, calculator.defaultValues ?? {}])),
   );
   const [editedSentences, setEditedSentences] = useState<Record<string, string>>({});
 
   useEffect(() => {
     if (!initialHelperId) return;
-    const helper = calculatorRegistry.find((calculator) => calculator.id === initialHelperId);
-    if (!helper) return;
-    const category = calculatorNavigationTree.find((item) => item.calculatorIds.includes(helper.id));
+    const helper = publicCalculatorRegistry.find((calculator) => calculator.id === initialHelperId);
+    if (!helper) {
+      onHelperOpened?.();
+      return;
+    }
+    const category = publicCalculatorNavigationTree.find((item) => item.calculatorIds.includes(helper.id));
     setSelectedCategoryId(category?.id ?? '');
     setSelectedCalculatorId(helper.id);
     onHelperOpened?.();
   }, [initialHelperId, onHelperOpened]);
 
-  const selectedCategory = calculatorNavigationTree.find((category) => category.id === selectedCategoryId);
-  const selectedCalculator = calculatorRegistry.find((calculator) => calculator.id === selectedCalculatorId);
+  const selectedCategory = publicCalculatorNavigationTree.find((category) => category.id === selectedCategoryId);
+  const selectedCalculator = publicCalculatorRegistry.find((calculator) => calculator.id === selectedCalculatorId);
 
   const matchesFilter = (calculator: CalculatorDefinition) => {
     const query = search.trim().toLowerCase();
     const matchesSearch =
       !query ||
       [calculator.name, calculator.description, calculator.modality, calculator.bodySystem].join(' ').toLowerCase().includes(query);
-    return matchesSearch && (status === 'All' || calculator.status === status);
+    return matchesSearch;
   };
 
   const categoryCalculators = (selectedCategory
     ? selectedCategory.calculatorIds
-        .map((id) => calculatorRegistry.find((calculator) => calculator.id === id))
+        .map((id) => publicCalculatorRegistry.find((calculator) => calculator.id === id))
         .filter((calculator): calculator is CalculatorDefinition => Boolean(calculator))
     : []
   ).filter(matchesFilter);
 
-  const searchResults = search.trim() ? calculatorRegistry.filter(matchesFilter) : [];
+  const searchResults = search.trim() ? publicCalculatorRegistry.filter(matchesFilter) : [];
 
   const updateValue = (calculatorId: string, fieldId: string, valueToSet: string | string[]) => {
     setValuesById((existing) => ({
@@ -352,12 +330,6 @@ export function CalculatorRegistry({ onInsertSentence, onSaveText, initialHelper
           Quick search helpers
           <input value={search} onChange={(event) => setSearch(event.target.value)} placeholder="Search LI-RADS, RECIST, RV/LV..." />
         </label>
-        <FilterSelect
-          label="Status"
-          value={status}
-          values={['All', 'implemented', 'partial', 'placeholder']}
-          onChange={(value) => setStatus(value as never)}
-        />
       </div>
 
       {selectedCalculator ? (
@@ -376,7 +348,7 @@ export function CalculatorRegistry({ onInsertSentence, onSaveText, initialHelper
         </div>
       ) : (
         <div className="branch-grid calculator-category-grid">
-          {calculatorNavigationTree.map((category) => (
+          {publicCalculatorNavigationTree.map((category) => (
             <button className="branch-card" onClick={() => setSelectedCategoryId(category.id)} type="button" key={category.id}>
               <span>Helper family</span>
               <strong>
@@ -396,21 +368,18 @@ export function CalculatorRegistry({ onInsertSentence, onSaveText, initialHelper
 
 function HelperChoiceCard({ calculator, onOpen }: { calculator: CalculatorDefinition; onOpen: () => void }) {
   return (
-    <article className="workflow-choice-card">
+    <button className="workflow-choice-card interactive-choice-card" onClick={onOpen} type="button">
       <div className="card-topline">
-        <span>
-          {calculator.modality} · {calculator.bodySystem}
-        </span>
-        <div className="badge-row">
-          <StatusBadge status={calculator.status} />
-          <span className="content-status-badge small">{calculator.contentStatus ?? 'Educational draft'}</span>
-        </div>
-	      </div>
-	      <h3>{calculator.name}</h3>
-	      <button className={calculator.status === 'placeholder' ? 'secondary-button' : 'primary-button'} onClick={onOpen} type="button">
-        {calculator.status === 'placeholder' ? 'View planned helper' : 'Open helper'}
-      </button>
-    </article>
+        <span>{calculator.modality} · {calculator.bodySystem}</span>
+        <RadIcon name="calculator" size={20} />
+      </div>
+      <h3>{calculator.name}</h3>
+      <p className="workflow-supporting-copy">{calculator.description}</p>
+      <span className="card-action">
+        Open helper
+        <span aria-hidden="true">→</span>
+      </span>
+    </button>
   );
 }
 
@@ -450,17 +419,15 @@ function CalculatorRegistryCard({
   const radsPreview = radsSystemsRegistry.find((system) => system.id === radsIdByCalculatorId[calculator.id]);
 
   return (
-    <article className={`calculator-card ${calculator.status === 'placeholder' ? 'placeholder-card' : ''}`}>
+    <article className="calculator-card">
       <div className="card-topline">
         <span>
           {calculator.modality} · {calculator.bodySystem}
         </span>
-        <StatusBadge status={calculator.status} />
-	      </div>
-	      <h3>{calculator.name}</h3>
+      </div>
+      <h3>{calculator.name}</h3>
 
-	      {calculator.status !== 'placeholder' ? (
-        <>
+      <>
           <div className="calculator-field-grid">
             {calculator.fields.map((field) =>
               field.type === 'lesion-tracker' ? (
@@ -488,17 +455,7 @@ function CalculatorRegistryCard({
             </p>
             {radsPreview ? <SourceBadges names={radsPreview.sourceNames} links={radsPreview.sourceLinks} /> : null}
           </details>
-        </>
-      ) : (
-        <div className="preview-stack">
-          <PreviewList title="Planned inputs" items={radsPreview?.keyInputs ?? ['Structured descriptors', 'Category selection', 'Comparison', 'Report-ready sentence']} />
-          {radsPreview ? <PreviewList title="Category concepts" items={radsPreview.categoryConcepts.slice(0, 4)} /> : null}
-          <div className="sample-language">
-            <span>Preview sentence</span>
-            <p>{radsPreview?.reportReadySentenceTemplate ?? 'Future workflow will generate verified classification language from user-entered features.'}</p>
-          </div>
-        </div>
-      )}
+      </>
     </article>
   );
 }
@@ -613,15 +570,15 @@ interface RadsSystemsPanelProps {
 
 export function RadsSystemsPanel({ onInsertSentence, onSaveText }: RadsSystemsPanelProps) {
   const [search, setSearch] = useState('');
-  const [status, setStatus] = useState<'All' | RadsStatus>('All');
   const [editedSentences, setEditedSentences] = useState<Record<string, string>>({});
 
   const filtered = radsSystemsRegistry.filter((system) => {
+    if (system.status !== 'implemented') return false;
     const query = search.trim().toLowerCase();
     const text = [system.name, system.fullName, system.purpose, system.modality, system.bodySystem, system.keyInputs.join(' ')]
       .join(' ')
       .toLowerCase();
-    return (!query || text.includes(query)) && (status === 'All' || system.status === status);
+    return !query || text.includes(query);
   });
 
   return (
@@ -629,14 +586,13 @@ export function RadsSystemsPanel({ onInsertSentence, onSaveText }: RadsSystemsPa
       <div className="section-heading">
         <span className="eyebrow">RADS / Classification Preview Registry</span>
         <h2>Structured preview cards</h2>
-        <p>Planned systems are populated with applicability, inputs, report elements, source metadata, and editable sample language.</p>
+        <p>Open a functional classification helper and keep its report language editable.</p>
       </div>
       <div className="filter-bar compact-filter-bar">
         <label className="field">
           Search RADS systems
           <input value={search} onChange={(event) => setSearch(event.target.value)} placeholder="Search LI-RADS, PI-RADS, Bone-RADS..." />
         </label>
-        <FilterSelect label="Status" value={status} values={['All', 'implemented', 'partial', 'planned']} onChange={(value) => setStatus(value as never)} />
       </div>
       <div className="rads-grid">
         {filtered.map((system) => {
@@ -676,7 +632,6 @@ function RadsSystemCard({
         <span>
           {system.modality} · {system.bodySystem}
         </span>
-        <StatusBadge status={system.status} />
       </div>
       <h3>{system.name}</h3>
       <p>

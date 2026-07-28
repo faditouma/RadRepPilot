@@ -78,6 +78,48 @@ type AppProps = {
   onActivePageChange?: (page: PageKey) => void;
 };
 
+interface WorkspaceActionCardProps {
+  title: string;
+  description: string;
+  iconName: RadIconName;
+  onOpen: () => void;
+}
+
+function WorkspaceActionCard({ title, description, iconName, onOpen }: WorkspaceActionCardProps) {
+  return (
+    <button className="workspace-action-card" onClick={onOpen} type="button">
+      <span className="workspace-action-icon" aria-hidden="true">
+        <RadIcon name={iconName} size={23} />
+      </span>
+      <span className="workspace-action-copy">
+        <strong>{title}</strong>
+        <small>{description}</small>
+      </span>
+      <span className="workspace-action-arrow" aria-hidden="true">→</span>
+    </button>
+  );
+}
+
+function WorkspaceFlowVisual() {
+  const steps: Array<{ label: string; iconName: RadIconName }> = [
+    { label: 'Choose study', iconName: 'xray' },
+    { label: 'Structure findings', iconName: 'helper' },
+    { label: 'Generate report', iconName: 'report' },
+  ];
+
+  return (
+    <div className="workspace-flow-visual" aria-hidden="true">
+      {steps.map((step, index) => (
+        <div className="workspace-flow-step" key={step.label}>
+          <span><RadIcon name={step.iconName} size={18} /></span>
+          <small>{step.label}</small>
+          {index < steps.length - 1 ? <i /> : null}
+        </div>
+      ))}
+    </div>
+  );
+}
+
 const moduleLabels: Record<ModuleType, string> = {
   ctpa: 'CTPA Pulmonary Embolism',
   lymphomaPetCt: 'Lymphoma PET-CT',
@@ -327,11 +369,13 @@ function getStructuredObject(value: unknown): Record<string, unknown> {
 
 function App({ embedded = false, initialPage = 'dashboard', onActivePageChange }: AppProps) {
   const [activePage, setActivePage] = useState<PageKey>(initialPage);
+  const [workspaceNavOpen, setWorkspaceNavOpen] = useState(false);
   const routeSyncRef = useRef(false);
 
   useEffect(() => {
     routeSyncRef.current = true;
     setActivePage(initialPage);
+    setWorkspaceNavOpen(false);
   }, [initialPage]);
 
   useEffect(() => {
@@ -1291,7 +1335,6 @@ function App({ embedded = false, initialPage = 'dashboard', onActivePageChange }
         initialWorkflowId={dashboardWorkflowId}
         onInitialWorkflowOpened={() => setDashboardWorkflowId('')}
         onWorkflowSelectionChange={setReportingWorkflowOpen}
-        onOpenCalculators={() => setActivePage('calculators')}
         renderWorkflow={(moduleType) => {
           if (schemaDrivenModuleTypes.includes(moduleType as keyof typeof reportingWorkflowSchemas)) {
             return (
@@ -1311,39 +1354,39 @@ function App({ embedded = false, initialPage = 'dashboard', onActivePageChange }
   );
 
   const renderWorkspaceOverview = () => (
-    <div className="page-stack">
-      <section className="module-grid">
-        <ModuleCard
-          title="Structured reporting modules"
-          meta="Reporting"
+    <div className="page-stack workspace-overview">
+      <section className="workspace-overview-intro">
+        <div>
+          <span className="eyebrow">Start a focused task</span>
+          <h2>From clinical question to clear draft.</h2>
+          <p>Choose the workspace that matches what you need to prepare.</p>
+        </div>
+        <WorkspaceFlowVisual />
+      </section>
+      <section className="workspace-action-grid" aria-label="Workspace actions">
+        <WorkspaceActionCard
+          title="Reporting workflows"
+          description="Structured findings and editable reports"
           iconName="xray"
-          description="Open a modality and body-system pathway, then draft editable report language from user-entered findings."
           onOpen={() => setActivePage('modules')}
-          ctaLabel="Open workflows"
         />
-        <ModuleCard
-          title="Calculators and helpers"
-          meta="Support"
+        <WorkspaceActionCard
+          title="Calculators"
+          description="Focused measurements and classifications"
           iconName="calculator"
-          description="Use focused educational helpers and insert report-ready sentences into the report builder."
           onOpen={() => setActivePage('calculators')}
-          ctaLabel="Open calculators"
         />
-        <ModuleCard
+        <WorkspaceActionCard
           title="Imaging Guide"
-          meta="Appropriateness"
+          description="Compare appropriate imaging options"
           iconName="helper"
-          description="Search extracted ACR table summaries and curated educational notes, then compare imaging options."
           onOpen={() => setActivePage('imagingGuide')}
-          ctaLabel="Open guide"
         />
-        <ModuleCard
+        <WorkspaceActionCard
           title="Imaging requisitions"
-          meta="Requisitions"
+          description="Build concise, question-led requests"
           iconName="primaryCare"
-          description="Practise writing concise imaging requests that communicate the clinical question clearly."
           onOpen={() => setActivePage('referral')}
-          ctaLabel="Build requisition"
         />
       </section>
     </div>
@@ -1601,22 +1644,43 @@ function App({ embedded = false, initialPage = 'dashboard', onActivePageChange }
   return (
     <div className={embedded ? 'workspace-legacy-shell' : 'app-shell'}>
       {embedded ? (
-        <aside className="workspace-side-panel" aria-label="Workspace tools">
-          <div className="workspace-side-panel-header">
-            <span>Workspace</span>
-            <strong>Modules</strong>
-          </div>
-          {workspaceTabs.map((tab) => (
-            <a
-              className={activePage === tab.key ? 'active' : ''}
-              href={workspacePageToHashPath(tab.key)}
-              key={tab.key}
-              onClick={() => setActivePage(tab.key)}
-            >
-              <RadIcon name={tab.iconName} size={20} />
-              {tab.label}
-            </a>
-          ))}
+        <>
+          <button
+            className="workspace-mobile-nav-toggle"
+            aria-controls="workspace-navigation"
+            aria-expanded={workspaceNavOpen}
+            onClick={() => setWorkspaceNavOpen((open) => !open)}
+            type="button"
+          >
+            <span>
+              <RadIcon name={workspaceTabs.find((tab) => tab.key === activePage)?.iconName ?? 'dashboard'} size={20} />
+              {workspaceTabs.find((tab) => tab.key === activePage)?.label ?? 'Workspace'}
+            </span>
+            <span aria-hidden="true">{workspaceNavOpen ? 'Close' : 'Menu'}</span>
+          </button>
+          <aside
+            className={`workspace-side-panel ${workspaceNavOpen ? 'mobile-open' : ''}`}
+            id="workspace-navigation"
+            aria-label="Workspace tools"
+          >
+            <div className="workspace-side-panel-header">
+              <span>Workspace</span>
+              <strong>Modules</strong>
+            </div>
+            {workspaceTabs.map((tab) => (
+              <a
+                className={activePage === tab.key ? 'active' : ''}
+                href={workspacePageToHashPath(tab.key)}
+                key={tab.key}
+                onClick={() => {
+                  setActivePage(tab.key);
+                  setWorkspaceNavOpen(false);
+                }}
+              >
+                <RadIcon name={tab.iconName} size={20} />
+                {tab.label}
+              </a>
+            ))}
           {activePage === 'modules' && workflowSidebar ? (
             <div className="workspace-sidebar-widgets" aria-label="Current workflow status">
               <section className="workflow-side-card workflow-module-map">
@@ -1681,7 +1745,8 @@ function App({ embedded = false, initialPage = 'dashboard', onActivePageChange }
               </section>
             </div>
           ) : null}
-        </aside>
+          </aside>
+        </>
       ) : (
         <Sidebar activePage={activePage} onNavigate={setActivePage} />
       )}
