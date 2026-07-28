@@ -805,7 +805,7 @@ function appropriatenessSeverityLabel(check: RequestedImagingCheck) {
   if (check.severity === 'conditional') return check.appropriatenessCategory ?? 'May be appropriate';
   if (check.severity === 'not_appropriate') return 'Usually Not Appropriate';
   if (check.severity === 'unknown') return 'Not found in recommendation set';
-  return 'Select requested imaging';
+  return 'Choose an exam';
 }
 
 export function PrimaryCareRequestBuilder({
@@ -882,7 +882,7 @@ export function PrimaryCareRequestBuilder({
   const pathwayMissing = useMemo(() => {
     const additions: string[] = [];
     if (hasStartedRequisition && !form.values.acrScenario && !selectedComplaintId) additions.push('Focused clinical questions');
-    if (hasStartedRequisition && !form.values.requestedProcedure) additions.push('Selected requested imaging');
+    if (hasStartedRequisition && !form.values.requestedProcedure) additions.push('Choose an exam');
     return Array.from(new Set([...missing, ...additions]));
   }, [form.values.acrScenario, form.values.requestedProcedure, hasStartedRequisition, missing, selectedComplaintId]);
   const readinessPercent = Math.round((requisitionQuality.complete / Math.max(requisitionQuality.total, 1)) * 100);
@@ -1023,7 +1023,7 @@ export function PrimaryCareRequestBuilder({
         },
       }),
     );
-    setDraftStatus('Requested imaging selected');
+    setDraftStatus('Exam selected');
   };
 
   const selectTemplate = (item: PrimaryCareContentTemplate) => {
@@ -1066,7 +1066,7 @@ export function PrimaryCareRequestBuilder({
         },
       }),
     );
-    setDraftStatus('Clinical context updated');
+    setDraftStatus('Answers updated');
   };
 
   const applyScenario = (scenario: { topicTitle: string; variantTitle: string; clinicalScenario: string; suggestedQuestion?: string }) => {
@@ -1334,16 +1334,16 @@ export function PrimaryCareRequestBuilder({
                     <GenericField
                       field={{
                         id: 'requestedProcedure',
-                        label: 'Selected requested imaging',
+                        label: 'Exam',
                         type: 'text',
-                        placeholder: 'Select from ACR options or type requested study',
+                        placeholder: 'Choose from the options or enter an exam',
                       }}
                       value={form.values.requestedProcedure}
                       onChange={(valueToSet) => updateValue('requestedProcedure', valueToSet)}
                     />
                   </div>
                   <details className="accordion-card advanced-context-card">
-                    <summary>Advanced patient context</summary>
+                    <summary>More patient details</summary>
                     <div className="patient-context-grid">
                       <GenericField
                         field={{

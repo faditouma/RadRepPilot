@@ -190,13 +190,13 @@ export function RequisitionAppropriatenessPanel({
       {selectedVariant ? (
         <section className="selected-requisition-summary">
           <div>
-            <span>Clinical details</span>
-            <strong>Guided questions completed</strong>
+            <span>Answers</span>
+            <strong>Guided questions complete</strong>
           </div>
 
           <div>
-            <span>Selected imaging</span>
-            <strong>{String(form.values.requestedProcedure || 'Not selected')}</strong>
+            <span>Exam</span>
+            <strong>{String(form.values.requestedProcedure || 'Not chosen')}</strong>
             <small>
               {appropriatenessCheck?.match
                 ? [

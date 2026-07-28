@@ -146,8 +146,11 @@ describe('RadRepPilot clinical text helpers', () => {
     const requisition = generateReferralText(form);
     expect(requisition).toContain('presenting with headache');
     expect(requisition).not.toContain('presenting with stale template symptom');
+    expect(requisition).toContain('Exam: CT head without IV contrast.');
+    expect(requisition).toContain('Relevant details: sudden severe headache');
     expect(requisition).toContain('CT head without IV contrast');
     expect(requisition).toContain('acute intracranial hemorrhage');
+    expect(requisition).not.toMatch(/clinical context|requested imaging/i);
   });
 
   it('does not leak a stale template question before guided imaging is selected', () => {
