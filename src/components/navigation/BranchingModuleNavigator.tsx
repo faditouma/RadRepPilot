@@ -4,6 +4,7 @@ import { bodySystemIconName } from '../../data/iconMap';
 import type { ModuleType } from '../../radrep/types';
 import { RadIcon } from '../icons/RadIcon';
 import { Breadcrumbs } from './Breadcrumbs';
+import { useI18n } from '../../i18n/I18nContext';
 
 interface BranchingModuleNavigatorProps {
   renderWorkflow: (moduleType: ModuleType) => ReactNode;
@@ -18,6 +19,7 @@ export function BranchingModuleNavigator({
   onInitialWorkflowOpened,
   onWorkflowSelectionChange,
 }: BranchingModuleNavigatorProps) {
+  const { text } = useI18n();
   const [selectedModalityName, setSelectedModalityName] = useState('');
   const [selectedBodySystemName, setSelectedBodySystemName] = useState('');
   const [selectedWorkflowId, setSelectedWorkflowId] = useState('');
@@ -54,12 +56,12 @@ export function BranchingModuleNavigator({
 
   const breadcrumbs = useMemo(
     () => [
-      { label: 'Radiology Reporting', onClick: reset },
-      selectedModalityName ? { label: selectedModalityName, onClick: () => setSelectedBodySystemName('') } : undefined,
-      selectedBodySystemName ? { label: selectedBodySystemName, onClick: () => setSelectedWorkflowId('') } : undefined,
+      { label: text('Radiology Reporting'), onClick: reset },
+      selectedModalityName ? { label: text(selectedModalityName), onClick: () => setSelectedBodySystemName('') } : undefined,
+      selectedBodySystemName ? { label: text(selectedBodySystemName), onClick: () => setSelectedWorkflowId('') } : undefined,
       selectedWorkflow?.title ? { label: selectedWorkflow.title } : undefined,
     ].filter((item): item is { label: string; onClick?: () => void } => Boolean(item)),
-    [selectedBodySystemName, selectedModalityName, selectedWorkflow?.title],
+    [selectedBodySystemName, selectedModalityName, selectedWorkflow?.title, text],
   );
 
   const selectModality = (name: string) => {
@@ -83,13 +85,13 @@ export function BranchingModuleNavigator({
           </div>
           <div className="button-row">
             <button className="secondary-button" onClick={() => setSelectedWorkflowId('')} type="button">
-              Back one step
+              {text('Back one step')}
             </button>
             <button className="secondary-button" onClick={() => setSelectedBodySystemName('')} type="button">
-              Change workflow
+              {text('Change workflow')}
             </button>
             <button className="ghost-button" onClick={reset} type="button">
-              Reset selection
+              {text('Reset selection')}
             </button>
           </div>
         </div>
@@ -97,16 +99,16 @@ export function BranchingModuleNavigator({
         <div className="branching-topbar">
           <div>
             <Breadcrumbs items={breadcrumbs} />
-            <h2>{selectedBodySystem ? 'Select a workflow' : selectedModality ? 'Select a body system' : 'Select a modality to begin.'}</h2>
+            <h2>{text(selectedBodySystem ? 'Select a workflow' : selectedModality ? 'Select a body system' : 'Select a modality to begin.')}</h2>
           </div>
           <div className="button-row">
             {selectedBodySystem ? (
               <button className="secondary-button" onClick={() => setSelectedBodySystemName('')} type="button">
-                Back one step
+                {text('Back one step')}
               </button>
             ) : selectedModality ? (
               <button className="secondary-button" onClick={() => setSelectedModalityName('')} type="button">
-                Back one step
+                {text('Back one step')}
               </button>
             ) : null}
             {(selectedModality || selectedBodySystem) ? (
@@ -119,12 +121,12 @@ export function BranchingModuleNavigator({
                 }}
                 type="button"
               >
-                Back to imaging modalities
+                {text('Back to imaging modalities')}
               </button>
             ) : null}
             {(selectedModality || selectedBodySystem) ? (
               <button className="ghost-button" onClick={reset} type="button">
-                Reset selection
+                {text('Reset selection')}
               </button>
             ) : null}
           </div>
@@ -135,12 +137,12 @@ export function BranchingModuleNavigator({
         <div className="branch-grid modality-grid">
           {publicModuleNavigationTree.map((modality) => (
             <button className="branch-card modality-card" onClick={() => selectModality(modality.name)} type="button" key={modality.name}>
-              <span>Modality</span>
+              <span>{text('Modality')}</span>
               <strong>
                 <span className="nav-icon" aria-hidden="true">
                   <RadIcon name={modality.iconName} size={24} />
                 </span>
-                {modality.name}
+                {text(modality.name)}
               </strong>
             </button>
           ))}
@@ -151,14 +153,14 @@ export function BranchingModuleNavigator({
         <div className="branch-grid body-system-grid">
           {selectedModality.bodySystems.map((bodySystem) => (
             <button className="branch-card" onClick={() => selectBodySystem(bodySystem.name)} type="button" key={bodySystem.name}>
-              <span>{selectedModality.name}</span>
+              <span>{text(selectedModality.name)}</span>
               <strong>
                 <span className="nav-icon" aria-hidden="true">
                   <RadIcon name={bodySystemIconName(bodySystem.name)} size={24} />
                 </span>
-                {bodySystem.name}
+                {text(bodySystem.name)}
               </strong>
-              <em>{bodySystem.workflows.length} workflows</em>
+              <em>{bodySystem.workflows.length} {text('workflows')}</em>
             </button>
           ))}
         </div>
@@ -180,6 +182,7 @@ export function BranchingModuleNavigator({
 }
 
 function WorkflowChoiceCard({ workflow, onOpen }: { workflow: NavigationWorkflow; onOpen: () => void }) {
+  const { text } = useI18n();
   return (
     <button className="workflow-choice-card interactive-choice-card" onClick={onOpen} type="button">
       <div className="card-topline">
@@ -191,7 +194,7 @@ function WorkflowChoiceCard({ workflow, onOpen }: { workflow: NavigationWorkflow
         <p className="workflow-supporting-copy">{workflow.toolBadges.join(' · ')}</p>
       ) : null}
       <span className="card-action">
-        Open workflow
+        {text('Open workflow')}
         <span aria-hidden="true">→</span>
       </span>
     </button>

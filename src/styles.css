@@ -4024,6 +4024,45 @@ footer {
   justify-content: flex-end;
 }
 
+.language-toggle {
+  display: inline-flex;
+  align-items: center;
+  gap: 2px;
+  min-height: 36px;
+  padding: 3px;
+  border: 1px solid rgba(148, 163, 184, 0.34);
+  border-radius: 999px;
+  background: rgba(241, 245, 249, 0.82);
+}
+
+.language-toggle button {
+  min-width: 34px;
+  min-height: 30px;
+  padding: 5px 8px !important;
+  border-radius: 999px !important;
+  color: var(--muted) !important;
+  font-size: 0.76rem;
+  font-weight: 820;
+  letter-spacing: 0.04em;
+  transition: color 160ms ease, background 160ms ease, box-shadow 160ms ease, transform 160ms ease;
+}
+
+.language-toggle button:hover,
+.language-toggle button:focus-visible {
+  color: var(--blue-dark) !important;
+  background: rgba(255, 255, 255, 0.78) !important;
+}
+
+.language-toggle button.active {
+  color: #fff !important;
+  background: linear-gradient(135deg, var(--primary), var(--accent)) !important;
+  box-shadow: 0 4px 10px rgba(37, 99, 235, 0.2);
+}
+
+.language-toggle button:active {
+  transform: scale(0.96);
+}
+
 .platform-nav-links a,
 .platform-nav-actions a,
 .platform-nav-actions button,

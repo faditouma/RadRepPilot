@@ -1,3 +1,5 @@
+import { useI18n } from '../../i18n/I18nContext';
+
 interface KeyNegativesPanelProps {
   options: string[];
   selected: string[];
@@ -5,6 +7,7 @@ interface KeyNegativesPanelProps {
 }
 
 export function KeyNegativesPanel({ options, selected, onChange }: KeyNegativesPanelProps) {
+  const { text } = useI18n();
   const toggle = (option: string) => {
     onChange(selected.includes(option) ? selected.filter((item) => item !== option) : [...selected, option]);
   };
@@ -12,15 +15,15 @@ export function KeyNegativesPanel({ options, selected, onChange }: KeyNegativesP
   return (
     <section className="workflow-card">
       <div className="section-heading">
-        <span className="eyebrow">Key negatives</span>
-        <h3>Common negatives to include</h3>
-        <p>Select only items verified by the user/radiologist.</p>
+        <span className="eyebrow">{text('Key negatives')}</span>
+        <h3>{text('Common negatives to include')}</h3>
+        <p>{text('Select only items verified by the user/radiologist.')}</p>
       </div>
       <div className="negative-chip-grid">
         {options.map((option) => (
           <label className={selected.includes(option) ? 'negative-chip active' : 'negative-chip'} key={option}>
             <input checked={selected.includes(option)} onChange={() => toggle(option)} type="checkbox" />
-            <span>{option}</span>
+            <span>{text(option)}</span>
           </label>
         ))}
       </div>

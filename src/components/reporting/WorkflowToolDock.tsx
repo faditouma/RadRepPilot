@@ -1,3 +1,5 @@
+import { useI18n } from '../../i18n/I18nContext';
+
 export type WorkflowToolId = 'clinicalContext' | 'incidental' | 'helpers' | 'freeText' | 'limitations' | 'teaching';
 
 export interface WorkflowToolItem {
@@ -14,13 +16,14 @@ interface WorkflowToolDockProps {
 }
 
 export function WorkflowToolDock({ tools, activeTool, onSelect }: WorkflowToolDockProps) {
+  const { text } = useI18n();
   const visibleTools = tools.filter((tool) => tool.available !== false);
 
   return (
-    <section className="workflow-tool-dock" aria-label="Workflow tools">
+    <section className="workflow-tool-dock" aria-label={text('Workflow tools')}>
       <div>
-        <span className="eyebrow">Tools</span>
-        <h3>Optional support</h3>
+        <span className="eyebrow">{text('Tools')}</span>
+        <h3>{text('Optional support')}</h3>
       </div>
       <div className="workflow-tool-grid">
         {visibleTools.map((tool) => (
@@ -31,7 +34,7 @@ export function WorkflowToolDock({ tools, activeTool, onSelect }: WorkflowToolDo
             aria-pressed={activeTool === tool.id}
             key={tool.id}
           >
-            <strong>{tool.label}</strong>
+            <strong>{text(tool.label)}</strong>
           </button>
         ))}
       </div>

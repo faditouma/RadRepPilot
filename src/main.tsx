@@ -16,12 +16,14 @@ import { Preferences } from './pages/Preferences';
 import { Reports } from './pages/Reports';
 import { Signup } from './pages/Signup';
 import { Workspace } from './pages/Workspace';
+import { I18nProvider } from './i18n/I18nContext';
 import './styles.css';
 
 ReactDOM.createRoot(document.getElementById('root') as HTMLElement).render(
   <React.StrictMode>
-    <HashRouter>
-      <Routes>
+    <I18nProvider>
+      <HashRouter>
+        <Routes>
         <Route element={<PublicLayout />}>
           <Route path="/" element={<HomeRoute />} />
           <Route path="/about" element={<About />} />
@@ -41,7 +43,8 @@ ReactDOM.createRoot(document.getElementById('root') as HTMLElement).render(
             <Route path="/preferences" element={<Preferences />} />
           </Route>
         </Route>
-      </Routes>
-    </HashRouter>
+        </Routes>
+      </HashRouter>
+    </I18nProvider>
   </React.StrictMode>,
 );

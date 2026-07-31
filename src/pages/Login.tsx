@@ -3,8 +3,10 @@ import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { useSupabaseSession } from '../components/auth/useSupabaseSession';
 import { isSupabaseConfigured, supabase } from '../lib/supabaseClient';
 import { PageShell } from './PageShell';
+import { useI18n } from '../i18n/I18nContext';
 
 export function Login() {
+  const { text } = useI18n();
   const navigate = useNavigate();
   const location = useLocation();
   const [email, setEmail] = useState('');
@@ -51,7 +53,7 @@ export function Login() {
     >
       <form className="auth-form" onSubmit={handleSubmit}>
         <label>
-          Email
+          {text('Email')}
           <input
             autoComplete="email"
             disabled={!isSupabaseConfigured || isSubmitting}
@@ -63,7 +65,7 @@ export function Login() {
         </label>
 
         <label>
-          Password
+          {text('Password')}
           <input
             autoComplete="current-password"
             disabled={!isSupabaseConfigured || isSubmitting}
@@ -88,12 +90,12 @@ export function Login() {
         ) : null}
 
         <button className="auth-submit" disabled={!isSupabaseConfigured || isSubmitting} type="submit">
-          {isSubmitting ? 'Signing in...' : 'Sign in'}
+          {text(isSubmitting ? 'Signing in...' : 'Sign in')}
         </button>
       </form>
 
       <p className="auth-switch">
-        Need an account? <Link to="/signup">Create one</Link>
+        {text('Need an account?')} <Link to="/signup">{text('Create one')}</Link>
       </p>
     </PageShell>
   );

@@ -31,6 +31,7 @@ import type {
   ReportingModuleDefinition,
 } from '../../radrep/types';
 import { CopyButton } from './RadRepComponents';
+import { useI18n } from '../../i18n/I18nContext';
 
 interface GeneratedTextPanelProps {
   title: string;
@@ -55,9 +56,10 @@ const insertTargets: Array<{ target: InsertTarget; label: string }> = [
 ];
 
 export function InsertToReportButton({ onInsert }: { onInsert: () => void }) {
+  const { text } = useI18n();
   return (
     <button className="secondary-button" onClick={onInsert} type="button">
-      Insert into Report Builder
+      {text('Insert into Report Builder')}
     </button>
   );
 }
@@ -77,23 +79,24 @@ export function GeneratedTextPanel({
   copyLabel = 'Copy',
   placeholder,
 }: GeneratedTextPanelProps) {
+  const { text: translate } = useI18n();
   return (
     <section className="generated-text-panel">
       <div className="output-heading">
         <div>
-          <span>{subtitle ?? 'Generated text'}</span>
-          <h3>{title}</h3>
+          <span>{translate(subtitle ?? 'Generated text')}</span>
+          <h3>{translate(title)}</h3>
         </div>
-        <CopyButton text={text} label={copyLabel} />
+        <CopyButton text={text} label={translate(copyLabel)} />
       </div>
       <textarea value={text} onChange={(event) => onTextChange?.(event.target.value)} readOnly={!onTextChange} placeholder={placeholder} />
       <div className="button-row generated-actions">
-        <CopyButton text={text} label={copyLabel} className="primary-button" />
+        <CopyButton text={text} label={translate(copyLabel)} className="primary-button" />
         {onInsertTarget ? (
           <div className="insert-button-grid" aria-label="Insert generated text">
             {insertTargets.map((item) => (
               <button className="secondary-button" onClick={() => onInsertTarget(item.target)} type="button" key={item.target}>
-                Insert: {item.label}
+                {translate('Insert')}: {translate(item.label)}
               </button>
             ))}
           </div>
@@ -101,7 +104,7 @@ export function GeneratedTextPanel({
           <InsertToReportButton onInsert={onInsert} />
         ) : null}
         <button className="secondary-button" onClick={onSave} type="button">
-          Save Draft
+          {translate('Save Draft')}
         </button>
       </div>
     </section>
@@ -816,6 +819,7 @@ export function PrimaryCareRequestBuilder({
   onSidebarStateChange,
   compactHeader = false,
 }: PrimaryCareRequestBuilderProps) {
+  const { text } = useI18n();
   const [mode, setMode] = useState<'quick' | 'detailed'>('quick');
   const [viewMode, setViewMode] = useState<PrimaryCareViewMode>(() => {
     if (typeof window === 'undefined') return 'form';
@@ -1136,7 +1140,7 @@ export function PrimaryCareRequestBuilder({
         </div>
         {secondaryQuickFields.length ? (
           <details className="accordion-card">
-            <summary>Less common details</summary>
+            <summary>{text('Less common details')}</summary>
             <div className="form-grid request-field-grid">
               {secondaryQuickFields.map((field) => (
                 <GenericField
@@ -1154,7 +1158,7 @@ export function PrimaryCareRequestBuilder({
       <div className="accordion-stack">
         {template.detailedFieldSections.map((section, index) => (
           <details className="accordion-card" open={index === 0} key={section.id}>
-            <summary>{section.title}</summary>
+            <summary>{text(section.title)}</summary>
             <div className="form-grid request-field-grid">
               {section.fields.map((field) => (
                 <GenericField field={field} value={form.values[field.id]} onChange={(valueToSet) => updateValue(field.id, valueToSet)} key={field.id} />
@@ -1169,13 +1173,13 @@ export function PrimaryCareRequestBuilder({
     <aside className="request-output-panel">
       <div className="request-output-header">
         <div>
-          <span className="eyebrow">Generated requisition</span>
-          <h3>Generated requisition</h3>
+          <span className="eyebrow">{text('Generated requisition')}</span>
+          <h3>{text('Generated requisition')}</h3>
         </div>
       </div>
       <div className="output-controls-grid">
         <div className="output-style-row">
-          <span>Output style</span>
+          <span>{text('Output style')}</span>
           <SegmentedControl
             value={outputStyle}
             options={[
@@ -1187,7 +1191,7 @@ export function PrimaryCareRequestBuilder({
           />
         </div>
         <div className="output-style-row">
-          <span>Tone</span>
+          <span>{text('Tone')}</span>
           <SegmentedControl
             value={form.tone ?? (typeof form.values.requisitionTone === 'string' ? form.values.requisitionTone : 'polite')}
             options={[
@@ -1250,10 +1254,10 @@ export function PrimaryCareRequestBuilder({
         onTextChange={(text) => setForm((existing) => ({ ...existing, generatedText: text }))}
         onSave={() => onSaveText(activeRequisitionTitle, 'referral', generated, { referralForm: { ...form, generatedText: generated }, requisitionText: generated })}
         copyLabel="Copy requisition"
-        placeholder="Generated requisition will appear here."
+        placeholder={text('Generated requisition will appear here.')}
       />
       <button className="secondary-button full-width-action" onClick={resetRequisition} type="button">
-        Clear/reset
+        {text('Clear/reset')}
       </button>
     </aside>
   );
@@ -1263,17 +1267,17 @@ export function PrimaryCareRequestBuilder({
       <div className={`primary-care-topbar ${compactHeader ? 'compact' : ''}`}>
         {!compactHeader ? (
           <div>
-            <h2>Imaging requisitions</h2>
+            <h2>{text('Imaging requisitions')}</h2>
           </div>
         ) : (
           <div className="primary-care-flow-summary">
-            <span>Complaint</span>
+            <span>{text('Complaint')}</span>
             <i />
-            <span>Clinical questions</span>
+            <span>{text('Clinical questions')}</span>
             <i />
-            <span>Recommended imaging</span>
+            <span>{text('Recommended imaging')}</span>
             <i />
-            <span>Editable requisition</span>
+            <span>{text('Editable requisition')}</span>
           </div>
         )}
         <div className="primary-care-toggle-stack">
@@ -1319,7 +1323,7 @@ export function PrimaryCareRequestBuilder({
                 />
 
                 <section className="patient-context-panel core-requisition-panel">
-                  <span className="mini-heading">Core requisition fields</span>
+                  <span className="mini-heading">{text('Core requisition fields')}</span>
                   <div className="form-grid request-field-grid">
                     <GenericField
                       field={{
@@ -1343,7 +1347,7 @@ export function PrimaryCareRequestBuilder({
                     />
                   </div>
                   <details className="accordion-card advanced-context-card">
-                    <summary>More patient details</summary>
+                    <summary>{text('More patient details')}</summary>
                     <div className="patient-context-grid">
                       <GenericField
                         field={{
@@ -1418,7 +1422,7 @@ export function PrimaryCareRequestBuilder({
                 </section>
 
                 <details className="readiness-details inline-readiness-details">
-                  <summary>{pathwayMissing.length ? 'Show missing details' : 'Show readiness details'}</summary>
+                  <summary>{text(pathwayMissing.length ? 'Show missing details' : 'Show readiness details')}</summary>
                   {pathwayMissing.length ? (
                     <div className="missing-chip-row">
                       {pathwayMissing.slice(0, 8).map((item) => (
@@ -1426,13 +1430,13 @@ export function PrimaryCareRequestBuilder({
                       ))}
                     </div>
                   ) : (
-                    <p>Verify the generated wording before using it clinically.</p>
+                    <p>{text('Verify the generated wording before using it clinically.')}</p>
                   )}
                 </details>
 
                 {template.oneClickNegatives.length ? (
                   <details className="accordion-card">
-                    <summary>Optional quick fills</summary>
+                    <summary>{text('Optional quick fills')}</summary>
                     <div className="one-click-row">
                       {template.oneClickNegatives.map((negative) => (
                         <button className="ghost-button chip-button" onClick={() => applyNegative(negative.values)} type="button" key={negative.label}>
@@ -1444,12 +1448,12 @@ export function PrimaryCareRequestBuilder({
                 ) : null}
 
                 <details className="accordion-card">
-                  <summary>Additional request details</summary>
+                  <summary>{text('Additional request details')}</summary>
                   {formFields}
                 </details>
 
                 <details className="why-panel">
-                  <summary>Why this matters to radiology</summary>
+                  <summary>{text('Why this matters to radiology')}</summary>
                   <ul>
                     {template.whyItMatters.map((item) => (
                       <li key={item}>{item}</li>
@@ -1496,6 +1500,7 @@ function GenericField({
   value: string | boolean | undefined;
   onChange: (value: string | boolean) => void;
 }) {
+  const { text } = useI18n();
   const label = field.id === 'clinicalQuestion' ? 'Radiology question / request' : field.label;
   const hint =
     field.id === 'clinicalQuestion'
@@ -1505,11 +1510,11 @@ function GenericField({
   if (field.type === 'select') {
     return (
       <label className={`field ${field.important ? 'important-field' : ''}`} data-field-id={field.id}>
-        {label}
+        {text(label)}
         <select value={typeof value === 'string' ? value : ''} onChange={(event) => onChange(event.target.value)}>
           {(field.options ?? []).map((option) => (
             <option value={option.value} key={option.value}>
-              {option.label}
+              {text(option.label)}
             </option>
           ))}
         </select>
@@ -1520,9 +1525,9 @@ function GenericField({
   if (field.type === 'textarea') {
     return (
       <label className={`field wide-field ${field.important ? 'important-field' : ''}`} data-field-id={field.id}>
-        {label}
-        <textarea value={typeof value === 'string' ? value : ''} onChange={(event) => onChange(event.target.value)} placeholder={field.placeholder} />
-        {hint ? <small className="field-hint">{hint}</small> : null}
+        {text(label)}
+        <textarea value={typeof value === 'string' ? value : ''} onChange={(event) => onChange(event.target.value)} placeholder={field.placeholder ? text(field.placeholder) : undefined} />
+        {hint ? <small className="field-hint">{text(hint)}</small> : null}
       </label>
     );
   }
@@ -1531,15 +1536,15 @@ function GenericField({
     return (
       <label className="check-toggle field-check">
         <input checked={value === true || value === 'yes'} onChange={(event) => onChange(event.target.checked)} type="checkbox" />
-        <span>{field.label}</span>
+        <span>{text(field.label)}</span>
       </label>
     );
   }
 
   return (
     <label className={`field ${field.important ? 'important-field' : ''}`} data-field-id={field.id}>
-      {label}
-      <input value={typeof value === 'string' ? value : ''} onChange={(event) => onChange(event.target.value)} placeholder={field.placeholder} />
+      {text(label)}
+      <input value={typeof value === 'string' ? value : ''} onChange={(event) => onChange(event.target.value)} placeholder={field.placeholder ? text(field.placeholder) : undefined} />
     </label>
   );
 }
@@ -1553,11 +1558,12 @@ function SegmentedControl({
   options: Array<{ value: string; label: string }>;
   onChange: (value: string) => void;
 }) {
+  const { text } = useI18n();
   return (
     <div className="segmented-control">
       {options.map((option) => (
         <button className={value === option.value ? 'active' : ''} onClick={() => onChange(option.value)} type="button" key={option.value}>
-          {option.label}
+          {text(option.label)}
         </button>
       ))}
     </div>
@@ -1607,13 +1613,14 @@ function FilterSelect({
   values: readonly string[];
   onChange: (value: string) => void;
 }) {
+  const { text } = useI18n();
   return (
     <label className="field">
-      {label}
+      {text(label)}
       <select value={value} onChange={(event) => onChange(event.target.value)}>
         {values.map((item) => (
           <option value={item} key={item}>
-            {item}
+            {text(item)}
           </option>
         ))}
       </select>

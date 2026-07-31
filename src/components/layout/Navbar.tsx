@@ -1,6 +1,8 @@
 import { NavLink, useNavigate } from 'react-router-dom';
 import { useSupabaseSession } from '../auth/useSupabaseSession';
 import { RadRepPilotLogo } from '../branding/RadRepPilotLogo';
+import { useI18n } from '../../i18n/I18nContext';
+import { LanguageToggle } from './LanguageToggle';
 
 type NavbarVariant = 'public' | 'app';
 
@@ -28,6 +30,7 @@ const appLinks = [
 export function Navbar({ variant = 'public' }: NavbarProps) {
   const navigate = useNavigate();
   const { session, signOut } = useSupabaseSession();
+  const { text } = useI18n();
   const links = session ? appLinks : publicLinks;
 
   async function handleLogout() {
@@ -37,37 +40,38 @@ export function Navbar({ variant = 'public' }: NavbarProps) {
 
   return (
     <header className={`platform-navbar ${variant}`}>
-      <NavLink className="platform-brand" to="/" aria-label="RadRepPilot home">
+      <NavLink className="platform-brand" to="/" aria-label={text('RadRepPilot home')}>
         <RadRepPilotLogo variant="iconOnly" size={36} />
         <span>
           <strong>RadRepPilot</strong>
-          <small>Radiology reporting education platform</small>
+          <small>{text('Radiology reporting education platform')}</small>
         </span>
       </NavLink>
 
-      <nav className="platform-nav-links" aria-label={variant === 'app' ? 'App navigation' : 'Public navigation'}>
+      <nav className="platform-nav-links" aria-label={text(variant === 'app' ? 'App navigation' : 'Public navigation')}>
         {links.map((link) => (
           <NavLink className={({ isActive }) => (isActive ? 'active' : '')} end={link.to === '/'} key={link.to} to={link.to}>
-            {link.label}
+            {text(link.label)}
           </NavLink>
         ))}
       </nav>
 
       <div className="platform-nav-actions">
+        <LanguageToggle />
         {session ? (
           <>
             <span className="session-pill">{session.user.email}</span>
             <button className="ghost-link nav-button" onClick={handleLogout} type="button">
-              Logout
+              {text('Logout')}
             </button>
           </>
         ) : (
           <>
             <NavLink className="ghost-link" to="/login">
-              Login
+              {text('Login')}
             </NavLink>
             <NavLink className="button-link" to="/signup">
-              Signup
+              {text('Signup')}
             </NavLink>
           </>
         )}

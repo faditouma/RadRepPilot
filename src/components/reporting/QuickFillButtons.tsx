@@ -1,4 +1,5 @@
 import type { WorkflowQuickFill } from '../../data/reportingWorkflowSchemas';
+import { useI18n } from '../../i18n/I18nContext';
 
 interface QuickFillButtonsProps {
   quickFills: WorkflowQuickFill[];
@@ -7,24 +8,25 @@ interface QuickFillButtonsProps {
 }
 
 export function QuickFillButtons({ quickFills, onApply, activeQuickFillId }: QuickFillButtonsProps) {
+  const { text } = useI18n();
   const normal = quickFills.find((quickFill) => quickFill.intent === 'normal') ?? quickFills[0];
   const positive = quickFills.find((quickFill) => quickFill.intent === 'positive') ?? quickFills.find((quickFill) => quickFill.intent === 'complicated');
 
   return (
     <section className="workflow-quickfill-panel">
       <div className="section-heading">
-        <span className="eyebrow">Quick start</span>
-        <h3>Start from a common scenario</h3>
+        <span className="eyebrow">{text('Quick start')}</span>
+        <h3>{text('Start from a common scenario')}</h3>
       </div>
       <div className="button-row">
         {normal ? (
           <button className="secondary-button" onClick={() => onApply(normal)} type="button">
-            Start with normal template
+            {text('Start with normal template')}
           </button>
         ) : null}
         {positive ? (
           <button className="primary-button" onClick={() => onApply(positive)} type="button">
-            Start with positive template
+            {text('Start with positive template')}
           </button>
         ) : null}
       </div>
@@ -36,7 +38,7 @@ export function QuickFillButtons({ quickFills, onApply, activeQuickFillId }: Qui
             type="button"
             key={quickFill.id}
           >
-            <strong>{quickFill.label}</strong>
+            <strong>{text(quickFill.label)}</strong>
           </button>
         ))}
       </div>

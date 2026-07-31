@@ -21,6 +21,7 @@ import { QuickFillButtons } from './QuickFillButtons';
 import { ReportDraftPanel, type WorkflowDraftReport } from './ReportDraftPanel';
 import { StructuredFieldRenderer } from './StructuredFieldRenderer';
 import { WorkflowToolDock, type WorkflowToolId, type WorkflowToolItem } from './WorkflowToolDock';
+import { useI18n } from '../../i18n/I18nContext';
 
 interface ReportingWorkflowPageProps {
   schema: ReportingWorkflowSchema;
@@ -148,6 +149,7 @@ export function ReportingWorkflowPage({
   onOpenHelper,
   onSidebarStateChange,
 }: ReportingWorkflowPageProps) {
+  const { text } = useI18n();
   const initialStoredDraft = readStoredDraft(schema);
   const [values, setValues] = useState<WorkflowValues>(() => initialStoredDraft?.values ?? cloneValues(schema.defaultValues));
   const [report, setReport] = useState<WorkflowDraftReport>(() => initialStoredDraft?.report ?? createDraftReport(schema, schema.defaultValues));
@@ -340,15 +342,15 @@ export function ReportingWorkflowPage({
       return (
         <section className="workflow-card workflow-tool-panel">
           <div className="section-heading">
-            <span className="eyebrow">Clinical context</span>
-            <h3>Optional context fields</h3>
+            <span className="eyebrow">{text('Clinical context')}</span>
+            <h3>{text('Optional context fields')}</h3>
           </div>
           {clinicalContextSections.length ? (
             <div className="accordion-stack">
               {clinicalContextSections.map((section) => (
                 <details className="workflow-card workflow-accordion nested-accordion" open key={section.id}>
 	                  <summary>
-	                    <span>{section.title}</span>
+	                    <span>{text(section.title)}</span>
 	                  </summary>
                   <div className="workflow-form-grid">
                     {section.fields.filter((field) => isWorkflowFieldVisible(field, values)).map((field) => (
@@ -364,7 +366,7 @@ export function ReportingWorkflowPage({
               ))}
             </div>
           ) : (
-            <div className="inline-note">This workflow has no dedicated clinical context fields.</div>
+            <div className="inline-note">{text('This workflow has no dedicated clinical context fields.')}</div>
           )}
         </section>
       );
@@ -386,8 +388,8 @@ export function ReportingWorkflowPage({
       return (
         <section className="workflow-card compact-workflow-card workflow-tool-panel">
 	          <div className="section-heading">
-	            <span className="eyebrow">Calculators / classification systems</span>
-	            <h3>Linked helpers</h3>
+	            <span className="eyebrow">{text('Calculators / classification systems')}</span>
+	            <h3>{text('Linked helpers')}</h3>
 	          </div>
           <div className="checklist-preview">
             {helperLinks.map((helper) => (
@@ -410,11 +412,11 @@ export function ReportingWorkflowPage({
       return (
         <section className="workflow-card workflow-tool-panel">
 	          <div className="section-heading">
-	            <span className="eyebrow">Free text</span>
-	            <h3>Additional findings / radiologist comment</h3>
+	            <span className="eyebrow">{text('Free text')}</span>
+	            <h3>{text('Additional findings / radiologist comment')}</h3>
 	          </div>
           <label className="field">
-            Additional findings / radiologist comment
+            {text('Additional findings / radiologist comment')}
             <textarea
               value={typeof values.additionalFindings === 'string' ? values.additionalFindings : ''}
               onChange={(event) => updateValue('additionalFindings', event.target.value)}
@@ -429,11 +431,11 @@ export function ReportingWorkflowPage({
       return (
         <section className="workflow-card workflow-tool-panel">
 	          <div className="section-heading">
-	            <span className="eyebrow">Limitations</span>
-	            <h3>Limitations / uncertainty</h3>
+	            <span className="eyebrow">{text('Limitations')}</span>
+	            <h3>{text('Limitations / uncertainty')}</h3>
 	          </div>
           <label className="field">
-            Limitations / uncertainty
+            {text('Limitations / uncertainty')}
             <textarea
               value={typeof values.limitationsUncertainty === 'string' ? values.limitationsUncertainty : ''}
               onChange={(event) => updateValue('limitationsUncertainty', event.target.value)}
@@ -447,9 +449,9 @@ export function ReportingWorkflowPage({
     return (
       <section className="workflow-card workflow-tool-panel">
         <div className="section-heading">
-          <span className="eyebrow">Teaching note</span>
-          <h3>Educational scope</h3>
-          <p>RadRepPilot organizes user-entered findings into draft language. Verify source images, measurements, and final wording before use.</p>
+          <span className="eyebrow">{text('Teaching note')}</span>
+          <h3>{text('Educational scope')}</h3>
+          <p>{text('RadRepPilot organizes user-entered findings into draft language. Verify source images, measurements, and final wording before use.')}</p>
         </div>
       </section>
     );
@@ -467,14 +469,14 @@ export function ReportingWorkflowPage({
 
           <section className="workflow-card workflow-core-card">
 	          <div className="section-heading">
-	            <span className="eyebrow">Core findings</span>
-	            <h3>Structured imaging findings</h3>
+	            <span className="eyebrow">{text('Core findings')}</span>
+	            <h3>{text('Structured imaging findings')}</h3>
 	          </div>
             <div className="accordion-stack">
               {imagingSections.map((section) => (
                 <details className="workflow-card workflow-accordion nested-accordion" open={section.defaultOpen ?? true} key={section.id}>
 	                  <summary>
-	                    <span>{section.title}</span>
+	                    <span>{text(section.title)}</span>
 	                  </summary>
                   <div className="workflow-form-grid">
                     {section.fields.filter((field) => isWorkflowFieldVisible(field, values)).map((field) => (
@@ -494,9 +496,9 @@ export function ReportingWorkflowPage({
           {usesDerivedNegatives ? (
             <section className="workflow-card compact-workflow-card">
               <div className="section-heading">
-                <span className="eyebrow">Common negatives</span>
-                <h3>Auto-derived from selected states</h3>
-                <p>Absent/normal selections are included in the draft when appropriate. Positive findings suppress contradictory negatives.</p>
+                <span className="eyebrow">{text('Common negatives')}</span>
+                <h3>{text('Auto-derived from selected states')}</h3>
+                <p>{text('Absent/normal selections are included in the draft when appropriate. Positive findings suppress contradictory negatives.')}</p>
               </div>
             </section>
           ) : schema.keyNegatives.length ? (

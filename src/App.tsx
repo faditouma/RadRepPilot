@@ -47,6 +47,7 @@ import { reportingWorkflowSchemas, schemaDrivenModuleTypes, type WorkflowInciden
 import { generateReportingWorkflowReport } from './utils/reportGenerators';
 import { scoreReportCompleteness } from './utils/qualityMetrics';
 import { workspacePageToHashPath } from './utils/workspaceRoutes';
+import { useI18n } from './i18n/I18nContext';
 import {
   generateReferralText,
   getReferralTemplate,
@@ -86,14 +87,15 @@ interface WorkspaceActionCardProps {
 }
 
 function WorkspaceActionCard({ title, description, iconName, onOpen }: WorkspaceActionCardProps) {
+  const { text } = useI18n();
   return (
     <button className="workspace-action-card" onClick={onOpen} type="button">
       <span className="workspace-action-icon" aria-hidden="true">
         <RadIcon name={iconName} size={23} />
       </span>
       <span className="workspace-action-copy">
-        <strong>{title}</strong>
-        <small>{description}</small>
+        <strong>{text(title)}</strong>
+        <small>{text(description)}</small>
       </span>
       <span className="workspace-action-arrow" aria-hidden="true">→</span>
     </button>
@@ -101,6 +103,7 @@ function WorkspaceActionCard({ title, description, iconName, onOpen }: Workspace
 }
 
 function WorkspaceFlowVisual() {
+  const { text } = useI18n();
   const steps: Array<{ label: string; iconName: RadIconName }> = [
     { label: 'Choose study', iconName: 'xray' },
     { label: 'Structure findings', iconName: 'helper' },
@@ -112,7 +115,7 @@ function WorkspaceFlowVisual() {
       {steps.map((step, index) => (
         <div className="workspace-flow-step" key={step.label}>
           <span><RadIcon name={step.iconName} size={18} /></span>
-          <small>{step.label}</small>
+          <small>{text(step.label)}</small>
           {index < steps.length - 1 ? <i /> : null}
         </div>
       ))}
@@ -368,6 +371,7 @@ function getStructuredObject(value: unknown): Record<string, unknown> {
 }
 
 function App({ embedded = false, initialPage = 'dashboard', onActivePageChange }: AppProps) {
+  const { text } = useI18n();
   const [activePage, setActivePage] = useState<PageKey>(initialPage);
   const [workspaceNavOpen, setWorkspaceNavOpen] = useState(false);
   const routeSyncRef = useRef(false);
@@ -1357,13 +1361,13 @@ function App({ embedded = false, initialPage = 'dashboard', onActivePageChange }
     <div className="page-stack workspace-overview">
       <section className="workspace-overview-intro">
         <div>
-          <span className="eyebrow">Start a focused task</span>
-          <h2>From clinical question to clear draft.</h2>
-          <p>Choose the workspace that matches what you need to prepare.</p>
+          <span className="eyebrow">{text('Start a focused task')}</span>
+          <h2>{text('From clinical question to clear draft.')}</h2>
+          <p>{text('Choose the workspace that matches what you need to prepare.')}</p>
         </div>
         <WorkspaceFlowVisual />
       </section>
-      <section className="workspace-action-grid" aria-label="Workspace actions">
+      <section className="workspace-action-grid" aria-label={text('Workspace actions')}>
         <WorkspaceActionCard
           title="Reporting workflows"
           description="Structured findings and editable reports"
@@ -1654,18 +1658,18 @@ function App({ embedded = false, initialPage = 'dashboard', onActivePageChange }
           >
             <span>
               <RadIcon name={workspaceTabs.find((tab) => tab.key === activePage)?.iconName ?? 'dashboard'} size={20} />
-              {workspaceTabs.find((tab) => tab.key === activePage)?.label ?? 'Workspace'}
+              {text(workspaceTabs.find((tab) => tab.key === activePage)?.label ?? 'Workspace')}
             </span>
-            <span aria-hidden="true">{workspaceNavOpen ? 'Close' : 'Menu'}</span>
+            <span aria-hidden="true">{text(workspaceNavOpen ? 'Close' : 'Menu')}</span>
           </button>
           <aside
             className={`workspace-side-panel ${workspaceNavOpen ? 'mobile-open' : ''}`}
             id="workspace-navigation"
-            aria-label="Workspace tools"
+            aria-label={text('Workspace tools')}
           >
             <div className="workspace-side-panel-header">
-              <span>Workspace</span>
-              <strong>Modules</strong>
+              <span>{text('Workspace')}</span>
+              <strong>{text('Modules')}</strong>
             </div>
             {workspaceTabs.map((tab) => (
               <a
@@ -1678,7 +1682,7 @@ function App({ embedded = false, initialPage = 'dashboard', onActivePageChange }
                 }}
               >
                 <RadIcon name={tab.iconName} size={20} />
-                {tab.label}
+                {text(tab.label)}
               </a>
             ))}
           {activePage === 'modules' && workflowSidebar ? (
@@ -1753,7 +1757,7 @@ function App({ embedded = false, initialPage = 'dashboard', onActivePageChange }
       <main className={embedded ? 'workspace-main-shell' : 'main-shell'}>
         {embedded ? (
           <div className="workspace-inline-safety" role="note">
-            Educational use only. Do not enter patient-identifying information.
+            {text('Educational use only. Do not enter patient-identifying information.')}
           </div>
         ) : (
           <SafetyBanner />
@@ -1792,10 +1796,11 @@ interface PageHeaderProps {
 }
 
 function PageHeader({ eyebrow, title }: PageHeaderProps) {
+  const { text } = useI18n();
   return (
     <header className="page-header">
-      <span className="eyebrow">{eyebrow}</span>
-      <h1>{title}</h1>
+      <span className="eyebrow">{text(eyebrow)}</span>
+      <h1>{text(title)}</h1>
     </header>
   );
 }

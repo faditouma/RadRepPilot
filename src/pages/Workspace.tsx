@@ -5,8 +5,10 @@ import { useSupabaseSession } from '../components/auth/useSupabaseSession';
 import { Navbar } from '../components/layout/Navbar';
 import type { PageKey } from '../radrep/types';
 import { workspacePageToRoutePath, workspaceSlugToPage } from '../utils/workspaceRoutes';
+import { useI18n } from '../i18n/I18nContext';
 
 export function Workspace() {
+  const { text } = useI18n();
   const { session } = useSupabaseSession();
   const { workspaceSection } = useParams();
   const location = useLocation();
@@ -68,8 +70,8 @@ export function Workspace() {
       <main className="workspace-route">
         <section className="workspace-route-header">
           <div>
-            <span className="eyebrow">Workspace</span>
-            <h1>{workspaceHeader.title}</h1>
+            <span className="eyebrow">{text('Workspace')}</span>
+            <h1>{text(workspaceHeader.title)}</h1>
           </div>
         </section>
 
