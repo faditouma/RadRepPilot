@@ -9,6 +9,7 @@ import { deriveScenarioQuestions } from '../../utils/acrScenarioQuestions';
 import type { ScenarioAnswerMap } from '../../utils/acrScenarioMatching';
 import { rankVariants, selectedAnswerPhrases } from '../../utils/acrScenarioMatching';
 import { cleanVariantTitle } from '../../utils/requisitionTopicMatching';
+import { useI18n } from '../../i18n/I18nContext';
 
 interface RequisitionGuidedSelection {
   topic: AppropriatenessTopic;
@@ -65,6 +66,7 @@ export function RequisitionGuidedDrawer({
   onClose,
   onSelect,
 }: RequisitionGuidedDrawerProps) {
+  const { clinicalText, text } = useI18n();
   const [step, setStep] = useState<'clarify' | 'recommend'>('clarify');
   const [answers, setAnswers] = useState<ScenarioAnswerMap>({});
   const [manualScenarioKey, setManualScenarioKey] = useState('');
@@ -144,27 +146,27 @@ export function RequisitionGuidedDrawer({
   if (!open) return null;
 
   return (
-    <div className="guided-drawer-layer" role="dialog" aria-modal="true" aria-label="Clinical imaging questions">
+    <div className="guided-drawer-layer" role="dialog" aria-modal="true" aria-label={text('Clinical imaging questions')}>
       <button
         className="guided-drawer-scrim"
         type="button"
         onClick={onClose}
-        aria-label="Close guided imaging drawer"
+        aria-label={text('Close guided imaging drawer')}
       />
 
       <aside className="guided-drawer-panel">
         <div className="guided-drawer-header">
           <div>
-            <span className="eyebrow">{step === 'clarify' ? 'Clinical details' : 'Recommended imaging'}</span>
-            <h3>{step === 'clarify' ? 'Answer focused questions' : 'Choose an imaging option'}</h3>
+            <span className="eyebrow">{text(step === 'clarify' ? 'Clinical details' : 'Recommended imaging')}</span>
+            <h3>{text(step === 'clarify' ? 'Answer focused questions' : 'Choose an imaging option')}</h3>
             <p>
-              {clinicalProblem || 'Clinical problem not entered'}
+              {clinicalProblem || text('Clinical problem not entered')}
               {age || sex ? ` · ${[age, sex].filter(Boolean).join('')}` : ''}
             </p>
           </div>
 
           <button className="ghost-button compact-panel-toggle" type="button" onClick={onClose}>
-            Close
+            {text('Close')}
           </button>
         </div>
 
@@ -172,7 +174,7 @@ export function RequisitionGuidedDrawer({
           <div className="guided-drawer-body">
             {topicMatches.length > 1 ? (
               <section className="guided-question-card">
-                <h4>Clinical focus</h4>
+                <h4>{text('Clinical focus')}</h4>
                 <select
                   className="guided-question-select"
                   value={selectedTopic?.id ?? ''}
@@ -182,10 +184,10 @@ export function RequisitionGuidedDrawer({
                     setManualScenarioKey('');
                   }}
                 >
-                  <option value="">Choose focus...</option>
+                  <option value="">{text('Choose focus...')}</option>
                   {topicMatches.map((topic) => (
                     <option value={topic.id} key={topic.id}>
-                      {topic.title}
+                      {clinicalText(topic.title)}
                     </option>
                   ))}
                 </select>
@@ -195,17 +197,17 @@ export function RequisitionGuidedDrawer({
             {selectedTopic ? (
               questions.map((question) => (
                 <section className="guided-question-card" key={question.id}>
-                  <h4>{question.label}</h4>
+                  <h4>{clinicalText(question.label)}</h4>
                   {question.type === 'single' || question.type === 'boolean' ? (
                     <select
                       className="guided-question-select"
                       value={answers[question.id]?.[0] ?? ''}
                       onChange={(event) => setSingleOption(question.id, event.target.value)}
                     >
-                      <option value="">Choose one...</option>
+                      <option value="">{text('Choose one...')}</option>
                       {question.options.map((item) => (
                         <option value={item.id} key={item.id}>
-                          {item.label}
+                          {clinicalText(item.label)}
                         </option>
                       ))}
                     </select>
@@ -221,7 +223,7 @@ export function RequisitionGuidedDrawer({
                               onChange={() => toggleOption(question.id, item.id, question.type)}
                               type="checkbox"
                             />
-                            <span>{item.label}</span>
+                            <span>{clinicalText(item.label)}</span>
                           </label>
                         );
                       })}
@@ -230,7 +232,7 @@ export function RequisitionGuidedDrawer({
                 </section>
               ))
             ) : (
-              <div className="inline-note">Choose the closest focus before continuing.</div>
+              <div className="inline-note">{text('Choose the closest focus before continuing.')}</div>
             )}
 
             <div className="guided-drawer-actions">
@@ -240,17 +242,17 @@ export function RequisitionGuidedDrawer({
                 type="button"
                 disabled={!selectedTopic || !requiredAnswersComplete}
               >
-                Show recommendations
+                {text('Show recommendations')}
               </button>
 
               <button className="secondary-button" onClick={onClose} type="button">
-                Cancel
+                {text('Cancel')}
               </button>
             </div>
 
             {!topicMatches.length ? (
               <div className="inline-note">
-                No imaging recommendation set was found for this search. Try a different complaint or diagnosis.
+                {text('No imaging recommendation set was found for this search. Try a different complaint or diagnosis.')}
               </div>
             ) : null}
           </div>
@@ -259,14 +261,14 @@ export function RequisitionGuidedDrawer({
             {selectedScenario ? (
               <>
                 <section className="guided-selected-scenario">
-                  <span className="eyebrow">Clinical fit</span>
-                  <h4>Recommendations based on the entered clinical details</h4>
-                  <small>Source: ACR Appropriateness Criteria table summary. Confirm with local protocol and radiologist judgment.</small>
+                  <span className="eyebrow">{text('Clinical fit')}</span>
+                  <h4>{text('Recommendations based on the entered clinical details')}</h4>
+                  <small>{text('Source: ACR Appropriateness Criteria table summary. Confirm with local protocol and radiologist judgment.')}</small>
                 </section>
 
                 {ranked.length > 1 ? (
                   <details className="guide-section compact">
-                    <summary>Other possible matches</summary>
+                    <summary>{text('Other possible matches')}</summary>
                     <div className="guided-alternative-list">
                       {ranked.slice(1, 4).map((item) => (
                         <button
@@ -275,8 +277,8 @@ export function RequisitionGuidedDrawer({
                           type="button"
                           key={`${item.topic.id}:${item.variant.id}`}
                         >
-                          <span>Clinical fit</span>
-                          <strong>{cleanVariantTitle(item.variant.title)}</strong>
+                          <span>{text('Clinical fit')}</span>
+                          <strong>{clinicalText(cleanVariantTitle(item.variant.title))}</strong>
                         </button>
                       ))}
                     </div>
@@ -295,9 +297,9 @@ export function RequisitionGuidedDrawer({
                         key={category}
                       >
                         <summary>
-                          <span className={`guide-category-badge ${categoryClass(category)}`}>{category}</span>
+                          <span className={`guide-category-badge ${categoryClass(category)}`}>{clinicalText(category)}</span>
                           <small>
-                            {options.length} option{options.length === 1 ? '' : 's'}
+                            {options.length} {text(options.length === 1 ? 'option' : 'options')}
                           </small>
                         </summary>
 
@@ -308,7 +310,7 @@ export function RequisitionGuidedDrawer({
                               key={`${category}-${optionToSelect.procedure}`}
                             >
                               <div>
-                                <strong>{optionToSelect.procedure}</strong>
+                                <strong>{clinicalText(optionToSelect.procedure)}</strong>
                               </div>
 
                               <div className="requisition-option-badges">
@@ -317,7 +319,7 @@ export function RequisitionGuidedDrawer({
                                     optionToSelect.appropriatenessCategory
                                   )}`}
                                 >
-                                  {optionToSelect.appropriatenessCategory}
+                                  {clinicalText(optionToSelect.appropriatenessCategory)}
                                 </span>
                                 <span className="guide-radiation-badge">
                                   {optionToSelect.radiationLevel}
@@ -337,7 +339,7 @@ export function RequisitionGuidedDrawer({
                                   onClose();
                                 }}
                               >
-                                Use this imaging
+                                {text('Use this imaging')}
                               </button>
                             </article>
                           ))}
@@ -348,22 +350,21 @@ export function RequisitionGuidedDrawer({
                 </div>
 
                 <details className="guide-section compact">
-                  <summary>Source summary</summary>
+                  <summary>{text('Source summary')}</summary>
                   <p>
-                    {selectedScenario.topic.sourceLabel}. Structured appropriateness table summary; verify against the source document,
-                    local protocols, and radiologist judgment.
+                    {clinicalText(selectedScenario.topic.sourceLabel)}. {text('Structured appropriateness table summary; verify against the source document, local protocols, and radiologist judgment.')}
                   </p>
                 </details>
 
                 <div className="guided-drawer-actions">
                   <button className="secondary-button" onClick={() => setStep('clarify')} type="button">
-                    Back to questions
+                    {text('Back to questions')}
                   </button>
                 </div>
               </>
             ) : (
               <div className="inline-note">
-                No matching presentation found. Go back and adjust the clinical problem.
+                {text('No matching presentation found. Go back and adjust the clinical problem.')}
               </div>
             )}
           </div>

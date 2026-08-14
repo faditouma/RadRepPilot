@@ -149,7 +149,7 @@ export function ReportingWorkflowPage({
   onOpenHelper,
   onSidebarStateChange,
 }: ReportingWorkflowPageProps) {
-  const { text } = useI18n();
+  const { clinicalText, text } = useI18n();
   const initialStoredDraft = readStoredDraft(schema);
   const [values, setValues] = useState<WorkflowValues>(() => initialStoredDraft?.values ?? cloneValues(schema.defaultValues));
   const [report, setReport] = useState<WorkflowDraftReport>(() => initialStoredDraft?.report ?? createDraftReport(schema, schema.defaultValues));
@@ -350,7 +350,7 @@ export function ReportingWorkflowPage({
               {clinicalContextSections.map((section) => (
                 <details className="workflow-card workflow-accordion nested-accordion" open key={section.id}>
 	                  <summary>
-	                    <span>{text(section.title)}</span>
+	                    <span>{clinicalText(section.title)}</span>
 	                  </summary>
                   <div className="workflow-form-grid">
                     {section.fields.filter((field) => isWorkflowFieldVisible(field, values)).map((field) => (
@@ -394,13 +394,13 @@ export function ReportingWorkflowPage({
           <div className="checklist-preview">
             {helperLinks.map((helper) => (
               <button className="helper-link-chip" onClick={() => onOpenHelper?.(helper.id)} type="button" key={helper.id}>
-                Open {helper.label}
+                {text('Open')} {clinicalText(helper.label)}
               </button>
             ))}
             {schema.badges
               .filter((badge) => !['Implemented', 'Prototype', 'Incidental support', 'Surgical red flags', 'Vascular workflow'].includes(badge))
               .map((badge) => (
-                <span key={badge}>{badge}</span>
+                <span key={badge}>{clinicalText(badge)}</span>
               ))}
             <span>Report Builder insert support available under advanced options</span>
           </div>
@@ -420,7 +420,7 @@ export function ReportingWorkflowPage({
             <textarea
               value={typeof values.additionalFindings === 'string' ? values.additionalFindings : ''}
               onChange={(event) => updateValue('additionalFindings', event.target.value)}
-              placeholder="Add relevant findings not captured above, nuance, comparison, uncertainty, or differential considerations."
+              placeholder={clinicalText('Add relevant findings not captured above, nuance, comparison, uncertainty, or differential considerations.')}
             />
           </label>
         </section>
@@ -439,7 +439,7 @@ export function ReportingWorkflowPage({
             <textarea
               value={typeof values.limitationsUncertainty === 'string' ? values.limitationsUncertainty : ''}
               onChange={(event) => updateValue('limitationsUncertainty', event.target.value)}
-              placeholder="e.g. motion artifact, incomplete visualization, limited contrast timing, technically limited study."
+              placeholder={clinicalText('e.g. motion artifact, incomplete visualization, limited contrast timing, technically limited study.')}
             />
           </label>
         </section>
@@ -476,7 +476,7 @@ export function ReportingWorkflowPage({
               {imagingSections.map((section) => (
                 <details className="workflow-card workflow-accordion nested-accordion" open={section.defaultOpen ?? true} key={section.id}>
 	                  <summary>
-	                    <span>{text(section.title)}</span>
+	                    <span>{clinicalText(section.title)}</span>
 	                  </summary>
                   <div className="workflow-form-grid">
                     {section.fields.filter((field) => isWorkflowFieldVisible(field, values)).map((field) => (
@@ -509,11 +509,11 @@ export function ReportingWorkflowPage({
             />
           ) : null}
 
-          <p className="workflow-safety-note">{schema.safetyNote}</p>
+          <p className="workflow-safety-note">{clinicalText(schema.safetyNote)}</p>
         </main>
 
         <ReportDraftPanel
-          title={schema.shortTitle}
+          title={clinicalText(schema.shortTitle)}
           report={report}
           onChange={handleReportChange}
           onRegenerate={regenerateReport}

@@ -6,6 +6,8 @@ import { getTopicById, reviewStatusLabel } from '../../utils/appropriatenessSear
 import { classifyRequestedImaging, type RequestedImagingCheck } from '../../utils/appropriatenessValidation';
 import { buildClinicalQuestion, cleanVariantTitle, findRequisitionTopicMatches } from '../../utils/requisitionTopicMatching';
 import { RequisitionGuidedDrawer } from './RequisitionGuidedDrawer';
+import { useI18n } from '../../i18n/I18nContext';
+import { normalizeClinicalSearchQuery } from '../../i18n/clinicalFrench';
 
 interface RequisitionAppropriatenessPanelProps {
   template: PrimaryCareContentTemplate;
@@ -75,6 +77,7 @@ export function RequisitionAppropriatenessPanel({
   onAppropriatenessCheckChange,
   onOpenGuide,
 }: RequisitionAppropriatenessPanelProps) {
+  const { clinicalText, language, text } = useI18n();
   const [drawerOpen, setDrawerOpen] = useState(false);
 
   const clinicalProblem = String(
@@ -89,9 +92,14 @@ export function RequisitionAppropriatenessPanel({
   const selectedTopic = directTopicId ? getTopicById(directTopicId) : undefined;
   const selectedVariant = selectedTopic?.variants.find((variant) => variant.id === preferredVariantId);
 
+  const matchingQuery = useMemo(
+    () => normalizeClinicalSearchQuery(clinicalProblemQuery, language),
+    [clinicalProblemQuery, language]
+  );
+
   const matchResult = useMemo(
-    () => findRequisitionTopicMatches(clinicalProblemQuery, { age, sex }),
-    [age, clinicalProblemQuery, sex]
+    () => findRequisitionTopicMatches(matchingQuery, { age, sex }),
+    [age, matchingQuery, sex]
   );
 
   const topicMatches = matchResult.topics;
@@ -118,13 +126,13 @@ export function RequisitionAppropriatenessPanel({
     <section className="requisition-appropriateness-panel guided-requisition-panel">
       <div className="clinical-intake-heading">
         <div>
-          <span className="eyebrow">Imaging request</span>
-          <h3>Start with the clinical problem</h3>
+          <span className="eyebrow">{text('Imaging request')}</span>
+          <h3>{text('Start with the clinical problem')}</h3>
         </div>
       </div>
 
       {!clinicalProblemQuery ? (
-        <div className="complaint-starter-grid compact" aria-label="Common imaging request complaints">
+        <div className="complaint-starter-grid compact" aria-label={text('Common imaging request complaints')}>
           {curatedComplaintStarters.map((mapping) => (
             <button
               className="complaint-starter-card"
@@ -132,8 +140,8 @@ export function RequisitionAppropriatenessPanel({
               onClick={() => startComplaintFlow(mapping.complaint)}
               key={mapping.id}
             >
-              <span className="complaint-card-kicker">Flow</span>
-              <strong>{mapping.complaint}</strong>
+              <span className="complaint-card-kicker">{text('Flow')}</span>
+              <strong>{clinicalText(mapping.complaint)}</strong>
             </button>
           ))}
         </div>
@@ -141,16 +149,16 @@ export function RequisitionAppropriatenessPanel({
 
       <div className="guided-main-fields">
         <label className="field">
-          Clinical problem / indication
+          {text('Clinical problem / indication')}
           <input
             value={clinicalProblem}
             onChange={(event) => onClinicalProblemChange?.(event.target.value)}
-            placeholder="e.g. headache, low back pain, suspected PE, hematuria"
+            placeholder={text('e.g. headache, low back pain, suspected PE, hematuria')}
           />
         </label>
 
         <label className="field">
-          Age
+          {text('Age')}
           <input
             value={age}
             onChange={(event) => onUpdateValue?.('age', event.target.value)}
@@ -159,13 +167,13 @@ export function RequisitionAppropriatenessPanel({
         </label>
 
         <label className="field">
-          Sex/gender
+          {text('Sex/gender')}
           <select value={sex} onChange={(event) => onUpdateValue?.('sex', event.target.value)}>
-            <option value="">Not specified</option>
+            <option value="">{text('Not specified')}</option>
             <option value="M">M</option>
             <option value="F">F</option>
-            <option value="X">X/other</option>
-            <option value="Prefer not to specify">Prefer not to specify</option>
+            <option value="X">{text('X/other')}</option>
+            <option value="Prefer not to specify">{text('Prefer not to specify')}</option>
           </select>
         </label>
       </div>
@@ -177,12 +185,12 @@ export function RequisitionAppropriatenessPanel({
           onClick={() => setDrawerOpen(true)}
           disabled={!clinicalProblemQuery}
         >
-          Open guided questions
+          {text('Open guided questions')}
         </button>
 
         {selectedVariant ? (
           <button className="secondary-button" type="button" onClick={() => setDrawerOpen(true)}>
-            Edit answers
+            {text('Edit answers')}
           </button>
         ) : null}
       </div>
@@ -190,26 +198,26 @@ export function RequisitionAppropriatenessPanel({
       {selectedVariant ? (
         <section className="selected-requisition-summary">
           <div>
-            <span>Answers</span>
-            <strong>Guided questions complete</strong>
+            <span>{text('Answers')}</span>
+            <strong>{text('Guided questions complete')}</strong>
           </div>
 
           <div>
-            <span>Exam</span>
-            <strong>{String(form.values.requestedProcedure || 'Not chosen')}</strong>
+            <span>{text('Exam')}</span>
+            <strong>{clinicalText(String(form.values.requestedProcedure || 'Not chosen'))}</strong>
             <small>
               {appropriatenessCheck?.match
                 ? [
-                    appropriatenessCheck.match.appropriatenessCategory,
+                    clinicalText(appropriatenessCheck.match.appropriatenessCategory),
                     appropriatenessCheck.match.radiationLevel
-                      ? `Relative radiation: ${appropriatenessCheck.match.radiationLevel}`
+                      ? `${text('Relative radiation')}: ${appropriatenessCheck.match.radiationLevel}`
                       : '',
                   ]
                     .filter(Boolean)
                     .join(' · ')
                 : appropriatenessCheck
-                  ? appropriatenessCheck.message
-                  : topicReviewSummary(selectedTopic)}
+                  ? clinicalText(appropriatenessCheck.message)
+                  : clinicalText(topicReviewSummary(selectedTopic))}
             </small>
           </div>
 
@@ -219,7 +227,7 @@ export function RequisitionAppropriatenessPanel({
               type="button"
               onClick={() => onOpenGuide?.(selectedTopic.id, selectedVariant.id)}
             >
-              Source summary
+              {text('Source summary')}
             </button>
           ) : null}
         </section>

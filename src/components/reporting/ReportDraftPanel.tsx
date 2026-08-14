@@ -93,7 +93,7 @@ export function ReportDraftPanel({
         <div className="inline-note">{text('Report draft panel collapsed. Expand to preview, edit, copy, or save the draft.')}</div>
       ) : (
         <>
-          <div className="draft-tab-row" role="tablist" aria-label="Report draft view">
+          <div className="draft-tab-row" role="tablist" aria-label={text('Report draft view')}>
             <button className={activeTab === 'preview' ? 'active' : ''} onClick={() => setActiveTab('preview')} type="button">
               {text('Preview')}
             </button>

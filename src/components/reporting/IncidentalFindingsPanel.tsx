@@ -7,6 +7,7 @@ import { getHelperRouteLabel } from '../../utils/helperRouting';
 import { scoreFollowUpSafety } from '../../utils/qualityMetrics';
 import { QualityMetricBadge } from '../quality/QualityMetricBadge';
 import { CopyButton } from '../radrep/RadRepComponents';
+import { useI18n } from '../../i18n/I18nContext';
 
 interface IncidentalFindingsPanelProps {
   options: WorkflowIncidentalOption[];
@@ -136,14 +137,15 @@ function FieldRenderer({
   value: string | boolean | undefined;
   onChange: (value: string | boolean) => void;
 }) {
+  const { clinicalText } = useI18n();
   if (field.type === 'select') {
     return (
       <label className="field">
-        {field.label}
+        {clinicalText(field.label)}
         <select value={typeof value === 'string' ? value : ''} onChange={(event) => onChange(event.target.value)}>
           {(field.options ?? []).map((option) => (
             <option value={option.value} key={option.value}>
-              {option.label}
+              {clinicalText(option.label)}
             </option>
           ))}
         </select>
@@ -155,18 +157,18 @@ function FieldRenderer({
     return (
       <label className="check-toggle field-check">
         <input checked={value === true || value === 'yes'} onChange={(event) => onChange(event.target.checked)} type="checkbox" />
-        <span>{field.label}</span>
+        <span>{clinicalText(field.label)}</span>
       </label>
     );
   }
 
   return (
     <label className="field">
-      {field.label}
+      {clinicalText(field.label)}
       <input
         value={typeof value === 'string' ? value : ''}
         onChange={(event) => onChange(event.target.value)}
-        placeholder={field.placeholder}
+        placeholder={field.placeholder ? clinicalText(field.placeholder) : undefined}
         type={field.label.toLowerCase().includes('size') || field.label.toLowerCase().includes('age') ? 'number' : 'text'}
         step="0.1"
       />
@@ -175,6 +177,7 @@ function FieldRenderer({
 }
 
 export function IncidentalFindingsPanel({ options, value, onChange, onOpenHelper }: IncidentalFindingsPanelProps) {
+  const { clinicalText, text } = useI18n();
   const [isAdding, setIsAdding] = useState(false);
   const [selectedLabel, setSelectedLabel] = useState('');
   const [valuesByLabel, setValuesByLabel] = useState<Record<string, IncidentalValueMap>>({});
@@ -213,23 +216,23 @@ export function IncidentalFindingsPanel({ options, value, onChange, onOpenHelper
   return (
     <section className="workflow-card">
       <div className="section-heading">
-        <span className="eyebrow">Incidental findings / follow-up</span>
-        <h3>Add incidental finding if present</h3>
-        <p>Use only for radiologist-verified incidental findings. Mini-forms generate editable follow-up language.</p>
+        <span className="eyebrow">{text('Incidental findings / follow-up')}</span>
+        <h3>{text('Add incidental finding if present')}</h3>
+        <p>{text('Use only for radiologist-verified incidental findings. Mini-forms generate editable follow-up language.')}</p>
       </div>
       {options.length ? (
         <>
           <div className="incidental-compact-row">
             <button className="secondary-button" onClick={() => setIsAdding((open) => !open)} type="button">
-              {isAdding ? 'Hide incidental helper' : 'Add incidental finding'}
+              {text(isAdding ? 'Hide incidental helper' : 'Add incidental finding')}
             </button>
             <label className="field compact-select">
-              Select finding type
+              {text('Select finding type')}
               <select value={selectedLabel} onChange={(event) => selectOption(event.target.value)}>
-                <option value="">Select...</option>
+                <option value="">{text('Select...')}</option>
                 {options.map((option) => (
                   <option value={option.label} key={option.label}>
-                    {option.label}
+                    {clinicalText(option.label)}
                   </option>
                 ))}
               </select>
@@ -239,9 +242,9 @@ export function IncidentalFindingsPanel({ options, value, onChange, onOpenHelper
           {isAdding && selectedOption ? (
             <div className="incidental-mini-form">
               <div className="card-topline">
-                <span>{selectedRegistryFinding?.organSystem ?? 'Context-aware helper'}</span>
+                <span>{clinicalText(selectedRegistryFinding?.organSystem ?? 'Context-aware helper')}</span>
               </div>
-              <h4>{selectedRegistryFinding?.name ?? selectedOption.label}</h4>
+              <h4>{clinicalText(selectedRegistryFinding?.name ?? selectedOption.label)}</h4>
               {selectedRegistryFinding ? (
                 <div className="workflow-form-grid">
                   {selectedRegistryFinding.keyInputs.map((field) => (
@@ -254,26 +257,26 @@ export function IncidentalFindingsPanel({ options, value, onChange, onOpenHelper
                   ))}
                 </div>
               ) : (
-                <div className="inline-note">This workflow uses a simple educational sentence for this incidental finding.</div>
+                <div className="inline-note">{text('This workflow uses a simple educational sentence for this incidental finding.')}</div>
               )}
               {selectedRegistryFinding ? (
                 <div className="inline-note">
-                  Linked helper: {helperLabelsByFindingId[selectedRegistryFinding.id] ?? 'Related calculator/classification helper when applicable'}.
+                  {text('Linked helper')}: {clinicalText(helperLabelsByFindingId[selectedRegistryFinding.id] ?? 'Related calculator/classification helper when applicable')}.
                 </div>
               ) : associatedHelperIds.length ? (
                 <div className="inline-note">
-                  Linked helper: {associatedHelperIds.map(getHelperRouteLabel).join(', ')}.
+                  {text('Linked helper')}: {associatedHelperIds.map((helperId) => clinicalText(getHelperRouteLabel(helperId))).join(', ')}.
                 </div>
               ) : null}
               <section className="follow-up-selector-panel">
-                <span className="mini-heading">Follow-up recommendation</span>
+                <span className="mini-heading">{text('Follow-up recommendation')}</span>
                 <div className="workflow-form-grid">
                   <label className="field">
-                    Follow-up plan
+                    {text('Follow-up plan')}
                     <select value={selectedValue(selectedValues, '_followUpAction')} onChange={(event) => updateValue('_followUpAction', event.target.value)}>
                       {followUpActions.map((action) => (
                         <option value={action.value} key={action.value}>
-                          {action.label}
+                          {clinicalText(action.label)}
                         </option>
                       ))}
                     </select>
@@ -281,67 +284,67 @@ export function IncidentalFindingsPanel({ options, value, onChange, onOpenHelper
                   {imagingFollowUpActions.has(selectedValue(selectedValues, '_followUpAction')) ? (
                     <>
                       <label className="field">
-                        Modality
+                        {text('Modality')}
                         <select value={selectedValue(selectedValues, '_followUpModality')} onChange={(event) => updateValue('_followUpModality', event.target.value)}>
-                          <option value="">Select modality</option>
+                          <option value="">{text('Select modality')}</option>
                           {followUpModalities.map((modality) => (
                             <option value={modality.value} key={modality.value}>
-                              {modality.label}
+                              {clinicalText(modality.label)}
                             </option>
                           ))}
                         </select>
                       </label>
                       {selectedValue(selectedValues, '_followUpModality') === 'custom' ? (
                         <label className="field">
-                          Custom modality
-                          <input value={selectedValue(selectedValues, '_customModality')} onChange={(event) => updateValue('_customModality', event.target.value)} placeholder="e.g. adrenal protocol CT" />
+                          {text('Custom modality')}
+                          <input value={selectedValue(selectedValues, '_customModality')} onChange={(event) => updateValue('_customModality', event.target.value)} placeholder={clinicalText('e.g. adrenal protocol CT')} />
                         </label>
                       ) : null}
                     </>
                   ) : null}
                   {selectedValue(selectedValues, '_followUpAction') === 'custom' ? (
                     <label className="field wide-field">
-                      Custom follow-up recommendation
+                      {text('Custom follow-up recommendation')}
                       <textarea
                         value={selectedValue(selectedValues, '_customFollowUp')}
                         onChange={(event) => updateValue('_customFollowUp', event.target.value)}
-                        placeholder="e.g. Compare with outside imaging; follow local incidental finding pathway."
+                        placeholder={text('e.g. Compare with outside imaging; follow local incidental finding pathway.')}
                       />
                     </label>
                   ) : null}
                 </div>
               </section>
               <label className="field">
-                Generated incidental sentence
+                {text('Generated incidental sentence')}
                 <textarea value={generatedSentence} readOnly />
               </label>
               {followUpQuality ? <QualityMetricBadge score={followUpQuality} /> : null}
               <div className="button-row generated-actions">
                 <button className="primary-button" onClick={() => onChange(appendText(value, generatedSentence))} type="button">
-                  Add to draft
+                  {text('Add to draft')}
                 </button>
                 <button className="secondary-button" onClick={() => onChange(generatedSentence)} type="button">
-                  Replace draft text
+                  {text('Replace draft text')}
                 </button>
-                <CopyButton text={generatedSentence} label="Copy sentence" />
+                <CopyButton text={generatedSentence} label={text('Copy sentence')} />
                 {associatedHelperIds.map((helperId) => (
                   <button className="secondary-button" onClick={() => onOpenHelper?.(helperId)} type="button" key={helperId}>
-                    Open {getHelperRouteLabel(helperId)}
+                    {text('Open')} {clinicalText(getHelperRouteLabel(helperId))}
                   </button>
                 ))}
                 <button className="ghost-button" onClick={() => setSelectedLabel('')} type="button">
-                  Remove incidental finding
+                  {text('Remove incidental finding')}
                 </button>
               </div>
             </div>
           ) : null}
         </>
       ) : (
-        <div className="inline-note">No dedicated incidental helper is attached to this workflow. Free-text follow-up can still be entered below.</div>
+        <div className="inline-note">{text('No dedicated incidental helper is attached to this workflow. Free-text follow-up can still be entered below.')}</div>
       )}
       <label className="field">
-        Incidental findings / follow-up text
-        <textarea value={value} onChange={(event) => onChange(event.target.value)} placeholder="e.g. Incidental renal cyst/mass follow-up language..." />
+        {text('Incidental findings / follow-up text')}
+        <textarea value={value} onChange={(event) => onChange(event.target.value)} placeholder={clinicalText('e.g. Incidental renal cyst/mass follow-up language...')} />
       </label>
     </section>
   );

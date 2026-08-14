@@ -1,12 +1,15 @@
+import { useI18n } from '../../i18n/I18nContext';
+
 interface BreadcrumbsProps {
   items: Array<{ label: string; onClick?: () => void }>;
 }
 
 export function Breadcrumbs({ items }: BreadcrumbsProps) {
+  const { text } = useI18n();
   if (!items.length) return null;
 
   return (
-    <nav className="breadcrumb-row" aria-label="Workflow breadcrumb">
+    <nav className="breadcrumb-row" aria-label={text('Workflow breadcrumb')}>
       {items.map((item, index) => (
         item.onClick ? (
           <button className="breadcrumb-pill clickable" onClick={item.onClick} type="button" key={`${item.label}-${index}`}>

@@ -819,7 +819,7 @@ export function PrimaryCareRequestBuilder({
   onSidebarStateChange,
   compactHeader = false,
 }: PrimaryCareRequestBuilderProps) {
-  const { text } = useI18n();
+  const { clinicalText, text } = useI18n();
   const [mode, setMode] = useState<'quick' | 'detailed'>('quick');
   const [viewMode, setViewMode] = useState<PrimaryCareViewMode>(() => {
     if (typeof window === 'undefined') return 'form';
@@ -1214,18 +1214,18 @@ export function PrimaryCareRequestBuilder({
         </div>
       </div>
       {appropriatenessCheck && appropriatenessCheck.severity !== 'not_selected' && form.values.requestedProcedure ? (
-        <section className={`appropriateness-check-card ${appropriatenessCheck.severity}`} aria-label="Appropriateness check">
+        <section className={`appropriateness-check-card ${appropriatenessCheck.severity}`} aria-label={text('Appropriateness check')}>
           <div>
-            <span className="eyebrow">Appropriateness check</span>
-            <strong>{appropriatenessSeverityLabel(appropriatenessCheck)}</strong>
+            <span className="eyebrow">{text('Appropriateness check')}</span>
+            <strong>{clinicalText(appropriatenessSeverityLabel(appropriatenessCheck))}</strong>
           </div>
-          <p>{appropriatenessCheck.message}</p>
+          <p>{clinicalText(appropriatenessCheck.message)}</p>
           {appropriatenessCheck.radiationLevel ? (
-            <small>Relative radiation: {appropriatenessCheck.radiationLevel}</small>
+            <small>{text('Relative radiation')}: {appropriatenessCheck.radiationLevel}</small>
           ) : null}
           {appropriatenessCheck.suggestedAlternatives.length ? (
             <div className="appropriateness-alternative-list">
-              <span>Listed alternatives:</span>
+              <span>{text('Listed alternatives')}:</span>
               {appropriatenessCheck.suggestedAlternatives.map((option) => (
                 <button
                   className="ghost-button chip-button"
@@ -1240,7 +1240,7 @@ export function PrimaryCareRequestBuilder({
                   type="button"
                   key={option.procedure}
                 >
-                  {option.procedure}
+                  {clinicalText(option.procedure)}
                 </button>
               ))}
             </div>

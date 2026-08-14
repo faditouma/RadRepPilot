@@ -1,4 +1,5 @@
 import { createContext, useContext, useEffect, useMemo, useState, type ReactNode } from 'react';
+import { translateClinicalDisplayText, translateClinicalExactText } from './clinicalFrench';
 
 export type InterfaceLanguage = 'en' | 'fr';
 
@@ -259,7 +260,7 @@ const frenchText: Record<string, string> = {
   Standard: 'Standard',
   Detailed: 'Détaillé',
   'Polite requisition': 'Demande courtoise',
-  'Direct clinical': 'Clinique direct',
+  'Direct clinical': 'Direct et clinique',
   'Clear/reset': 'Effacer / réinitialiser',
   Complaint: 'Motif',
   'Clinical questions': 'Questions cliniques',
@@ -298,13 +299,20 @@ const frenchText: Record<string, string> = {
 };
 
 export function translateInterfaceText(english: string, language: InterfaceLanguage): string {
-  return language === 'fr' ? frenchText[english] ?? english : english;
+  if (language !== 'fr') return english;
+  return frenchText[english] ?? translateClinicalExactText(english, language);
+}
+
+export function translateClinicalInterfaceText(english: string, language: InterfaceLanguage): string {
+  if (language !== 'fr') return english;
+  return frenchText[english] ?? translateClinicalDisplayText(english, language);
 }
 
 interface I18nContextValue {
   language: InterfaceLanguage;
   setLanguage: (language: InterfaceLanguage) => void;
   text: (english: string) => string;
+  clinicalText: (english: string) => string;
 }
 
 const I18nContext = createContext<I18nContextValue | null>(null);
@@ -328,6 +336,7 @@ export function I18nProvider({ children }: { children: ReactNode }) {
       language,
       setLanguage,
       text: (english) => translateInterfaceText(english, language),
+      clinicalText: (english) => translateClinicalInterfaceText(english, language),
     }),
     [language],
   );

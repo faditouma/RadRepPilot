@@ -8,7 +8,7 @@ interface QuickFillButtonsProps {
 }
 
 export function QuickFillButtons({ quickFills, onApply, activeQuickFillId }: QuickFillButtonsProps) {
-  const { text } = useI18n();
+  const { clinicalText, text } = useI18n();
   const normal = quickFills.find((quickFill) => quickFill.intent === 'normal') ?? quickFills[0];
   const positive = quickFills.find((quickFill) => quickFill.intent === 'positive') ?? quickFills.find((quickFill) => quickFill.intent === 'complicated');
 
@@ -38,7 +38,7 @@ export function QuickFillButtons({ quickFills, onApply, activeQuickFillId }: Qui
             type="button"
             key={quickFill.id}
           >
-            <strong>{text(quickFill.label)}</strong>
+            <strong>{clinicalText(quickFill.label)}</strong>
           </button>
         ))}
       </div>

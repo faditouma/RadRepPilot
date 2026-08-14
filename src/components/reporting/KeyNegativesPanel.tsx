@@ -7,7 +7,7 @@ interface KeyNegativesPanelProps {
 }
 
 export function KeyNegativesPanel({ options, selected, onChange }: KeyNegativesPanelProps) {
-  const { text } = useI18n();
+  const { clinicalText, text } = useI18n();
   const toggle = (option: string) => {
     onChange(selected.includes(option) ? selected.filter((item) => item !== option) : [...selected, option]);
   };
@@ -23,7 +23,7 @@ export function KeyNegativesPanel({ options, selected, onChange }: KeyNegativesP
         {options.map((option) => (
           <label className={selected.includes(option) ? 'negative-chip active' : 'negative-chip'} key={option}>
             <input checked={selected.includes(option)} onChange={() => toggle(option)} type="checkbox" />
-            <span>{text(option)}</span>
+            <span>{clinicalText(option)}</span>
           </label>
         ))}
       </div>

@@ -19,7 +19,7 @@ export function BranchingModuleNavigator({
   onInitialWorkflowOpened,
   onWorkflowSelectionChange,
 }: BranchingModuleNavigatorProps) {
-  const { text } = useI18n();
+  const { clinicalText, text } = useI18n();
   const [selectedModalityName, setSelectedModalityName] = useState('');
   const [selectedBodySystemName, setSelectedBodySystemName] = useState('');
   const [selectedWorkflowId, setSelectedWorkflowId] = useState('');
@@ -59,9 +59,9 @@ export function BranchingModuleNavigator({
       { label: text('Radiology Reporting'), onClick: reset },
       selectedModalityName ? { label: text(selectedModalityName), onClick: () => setSelectedBodySystemName('') } : undefined,
       selectedBodySystemName ? { label: text(selectedBodySystemName), onClick: () => setSelectedWorkflowId('') } : undefined,
-      selectedWorkflow?.title ? { label: selectedWorkflow.title } : undefined,
+      selectedWorkflow?.title ? { label: clinicalText(selectedWorkflow.title) } : undefined,
     ].filter((item): item is { label: string; onClick?: () => void } => Boolean(item)),
-    [selectedBodySystemName, selectedModalityName, selectedWorkflow?.title, text],
+    [clinicalText, selectedBodySystemName, selectedModalityName, selectedWorkflow?.title, text],
   );
 
   const selectModality = (name: string) => {
@@ -81,7 +81,7 @@ export function BranchingModuleNavigator({
         <div className="selected-workflow-bar">
           <div>
             <Breadcrumbs items={breadcrumbs} />
-            <h2>{selectedWorkflow.title}</h2>
+            <h2>{clinicalText(selectedWorkflow.title)}</h2>
           </div>
           <div className="button-row">
             <button className="secondary-button" onClick={() => setSelectedWorkflowId('')} type="button">
@@ -182,16 +182,16 @@ export function BranchingModuleNavigator({
 }
 
 function WorkflowChoiceCard({ workflow, onOpen }: { workflow: NavigationWorkflow; onOpen: () => void }) {
-  const { text } = useI18n();
+  const { clinicalText, text } = useI18n();
   return (
     <button className="workflow-choice-card interactive-choice-card" onClick={onOpen} type="button">
       <div className="card-topline">
-        <span>{workflow.description}</span>
+        <span>{clinicalText(workflow.description)}</span>
         <RadIcon name="report" size={20} />
       </div>
-      <h3>{workflow.title}</h3>
+      <h3>{clinicalText(workflow.title)}</h3>
       {workflow.toolBadges?.length ? (
-        <p className="workflow-supporting-copy">{workflow.toolBadges.join(' · ')}</p>
+        <p className="workflow-supporting-copy">{workflow.toolBadges.map(clinicalText).join(' · ')}</p>
       ) : null}
       <span className="card-action">
         {text('Open workflow')}

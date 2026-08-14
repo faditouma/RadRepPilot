@@ -371,7 +371,7 @@ function getStructuredObject(value: unknown): Record<string, unknown> {
 }
 
 function App({ embedded = false, initialPage = 'dashboard', onActivePageChange }: AppProps) {
-  const { text } = useI18n();
+  const { clinicalText, text } = useI18n();
   const [activePage, setActivePage] = useState<PageKey>(initialPage);
   const [workspaceNavOpen, setWorkspaceNavOpen] = useState(false);
   const routeSyncRef = useRef(false);
@@ -1686,23 +1686,23 @@ function App({ embedded = false, initialPage = 'dashboard', onActivePageChange }
               </a>
             ))}
           {activePage === 'modules' && workflowSidebar ? (
-            <div className="workspace-sidebar-widgets" aria-label="Current workflow status">
+            <div className="workspace-sidebar-widgets" aria-label={text('Current workflow status')}>
               <section className="workflow-side-card workflow-module-map">
-                <span className="eyebrow">Current workflow</span>
-                <h3>{workflowSidebar.workflowTitle}</h3>
+                <span className="eyebrow">{text('Current workflow')}</span>
+                <h3>{clinicalText(workflowSidebar.workflowTitle)}</h3>
                 <p>
-                  {workflowSidebar.modality} · {workflowSidebar.bodySystem}
+                  {clinicalText(workflowSidebar.modality)} · {clinicalText(workflowSidebar.bodySystem)}
                 </p>
                 <ol>
-                  <li>Quick start</li>
-                  <li>Core findings</li>
-                  <li>Report draft</li>
+                  <li>{text('Quick start')}</li>
+                  <li>{text('Core findings')}</li>
+                  <li>{text('Report draft')}</li>
                 </ol>
               </section>
               <CompletenessMiniPanel score={workflowSidebar.completeness} />
               <section className="workflow-side-card draft-status-card">
-                <span className="eyebrow">Local progress</span>
-                <strong>{workflowSidebar.draftStatus}</strong>
+                <span className="eyebrow">{text('Local progress')}</span>
+                <strong>{clinicalText(workflowSidebar.draftStatus)}</strong>
               </section>
             </div>
           ) : null}

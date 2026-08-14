@@ -1,6 +1,7 @@
 import type { DraftType, InsertTarget, ReferralFormState } from '../../radrep/types';
 import { generateAppropriatenessSentence, matchAppropriatenessEntry } from '../../utils/appropriatenessMatcher';
 import { CopyButton } from '../radrep/RadRepComponents';
+import { useI18n } from '../../i18n/I18nContext';
 
 interface AppropriatenessSupportPanelProps {
   form: ReferralFormState;
@@ -15,54 +16,55 @@ const insertTargets: Array<{ target: InsertTarget; label: string }> = [
 ];
 
 export function AppropriatenessSupportPanel({ form, onInsertText, onSaveText }: AppropriatenessSupportPanelProps) {
+  const { clinicalText, text } = useI18n();
   const entry = matchAppropriatenessEntry(form);
   const sentence = generateAppropriatenessSentence(entry);
 
   return (
     <section className="appropriateness-support-panel">
       <div className="card-topline">
-        <span>ACR Appropriateness Criteria prototype</span>
-        <span className="status-badge partial">Framework</span>
+        <span>{text('ACR Appropriateness Criteria prototype')}</span>
+        <span className="status-badge partial">{text('Framework')}</span>
       </div>
-      <h3>{entry?.acrTopicName ?? 'Topic mapping pending'}</h3>
-      <p>{sentence}</p>
+      <h3>{clinicalText(entry?.acrTopicName ?? 'Topic mapping pending')}</h3>
+      <p>{clinicalText(sentence)}</p>
       {entry ? (
         <details className="preview-details">
-          <summary>Variant details to verify</summary>
+          <summary>{text('Variant details to verify')}</summary>
           <div className="preview-stack">
             <div className="preview-list">
-              <span>Key clinical questions</span>
+              <span>{text('Key clinical questions')}</span>
               <ul>
                 {entry.keyClinicalQuestions.map((item) => (
-                  <li key={item}>{item}</li>
+                  <li key={item}>{clinicalText(item)}</li>
                 ))}
               </ul>
             </div>
             <div className="preview-list">
-              <span>Radiology needs to know</span>
+              <span>{text('Radiology needs to know')}</span>
               <ul>
                 {entry.whatRadiologyNeedsToKnow.map((item) => (
-                  <li key={item}>{item}</li>
+                  <li key={item}>{clinicalText(item)}</li>
                 ))}
               </ul>
             </div>
             <div className="source-badges">
               <a href={entry.acrTopicUrl} target="_blank" rel="noreferrer">
-                Official ACR AC verification
+                {text('Official ACR AC verification')}
               </a>
             </div>
           </div>
         </details>
       ) : null}
       <div className="button-row generated-actions">
-        <CopyButton text={sentence} label="Copy ACR note" />
+        <CopyButton text={sentence} label={text('Copy ACR note')} />
         {insertTargets.map((item) => (
           <button className="secondary-button" onClick={() => onInsertText(sentence, 'ACR Appropriateness support', item.target)} type="button" key={item.target}>
-            Insert: {item.label}
+            {text('Insert')}: {text(item.label)}
           </button>
         ))}
         <button className="secondary-button" onClick={() => onSaveText('ACR appropriateness support', 'referral', sentence, { entry, form })} type="button">
-          Save note
+          {text('Save note')}
         </button>
       </div>
     </section>

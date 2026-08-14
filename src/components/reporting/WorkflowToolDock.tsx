@@ -16,7 +16,7 @@ interface WorkflowToolDockProps {
 }
 
 export function WorkflowToolDock({ tools, activeTool, onSelect }: WorkflowToolDockProps) {
-  const { text } = useI18n();
+  const { clinicalText, text } = useI18n();
   const visibleTools = tools.filter((tool) => tool.available !== false);
 
   return (
@@ -34,7 +34,7 @@ export function WorkflowToolDock({ tools, activeTool, onSelect }: WorkflowToolDo
             aria-pressed={activeTool === tool.id}
             key={tool.id}
           >
-            <strong>{text(tool.label)}</strong>
+            <strong>{clinicalText(tool.label)}</strong>
           </button>
         ))}
       </div>
