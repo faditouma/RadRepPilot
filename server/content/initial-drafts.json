@@ -6,17 +6,11 @@
     "status": "draft",
     "locale": "en-CA",
     "title": "Back pain in primary care",
-    "audience": [
-      "student",
-      "resident",
-      "referrer"
-    ],
+    "audience": ["student", "resident", "referrer"],
     "modality": "Imaging selection",
     "bodySystem": "Clinical reasoning",
     "difficulty": "Foundation",
-    "objectives": [
-      "Recognize uncomplicated acute back pain"
-    ],
+    "objectives": ["Recognize uncomplicated acute back pain"],
     "vignette": {
       "text": "A fictional adult has five days of low back pain after lifting. Neurologic examination is normal; there is no fever, trauma, cancer history or bladder/bowel disturbance.",
       "provenance": "Original fictional teaching vignette; no source-patient facts"
@@ -114,17 +108,11 @@
     "status": "draft",
     "locale": "en-CA",
     "title": "A familiar headache pattern",
-    "audience": [
-      "student",
-      "resident",
-      "referrer"
-    ],
+    "audience": ["student", "resident", "referrer"],
     "modality": "Imaging selection",
     "bodySystem": "Clinical reasoning",
     "difficulty": "Foundation",
-    "objectives": [
-      "Identify headache features that change imaging need"
-    ],
+    "objectives": ["Identify headache features that change imaging need"],
     "vignette": {
       "text": "A fictional adult has recurrent headaches matching an established migraine pattern, with a normal neurologic examination and no new warning features.",
       "provenance": "Original fictional teaching vignette; no source-patient facts"
@@ -222,17 +210,11 @@
     "status": "draft",
     "locale": "en-CA",
     "title": "An ankle injury",
-    "audience": [
-      "student",
-      "resident",
-      "referrer"
-    ],
+    "audience": ["student", "resident", "referrer"],
     "modality": "Imaging selection",
     "bodySystem": "Clinical reasoning",
     "difficulty": "Foundation",
-    "objectives": [
-      "Seek missing decision-changing examination findings"
-    ],
+    "objectives": ["Seek missing decision-changing examination findings"],
     "vignette": {
       "text": "A fictional adult presents with a new ankle injury. The history does not yet establish weight-bearing ability or the precise site of bony tenderness.",
       "provenance": "Original fictional teaching vignette; no source-patient facts"
@@ -350,17 +332,11 @@
     "status": "draft",
     "locale": "en-CA",
     "title": "Abdominal pain in a child",
-    "audience": [
-      "student",
-      "resident",
-      "referrer"
-    ],
+    "audience": ["student", "resident", "referrer"],
     "modality": "Imaging selection",
     "bodySystem": "Clinical reasoning",
     "difficulty": "Foundation",
-    "objectives": [
-      "Consider ultrasound before pediatric CT"
-    ],
+    "objectives": ["Consider ultrasound before pediatric CT"],
     "vignette": {
       "text": "A fictional school-aged child has focal right lower quadrant tenderness and suspected appendicitis. The child is stable and ultrasound expertise is available.",
       "provenance": "Original fictional teaching vignette; no source-patient facts"
@@ -467,11 +443,7 @@
     "status": "draft",
     "locale": "en-CA",
     "title": "Possible pulmonary embolism",
-    "audience": [
-      "student",
-      "resident",
-      "referrer"
-    ],
+    "audience": ["student", "resident", "referrer"],
     "modality": "Imaging selection",
     "bodySystem": "Clinical reasoning",
     "difficulty": "Foundation",
@@ -584,17 +556,11 @@
     "status": "draft",
     "locale": "en-CA",
     "title": "Study 001 · Chest",
-    "audience": [
-      "student",
-      "resident",
-      "referrer"
-    ],
+    "audience": ["student", "resident", "referrer"],
     "modality": "Radiograph",
     "bodySystem": "Chest",
     "difficulty": "Foundation",
-    "objectives": [
-      "Systematic review and limits of a selected chest image"
-    ],
+    "objectives": ["Systematic review and limits of a selected chest image"],
     "vignette": {
       "text": "Interpret the supplied selected radiograph. No source-patient clinical history is available. State limitations rather than assuming missing context.",
       "provenance": "Original educational task; no fictional patient demographics added",
@@ -606,9 +572,7 @@
         "id": "series-1",
         "label": "Selected radiograph",
         "format": "raster",
-        "assetIds": [
-          "img-dd401ab4-3367-48b9-be07-7ca92045681d"
-        ],
+        "assetIds": ["img-dd401ab4-3367-48b9-be07-7ca92045681d"],
         "orientation": null
       }
     ],
@@ -672,17 +636,11 @@
     "status": "draft",
     "locale": "en-CA",
     "title": "Study 002 · Chest",
-    "audience": [
-      "student",
-      "resident",
-      "referrer"
-    ],
+    "audience": ["student", "resident", "referrer"],
     "modality": "Radiograph",
     "bodySystem": "Chest",
     "difficulty": "Foundation",
-    "objectives": [
-      "Describe source-supported focal pulmonary opacity"
-    ],
+    "objectives": ["Describe source-supported focal pulmonary opacity"],
     "vignette": {
       "text": "Interpret the supplied selected radiograph. No source-patient clinical history is available. State limitations rather than assuming missing context.",
       "provenance": "Original educational task; no fictional patient demographics added",
@@ -699,9 +657,7 @@
         "id": "series-1",
         "label": "Selected radiograph",
         "format": "raster",
-        "assetIds": [
-          "img-3400d57e-7809-4976-b660-d958c16f2629"
-        ],
+        "assetIds": ["img-3400d57e-7809-4976-b660-d958c16f2629"],
         "orientation": null
       }
     ],
@@ -731,9 +687,7 @@
           "anatomy": "Right middle lobe",
           "laterality": "right",
           "presence": "present",
-          "acceptedSynonyms": [
-            "right middle lobe consolidation"
-          ],
+          "acceptedSynonyms": ["right middle lobe consolidation"],
           "importance": "major",
           "support": {
             "assetId": "img-3400d57e-7809-4976-b660-d958c16f2629",
@@ -777,17 +731,11 @@
     "status": "draft",
     "locale": "en-CA",
     "title": "Study 003 · Musculoskeletal",
-    "audience": [
-      "student",
-      "resident",
-      "referrer"
-    ],
+    "audience": ["student", "resident", "referrer"],
     "modality": "Radiograph",
     "bodySystem": "Musculoskeletal",
     "difficulty": "Foundation",
-    "objectives": [
-      "Identify proximal humeral injury and study limitations"
-    ],
+    "objectives": ["Identify proximal humeral injury and study limitations"],
     "vignette": {
       "text": "Interpret the supplied selected radiograph. No source-patient clinical history is available. State limitations rather than assuming missing context.",
       "provenance": "Original educational task; no fictional patient demographics added",
@@ -799,9 +747,7 @@
         "id": "series-1",
         "label": "Selected radiograph",
         "format": "raster",
-        "assetIds": [
-          "img-cfd13ba1-61ed-4ea5-85cb-c99e1b577db2"
-        ],
+        "assetIds": ["img-cfd13ba1-61ed-4ea5-85cb-c99e1b577db2"],
         "orientation": null
       }
     ],
@@ -841,9 +787,7 @@
           "objective": "Identify proximal humeral injury and study limitations"
         }
       ],
-      "requiredFindings": [
-        "Complex proximal humerus fracture"
-      ],
+      "requiredFindings": ["Complex proximal humerus fracture"],
       "relevantNegatives": [],
       "acceptableAlternates": [],
       "errors": {
@@ -867,17 +811,11 @@
     "status": "draft",
     "locale": "en-CA",
     "title": "Study 004 · Chest",
-    "audience": [
-      "student",
-      "resident",
-      "referrer"
-    ],
+    "audience": ["student", "resident", "referrer"],
     "modality": "Radiograph",
     "bodySystem": "Chest",
     "difficulty": "Foundation",
-    "objectives": [
-      "Identify pleural air and prioritize communication"
-    ],
+    "objectives": ["Identify pleural air and prioritize communication"],
     "vignette": {
       "text": "Interpret the supplied selected radiograph. No source-patient clinical history is available. State limitations rather than assuming missing context.",
       "provenance": "Original educational task; no fictional patient demographics added",
@@ -889,9 +827,7 @@
         "id": "series-1",
         "label": "Selected radiograph",
         "format": "raster",
-        "assetIds": [
-          "img-2e0df5c9-19ab-451c-9fc8-0f3309fef7e4"
-        ],
+        "assetIds": ["img-2e0df5c9-19ab-451c-9fc8-0f3309fef7e4"],
         "orientation": null
       }
     ],
@@ -921,9 +857,7 @@
           "anatomy": "Chest",
           "laterality": "left",
           "presence": "present",
-          "acceptedSynonyms": [
-            "left pleural air"
-          ],
+          "acceptedSynonyms": ["left pleural air"],
           "importance": "critical",
           "support": {
             "assetId": "img-2e0df5c9-19ab-451c-9fc8-0f3309fef7e4",
@@ -933,9 +867,7 @@
           "objective": "Identify pleural air and prioritize communication"
         }
       ],
-      "requiredFindings": [
-        "Left pneumothorax"
-      ],
+      "requiredFindings": ["Left pneumothorax"],
       "relevantNegatives": [],
       "acceptableAlternates": [],
       "errors": {
@@ -969,17 +901,11 @@
     "status": "draft",
     "locale": "en-CA",
     "title": "Study 005 · Musculoskeletal",
-    "audience": [
-      "student",
-      "resident",
-      "referrer"
-    ],
+    "audience": ["student", "resident", "referrer"],
     "modality": "Radiograph",
     "bodySystem": "Musculoskeletal",
     "difficulty": "Foundation",
-    "objectives": [
-      "Localize a clavicular injury"
-    ],
+    "objectives": ["Localize a clavicular injury"],
     "vignette": {
       "text": "Interpret the supplied selected radiograph. No source-patient clinical history is available. State limitations rather than assuming missing context.",
       "provenance": "Original educational task; no fictional patient demographics added",
@@ -991,9 +917,7 @@
         "id": "series-1",
         "label": "Selected radiograph",
         "format": "raster",
-        "assetIds": [
-          "img-07b0fa30-51f5-48b6-83ee-37c71ef97459"
-        ],
+        "assetIds": ["img-07b0fa30-51f5-48b6-83ee-37c71ef97459"],
         "orientation": null
       }
     ],
@@ -1033,9 +957,7 @@
           "objective": "Localize a clavicular injury"
         }
       ],
-      "requiredFindings": [
-        "Right clavicle fracture"
-      ],
+      "requiredFindings": ["Right clavicle fracture"],
       "relevantNegatives": [],
       "acceptableAlternates": [],
       "errors": {

@@ -1,4 +1,4 @@
-import { Education } from '../education/Education';
+import { Education } from "../education/Education";
 
 export function HomeRoute() {
   return <Education />;

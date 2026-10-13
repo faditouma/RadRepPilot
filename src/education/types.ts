@@ -1,6 +1,91 @@
-export type Profile='student'|'resident'|'referrer';
-export interface Asset {id:string;width:number;height:number;attribution:string;attributionRevealsAnswer:boolean;license:{name:string;url:string};sourceUrl?:string;rights?:unknown;privacyReview?:unknown;}
-export interface Rubric {id:string;expectedConcept:string;importance:string;assessable:boolean;objective?:string;anatomy:string;laterality:string;acceptedSynonyms:string[];}
-export interface Answer {rubricVersion:string;referenceReport:string;rubric:Rubric[];hints:string[];annotations:Array<{assetId:string;x:number;y:number;label:string}>;teaching:string;branches?:Array<{id:string;label:string;requires?:string;exam:string;contrast:string;urgency:string;question:string;explanation:string}>;acceptableAlternates?:string[];relevantNegatives?:string[];errors?:{critical:string[];major:string[];minor:string[]};}
-export interface Case {id:string;version:number;kind:'report'|'ordering';title:string;modality:string;bodySystem:string;difficulty:string;status:string;objectives:string[];vignette:{text:string;provenance:string};studyCompleteness:string;assessmentEligible:boolean;learningOnly?:boolean;series?:Array<{id:string;label:string;assetIds:string[];orientation:string|null;format:string}>;assets?:Asset[];answer?:Answer;clinicalReferences?:Array<{url:string;jurisdiction?:string;version?:string}>;additionalInfo?:string;options?:Array<{id:string;label:string}>;publicationProblems?:string[];}
-export interface Attempt {id:string;case_id:string;version:number;mode:string;assisted:number;profile:Profile;due_at:string;submitted_at:string;assessment:{score:number|null;criticalMisses:string[];items:Array<{id:string;rating:string;objective?:string}>}|null;report:Record<string,string>;}
+export type Profile = "student" | "resident" | "referrer";
+export interface Asset {
+  id: string;
+  width: number;
+  height: number;
+  attribution: string;
+  attributionRevealsAnswer: boolean;
+  license: { name: string; url: string };
+  sourceUrl?: string;
+  rights?: unknown;
+  privacyReview?: unknown;
+}
+export interface Rubric {
+  id: string;
+  expectedConcept: string;
+  importance: string;
+  assessable: boolean;
+  objective?: string;
+  anatomy: string;
+  laterality: string;
+  acceptedSynonyms: string[];
+}
+export interface Answer {
+  rubricVersion: string;
+  referenceReport: string;
+  rubric: Rubric[];
+  hints: string[];
+  annotations: Array<{ assetId: string; x: number; y: number; label: string }>;
+  teaching: string;
+  branches?: Array<{
+    id: string;
+    label: string;
+    requires?: string;
+    exam: string;
+    contrast: string;
+    urgency: string;
+    question: string;
+    explanation: string;
+  }>;
+  acceptableAlternates?: string[];
+  relevantNegatives?: string[];
+  errors?: { critical: string[]; major: string[]; minor: string[] };
+}
+export interface Case {
+  id: string;
+  version: number;
+  kind: "report" | "ordering";
+  title: string;
+  modality: string;
+  bodySystem: string;
+  difficulty: string;
+  status: string;
+  objectives: string[];
+  vignette: { text: string; provenance: string };
+  studyCompleteness: string;
+  assessmentEligible: boolean;
+  learningOnly?: boolean;
+  series?: Array<{
+    id: string;
+    label: string;
+    assetIds: string[];
+    orientation: string | null;
+    format: string;
+  }>;
+  assets?: Asset[];
+  answer?: Answer;
+  clinicalReferences?: Array<{
+    url: string;
+    jurisdiction?: string;
+    version?: string;
+  }>;
+  additionalInfo?: string;
+  options?: Array<{ id: string; label: string }>;
+  publicationProblems?: string[];
+}
+export interface Attempt {
+  id: string;
+  case_id: string;
+  version: number;
+  mode: string;
+  assisted: number;
+  profile: Profile;
+  due_at: string;
+  submitted_at: string;
+  assessment: {
+    score: number | null;
+    criticalMisses: string[];
+    items: Array<{ id: string; rating: string; objective?: string }>;
+  } | null;
+  report: Record<string, string>;
+}
