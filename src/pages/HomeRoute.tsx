@@ -1,5 +1,5 @@
-import { PublicHome } from './PublicHome';
+import { Education } from '../education/Education';
 
 export function HomeRoute() {
-  return <PublicHome />;
+  return <Education />;
 }

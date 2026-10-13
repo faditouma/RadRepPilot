@@ -1,0 +1,1055 @@
+[
+  {
+    "id": "oi-001",
+    "version": 1,
+    "kind": "ordering",
+    "status": "draft",
+    "locale": "en-CA",
+    "title": "Back pain in primary care",
+    "audience": [
+      "student",
+      "resident",
+      "referrer"
+    ],
+    "modality": "Imaging selection",
+    "bodySystem": "Clinical reasoning",
+    "difficulty": "Foundation",
+    "objectives": [
+      "Recognize uncomplicated acute back pain"
+    ],
+    "vignette": {
+      "text": "A fictional adult has five days of low back pain after lifting. Neurologic examination is normal; there is no fever, trauma, cancer history or bladder/bowel disturbance.",
+      "provenance": "Original fictional teaching vignette; no source-patient facts"
+    },
+    "additionalInfo": "New weakness, bladder dysfunction, systemic illness, cancer history or substantial trauma would change this pathway.",
+    "assessmentEligible": false,
+    "questions": [
+      "Is imaging needed?",
+      "What additional information changes the decision?",
+      "Which examination?",
+      "Is contrast relevant?",
+      "What urgency?",
+      "What clinical question belongs on the requisition?"
+    ],
+    "options": [
+      {
+        "id": "no",
+        "label": "No imaging now"
+      },
+      {
+        "id": "more",
+        "label": "More information needed"
+      },
+      {
+        "id": "us",
+        "label": "Ultrasound"
+      },
+      {
+        "id": "yes",
+        "label": "Radiograph"
+      },
+      {
+        "id": "ct",
+        "label": "CT"
+      },
+      {
+        "id": "discuss",
+        "label": "Discuss with radiology"
+      }
+    ],
+    "clinicalReferences": [
+      {
+        "url": "https://choosingwiselycanada.org/recommendation/radiology/",
+        "jurisdiction": "Canada",
+        "version": "September 2026 update",
+        "accessDate": "2026-10-13",
+        "reviewDate": null
+      }
+    ],
+    "clinicalReview": null,
+    "rightsReview": null,
+    "answer": {
+      "rubricVersion": "1-draft",
+      "referenceReport": "Acceptable requisition/action examples are listed in the reviewed decision branches after clinical approval.",
+      "branches": [
+        {
+          "id": "no",
+          "label": "No imaging now",
+          "exam": "None",
+          "contrast": "Not applicable",
+          "urgency": "No imaging now",
+          "question": "No requisition is needed at this stage.",
+          "explanation": "This scenario supplies no red flags. Discuss conservative care and reassessment; new concerning features require a different pathway."
+        }
+      ],
+      "rubric": [
+        {
+          "id": "decision",
+          "expectedConcept": "Recognize uncomplicated acute back pain",
+          "anatomy": "Not applicable",
+          "laterality": "Not applicable",
+          "presence": "Not applicable",
+          "acceptedSynonyms": [],
+          "importance": "major",
+          "assessable": true,
+          "objective": "Recognize uncomplicated acute back pain"
+        }
+      ],
+      "hints": [],
+      "annotations": [],
+      "teaching": "Review the supplied branch conditions and safety-net the fictional scenario. This draft is educational and is not live clinical advice.",
+      "errors": {
+        "critical": [],
+        "major": [],
+        "minor": []
+      },
+      "relevantNegatives": [],
+      "acceptableAlternates": []
+    }
+  },
+  {
+    "id": "oi-002",
+    "version": 1,
+    "kind": "ordering",
+    "status": "draft",
+    "locale": "en-CA",
+    "title": "A familiar headache pattern",
+    "audience": [
+      "student",
+      "resident",
+      "referrer"
+    ],
+    "modality": "Imaging selection",
+    "bodySystem": "Clinical reasoning",
+    "difficulty": "Foundation",
+    "objectives": [
+      "Identify headache features that change imaging need"
+    ],
+    "vignette": {
+      "text": "A fictional adult has recurrent headaches matching an established migraine pattern, with a normal neurologic examination and no new warning features.",
+      "provenance": "Original fictional teaching vignette; no source-patient facts"
+    },
+    "additionalInfo": "A new focal deficit, progressive change, cancer or immunodeficiency could alter the decision.",
+    "assessmentEligible": false,
+    "questions": [
+      "Is imaging needed?",
+      "What additional information changes the decision?",
+      "Which examination?",
+      "Is contrast relevant?",
+      "What urgency?",
+      "What clinical question belongs on the requisition?"
+    ],
+    "options": [
+      {
+        "id": "no",
+        "label": "No imaging now"
+      },
+      {
+        "id": "more",
+        "label": "More information needed"
+      },
+      {
+        "id": "us",
+        "label": "Ultrasound"
+      },
+      {
+        "id": "yes",
+        "label": "Radiograph"
+      },
+      {
+        "id": "ct",
+        "label": "CT"
+      },
+      {
+        "id": "discuss",
+        "label": "Discuss with radiology"
+      }
+    ],
+    "clinicalReferences": [
+      {
+        "url": "https://choosingwiselycanada.org/recommendation/radiology/",
+        "jurisdiction": "Canada",
+        "version": "September 2026 update",
+        "accessDate": "2026-10-13",
+        "reviewDate": null
+      }
+    ],
+    "clinicalReview": null,
+    "rightsReview": null,
+    "answer": {
+      "rubricVersion": "1-draft",
+      "referenceReport": "Acceptable requisition/action examples are listed in the reviewed decision branches after clinical approval.",
+      "branches": [
+        {
+          "id": "no",
+          "label": "No imaging now",
+          "exam": "None",
+          "contrast": "Not applicable",
+          "urgency": "No imaging now",
+          "question": "Document the stable pattern and absence of concerning features.",
+          "explanation": "A stable uncomplicated headache pattern does not routinely warrant imaging. A changed presentation requires reassessment."
+        }
+      ],
+      "rubric": [
+        {
+          "id": "decision",
+          "expectedConcept": "Identify headache features that change imaging need",
+          "anatomy": "Not applicable",
+          "laterality": "Not applicable",
+          "presence": "Not applicable",
+          "acceptedSynonyms": [],
+          "importance": "major",
+          "assessable": true,
+          "objective": "Identify headache features that change imaging need"
+        }
+      ],
+      "hints": [],
+      "annotations": [],
+      "teaching": "Review the supplied branch conditions and safety-net the fictional scenario. This draft is educational and is not live clinical advice.",
+      "errors": {
+        "critical": [],
+        "major": [],
+        "minor": []
+      },
+      "relevantNegatives": [],
+      "acceptableAlternates": []
+    }
+  },
+  {
+    "id": "oi-003",
+    "version": 1,
+    "kind": "ordering",
+    "status": "draft",
+    "locale": "en-CA",
+    "title": "An ankle injury",
+    "audience": [
+      "student",
+      "resident",
+      "referrer"
+    ],
+    "modality": "Imaging selection",
+    "bodySystem": "Clinical reasoning",
+    "difficulty": "Foundation",
+    "objectives": [
+      "Seek missing decision-changing examination findings"
+    ],
+    "vignette": {
+      "text": "A fictional adult presents with a new ankle injury. The history does not yet establish weight-bearing ability or the precise site of bony tenderness.",
+      "provenance": "Original fictional teaching vignette; no source-patient facts"
+    },
+    "additionalInfo": "Establish pain location, posterior-edge/tip malleolar tenderness, and ability to take four steps immediately after injury and at assessment.",
+    "assessmentEligible": false,
+    "questions": [
+      "Is imaging needed?",
+      "What additional information changes the decision?",
+      "Which examination?",
+      "Is contrast relevant?",
+      "What urgency?",
+      "What clinical question belongs on the requisition?"
+    ],
+    "options": [
+      {
+        "id": "no",
+        "label": "No imaging now"
+      },
+      {
+        "id": "more",
+        "label": "More information needed"
+      },
+      {
+        "id": "us",
+        "label": "Ultrasound"
+      },
+      {
+        "id": "yes",
+        "label": "Radiograph"
+      },
+      {
+        "id": "ct",
+        "label": "CT"
+      },
+      {
+        "id": "discuss",
+        "label": "Discuss with radiology"
+      }
+    ],
+    "clinicalReferences": [
+      {
+        "url": "https://choosingwiselycanada.org/recommendation/radiology/",
+        "jurisdiction": "Canada",
+        "version": "September 2026 update",
+        "accessDate": "2026-10-13",
+        "reviewDate": null
+      }
+    ],
+    "clinicalReview": null,
+    "rightsReview": null,
+    "answer": {
+      "rubricVersion": "1-draft",
+      "referenceReport": "Acceptable requisition/action examples are listed in the reviewed decision branches after clinical approval.",
+      "branches": [
+        {
+          "id": "more",
+          "label": "More information needed",
+          "exam": "Pending examination",
+          "contrast": "Not applicable",
+          "urgency": "Assess during this visit",
+          "question": "Complete the clinical assessment before selecting imaging.",
+          "explanation": "The initial history is insufficient. Clinical examination determines whether a radiograph is appropriate."
+        },
+        {
+          "id": "yes",
+          "label": "Radiograph after positive clinical criteria",
+          "requires": "criteria-positive",
+          "exam": "Ankle radiographs",
+          "contrast": "No",
+          "urgency": "During this visit",
+          "question": "Acute ankle injury with malleolar pain and qualifying tenderness or impaired weight bearing; assess for fracture.",
+          "explanation": "The supplied positive branch supports a radiograph; document the qualifying finding."
+        },
+        {
+          "id": "no",
+          "label": "No imaging after negative clinical criteria",
+          "requires": "criteria-negative",
+          "exam": "None",
+          "contrast": "Not applicable",
+          "urgency": "No imaging now",
+          "question": "No requisition; document negative clinical criteria.",
+          "explanation": "With a completed negative assessment, routine ankle radiographs can be avoided."
+        }
+      ],
+      "rubric": [
+        {
+          "id": "decision",
+          "expectedConcept": "Seek missing decision-changing examination findings",
+          "anatomy": "Not applicable",
+          "laterality": "Not applicable",
+          "presence": "Not applicable",
+          "acceptedSynonyms": [],
+          "importance": "major",
+          "assessable": true,
+          "objective": "Seek missing decision-changing examination findings"
+        }
+      ],
+      "hints": [],
+      "annotations": [],
+      "teaching": "Review the supplied branch conditions and safety-net the fictional scenario. This draft is educational and is not live clinical advice.",
+      "errors": {
+        "critical": [],
+        "major": [],
+        "minor": []
+      },
+      "relevantNegatives": [],
+      "acceptableAlternates": []
+    }
+  },
+  {
+    "id": "oi-004",
+    "version": 1,
+    "kind": "ordering",
+    "status": "draft",
+    "locale": "en-CA",
+    "title": "Abdominal pain in a child",
+    "audience": [
+      "student",
+      "resident",
+      "referrer"
+    ],
+    "modality": "Imaging selection",
+    "bodySystem": "Clinical reasoning",
+    "difficulty": "Foundation",
+    "objectives": [
+      "Consider ultrasound before pediatric CT"
+    ],
+    "vignette": {
+      "text": "A fictional school-aged child has focal right lower quadrant tenderness and suspected appendicitis. The child is stable and ultrasound expertise is available.",
+      "provenance": "Original fictional teaching vignette; no source-patient facts"
+    },
+    "additionalInfo": "Clinical stability, local ultrasound expertise and the result of initial imaging affect escalation.",
+    "assessmentEligible": false,
+    "questions": [
+      "Is imaging needed?",
+      "What additional information changes the decision?",
+      "Which examination?",
+      "Is contrast relevant?",
+      "What urgency?",
+      "What clinical question belongs on the requisition?"
+    ],
+    "options": [
+      {
+        "id": "no",
+        "label": "No imaging now"
+      },
+      {
+        "id": "more",
+        "label": "More information needed"
+      },
+      {
+        "id": "us",
+        "label": "Ultrasound"
+      },
+      {
+        "id": "yes",
+        "label": "Radiograph"
+      },
+      {
+        "id": "ct",
+        "label": "CT"
+      },
+      {
+        "id": "discuss",
+        "label": "Discuss with radiology"
+      }
+    ],
+    "clinicalReferences": [
+      {
+        "url": "https://choosingwiselycanada.org/recommendation/radiology/",
+        "jurisdiction": "Canada",
+        "version": "September 2026 update",
+        "accessDate": "2026-10-13",
+        "reviewDate": null
+      }
+    ],
+    "clinicalReview": null,
+    "rightsReview": null,
+    "answer": {
+      "rubricVersion": "1-draft",
+      "referenceReport": "Acceptable requisition/action examples are listed in the reviewed decision branches after clinical approval.",
+      "branches": [
+        {
+          "id": "us",
+          "label": "Ultrasound first",
+          "exam": "Right lower quadrant ultrasound",
+          "contrast": "No",
+          "urgency": "Urgent, during this assessment",
+          "question": "Focal right lower quadrant pain and tenderness; assess for appendicitis.",
+          "explanation": "Ultrasound should be considered before CT in this pediatric scenario. Equivocal results need reassessment and discussion about further imaging."
+        },
+        {
+          "id": "discuss",
+          "label": "Discuss with radiology",
+          "exam": "Discuss ultrasound pathway",
+          "contrast": "Discuss only if escalation is needed",
+          "urgency": "Urgent discussion",
+          "question": "Suspected pediatric appendicitis; discuss locally available initial ultrasound and escalation if equivocal.",
+          "explanation": "Discussion is an acceptable way to arrange the ultrasound-first pathway and clarify local capability."
+        }
+      ],
+      "rubric": [
+        {
+          "id": "decision",
+          "expectedConcept": "Consider ultrasound before pediatric CT",
+          "anatomy": "Not applicable",
+          "laterality": "Not applicable",
+          "presence": "Not applicable",
+          "acceptedSynonyms": [],
+          "importance": "major",
+          "assessable": true,
+          "objective": "Consider ultrasound before pediatric CT"
+        }
+      ],
+      "hints": [],
+      "annotations": [],
+      "teaching": "Review the supplied branch conditions and safety-net the fictional scenario. This draft is educational and is not live clinical advice.",
+      "errors": {
+        "critical": [],
+        "major": [],
+        "minor": []
+      },
+      "relevantNegatives": [],
+      "acceptableAlternates": []
+    }
+  },
+  {
+    "id": "oi-005",
+    "version": 1,
+    "kind": "ordering",
+    "status": "draft",
+    "locale": "en-CA",
+    "title": "Possible pulmonary embolism",
+    "audience": [
+      "student",
+      "resident",
+      "referrer"
+    ],
+    "modality": "Imaging selection",
+    "bodySystem": "Clinical reasoning",
+    "difficulty": "Foundation",
+    "objectives": [
+      "Avoid reflex CT without pulmonary embolism risk assessment"
+    ],
+    "vignette": {
+      "text": "A fictional stable adult has symptoms raising possible pulmonary embolism, but pretest probability, relevant rule inputs and D-dimer status are not supplied.",
+      "provenance": "Original fictional teaching vignette; no source-patient facts"
+    },
+    "additionalInfo": "Establish validated pretest probability, relevant rule inputs, D-dimer when indicated, pregnancy, renal function, contrast history and chest radiograph context.",
+    "assessmentEligible": false,
+    "questions": [
+      "Is imaging needed?",
+      "What additional information changes the decision?",
+      "Which examination?",
+      "Is contrast relevant?",
+      "What urgency?",
+      "What clinical question belongs on the requisition?"
+    ],
+    "options": [
+      {
+        "id": "no",
+        "label": "No imaging now"
+      },
+      {
+        "id": "more",
+        "label": "More information needed"
+      },
+      {
+        "id": "us",
+        "label": "Ultrasound"
+      },
+      {
+        "id": "yes",
+        "label": "Radiograph"
+      },
+      {
+        "id": "ct",
+        "label": "CT"
+      },
+      {
+        "id": "discuss",
+        "label": "Discuss with radiology"
+      }
+    ],
+    "clinicalReferences": [
+      {
+        "url": "https://choosingwiselycanada.org/recommendation/nuclear-medicine/",
+        "jurisdiction": "Canada",
+        "version": "Current live page accessed 2026-10-13",
+        "accessDate": "2026-10-13",
+        "reviewDate": null
+      }
+    ],
+    "clinicalReview": null,
+    "rightsReview": null,
+    "answer": {
+      "rubricVersion": "1-draft",
+      "referenceReport": "Acceptable requisition/action examples are listed in the reviewed decision branches after clinical approval.",
+      "branches": [
+        {
+          "id": "more",
+          "label": "More information needed",
+          "exam": "Risk assessment before selecting imaging",
+          "contrast": "Not decided",
+          "urgency": "Prompt clinical assessment",
+          "question": "Clarify pretest probability and appropriate rule/D-dimer inputs before an imaging requisition.",
+          "explanation": "Clinical risk assessment determines whether imaging is needed. Low-risk presentations with appropriate negative testing may avoid imaging. If imaging is needed, CTPA or V/Q selection depends on the context."
+        },
+        {
+          "id": "discuss",
+          "label": "Discuss with radiology",
+          "exam": "CTPA / V/Q discussion after risk assessment",
+          "contrast": "Review contraindications if considering CTPA",
+          "urgency": "Prompt discussion",
+          "question": "Provide risk assessment and relevant tests; discuss examination selection if imaging is indicated.",
+          "explanation": "Discuss examination selection when clinical risk supports imaging and contrast, pregnancy or other circumstances complicate the choice."
+        }
+      ],
+      "rubric": [
+        {
+          "id": "decision",
+          "expectedConcept": "Avoid reflex CT without pulmonary embolism risk assessment",
+          "anatomy": "Not applicable",
+          "laterality": "Not applicable",
+          "presence": "Not applicable",
+          "acceptedSynonyms": [],
+          "importance": "major",
+          "assessable": true,
+          "objective": "Avoid reflex CT without pulmonary embolism risk assessment"
+        }
+      ],
+      "hints": [],
+      "annotations": [],
+      "teaching": "Review the supplied branch conditions and safety-net the fictional scenario. This draft is educational and is not live clinical advice.",
+      "errors": {
+        "critical": [],
+        "major": [],
+        "minor": []
+      },
+      "relevantNegatives": [],
+      "acceptableAlternates": []
+    }
+  },
+  {
+    "id": "rr-001",
+    "version": 1,
+    "kind": "report",
+    "status": "draft",
+    "locale": "en-CA",
+    "title": "Study 001 · Chest",
+    "audience": [
+      "student",
+      "resident",
+      "referrer"
+    ],
+    "modality": "Radiograph",
+    "bodySystem": "Chest",
+    "difficulty": "Foundation",
+    "objectives": [
+      "Systematic review and limits of a selected chest image"
+    ],
+    "vignette": {
+      "text": "Interpret the supplied selected radiograph. No source-patient clinical history is available. State limitations rather than assuming missing context.",
+      "provenance": "Original educational task; no fictional patient demographics added",
+      "sourcePatientFacts": []
+    },
+    "studyCompleteness": "Selected image only; not a complete diagnostic study",
+    "series": [
+      {
+        "id": "series-1",
+        "label": "Selected radiograph",
+        "format": "raster",
+        "assetIds": [
+          "img-dd401ab4-3367-48b9-be07-7ca92045681d"
+        ],
+        "orientation": null
+      }
+    ],
+    "assessmentEligible": false,
+    "sourceSupported": {
+      "diagnosis": null,
+      "findingsEvidence": [
+        "https://commons.wikimedia.org/wiki/File%3AChest_Xray_PA_3-8-2010.png"
+      ],
+      "sourceDescription": "Chest X-ray PA"
+    },
+    "clinicalReferences": [
+      {
+        "url": "https://commons.wikimedia.org/wiki/File%3AChest_Xray_PA_3-8-2010.png",
+        "role": "Source-supported findings; clinician verification required"
+      }
+    ],
+    "clinicalReview": null,
+    "rightsReview": null,
+    "answer": {
+      "rubricVersion": "1-draft",
+      "referenceReport": "Source identifies a PA chest radiograph and classifies it as normal. A radiologist must verify findings and relevant negatives on this exact image before this draft becomes an answer key.",
+      "rubric": [
+        {
+          "id": "f1",
+          "expectedConcept": "Describe image quality and distinguish selected-image limitations from a full study",
+          "anatomy": "Chest",
+          "laterality": "unknown",
+          "presence": "present",
+          "acceptedSynonyms": [],
+          "importance": "major",
+          "support": {
+            "assetId": "img-dd401ab4-3367-48b9-be07-7ca92045681d",
+            "frame": 0
+          },
+          "assessable": false,
+          "objective": "Systematic review and limits of a selected chest image"
+        }
+      ],
+      "requiredFindings": [],
+      "relevantNegatives": [],
+      "acceptableAlternates": [],
+      "errors": {
+        "critical": [],
+        "major": [],
+        "minor": []
+      },
+      "hints": [
+        "Review image quality and available clinical context.",
+        "Use a systematic review of the visible anatomy.",
+        "Check the study limitations before finalizing your impression."
+      ],
+      "annotations": [],
+      "teaching": "Work from these exact images. Describe observations, state uncertainty, and avoid unsupported patient details. All clinical content remains a draft pending review."
+    }
+  },
+  {
+    "id": "rr-002",
+    "version": 1,
+    "kind": "report",
+    "status": "draft",
+    "locale": "en-CA",
+    "title": "Study 002 · Chest",
+    "audience": [
+      "student",
+      "resident",
+      "referrer"
+    ],
+    "modality": "Radiograph",
+    "bodySystem": "Chest",
+    "difficulty": "Foundation",
+    "objectives": [
+      "Describe source-supported focal pulmonary opacity"
+    ],
+    "vignette": {
+      "text": "Interpret the supplied selected radiograph. No source-patient clinical history is available. State limitations rather than assuming missing context.",
+      "provenance": "Original educational task; no fictional patient demographics added",
+      "sourcePatientFacts": [
+        {
+          "fact": "67-year-old man",
+          "source": "https://commons.wikimedia.org/wiki/File%3AX-ray_of_lobar_pneumonia.jpg"
+        }
+      ]
+    },
+    "studyCompleteness": "Selected image only; not a complete diagnostic study",
+    "series": [
+      {
+        "id": "series-1",
+        "label": "Selected radiograph",
+        "format": "raster",
+        "assetIds": [
+          "img-3400d57e-7809-4976-b660-d958c16f2629"
+        ],
+        "orientation": null
+      }
+    ],
+    "assessmentEligible": false,
+    "sourceSupported": {
+      "diagnosis": "Right middle lobe pneumonia (source description)",
+      "findingsEvidence": [
+        "https://commons.wikimedia.org/wiki/File%3AX-ray_of_lobar_pneumonia.jpg"
+      ],
+      "sourceDescription": "Chest radiograph of a 67 year old man, showing lobar pneumonia, affecting the right middle lobe. Culture from the nasopharynx only showed Moraxella catarrhalis, which is probably not the pathogen of the lung.."
+    },
+    "clinicalReferences": [
+      {
+        "url": "https://commons.wikimedia.org/wiki/File%3AX-ray_of_lobar_pneumonia.jpg",
+        "role": "Source-supported findings; clinician verification required"
+      }
+    ],
+    "clinicalReview": null,
+    "rightsReview": null,
+    "answer": {
+      "rubricVersion": "1-draft",
+      "referenceReport": "Source-supported draft: the selected chest radiograph shows right middle lobe pneumonia according to the creator description. A clinician must verify the exact images, distribution, relevant negatives and report wording before publication. Do not attribute a causative organism from the supplied radiograph.",
+      "rubric": [
+        {
+          "id": "f1",
+          "expectedConcept": "Right middle lobe pulmonary opacity / source-described pneumonia",
+          "anatomy": "Right middle lobe",
+          "laterality": "right",
+          "presence": "present",
+          "acceptedSynonyms": [
+            "right middle lobe consolidation"
+          ],
+          "importance": "major",
+          "support": {
+            "assetId": "img-3400d57e-7809-4976-b660-d958c16f2629",
+            "frame": 0
+          },
+          "assessable": true,
+          "objective": "Describe source-supported focal pulmonary opacity"
+        }
+      ],
+      "requiredFindings": [
+        "Identify the focal pulmonary opacity supported by the source"
+      ],
+      "relevantNegatives": [],
+      "acceptableAlternates": [],
+      "errors": {
+        "critical": [],
+        "major": [],
+        "minor": []
+      },
+      "hints": [
+        "Review image quality and available clinical context.",
+        "Use a systematic review of the visible anatomy.",
+        "Check the study limitations before finalizing your impression."
+      ],
+      "annotations": [
+        {
+          "assetId": "img-3400d57e-7809-4976-b660-d958c16f2629",
+          "frame": 0,
+          "x": 0.31,
+          "y": 0.72,
+          "label": "Source-described region · draft annotation"
+        }
+      ],
+      "teaching": "Work from these exact images. Describe observations, state uncertainty, and avoid unsupported patient details. All clinical content remains a draft pending review."
+    }
+  },
+  {
+    "id": "rr-003",
+    "version": 1,
+    "kind": "report",
+    "status": "draft",
+    "locale": "en-CA",
+    "title": "Study 003 · Musculoskeletal",
+    "audience": [
+      "student",
+      "resident",
+      "referrer"
+    ],
+    "modality": "Radiograph",
+    "bodySystem": "Musculoskeletal",
+    "difficulty": "Foundation",
+    "objectives": [
+      "Identify proximal humeral injury and study limitations"
+    ],
+    "vignette": {
+      "text": "Interpret the supplied selected radiograph. No source-patient clinical history is available. State limitations rather than assuming missing context.",
+      "provenance": "Original educational task; no fictional patient demographics added",
+      "sourcePatientFacts": []
+    },
+    "studyCompleteness": "Selected image only; not a complete diagnostic study",
+    "series": [
+      {
+        "id": "series-1",
+        "label": "Selected radiograph",
+        "format": "raster",
+        "assetIds": [
+          "img-cfd13ba1-61ed-4ea5-85cb-c99e1b577db2"
+        ],
+        "orientation": null
+      }
+    ],
+    "assessmentEligible": false,
+    "sourceSupported": {
+      "diagnosis": "Complex proximal humerus fracture",
+      "findingsEvidence": [
+        "https://commons.wikimedia.org/wiki/File%3AX-ray_of_complex_fracture_of_proximal_humerus.jpg"
+      ],
+      "sourceDescription": "X-ray of complex proximal humerus fracture"
+    },
+    "clinicalReferences": [
+      {
+        "url": "https://commons.wikimedia.org/wiki/File%3AX-ray_of_complex_fracture_of_proximal_humerus.jpg",
+        "role": "Source-supported findings; clinician verification required"
+      }
+    ],
+    "clinicalReview": null,
+    "rightsReview": null,
+    "answer": {
+      "rubricVersion": "1-draft",
+      "referenceReport": "Selected radiograph demonstrates a complex proximal humerus fracture, as described in the source. Laterality, alignment, classification and additional views need review. This is a source-supported draft, not a reviewed example report.",
+      "rubric": [
+        {
+          "id": "f1",
+          "expectedConcept": "Complex proximal humerus fracture",
+          "anatomy": "Musculoskeletal",
+          "laterality": "unknown",
+          "presence": "present",
+          "acceptedSynonyms": [],
+          "importance": "major",
+          "support": {
+            "assetId": "img-cfd13ba1-61ed-4ea5-85cb-c99e1b577db2",
+            "frame": 0
+          },
+          "assessable": true,
+          "objective": "Identify proximal humeral injury and study limitations"
+        }
+      ],
+      "requiredFindings": [
+        "Complex proximal humerus fracture"
+      ],
+      "relevantNegatives": [],
+      "acceptableAlternates": [],
+      "errors": {
+        "critical": [],
+        "major": [],
+        "minor": []
+      },
+      "hints": [
+        "Review image quality and available clinical context.",
+        "Use a systematic review of the visible anatomy.",
+        "Check the study limitations before finalizing your impression."
+      ],
+      "annotations": [],
+      "teaching": "Work from these exact images. Describe observations, state uncertainty, and avoid unsupported patient details. All clinical content remains a draft pending review."
+    }
+  },
+  {
+    "id": "rr-004",
+    "version": 1,
+    "kind": "report",
+    "status": "draft",
+    "locale": "en-CA",
+    "title": "Study 004 · Chest",
+    "audience": [
+      "student",
+      "resident",
+      "referrer"
+    ],
+    "modality": "Radiograph",
+    "bodySystem": "Chest",
+    "difficulty": "Foundation",
+    "objectives": [
+      "Identify pleural air and prioritize communication"
+    ],
+    "vignette": {
+      "text": "Interpret the supplied selected radiograph. No source-patient clinical history is available. State limitations rather than assuming missing context.",
+      "provenance": "Original educational task; no fictional patient demographics added",
+      "sourcePatientFacts": []
+    },
+    "studyCompleteness": "Selected image only; not a complete diagnostic study",
+    "series": [
+      {
+        "id": "series-1",
+        "label": "Selected radiograph",
+        "format": "raster",
+        "assetIds": [
+          "img-2e0df5c9-19ab-451c-9fc8-0f3309fef7e4"
+        ],
+        "orientation": null
+      }
+    ],
+    "assessmentEligible": false,
+    "sourceSupported": {
+      "diagnosis": "Left pneumothorax",
+      "findingsEvidence": [
+        "https://commons.wikimedia.org/wiki/File%3APneumothorax_CXR.jpg"
+      ],
+      "sourceDescription": "Left pneumothorax. This X-ray is used on clinicalcases.org to illustrate a fictional case history of tension pneumothorax. Note the large, well-demarcated area devoid of lung markings, the tracheal deviation and movement of the heart away from the affected side.  There is also small pleural effusion on the left side.\nThe patient's left is your right (as if you are looking at the patient facing you). The left-right orientation is assisted by the shape of the heart, a small amount of air in the stomach under the left side of the diaphragm on the left, and the radio-opaque liver under the right side of the diaphragm. The sternoclavicular joints are symmetrically situated indicating that the X-ray is not rotated. Generally, a radiopaque X-ray marker showing L or R indicates the patient's orientation, but one is not present on this X-ray.  The metallic spots are snaps for EKG (or ECG) readings."
+    },
+    "clinicalReferences": [
+      {
+        "url": "https://commons.wikimedia.org/wiki/File%3APneumothorax_CXR.jpg",
+        "role": "Source-supported findings; clinician verification required"
+      }
+    ],
+    "clinicalReview": null,
+    "rightsReview": null,
+    "answer": {
+      "rubricVersion": "1-draft",
+      "referenceReport": "Source describes a left pneumothorax, mediastinal displacement and a small left pleural effusion. Assess urgently in the clinical context; physiological tension cannot be established from this image alone. Clinician review must confirm this draft and communication wording.",
+      "rubric": [
+        {
+          "id": "f1",
+          "expectedConcept": "Left pneumothorax",
+          "anatomy": "Chest",
+          "laterality": "left",
+          "presence": "present",
+          "acceptedSynonyms": [
+            "left pleural air"
+          ],
+          "importance": "critical",
+          "support": {
+            "assetId": "img-2e0df5c9-19ab-451c-9fc8-0f3309fef7e4",
+            "frame": 0
+          },
+          "assessable": true,
+          "objective": "Identify pleural air and prioritize communication"
+        }
+      ],
+      "requiredFindings": [
+        "Left pneumothorax"
+      ],
+      "relevantNegatives": [],
+      "acceptableAlternates": [],
+      "errors": {
+        "critical": [
+          "Failure to recognize or communicate the source-supported pleural abnormality"
+        ],
+        "major": [],
+        "minor": []
+      },
+      "hints": [
+        "Review image quality and available clinical context.",
+        "Use a systematic review of the visible anatomy.",
+        "Check the study limitations before finalizing your impression."
+      ],
+      "annotations": [
+        {
+          "assetId": "img-2e0df5c9-19ab-451c-9fc8-0f3309fef7e4",
+          "frame": 0,
+          "x": 0.75,
+          "y": 0.4,
+          "label": "Source-described pleural region · draft"
+        }
+      ],
+      "teaching": "Work from these exact images. Describe observations, state uncertainty, and avoid unsupported patient details. All clinical content remains a draft pending review."
+    }
+  },
+  {
+    "id": "rr-005",
+    "version": 1,
+    "kind": "report",
+    "status": "draft",
+    "locale": "en-CA",
+    "title": "Study 005 · Musculoskeletal",
+    "audience": [
+      "student",
+      "resident",
+      "referrer"
+    ],
+    "modality": "Radiograph",
+    "bodySystem": "Musculoskeletal",
+    "difficulty": "Foundation",
+    "objectives": [
+      "Localize a clavicular injury"
+    ],
+    "vignette": {
+      "text": "Interpret the supplied selected radiograph. No source-patient clinical history is available. State limitations rather than assuming missing context.",
+      "provenance": "Original educational task; no fictional patient demographics added",
+      "sourcePatientFacts": []
+    },
+    "studyCompleteness": "Selected image only; not a complete diagnostic study",
+    "series": [
+      {
+        "id": "series-1",
+        "label": "Selected radiograph",
+        "format": "raster",
+        "assetIds": [
+          "img-07b0fa30-51f5-48b6-83ee-37c71ef97459"
+        ],
+        "orientation": null
+      }
+    ],
+    "assessmentEligible": false,
+    "sourceSupported": {
+      "diagnosis": "Right clavicle fracture",
+      "findingsEvidence": [
+        "https://commons.wikimedia.org/wiki/File%3AClavicle_fracture.jpg"
+      ],
+      "sourceDescription": "Fracture of the right clavicle (x-ray).Broken Collar Bone"
+    },
+    "clinicalReferences": [
+      {
+        "url": "https://commons.wikimedia.org/wiki/File%3AClavicle_fracture.jpg",
+        "role": "Source-supported findings; clinician verification required"
+      }
+    ],
+    "clinicalReview": null,
+    "rightsReview": null,
+    "answer": {
+      "rubricVersion": "1-draft",
+      "referenceReport": "Selected radiograph shows a right clavicle fracture according to the source description. Displacement, shortening, associated injuries and further-view requirements remain for clinical review.",
+      "rubric": [
+        {
+          "id": "f1",
+          "expectedConcept": "Right clavicle fracture",
+          "anatomy": "Musculoskeletal",
+          "laterality": "right",
+          "presence": "present",
+          "acceptedSynonyms": [],
+          "importance": "major",
+          "support": {
+            "assetId": "img-07b0fa30-51f5-48b6-83ee-37c71ef97459",
+            "frame": 0
+          },
+          "assessable": true,
+          "objective": "Localize a clavicular injury"
+        }
+      ],
+      "requiredFindings": [
+        "Right clavicle fracture"
+      ],
+      "relevantNegatives": [],
+      "acceptableAlternates": [],
+      "errors": {
+        "critical": [],
+        "major": [],
+        "minor": []
+      },
+      "hints": [
+        "Review image quality and available clinical context.",
+        "Use a systematic review of the visible anatomy.",
+        "Check the study limitations before finalizing your impression."
+      ],
+      "annotations": [],
+      "teaching": "Work from these exact images. Describe observations, state uncertainty, and avoid unsupported patient details. All clinical content remains a draft pending review."
+    }
+  }
+]

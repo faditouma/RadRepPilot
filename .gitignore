@@ -37,3 +37,6 @@ tsconfig.*.tsbuildinfo
 reports/acr-extraction/*.csv
 reports/acr-extraction/*.xlsx
 .vercel
+
+# Private educational storage (never served by Vite/GitHub Pages)
+.education-storage/

@@ -1,0 +1,7 @@
+[
+ {"key":"rr-001","title":"File:Chest Xray PA 3-8-2010.png","sourceSupported":"PA chest radiograph; source category identifies normal chest. Category alone is insufficient to establish a complete normal report."},
+ {"key":"rr-002","title":"File:X-ray of lobar pneumonia.jpg","sourceSupported":"Use current source description after import; do not assume laterality from filename."},
+ {"key":"rr-003","title":"File:X-ray of complex fracture of proximal humerus.jpg","sourceSupported":"Source description identifies complex proximal humerus fracture. Individual selected image, not complete trauma series."},
+ {"key":"rr-004","title":"File:Pneumothorax CXR.jpg","sourceSupported":"Source description supports left pneumothorax, displacement and small left effusion; clinical tension diagnosis requires context. Source fictional history is not source-patient fact."},
+ {"key":"rr-005","title":"File:Clavicle fracture.jpg","sourceSupported":"Source description supports right clavicle fracture; no additional patient history supplied."}
+]

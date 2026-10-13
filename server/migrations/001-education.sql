@@ -1,0 +1,14 @@
+PRAGMA foreign_keys=ON;
+CREATE TABLE IF NOT EXISTS schema_migrations (version INTEGER PRIMARY KEY);
+CREATE TABLE IF NOT EXISTS assets (id TEXT PRIMARY KEY, checksum TEXT NOT NULL UNIQUE, data TEXT NOT NULL);
+CREATE TABLE IF NOT EXISTS content (id TEXT NOT NULL, version INTEGER NOT NULL, kind TEXT NOT NULL CHECK(kind IN ('report','ordering')), status TEXT NOT NULL CHECK(status IN ('draft','clinical_review','rights_review','published','retired')), data TEXT NOT NULL, PRIMARY KEY(id,version));
+CREATE TABLE IF NOT EXISTS published_versions (id TEXT NOT NULL, version INTEGER NOT NULL, snapshot TEXT NOT NULL, PRIMARY KEY(id,version));
+CREATE TRIGGER IF NOT EXISTS immutable_snapshot_update BEFORE UPDATE ON published_versions BEGIN SELECT RAISE(ABORT,'Published versions are immutable'); END;
+CREATE TRIGGER IF NOT EXISTS immutable_snapshot_delete BEFORE DELETE ON published_versions BEGIN SELECT RAISE(ABORT,'Published versions are immutable'); END;
+CREATE TABLE IF NOT EXISTS drafts (user_id TEXT NOT NULL, case_id TEXT NOT NULL, version INTEGER NOT NULL, mode TEXT NOT NULL, data TEXT NOT NULL, updated_at TEXT NOT NULL, PRIMARY KEY(user_id,case_id,version,mode));
+CREATE TABLE IF NOT EXISTS attempts (id TEXT PRIMARY KEY, user_id TEXT NOT NULL, case_id TEXT NOT NULL, version INTEGER NOT NULL, rubric_version TEXT NOT NULL, mode TEXT NOT NULL, assisted INTEGER NOT NULL, profile TEXT NOT NULL, submitted_at TEXT NOT NULL, due_at TEXT, snapshot TEXT NOT NULL, report TEXT NOT NULL, assessment TEXT);
+CREATE INDEX IF NOT EXISTS attempts_owner ON attempts(user_id,submitted_at);
+CREATE TABLE IF NOT EXISTS reviews (id TEXT PRIMARY KEY, case_id TEXT NOT NULL, version INTEGER NOT NULL, reviewer TEXT NOT NULL, type TEXT NOT NULL, decision TEXT NOT NULL, comment TEXT NOT NULL, reviewed_at TEXT NOT NULL);
+CREATE TABLE IF NOT EXISTS feedback_flags (id TEXT PRIMARY KEY, attempt_id TEXT NOT NULL REFERENCES attempts(id), user_id TEXT NOT NULL, comment TEXT NOT NULL, created_at TEXT NOT NULL);
+CREATE TABLE IF NOT EXISTS audit_log (id TEXT PRIMARY KEY, actor TEXT NOT NULL, action TEXT NOT NULL, target TEXT NOT NULL, created_at TEXT NOT NULL);
+INSERT OR IGNORE INTO schema_migrations VALUES(1);

@@ -55,25 +55,25 @@ describe('ACR guided scenario utilities', () => {
   it('derives focused question groups from matching topic text', () => {
     const questions = deriveScenarioQuestions([headacheTopic], 'headache');
 
-    expect(questions.map((question) => question.id)).toContain('acr-scenario');
-    expect(questions[0].options.map((option) => option.label)).toContain('Sudden severe headache reaching maximal intensity within 1 hour');
+    expect(questions.map((question) => question.id)).toContain('headache-pattern');
+    expect(questions[0].options.map((option) => option.label)).toContain('Sudden severe / thunderclap, maximal within 1 hour');
   });
 
-  it('uses the selected extracted ACR scenario rather than loose keyword guessing', () => {
+  it('maps the selected focused question to its extracted ACR scenario', () => {
     const questions = deriveScenarioQuestions([headacheTopic], 'headache');
     const suddenScenario = questions
-      .find((question) => question.id === 'acr-scenario')
-      ?.options.find((option) => option.id === 'sudden-severe');
+      .find((question) => question.id === 'headache-pattern')
+      ?.options.find((option) => option.mapsToVariantIds?.includes('sudden-severe'));
 
     expect(suddenScenario).toBeDefined();
 
     const answers = {
-      'acr-scenario': [suddenScenario!.id],
+      'headache-pattern': [suddenScenario!.id],
     };
     const ranked = rankVariants([headacheTopic], answers, questions);
 
     expect(ranked[0].variant.id).toBe('sudden-severe');
-    expect(selectedAnswerPhrases(questions, answers)).toEqual([]);
+    expect(selectedAnswerPhrases(questions, answers)).toEqual(['sudden severe thunderclap headache reaching maximal severity within 1 hour']);
     expect(buildClinicalQuestion(headacheTopic, ranked[0].variant)).toContain('acute intracranial hemorrhage');
   });
 

@@ -3,22 +3,28 @@
   "private": true,
   "version": "0.1.0",
   "type": "module",
-"scripts": {
-  "dev": "vite",
-  "build": "tsc -b && vite build",
-  "extract:acr": "node scripts/extract-acr-pdfs.mjs",
-  "generate:acr-topics": "node scripts/generate-acr-topics.mjs",
-  "convert:acr": "node scripts/convert-acr-raw-to-curated.mjs",
-  "acr:clean": "node scripts/acr/clean-acr-procedure-rows.mjs",
-  "preview": "vite preview",
-  "test": "vitest run",
-  "report:acr-quality": "node scripts/generate-acr-quality-reports.mjs"
-},
+  "scripts": {
+    "dev": "vite",
+    "build": "tsc -b && vite build",
+    "extract:acr": "node scripts/extract-acr-pdfs.mjs",
+    "generate:acr-topics": "node scripts/generate-acr-topics.mjs",
+    "convert:acr": "node scripts/convert-acr-raw-to-curated.mjs",
+    "acr:clean": "node scripts/acr/clean-acr-procedure-rows.mjs",
+    "preview": "vite preview",
+    "test": "vitest run",
+    "report:acr-quality": "node scripts/generate-acr-quality-reports.mjs",
+    "education:server": "node --env-file-if-exists=.env.local server/app.mjs",
+    "education:preview": "EDUCATION_LOCAL_PREVIEW=true node server/app.mjs",
+    "education:import": "node scripts/education/import.mjs",
+    "education:seed": "node scripts/education/seed.mjs",
+    "education:test": "node --test server/*.test.mjs"
+  },
   "dependencies": {
     "@supabase/supabase-js": "^2.106.2",
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
-    "react-router-dom": "^7.16.0"
+    "react-router-dom": "^7.16.0",
+    "sharp": "0.34.5"
   },
   "devDependencies": {
     "@testing-library/jest-dom": "^6.6.3",
