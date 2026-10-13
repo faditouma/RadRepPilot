@@ -1,0 +1,99 @@
+{
+  "batchcomplete": "",
+  "query": {
+    "pages": {
+      "74210787": {
+        "pageid": 74210787,
+        "ns": 6,
+        "title": "File:X-ray of lobar pneumonia.jpg",
+        "imagerepository": "local",
+        "imageinfo": [
+          {
+            "size": 3155438,
+            "width": 3027,
+            "height": 2407,
+            "url": "https://upload.wikimedia.org/wikipedia/commons/5/51/X-ray_of_lobar_pneumonia.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=original",
+            "descriptionurl": "https://commons.wikimedia.org/wiki/File:X-ray_of_lobar_pneumonia.jpg",
+            "descriptionshorturl": "https://commons.wikimedia.org/w/index.php?curid=74210787",
+            "sha1": "f8e927b2bfc4246de8c2356b5495818a429afbbe",
+            "extmetadata": {
+              "DateTime": {
+                "value": "2018-11-07 13:52:25",
+                "source": "mediawiki-metadata",
+                "hidden": ""
+              },
+              "ObjectName": {
+                "value": "X-ray of lobar pneumonia",
+                "source": "mediawiki-metadata"
+              },
+              "CommonsMetadataExtension": {
+                "value": 1.2,
+                "source": "extension",
+                "hidden": ""
+              },
+              "Categories": {
+                "value": "CC-Zero|Lobar pneumonia|Self-published work|X-rays of pneumonia|Mikael Häggström/X-rays of the thorax",
+                "source": "commons-categories",
+                "hidden": ""
+              },
+              "Assessments": {
+                "value": "",
+                "source": "commons-categories",
+                "hidden": ""
+              },
+              "ImageDescription": {
+                "value": "<a href=\"https://en.wikipedia.org/wiki/Chest_radiograph\" class=\"extiw\" title=\"en:Chest radiograph\">Chest radiograph</a> of a 67 year old man, showing <a href=\"https://en.wikipedia.org/wiki/Lobar_pneumonia\" class=\"extiw\" title=\"en:Lobar pneumonia\">lobar pneumonia</a>, affecting the right middle lobe. Culture from the nasopharynx only showed <a href=\"https://en.wikipedia.org/wiki/Moraxella_catarrhalis\" class=\"extiw\" title=\"en:Moraxella catarrhalis\">Moraxella catarrhalis</a>, which is probably not the pathogen of the lung..",
+                "source": "commons-desc-page"
+              },
+              "DateTimeOriginal": {
+                "value": "2018-06-07",
+                "source": "commons-desc-page"
+              },
+              "Credit": {
+                "value": "<span class=\"int-own-work\" lang=\"en\">Own work</span>",
+                "source": "commons-desc-page"
+              },
+              "Artist": {
+                "value": "<figure typeof=\"mw:File/Thumb\"><a href=\"//commons.wikimedia.org/wiki/File:Mikael_H%C3%A4ggstr%C3%B6m_at_pathology_in_2019_(crop).jpg\" class=\"mw-file-description\"><img src=\"https://thumb.wikimedia.org/wikipedia/commons/thumb/f/f1/Mikael_H%C3%A4ggstr%C3%B6m_at_pathology_in_2019_%28crop%29.jpg/250px-Mikael_H%C3%A4ggstr%C3%B6m_at_pathology_in_2019_%28crop%29.jpg?utm_source=commons.wikimedia.org&amp;utm_campaign=parser&amp;utm_content=thumbnail\" decoding=\"async\" loading=\"lazy\" width=\"135\" height=\"159\" class=\"mw-file-element\" srcset=\"https://thumb.wikimedia.org/wikipedia/commons/thumb/f/f1/Mikael_H%C3%A4ggstr%C3%B6m_at_pathology_in_2019_%28crop%29.jpg/330px-Mikael_H%C3%A4ggstr%C3%B6m_at_pathology_in_2019_%28crop%29.jpg?utm_source=commons.wikimedia.org&amp;utm_campaign=parser&amp;utm_content=thumbnail 2x\" data-file-width=\"1439\" data-file-height=\"1697\"></a><figcaption><a href=\"//commons.wikimedia.org/wiki/User:Mikael_H%C3%A4ggstr%C3%B6m\" title=\"User:Mikael Häggström\">Mikael Häggström</a>, <a href=\"https://en.wikipedia.org/wiki/Medical_Doctor\" class=\"extiw\" title=\"en:Medical Doctor\">M.D.</a> <a href=\"//commons.wikimedia.org/wiki/Mikael_H%C3%A4ggstr%C3%B6m\" class=\"mw-redirect\" title=\"Mikael Häggström\">Author info</a><br> - <a href=\"//commons.wikimedia.org/wiki/User:Mikael_H%C3%A4ggstr%C3%B6m#Reusing_images\" title=\"User:Mikael Häggström\">Reusing images</a><br>- Conflicts of interest:<br>  None</figcaption></figure>\n<a href=\"//commons.wikimedia.org/wiki/User:Mikael_H%C3%A4ggstr%C3%B6m\" title=\"User:Mikael Häggström\">Mikael Häggström</a>, <a href=\"https://en.wikipedia.org/wiki/Medical_Doctor\" class=\"extiw\" title=\"en:Medical Doctor\">M.D.</a><br><b>Consent note</b>: Written informed consent was obtained from the individual, including online publication.",
+                "source": "commons-desc-page"
+              },
+              "LicenseShortName": {
+                "value": "CC0",
+                "source": "commons-desc-page",
+                "hidden": ""
+              },
+              "UsageTerms": {
+                "value": "Creative Commons Zero, Public Domain Dedication",
+                "source": "commons-desc-page"
+              },
+              "AttributionRequired": {
+                "value": "false",
+                "source": "commons-desc-page",
+                "hidden": ""
+              },
+              "LicenseUrl": {
+                "value": "http://creativecommons.org/publicdomain/zero/1.0/deed.en",
+                "source": "commons-desc-page"
+              },
+              "Copyrighted": {
+                "value": "True",
+                "source": "commons-desc-page",
+                "hidden": ""
+              },
+              "Restrictions": {
+                "value": "",
+                "source": "commons-desc-page",
+                "hidden": ""
+              },
+              "License": {
+                "value": "cc0",
+                "source": "commons-templates",
+                "hidden": ""
+              }
+            }
+          }
+        ]
+      }
+    }
+  }
+}

@@ -1,0 +1,102 @@
+{
+  "continue": {
+    "iistart": "2007-06-12T17:55:58Z",
+    "continue": "||"
+  },
+  "query": {
+    "pages": {
+      "2235891": {
+        "pageid": 2235891,
+        "ns": 6,
+        "title": "File:Pneumothorax CXR.jpg",
+        "imagerepository": "local",
+        "imageinfo": [
+          {
+            "size": 144679,
+            "width": 877,
+            "height": 807,
+            "url": "https://upload.wikimedia.org/wikipedia/commons/2/2f/Pneumothorax_CXR.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=original",
+            "descriptionurl": "https://commons.wikimedia.org/wiki/File:Pneumothorax_CXR.jpg",
+            "descriptionshorturl": "https://commons.wikimedia.org/w/index.php?curid=2235891",
+            "sha1": "f44baaf2b8621d68c3761e3308f519c92b611620",
+            "extmetadata": {
+              "DateTime": {
+                "value": "2011-12-28 13:33:22",
+                "source": "mediawiki-metadata",
+                "hidden": ""
+              },
+              "ObjectName": {
+                "value": "Pneumothorax CXR",
+                "source": "mediawiki-metadata"
+              },
+              "CommonsMetadataExtension": {
+                "value": 1.2,
+                "source": "extension",
+                "hidden": ""
+              },
+              "Categories": {
+                "value": "X-rays of pneumothorax|X-rays of mediastinal shift",
+                "source": "commons-categories",
+                "hidden": ""
+              },
+              "Assessments": {
+                "value": "",
+                "source": "commons-categories",
+                "hidden": ""
+              },
+              "ImageDescription": {
+                "value": "Left pneumothorax. This X-ray is used on clinicalcases.org to illustrate a fictional case history of tension pneumothorax. Note the large, well-demarcated area devoid of lung markings, the tracheal deviation and movement of the heart away from the affected side.  There is also small pleural effusion on the left side.<br><br>\nThe patient's left is your right (as if you are looking at the patient facing you). The left-right orientation is assisted by the shape of the heart, a small amount of air in the stomach under the left side of the diaphragm on the left, and the radio-opaque liver under the right side of the diaphragm. The sternoclavicular joints are symmetrically situated indicating that the X-ray is not rotated. Generally, a radiopaque <a href=\"https://en.wikipedia.org/wiki/en:x-ray_marker\" class=\"extiw\" title=\"w:en:x-ray marker\">X-ray marker</a> showing L or R indicates the patient's orientation, but one is not present on this X-ray.  The metallic spots are snaps for EKG (or ECG) readings.",
+                "source": "commons-desc-page"
+              },
+              "DateTimeOriginal": {
+                "value": "4 August 2006 (original upload date)",
+                "source": "commons-desc-page"
+              },
+              "Credit": {
+                "value": "<ul><li>Originally from <a rel=\"nofollow\" class=\"external text\" href=\"http://clinicalcases.org/2004/02/tension-pneumothorax.html\">tension pneumthorax page</a> on <a rel=\"nofollow\" class=\"external text\" href=\"http://clinicalcases.org\">clinicalcases.org</a></li>\n<li><bdi lang=\"en\" dir=\"ltr\">Transferred from <span class=\"plainlinks\"><a class=\"external text\" data-mw-original-href=\"//en.wikipedia.org\" href=\"https://en.wikipedia.org\">en.wikipedia</a></span> to Commons.</bdi>; description page is/was <a class=\"external text\" data-mw-original-href=\"http://en.wikipedia.org/w/index.php?title=Image%3APneumothorax_CXR.jpg\" href=\"https://en.wikipedia.org/w/index.php?title=Image%3APneumothorax_CXR.jpg\">here</a>; uploader to en Wiki was <a href=\"https://en.wikipedia.org/wiki/User:Clinical_Cases\" class=\"extiw\" title=\"en:User:Clinical Cases\">Clinical Cases</a> at <a class=\"external text\" data-mw-original-href=\"http://en.wikipedia.org\" href=\"https://en.wikipedia.org\">en.wikipedia</a></li></ul>",
+                "source": "commons-desc-page"
+              },
+              "Artist": {
+                "value": "<ul><li>Photographed by User <a href=\"https://en.wikipedia.org/wiki/User:Clinical_Cases\" class=\"extiw\" title=\"en:User:Clinical Cases\">Clinical Cases</a> 00:42, 7 November 2006</li></ul>",
+                "source": "commons-desc-page"
+              },
+              "LicenseShortName": {
+                "value": "CC BY-SA 2.5",
+                "source": "commons-desc-page",
+                "hidden": ""
+              },
+              "UsageTerms": {
+                "value": "Creative Commons Attribution-Share Alike 2.5",
+                "source": "commons-desc-page"
+              },
+              "AttributionRequired": {
+                "value": "true",
+                "source": "commons-desc-page",
+                "hidden": ""
+              },
+              "LicenseUrl": {
+                "value": "https://creativecommons.org/licenses/by-sa/2.5",
+                "source": "commons-desc-page"
+              },
+              "Copyrighted": {
+                "value": "True",
+                "source": "commons-desc-page",
+                "hidden": ""
+              },
+              "Restrictions": {
+                "value": "",
+                "source": "commons-desc-page",
+                "hidden": ""
+              },
+              "License": {
+                "value": "cc-by-sa-2.5",
+                "source": "commons-templates",
+                "hidden": ""
+              }
+            }
+          }
+        ]
+      }
+    }
+  }
+}

@@ -1,0 +1,99 @@
+{
+  "batchcomplete": "",
+  "query": {
+    "pages": {
+      "71634244": {
+        "pageid": 71634244,
+        "ns": 6,
+        "title": "File:X-ray of complex fracture of proximal humerus.jpg",
+        "imagerepository": "local",
+        "imageinfo": [
+          {
+            "size": 100878,
+            "width": 416,
+            "height": 471,
+            "url": "https://upload.wikimedia.org/wikipedia/commons/2/2c/X-ray_of_complex_fracture_of_proximal_humerus.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=original",
+            "descriptionurl": "https://commons.wikimedia.org/wiki/File:X-ray_of_complex_fracture_of_proximal_humerus.jpg",
+            "descriptionshorturl": "https://commons.wikimedia.org/w/index.php?curid=71634244",
+            "sha1": "f1003f6c63a1d3f4988653ae6872946afe4840e9",
+            "extmetadata": {
+              "DateTime": {
+                "value": "2018-08-15 09:16:35",
+                "source": "mediawiki-metadata",
+                "hidden": ""
+              },
+              "ObjectName": {
+                "value": "X-ray of complex fracture of proximal humerus",
+                "source": "mediawiki-metadata"
+              },
+              "CommonsMetadataExtension": {
+                "value": 1.2,
+                "source": "extension",
+                "hidden": ""
+              },
+              "Categories": {
+                "value": "X-rays of fractures of the human upper extremities",
+                "source": "commons-categories",
+                "hidden": ""
+              },
+              "Assessments": {
+                "value": "",
+                "source": "commons-categories",
+                "hidden": ""
+              },
+              "ImageDescription": {
+                "value": "X-ray of complex proximal <a href=\"https://en.wikipedia.org/wiki/humerus_fracture\" class=\"extiw\" title=\"en:humerus fracture\">humerus fracture</a>",
+                "source": "commons-desc-page"
+              },
+              "DateTimeOriginal": {
+                "value": "2013-08-08",
+                "source": "commons-desc-page"
+              },
+              "Credit": {
+                "value": "<cite style=\"font-style:normal\"> (2013). \"Delta III reverse shoulder arthroplasty in the treatment of complex 3- and 4-part fractures of the proximal humerus: 6 to 42 months of follow up\". <i>BMC Musculoskeletal Disorders</i> <b>14</b> (1). <span lang=\"en\" dir=\"ltr\"><a href=\"https://en.wikipedia.org/wiki/Digital_object_identifier\" class=\"extiw\" title=\"en:Digital object identifier\">DOI</a></span>:<a rel=\"nofollow\" class=\"external text\" href=\"https://doi.org/10.1186/1471-2474-14-231\">10.1186/1471-2474-14-231</a>. <span lang=\"en\" dir=\"ltr\"><a href=\"https://en.wikipedia.org/wiki/ISSN\" class=\"extiw\" title=\"en:ISSN\"><span lang=\"en\" dir=\"ltr\">ISSN</span></a></span> <a rel=\"nofollow\" class=\"external text\" href=\"https://www.worldcat.org/issn/1471-2474\">1471-2474</a>.</cite>",
+                "source": "commons-desc-page"
+              },
+              "Artist": {
+                "value": "Article authors: Georg Mattiassich, Lucian Lior Marcovici, Rolf Michael Krifter, Reinhold Ortmaier, Peter Wegerer, Albert Kroepfl",
+                "source": "commons-desc-page"
+              },
+              "LicenseShortName": {
+                "value": "CC BY 2.0",
+                "source": "commons-desc-page",
+                "hidden": ""
+              },
+              "UsageTerms": {
+                "value": "Creative Commons Attribution 2.0",
+                "source": "commons-desc-page"
+              },
+              "AttributionRequired": {
+                "value": "true",
+                "source": "commons-desc-page",
+                "hidden": ""
+              },
+              "LicenseUrl": {
+                "value": "https://creativecommons.org/licenses/by/2.0",
+                "source": "commons-desc-page"
+              },
+              "Copyrighted": {
+                "value": "True",
+                "source": "commons-desc-page",
+                "hidden": ""
+              },
+              "Restrictions": {
+                "value": "",
+                "source": "commons-desc-page",
+                "hidden": ""
+              },
+              "License": {
+                "value": "cc-by-2.0",
+                "source": "commons-templates",
+                "hidden": ""
+              }
+            }
+          }
+        ]
+      }
+    }
+  }
+}
