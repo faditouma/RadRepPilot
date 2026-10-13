@@ -2,7 +2,7 @@
 
 ## Existing project and branch
 
-Implementation lives in `RadRepPilot-upgrade-20260720`, the newer checkout of `faditouma/RadRepPilot`, on `education/image-first`. Existing /workspace reporting modules, incidental helpers, calculators, requisitions, Supabase account routes and saved reports remain available. The home page now introduces image-first learning. No remote deployment, paid resource, reviewer or approval has been created.
+Implementation now lives in `/Users/faditouma/Documents/GitHub/RadRepPilot`, the newer checkout of `faditouma/RadRepPilot`, on `education/image-first`. Existing /workspace reporting modules, incidental helpers, calculators, requisitions, Supabase account routes and saved reports remain available. The home page now introduces image-first learning. No remote deployment, paid resource, reviewer or approval has been created.
 
 ## Local editorial preview
 

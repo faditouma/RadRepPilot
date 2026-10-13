@@ -26,7 +26,7 @@ npm run education:test
 npm run build
 ```
 
-15 existing Vitest tests and 8 Node API test groups passed. Import repeated without duplicates. All five image endpoints returned matching delivery checksums. Browser UI verification remains incomplete because the in-app browser did not load the app's module/CSS resources; see the verification record. Code tests are not clinical validation.
+212 existing Vitest tests and 8 Node API test groups passed. Import repeated without duplicates. All five image endpoints returned matching delivery checksums. Browser UI verification remains incomplete because the in-app browser did not load the app's module/CSS resources; see the verification record. Code tests are not clinical validation.
 
 ## Documentation
 
