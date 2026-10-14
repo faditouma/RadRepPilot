@@ -1,0 +1,4588 @@
+{
+  "studies": [
+    {
+      "StudyInstanceUID": "1.3.6.1.4.1.14519.5.2.1.6450.9002.140494957337365122665628989385",
+      "StudyDescription": "CT study 001",
+      "PatientName": "",
+      "PatientID": "CT-001",
+      "StudyDate": "",
+      "StudyTime": "",
+      "AccessionNumber": "",
+      "PatientAge": "",
+      "PatientSex": "",
+      "NumInstances": 89,
+      "Modalities": "CT",
+      "series": [
+        {
+          "SeriesInstanceUID": "1.3.6.1.4.1.14519.5.2.1.6450.9002.212434881874895270111598521722",
+          "SeriesNumber": 2,
+          "SeriesDescription": "CT acquisition 1",
+          "Modality": "CT",
+          "instances": [
+            {
+              "metadata": {
+                "SOPClassUID": "1.2.840.10008.5.1.4.1.1.2",
+                "SOPInstanceUID": "1.3.6.1.4.1.14519.5.2.1.6450.9002.154440754705040091827722068228",
+                "StudyInstanceUID": "1.3.6.1.4.1.14519.5.2.1.6450.9002.140494957337365122665628989385",
+                "SeriesInstanceUID": "1.3.6.1.4.1.14519.5.2.1.6450.9002.212434881874895270111598521722",
+                "FrameOfReferenceUID": "1.3.6.1.4.1.14519.5.2.1.6450.9002.332782825423809066734466132710",
+                "Modality": "CT",
+                "ImageType": [
+                  "ORIGINAL",
+                  "PRIMARY",
+                  "AXIAL"
+                ],
+                "Rows": 512,
+                "Columns": 512,
+                "InstanceNumber": 38,
+                "SamplesPerPixel": 1,
+                "PhotometricInterpretation": "MONOCHROME2",
+                "BitsAllocated": 16,
+                "BitsStored": 16,
+                "HighBit": 15,
+                "PixelRepresentation": 1,
+                "PixelSpacing": [
+                  0.736328,
+                  0.736328
+                ],
+                "ImageOrientationPatient": [
+                  -1.0,
+                  0.0,
+                  0.0,
+                  0.0,
+                  -1.0,
+                  0.0
+                ],
+                "ImagePositionPatient": [
+                  188.5,
+                  188.5,
+                  -251.0
+                ],
+                "SliceThickness": 5.0,
+                "SpacingBetweenSlices": 7.5,
+                "RescaleIntercept": -1024.0,
+                "RescaleSlope": 1.0,
+                "WindowCenter": 45.0,
+                "WindowWidth": 450.0,
+                "ConvolutionKernel": "SOFT",
+                "SeriesNumber": 2,
+                "TransferSyntaxUID": "1.2.840.10008.1.2.1"
+              },
+              "url": "dicomweb:/imaging/ct-001/808c956f213028d8a9b4763227358642.dcm"
+            },
+            {
+              "metadata": {
+                "SOPClassUID": "1.2.840.10008.5.1.4.1.1.2",
+                "SOPInstanceUID": "1.3.6.1.4.1.14519.5.2.1.6450.9002.328311070258326875157037060301",
+                "StudyInstanceUID": "1.3.6.1.4.1.14519.5.2.1.6450.9002.140494957337365122665628989385",
+                "SeriesInstanceUID": "1.3.6.1.4.1.14519.5.2.1.6450.9002.212434881874895270111598521722",
+                "FrameOfReferenceUID": "1.3.6.1.4.1.14519.5.2.1.6450.9002.332782825423809066734466132710",
+                "Modality": "CT",
+                "ImageType": [
+                  "ORIGINAL",
+                  "PRIMARY",
+                  "AXIAL"
+                ],
+                "Rows": 512,
+                "Columns": 512,
+                "InstanceNumber": 37,
+                "SamplesPerPixel": 1,
+                "PhotometricInterpretation": "MONOCHROME2",
+                "BitsAllocated": 16,
+                "BitsStored": 16,
+                "HighBit": 15,
+                "PixelRepresentation": 1,
+                "PixelSpacing": [
+                  0.736328,
+                  0.736328
+                ],
+                "ImageOrientationPatient": [
+                  -1.0,
+                  0.0,
+                  0.0,
+                  0.0,
+                  -1.0,
+                  0.0
+                ],
+                "ImagePositionPatient": [
+                  188.5,
+                  188.5,
+                  -246.0
+                ],
+                "SliceThickness": 5.0,
+                "SpacingBetweenSlices": 7.5,
+                "RescaleIntercept": -1024.0,
+                "RescaleSlope": 1.0,
+                "WindowCenter": 45.0,
+                "WindowWidth": 450.0,
+                "ConvolutionKernel": "SOFT",
+                "SeriesNumber": 2,
+                "TransferSyntaxUID": "1.2.840.10008.1.2.1"
+              },
+              "url": "dicomweb:/imaging/ct-001/dd3f1fe243abf6b92d678ad44b4c48cc.dcm"
+            },
+            {
+              "metadata": {
+                "SOPClassUID": "1.2.840.10008.5.1.4.1.1.2",
+                "SOPInstanceUID": "1.3.6.1.4.1.14519.5.2.1.6450.9002.508882867492536099529321966280",
+                "StudyInstanceUID": "1.3.6.1.4.1.14519.5.2.1.6450.9002.140494957337365122665628989385",
+                "SeriesInstanceUID": "1.3.6.1.4.1.14519.5.2.1.6450.9002.212434881874895270111598521722",
+                "FrameOfReferenceUID": "1.3.6.1.4.1.14519.5.2.1.6450.9002.332782825423809066734466132710",
+                "Modality": "CT",
+                "ImageType": [
+                  "ORIGINAL",
+                  "PRIMARY",
+                  "AXIAL"
+                ],
+                "Rows": 512,
+                "Columns": 512,
+                "InstanceNumber": 36,
+                "SamplesPerPixel": 1,
+                "PhotometricInterpretation": "MONOCHROME2",
+                "BitsAllocated": 16,
+                "BitsStored": 16,
+                "HighBit": 15,
+                "PixelRepresentation": 1,
+                "PixelSpacing": [
+                  0.736328,
+                  0.736328
+                ],
+                "ImageOrientationPatient": [
+                  -1.0,
+                  0.0,
+                  0.0,
+                  0.0,
+                  -1.0,
+                  0.0
+                ],
+                "ImagePositionPatient": [
+                  188.5,
+                  188.5,
+                  -241.0
+                ],
+                "SliceThickness": 5.0,
+                "SpacingBetweenSlices": 7.5,
+                "RescaleIntercept": -1024.0,
+                "RescaleSlope": 1.0,
+                "WindowCenter": 45.0,
+                "WindowWidth": 450.0,
+                "ConvolutionKernel": "SOFT",
+                "SeriesNumber": 2,
+                "TransferSyntaxUID": "1.2.840.10008.1.2.1"
+              },
+              "url": "dicomweb:/imaging/ct-001/060650b52a475d811d64f53f6225f7b1.dcm"
+            },
+            {
+              "metadata": {
+                "SOPClassUID": "1.2.840.10008.5.1.4.1.1.2",
+                "SOPInstanceUID": "1.3.6.1.4.1.14519.5.2.1.6450.9002.216995365116073477680103159197",
+                "StudyInstanceUID": "1.3.6.1.4.1.14519.5.2.1.6450.9002.140494957337365122665628989385",
+                "SeriesInstanceUID": "1.3.6.1.4.1.14519.5.2.1.6450.9002.212434881874895270111598521722",
+                "FrameOfReferenceUID": "1.3.6.1.4.1.14519.5.2.1.6450.9002.332782825423809066734466132710",
+                "Modality": "CT",
+                "ImageType": [
+                  "ORIGINAL",
+                  "PRIMARY",
+                  "AXIAL"
+                ],
+                "Rows": 512,
+                "Columns": 512,
+                "InstanceNumber": 35,
+                "SamplesPerPixel": 1,
+                "PhotometricInterpretation": "MONOCHROME2",
+                "BitsAllocated": 16,
+                "BitsStored": 16,
+                "HighBit": 15,
+                "PixelRepresentation": 1,
+                "PixelSpacing": [
+                  0.736328,
+                  0.736328
+                ],
+                "ImageOrientationPatient": [
+                  -1.0,
+                  0.0,
+                  0.0,
+                  0.0,
+                  -1.0,
+                  0.0
+                ],
+                "ImagePositionPatient": [
+                  188.5,
+                  188.5,
+                  -236.0
+                ],
+                "SliceThickness": 5.0,
+                "SpacingBetweenSlices": 7.5,
+                "RescaleIntercept": -1024.0,
+                "RescaleSlope": 1.0,
+                "WindowCenter": 45.0,
+                "WindowWidth": 450.0,
+                "ConvolutionKernel": "SOFT",
+                "SeriesNumber": 2,
+                "TransferSyntaxUID": "1.2.840.10008.1.2.1"
+              },
+              "url": "dicomweb:/imaging/ct-001/6a87de299a7f3d0d103741a038144a21.dcm"
+            },
+            {
+              "metadata": {
+                "SOPClassUID": "1.2.840.10008.5.1.4.1.1.2",
+                "SOPInstanceUID": "1.3.6.1.4.1.14519.5.2.1.6450.9002.929792232973567335069541132502",
+                "StudyInstanceUID": "1.3.6.1.4.1.14519.5.2.1.6450.9002.140494957337365122665628989385",
+                "SeriesInstanceUID": "1.3.6.1.4.1.14519.5.2.1.6450.9002.212434881874895270111598521722",
+                "FrameOfReferenceUID": "1.3.6.1.4.1.14519.5.2.1.6450.9002.332782825423809066734466132710",
+                "Modality": "CT",
+                "ImageType": [
+                  "ORIGINAL",
+                  "PRIMARY",
+                  "AXIAL"
+                ],
+                "Rows": 512,
+                "Columns": 512,
+                "InstanceNumber": 34,
+                "SamplesPerPixel": 1,
+                "PhotometricInterpretation": "MONOCHROME2",
+                "BitsAllocated": 16,
+                "BitsStored": 16,
+                "HighBit": 15,
+                "PixelRepresentation": 1,
+                "PixelSpacing": [
+                  0.736328,
+                  0.736328
+                ],
+                "ImageOrientationPatient": [
+                  -1.0,
+                  0.0,
+                  0.0,
+                  0.0,
+                  -1.0,
+                  0.0
+                ],
+                "ImagePositionPatient": [
+                  188.5,
+                  188.5,
+                  -231.0
+                ],
+                "SliceThickness": 5.0,
+                "SpacingBetweenSlices": 7.5,
+                "RescaleIntercept": -1024.0,
+                "RescaleSlope": 1.0,
+                "WindowCenter": 45.0,
+                "WindowWidth": 450.0,
+                "ConvolutionKernel": "SOFT",
+                "SeriesNumber": 2,
+                "TransferSyntaxUID": "1.2.840.10008.1.2.1"
+              },
+              "url": "dicomweb:/imaging/ct-001/4065d091c28dcf14e9433806c5f0313d.dcm"
+            },
+            {
+              "metadata": {
+                "SOPClassUID": "1.2.840.10008.5.1.4.1.1.2",
+                "SOPInstanceUID": "1.3.6.1.4.1.14519.5.2.1.6450.9002.333035980321100466536143746501",
+                "StudyInstanceUID": "1.3.6.1.4.1.14519.5.2.1.6450.9002.140494957337365122665628989385",
+                "SeriesInstanceUID": "1.3.6.1.4.1.14519.5.2.1.6450.9002.212434881874895270111598521722",
+                "FrameOfReferenceUID": "1.3.6.1.4.1.14519.5.2.1.6450.9002.332782825423809066734466132710",
+                "Modality": "CT",
+                "ImageType": [
+                  "ORIGINAL",
+                  "PRIMARY",
+                  "AXIAL"
+                ],
+                "Rows": 512,
+                "Columns": 512,
+                "InstanceNumber": 33,
+                "SamplesPerPixel": 1,
+                "PhotometricInterpretation": "MONOCHROME2",
+                "BitsAllocated": 16,
+                "BitsStored": 16,
+                "HighBit": 15,
+                "PixelRepresentation": 1,
+                "PixelSpacing": [
+                  0.736328,
+                  0.736328
+                ],
+                "ImageOrientationPatient": [
+                  -1.0,
+                  0.0,
+                  0.0,
+                  0.0,
+                  -1.0,
+                  0.0
+                ],
+                "ImagePositionPatient": [
+                  188.5,
+                  188.5,
+                  -226.0
+                ],
+                "SliceThickness": 5.0,
+                "SpacingBetweenSlices": 7.5,
+                "RescaleIntercept": -1024.0,
+                "RescaleSlope": 1.0,
+                "WindowCenter": 45.0,
+                "WindowWidth": 450.0,
+                "ConvolutionKernel": "SOFT",
+                "SeriesNumber": 2,
+                "TransferSyntaxUID": "1.2.840.10008.1.2.1"
+              },
+              "url": "dicomweb:/imaging/ct-001/8e365d73476b55148f209c29c795ad15.dcm"
+            },
+            {
+              "metadata": {
+                "SOPClassUID": "1.2.840.10008.5.1.4.1.1.2",
+                "SOPInstanceUID": "1.3.6.1.4.1.14519.5.2.1.6450.9002.391504500661437793301298420175",
+                "StudyInstanceUID": "1.3.6.1.4.1.14519.5.2.1.6450.9002.140494957337365122665628989385",
+                "SeriesInstanceUID": "1.3.6.1.4.1.14519.5.2.1.6450.9002.212434881874895270111598521722",
+                "FrameOfReferenceUID": "1.3.6.1.4.1.14519.5.2.1.6450.9002.332782825423809066734466132710",
+                "Modality": "CT",
+                "ImageType": [
+                  "ORIGINAL",
+                  "PRIMARY",
+                  "AXIAL"
+                ],
+                "Rows": 512,
+                "Columns": 512,
+                "InstanceNumber": 32,
+                "SamplesPerPixel": 1,
+                "PhotometricInterpretation": "MONOCHROME2",
+                "BitsAllocated": 16,
+                "BitsStored": 16,
+                "HighBit": 15,
+                "PixelRepresentation": 1,
+                "PixelSpacing": [
+                  0.736328,
+                  0.736328
+                ],
+                "ImageOrientationPatient": [
+                  -1.0,
+                  0.0,
+                  0.0,
+                  0.0,
+                  -1.0,
+                  0.0
+                ],
+                "ImagePositionPatient": [
+                  188.5,
+                  188.5,
+                  -221.0
+                ],
+                "SliceThickness": 5.0,
+                "SpacingBetweenSlices": 7.5,
+                "RescaleIntercept": -1024.0,
+                "RescaleSlope": 1.0,
+                "WindowCenter": 45.0,
+                "WindowWidth": 450.0,
+                "ConvolutionKernel": "SOFT",
+                "SeriesNumber": 2,
+                "TransferSyntaxUID": "1.2.840.10008.1.2.1"
+              },
+              "url": "dicomweb:/imaging/ct-001/7f9695aa2375caedd96085284f3223a6.dcm"
+            },
+            {
+              "metadata": {
+                "SOPClassUID": "1.2.840.10008.5.1.4.1.1.2",
+                "SOPInstanceUID": "1.3.6.1.4.1.14519.5.2.1.6450.9002.167117937210780056162330596326",
+                "StudyInstanceUID": "1.3.6.1.4.1.14519.5.2.1.6450.9002.140494957337365122665628989385",
+                "SeriesInstanceUID": "1.3.6.1.4.1.14519.5.2.1.6450.9002.212434881874895270111598521722",
+                "FrameOfReferenceUID": "1.3.6.1.4.1.14519.5.2.1.6450.9002.332782825423809066734466132710",
+                "Modality": "CT",
+                "ImageType": [
+                  "ORIGINAL",
+                  "PRIMARY",
+                  "AXIAL"
+                ],
+                "Rows": 512,
+                "Columns": 512,
+                "InstanceNumber": 31,
+                "SamplesPerPixel": 1,
+                "PhotometricInterpretation": "MONOCHROME2",
+                "BitsAllocated": 16,
+                "BitsStored": 16,
+                "HighBit": 15,
+                "PixelRepresentation": 1,
+                "PixelSpacing": [
+                  0.736328,
+                  0.736328
+                ],
+                "ImageOrientationPatient": [
+                  -1.0,
+                  0.0,
+                  0.0,
+                  0.0,
+                  -1.0,
+                  0.0
+                ],
+                "ImagePositionPatient": [
+                  188.5,
+                  188.5,
+                  -216.0
+                ],
+                "SliceThickness": 5.0,
+                "SpacingBetweenSlices": 7.5,
+                "RescaleIntercept": -1024.0,
+                "RescaleSlope": 1.0,
+                "WindowCenter": 45.0,
+                "WindowWidth": 450.0,
+                "ConvolutionKernel": "SOFT",
+                "SeriesNumber": 2,
+                "TransferSyntaxUID": "1.2.840.10008.1.2.1"
+              },
+              "url": "dicomweb:/imaging/ct-001/63bc467d7c97f07dda8eaaea2c6d6eb8.dcm"
+            },
+            {
+              "metadata": {
+                "SOPClassUID": "1.2.840.10008.5.1.4.1.1.2",
+                "SOPInstanceUID": "1.3.6.1.4.1.14519.5.2.1.6450.9002.241910432946923699823395396728",
+                "StudyInstanceUID": "1.3.6.1.4.1.14519.5.2.1.6450.9002.140494957337365122665628989385",
+                "SeriesInstanceUID": "1.3.6.1.4.1.14519.5.2.1.6450.9002.212434881874895270111598521722",
+                "FrameOfReferenceUID": "1.3.6.1.4.1.14519.5.2.1.6450.9002.332782825423809066734466132710",
+                "Modality": "CT",
+                "ImageType": [
+                  "ORIGINAL",
+                  "PRIMARY",
+                  "AXIAL"
+                ],
+                "Rows": 512,
+                "Columns": 512,
+                "InstanceNumber": 30,
+                "SamplesPerPixel": 1,
+                "PhotometricInterpretation": "MONOCHROME2",
+                "BitsAllocated": 16,
+                "BitsStored": 16,
+                "HighBit": 15,
+                "PixelRepresentation": 1,
+                "PixelSpacing": [
+                  0.736328,
+                  0.736328
+                ],
+                "ImageOrientationPatient": [
+                  -1.0,
+                  0.0,
+                  0.0,
+                  0.0,
+                  -1.0,
+                  0.0
+                ],
+                "ImagePositionPatient": [
+                  188.5,
+                  188.5,
+                  -211.0
+                ],
+                "SliceThickness": 5.0,
+                "SpacingBetweenSlices": 7.5,
+                "RescaleIntercept": -1024.0,
+                "RescaleSlope": 1.0,
+                "WindowCenter": 45.0,
+                "WindowWidth": 450.0,
+                "ConvolutionKernel": "SOFT",
+                "SeriesNumber": 2,
+                "TransferSyntaxUID": "1.2.840.10008.1.2.1"
+              },
+              "url": "dicomweb:/imaging/ct-001/a605dec39b75a07d98be3299a256871e.dcm"
+            },
+            {
+              "metadata": {
+                "SOPClassUID": "1.2.840.10008.5.1.4.1.1.2",
+                "SOPInstanceUID": "1.3.6.1.4.1.14519.5.2.1.6450.9002.337397637800631635188114834029",
+                "StudyInstanceUID": "1.3.6.1.4.1.14519.5.2.1.6450.9002.140494957337365122665628989385",
+                "SeriesInstanceUID": "1.3.6.1.4.1.14519.5.2.1.6450.9002.212434881874895270111598521722",
+                "FrameOfReferenceUID": "1.3.6.1.4.1.14519.5.2.1.6450.9002.332782825423809066734466132710",
+                "Modality": "CT",
+                "ImageType": [
+                  "ORIGINAL",
+                  "PRIMARY",
+                  "AXIAL"
+                ],
+                "Rows": 512,
+                "Columns": 512,
+                "InstanceNumber": 29,
+                "SamplesPerPixel": 1,
+                "PhotometricInterpretation": "MONOCHROME2",
+                "BitsAllocated": 16,
+                "BitsStored": 16,
+                "HighBit": 15,
+                "PixelRepresentation": 1,
+                "PixelSpacing": [
+                  0.736328,
+                  0.736328
+                ],
+                "ImageOrientationPatient": [
+                  -1.0,
+                  0.0,
+                  0.0,
+                  0.0,
+                  -1.0,
+                  0.0
+                ],
+                "ImagePositionPatient": [
+                  188.5,
+                  188.5,
+                  -206.0
+                ],
+                "SliceThickness": 5.0,
+                "SpacingBetweenSlices": 7.5,
+                "RescaleIntercept": -1024.0,
+                "RescaleSlope": 1.0,
+                "WindowCenter": 45.0,
+                "WindowWidth": 450.0,
+                "ConvolutionKernel": "SOFT",
+                "SeriesNumber": 2,
+                "TransferSyntaxUID": "1.2.840.10008.1.2.1"
+              },
+              "url": "dicomweb:/imaging/ct-001/528bad46c31e2a2b53a64071c83602eb.dcm"
+            },
+            {
+              "metadata": {
+                "SOPClassUID": "1.2.840.10008.5.1.4.1.1.2",
+                "SOPInstanceUID": "1.3.6.1.4.1.14519.5.2.1.6450.9002.373698397457642253608051202163",
+                "StudyInstanceUID": "1.3.6.1.4.1.14519.5.2.1.6450.9002.140494957337365122665628989385",
+                "SeriesInstanceUID": "1.3.6.1.4.1.14519.5.2.1.6450.9002.212434881874895270111598521722",
+                "FrameOfReferenceUID": "1.3.6.1.4.1.14519.5.2.1.6450.9002.332782825423809066734466132710",
+                "Modality": "CT",
+                "ImageType": [
+                  "ORIGINAL",
+                  "PRIMARY",
+                  "AXIAL"
+                ],
+                "Rows": 512,
+                "Columns": 512,
+                "InstanceNumber": 28,
+                "SamplesPerPixel": 1,
+                "PhotometricInterpretation": "MONOCHROME2",
+                "BitsAllocated": 16,
+                "BitsStored": 16,
+                "HighBit": 15,
+                "PixelRepresentation": 1,
+                "PixelSpacing": [
+                  0.736328,
+                  0.736328
+                ],
+                "ImageOrientationPatient": [
+                  -1.0,
+                  0.0,
+                  0.0,
+                  0.0,
+                  -1.0,
+                  0.0
+                ],
+                "ImagePositionPatient": [
+                  188.5,
+                  188.5,
+                  -201.0
+                ],
+                "SliceThickness": 5.0,
+                "SpacingBetweenSlices": 7.5,
+                "RescaleIntercept": -1024.0,
+                "RescaleSlope": 1.0,
+                "WindowCenter": 45.0,
+                "WindowWidth": 450.0,
+                "ConvolutionKernel": "SOFT",
+                "SeriesNumber": 2,
+                "TransferSyntaxUID": "1.2.840.10008.1.2.1"
+              },
+              "url": "dicomweb:/imaging/ct-001/1a173474bd0357973a09c3fe95bb5ece.dcm"
+            },
+            {
+              "metadata": {
+                "SOPClassUID": "1.2.840.10008.5.1.4.1.1.2",
+                "SOPInstanceUID": "1.3.6.1.4.1.14519.5.2.1.6450.9002.241499232439034660055496527736",
+                "StudyInstanceUID": "1.3.6.1.4.1.14519.5.2.1.6450.9002.140494957337365122665628989385",
+                "SeriesInstanceUID": "1.3.6.1.4.1.14519.5.2.1.6450.9002.212434881874895270111598521722",
+                "FrameOfReferenceUID": "1.3.6.1.4.1.14519.5.2.1.6450.9002.332782825423809066734466132710",
+                "Modality": "CT",
+                "ImageType": [
+                  "ORIGINAL",
+                  "PRIMARY",
+                  "AXIAL"
+                ],
+                "Rows": 512,
+                "Columns": 512,
+                "InstanceNumber": 27,
+                "SamplesPerPixel": 1,
+                "PhotometricInterpretation": "MONOCHROME2",
+                "BitsAllocated": 16,
+                "BitsStored": 16,
+                "HighBit": 15,
+                "PixelRepresentation": 1,
+                "PixelSpacing": [
+                  0.736328,
+                  0.736328
+                ],
+                "ImageOrientationPatient": [
+                  -1.0,
+                  0.0,
+                  0.0,
+                  0.0,
+                  -1.0,
+                  0.0
+                ],
+                "ImagePositionPatient": [
+                  188.5,
+                  188.5,
+                  -196.0
+                ],
+                "SliceThickness": 5.0,
+                "SpacingBetweenSlices": 7.5,
+                "RescaleIntercept": -1024.0,
+                "RescaleSlope": 1.0,
+                "WindowCenter": 45.0,
+                "WindowWidth": 450.0,
+                "ConvolutionKernel": "SOFT",
+                "SeriesNumber": 2,
+                "TransferSyntaxUID": "1.2.840.10008.1.2.1"
+              },
+              "url": "dicomweb:/imaging/ct-001/30f81a7d57b5f17583c8d2daea27c59b.dcm"
+            },
+            {
+              "metadata": {
+                "SOPClassUID": "1.2.840.10008.5.1.4.1.1.2",
+                "SOPInstanceUID": "1.3.6.1.4.1.14519.5.2.1.6450.9002.179065558310042030298564670039",
+                "StudyInstanceUID": "1.3.6.1.4.1.14519.5.2.1.6450.9002.140494957337365122665628989385",
+                "SeriesInstanceUID": "1.3.6.1.4.1.14519.5.2.1.6450.9002.212434881874895270111598521722",
+                "FrameOfReferenceUID": "1.3.6.1.4.1.14519.5.2.1.6450.9002.332782825423809066734466132710",
+                "Modality": "CT",
+                "ImageType": [
+                  "ORIGINAL",
+                  "PRIMARY",
+                  "AXIAL"
+                ],
+                "Rows": 512,
+                "Columns": 512,
+                "InstanceNumber": 26,
+                "SamplesPerPixel": 1,
+                "PhotometricInterpretation": "MONOCHROME2",
+                "BitsAllocated": 16,
+                "BitsStored": 16,
+                "HighBit": 15,
+                "PixelRepresentation": 1,
+                "PixelSpacing": [
+                  0.736328,
+                  0.736328
+                ],
+                "ImageOrientationPatient": [
+                  -1.0,
+                  0.0,
+                  0.0,
+                  0.0,
+                  -1.0,
+                  0.0
+                ],
+                "ImagePositionPatient": [
+                  188.5,
+                  188.5,
+                  -191.0
+                ],
+                "SliceThickness": 5.0,
+                "SpacingBetweenSlices": 7.5,
+                "RescaleIntercept": -1024.0,
+                "RescaleSlope": 1.0,
+                "WindowCenter": 45.0,
+                "WindowWidth": 450.0,
+                "ConvolutionKernel": "SOFT",
+                "SeriesNumber": 2,
+                "TransferSyntaxUID": "1.2.840.10008.1.2.1"
+              },
+              "url": "dicomweb:/imaging/ct-001/6d2fdbfba1c43206ad5f544c94d303e1.dcm"
+            },
+            {
+              "metadata": {
+                "SOPClassUID": "1.2.840.10008.5.1.4.1.1.2",
+                "SOPInstanceUID": "1.3.6.1.4.1.14519.5.2.1.6450.9002.162082449819225619344567559229",
+                "StudyInstanceUID": "1.3.6.1.4.1.14519.5.2.1.6450.9002.140494957337365122665628989385",
+                "SeriesInstanceUID": "1.3.6.1.4.1.14519.5.2.1.6450.9002.212434881874895270111598521722",
+                "FrameOfReferenceUID": "1.3.6.1.4.1.14519.5.2.1.6450.9002.332782825423809066734466132710",
+                "Modality": "CT",
+                "ImageType": [
+                  "ORIGINAL",
+                  "PRIMARY",
+                  "AXIAL"
+                ],
+                "Rows": 512,
+                "Columns": 512,
+                "InstanceNumber": 25,
+                "SamplesPerPixel": 1,
+                "PhotometricInterpretation": "MONOCHROME2",
+                "BitsAllocated": 16,
+                "BitsStored": 16,
+                "HighBit": 15,
+                "PixelRepresentation": 1,
+                "PixelSpacing": [
+                  0.736328,
+                  0.736328
+                ],
+                "ImageOrientationPatient": [
+                  -1.0,
+                  0.0,
+                  0.0,
+                  0.0,
+                  -1.0,
+                  0.0
+                ],
+                "ImagePositionPatient": [
+                  188.5,
+                  188.5,
+                  -186.0
+                ],
+                "SliceThickness": 5.0,
+                "SpacingBetweenSlices": 7.5,
+                "RescaleIntercept": -1024.0,
+                "RescaleSlope": 1.0,
+                "WindowCenter": 45.0,
+                "WindowWidth": 450.0,
+                "ConvolutionKernel": "SOFT",
+                "SeriesNumber": 2,
+                "TransferSyntaxUID": "1.2.840.10008.1.2.1"
+              },
+              "url": "dicomweb:/imaging/ct-001/a78023140057e197bf7d52c2b34d4c64.dcm"
+            },
+            {
+              "metadata": {
+                "SOPClassUID": "1.2.840.10008.5.1.4.1.1.2",
+                "SOPInstanceUID": "1.3.6.1.4.1.14519.5.2.1.6450.9002.285647747608158225595317637159",
+                "StudyInstanceUID": "1.3.6.1.4.1.14519.5.2.1.6450.9002.140494957337365122665628989385",
+                "SeriesInstanceUID": "1.3.6.1.4.1.14519.5.2.1.6450.9002.212434881874895270111598521722",
+                "FrameOfReferenceUID": "1.3.6.1.4.1.14519.5.2.1.6450.9002.332782825423809066734466132710",
+                "Modality": "CT",
+                "ImageType": [
+                  "ORIGINAL",
+                  "PRIMARY",
+                  "AXIAL"
+                ],
+                "Rows": 512,
+                "Columns": 512,
+                "InstanceNumber": 24,
+                "SamplesPerPixel": 1,
+                "PhotometricInterpretation": "MONOCHROME2",
+                "BitsAllocated": 16,
+                "BitsStored": 16,
+                "HighBit": 15,
+                "PixelRepresentation": 1,
+                "PixelSpacing": [
+                  0.736328,
+                  0.736328
+                ],
+                "ImageOrientationPatient": [
+                  -1.0,
+                  0.0,
+                  0.0,
+                  0.0,
+                  -1.0,
+                  0.0
+                ],
+                "ImagePositionPatient": [
+                  188.5,
+                  188.5,
+                  -181.0
+                ],
+                "SliceThickness": 5.0,
+                "SpacingBetweenSlices": 7.5,
+                "RescaleIntercept": -1024.0,
+                "RescaleSlope": 1.0,
+                "WindowCenter": 45.0,
+                "WindowWidth": 450.0,
+                "ConvolutionKernel": "SOFT",
+                "SeriesNumber": 2,
+                "TransferSyntaxUID": "1.2.840.10008.1.2.1"
+              },
+              "url": "dicomweb:/imaging/ct-001/7c535bd6a9a64b09574f77320937540e.dcm"
+            },
+            {
+              "metadata": {
+                "SOPClassUID": "1.2.840.10008.5.1.4.1.1.2",
+                "SOPInstanceUID": "1.3.6.1.4.1.14519.5.2.1.6450.9002.261572208660293474012007866499",
+                "StudyInstanceUID": "1.3.6.1.4.1.14519.5.2.1.6450.9002.140494957337365122665628989385",
+                "SeriesInstanceUID": "1.3.6.1.4.1.14519.5.2.1.6450.9002.212434881874895270111598521722",
+                "FrameOfReferenceUID": "1.3.6.1.4.1.14519.5.2.1.6450.9002.332782825423809066734466132710",
+                "Modality": "CT",
+                "ImageType": [
+                  "ORIGINAL",
+                  "PRIMARY",
+                  "AXIAL"
+                ],
+                "Rows": 512,
+                "Columns": 512,
+                "InstanceNumber": 23,
+                "SamplesPerPixel": 1,
+                "PhotometricInterpretation": "MONOCHROME2",
+                "BitsAllocated": 16,
+                "BitsStored": 16,
+                "HighBit": 15,
+                "PixelRepresentation": 1,
+                "PixelSpacing": [
+                  0.736328,
+                  0.736328
+                ],
+                "ImageOrientationPatient": [
+                  -1.0,
+                  0.0,
+                  0.0,
+                  0.0,
+                  -1.0,
+                  0.0
+                ],
+                "ImagePositionPatient": [
+                  188.5,
+                  188.5,
+                  -176.0
+                ],
+                "SliceThickness": 5.0,
+                "SpacingBetweenSlices": 7.5,
+                "RescaleIntercept": -1024.0,
+                "RescaleSlope": 1.0,
+                "WindowCenter": 45.0,
+                "WindowWidth": 450.0,
+                "ConvolutionKernel": "SOFT",
+                "SeriesNumber": 2,
+                "TransferSyntaxUID": "1.2.840.10008.1.2.1"
+              },
+              "url": "dicomweb:/imaging/ct-001/b31d9fe93a4aefa0b904ab7258857563.dcm"
+            },
+            {
+              "metadata": {
+                "SOPClassUID": "1.2.840.10008.5.1.4.1.1.2",
+                "SOPInstanceUID": "1.3.6.1.4.1.14519.5.2.1.6450.9002.396100505664847006014553416123",
+                "StudyInstanceUID": "1.3.6.1.4.1.14519.5.2.1.6450.9002.140494957337365122665628989385",
+                "SeriesInstanceUID": "1.3.6.1.4.1.14519.5.2.1.6450.9002.212434881874895270111598521722",
+                "FrameOfReferenceUID": "1.3.6.1.4.1.14519.5.2.1.6450.9002.332782825423809066734466132710",
+                "Modality": "CT",
+                "ImageType": [
+                  "ORIGINAL",
+                  "PRIMARY",
+                  "AXIAL"
+                ],
+                "Rows": 512,
+                "Columns": 512,
+                "InstanceNumber": 22,
+                "SamplesPerPixel": 1,
+                "PhotometricInterpretation": "MONOCHROME2",
+                "BitsAllocated": 16,
+                "BitsStored": 16,
+                "HighBit": 15,
+                "PixelRepresentation": 1,
+                "PixelSpacing": [
+                  0.736328,
+                  0.736328
+                ],
+                "ImageOrientationPatient": [
+                  -1.0,
+                  0.0,
+                  0.0,
+                  0.0,
+                  -1.0,
+                  0.0
+                ],
+                "ImagePositionPatient": [
+                  188.5,
+                  188.5,
+                  -171.0
+                ],
+                "SliceThickness": 5.0,
+                "SpacingBetweenSlices": 7.5,
+                "RescaleIntercept": -1024.0,
+                "RescaleSlope": 1.0,
+                "WindowCenter": 45.0,
+                "WindowWidth": 450.0,
+                "ConvolutionKernel": "SOFT",
+                "SeriesNumber": 2,
+                "TransferSyntaxUID": "1.2.840.10008.1.2.1"
+              },
+              "url": "dicomweb:/imaging/ct-001/b1bf360acab3139751f69b81b6cf50ce.dcm"
+            },
+            {
+              "metadata": {
+                "SOPClassUID": "1.2.840.10008.5.1.4.1.1.2",
+                "SOPInstanceUID": "1.3.6.1.4.1.14519.5.2.1.6450.9002.197957555783361311588509231436",
+                "StudyInstanceUID": "1.3.6.1.4.1.14519.5.2.1.6450.9002.140494957337365122665628989385",
+                "SeriesInstanceUID": "1.3.6.1.4.1.14519.5.2.1.6450.9002.212434881874895270111598521722",
+                "FrameOfReferenceUID": "1.3.6.1.4.1.14519.5.2.1.6450.9002.332782825423809066734466132710",
+                "Modality": "CT",
+                "ImageType": [
+                  "ORIGINAL",
+                  "PRIMARY",
+                  "AXIAL"
+                ],
+                "Rows": 512,
+                "Columns": 512,
+                "InstanceNumber": 21,
+                "SamplesPerPixel": 1,
+                "PhotometricInterpretation": "MONOCHROME2",
+                "BitsAllocated": 16,
+                "BitsStored": 16,
+                "HighBit": 15,
+                "PixelRepresentation": 1,
+                "PixelSpacing": [
+                  0.736328,
+                  0.736328
+                ],
+                "ImageOrientationPatient": [
+                  -1.0,
+                  0.0,
+                  0.0,
+                  0.0,
+                  -1.0,
+                  0.0
+                ],
+                "ImagePositionPatient": [
+                  188.5,
+                  188.5,
+                  -166.0
+                ],
+                "SliceThickness": 5.0,
+                "SpacingBetweenSlices": 7.5,
+                "RescaleIntercept": -1024.0,
+                "RescaleSlope": 1.0,
+                "WindowCenter": 45.0,
+                "WindowWidth": 450.0,
+                "ConvolutionKernel": "SOFT",
+                "SeriesNumber": 2,
+                "TransferSyntaxUID": "1.2.840.10008.1.2.1"
+              },
+              "url": "dicomweb:/imaging/ct-001/bbb7e7921b06c8346d5adf960bc425b3.dcm"
+            },
+            {
+              "metadata": {
+                "SOPClassUID": "1.2.840.10008.5.1.4.1.1.2",
+                "SOPInstanceUID": "1.3.6.1.4.1.14519.5.2.1.6450.9002.309707800350590003781894838175",
+                "StudyInstanceUID": "1.3.6.1.4.1.14519.5.2.1.6450.9002.140494957337365122665628989385",
+                "SeriesInstanceUID": "1.3.6.1.4.1.14519.5.2.1.6450.9002.212434881874895270111598521722",
+                "FrameOfReferenceUID": "1.3.6.1.4.1.14519.5.2.1.6450.9002.332782825423809066734466132710",
+                "Modality": "CT",
+                "ImageType": [
+                  "ORIGINAL",
+                  "PRIMARY",
+                  "AXIAL"
+                ],
+                "Rows": 512,
+                "Columns": 512,
+                "InstanceNumber": 20,
+                "SamplesPerPixel": 1,
+                "PhotometricInterpretation": "MONOCHROME2",
+                "BitsAllocated": 16,
+                "BitsStored": 16,
+                "HighBit": 15,
+                "PixelRepresentation": 1,
+                "PixelSpacing": [
+                  0.736328,
+                  0.736328
+                ],
+                "ImageOrientationPatient": [
+                  -1.0,
+                  0.0,
+                  0.0,
+                  0.0,
+                  -1.0,
+                  0.0
+                ],
+                "ImagePositionPatient": [
+                  188.5,
+                  188.5,
+                  -161.0
+                ],
+                "SliceThickness": 5.0,
+                "SpacingBetweenSlices": 7.5,
+                "RescaleIntercept": -1024.0,
+                "RescaleSlope": 1.0,
+                "WindowCenter": 45.0,
+                "WindowWidth": 450.0,
+                "ConvolutionKernel": "SOFT",
+                "SeriesNumber": 2,
+                "TransferSyntaxUID": "1.2.840.10008.1.2.1"
+              },
+              "url": "dicomweb:/imaging/ct-001/61ba9bc21c498b383369c82a13dd1715.dcm"
+            },
+            {
+              "metadata": {
+                "SOPClassUID": "1.2.840.10008.5.1.4.1.1.2",
+                "SOPInstanceUID": "1.3.6.1.4.1.14519.5.2.1.6450.9002.189591728748933512992228338632",
+                "StudyInstanceUID": "1.3.6.1.4.1.14519.5.2.1.6450.9002.140494957337365122665628989385",
+                "SeriesInstanceUID": "1.3.6.1.4.1.14519.5.2.1.6450.9002.212434881874895270111598521722",
+                "FrameOfReferenceUID": "1.3.6.1.4.1.14519.5.2.1.6450.9002.332782825423809066734466132710",
+                "Modality": "CT",
+                "ImageType": [
+                  "ORIGINAL",
+                  "PRIMARY",
+                  "AXIAL"
+                ],
+                "Rows": 512,
+                "Columns": 512,
+                "InstanceNumber": 19,
+                "SamplesPerPixel": 1,
+                "PhotometricInterpretation": "MONOCHROME2",
+                "BitsAllocated": 16,
+                "BitsStored": 16,
+                "HighBit": 15,
+                "PixelRepresentation": 1,
+                "PixelSpacing": [
+                  0.736328,
+                  0.736328
+                ],
+                "ImageOrientationPatient": [
+                  -1.0,
+                  0.0,
+                  0.0,
+                  0.0,
+                  -1.0,
+                  0.0
+                ],
+                "ImagePositionPatient": [
+                  188.5,
+                  188.5,
+                  -156.0
+                ],
+                "SliceThickness": 5.0,
+                "SpacingBetweenSlices": 7.5,
+                "RescaleIntercept": -1024.0,
+                "RescaleSlope": 1.0,
+                "WindowCenter": 45.0,
+                "WindowWidth": 450.0,
+                "ConvolutionKernel": "SOFT",
+                "SeriesNumber": 2,
+                "TransferSyntaxUID": "1.2.840.10008.1.2.1"
+              },
+              "url": "dicomweb:/imaging/ct-001/63c29f6ff5d9784999d253ed53d70f20.dcm"
+            },
+            {
+              "metadata": {
+                "SOPClassUID": "1.2.840.10008.5.1.4.1.1.2",
+                "SOPInstanceUID": "1.3.6.1.4.1.14519.5.2.1.6450.9002.764787817237339232976951831380",
+                "StudyInstanceUID": "1.3.6.1.4.1.14519.5.2.1.6450.9002.140494957337365122665628989385",
+                "SeriesInstanceUID": "1.3.6.1.4.1.14519.5.2.1.6450.9002.212434881874895270111598521722",
+                "FrameOfReferenceUID": "1.3.6.1.4.1.14519.5.2.1.6450.9002.332782825423809066734466132710",
+                "Modality": "CT",
+                "ImageType": [
+                  "ORIGINAL",
+                  "PRIMARY",
+                  "AXIAL"
+                ],
+                "Rows": 512,
+                "Columns": 512,
+                "InstanceNumber": 18,
+                "SamplesPerPixel": 1,
+                "PhotometricInterpretation": "MONOCHROME2",
+                "BitsAllocated": 16,
+                "BitsStored": 16,
+                "HighBit": 15,
+                "PixelRepresentation": 1,
+                "PixelSpacing": [
+                  0.736328,
+                  0.736328
+                ],
+                "ImageOrientationPatient": [
+                  -1.0,
+                  0.0,
+                  0.0,
+                  0.0,
+                  -1.0,
+                  0.0
+                ],
+                "ImagePositionPatient": [
+                  188.5,
+                  188.5,
+                  -151.0
+                ],
+                "SliceThickness": 5.0,
+                "SpacingBetweenSlices": 7.5,
+                "RescaleIntercept": -1024.0,
+                "RescaleSlope": 1.0,
+                "WindowCenter": 45.0,
+                "WindowWidth": 450.0,
+                "ConvolutionKernel": "SOFT",
+                "SeriesNumber": 2,
+                "TransferSyntaxUID": "1.2.840.10008.1.2.1"
+              },
+              "url": "dicomweb:/imaging/ct-001/e5ad9defeffd171efcd7492068d95f56.dcm"
+            },
+            {
+              "metadata": {
+                "SOPClassUID": "1.2.840.10008.5.1.4.1.1.2",
+                "SOPInstanceUID": "1.3.6.1.4.1.14519.5.2.1.6450.9002.988026243212317563240485204810",
+                "StudyInstanceUID": "1.3.6.1.4.1.14519.5.2.1.6450.9002.140494957337365122665628989385",
+                "SeriesInstanceUID": "1.3.6.1.4.1.14519.5.2.1.6450.9002.212434881874895270111598521722",
+                "FrameOfReferenceUID": "1.3.6.1.4.1.14519.5.2.1.6450.9002.332782825423809066734466132710",
+                "Modality": "CT",
+                "ImageType": [
+                  "ORIGINAL",
+                  "PRIMARY",
+                  "AXIAL"
+                ],
+                "Rows": 512,
+                "Columns": 512,
+                "InstanceNumber": 17,
+                "SamplesPerPixel": 1,
+                "PhotometricInterpretation": "MONOCHROME2",
+                "BitsAllocated": 16,
+                "BitsStored": 16,
+                "HighBit": 15,
+                "PixelRepresentation": 1,
+                "PixelSpacing": [
+                  0.736328,
+                  0.736328
+                ],
+                "ImageOrientationPatient": [
+                  -1.0,
+                  0.0,
+                  0.0,
+                  0.0,
+                  -1.0,
+                  0.0
+                ],
+                "ImagePositionPatient": [
+                  188.5,
+                  188.5,
+                  -146.0
+                ],
+                "SliceThickness": 5.0,
+                "SpacingBetweenSlices": 7.5,
+                "RescaleIntercept": -1024.0,
+                "RescaleSlope": 1.0,
+                "WindowCenter": 45.0,
+                "WindowWidth": 450.0,
+                "ConvolutionKernel": "SOFT",
+                "SeriesNumber": 2,
+                "TransferSyntaxUID": "1.2.840.10008.1.2.1"
+              },
+              "url": "dicomweb:/imaging/ct-001/b1ba9f99aa2f0e2d742f3b4715dda97a.dcm"
+            },
+            {
+              "metadata": {
+                "SOPClassUID": "1.2.840.10008.5.1.4.1.1.2",
+                "SOPInstanceUID": "1.3.6.1.4.1.14519.5.2.1.6450.9002.298289994973848298802962341453",
+                "StudyInstanceUID": "1.3.6.1.4.1.14519.5.2.1.6450.9002.140494957337365122665628989385",
+                "SeriesInstanceUID": "1.3.6.1.4.1.14519.5.2.1.6450.9002.212434881874895270111598521722",
+                "FrameOfReferenceUID": "1.3.6.1.4.1.14519.5.2.1.6450.9002.332782825423809066734466132710",
+                "Modality": "CT",
+                "ImageType": [
+                  "ORIGINAL",
+                  "PRIMARY",
+                  "AXIAL"
+                ],
+                "Rows": 512,
+                "Columns": 512,
+                "InstanceNumber": 16,
+                "SamplesPerPixel": 1,
+                "PhotometricInterpretation": "MONOCHROME2",
+                "BitsAllocated": 16,
+                "BitsStored": 16,
+                "HighBit": 15,
+                "PixelRepresentation": 1,
+                "PixelSpacing": [
+                  0.736328,
+                  0.736328
+                ],
+                "ImageOrientationPatient": [
+                  -1.0,
+                  0.0,
+                  0.0,
+                  0.0,
+                  -1.0,
+                  0.0
+                ],
+                "ImagePositionPatient": [
+                  188.5,
+                  188.5,
+                  -141.0
+                ],
+                "SliceThickness": 5.0,
+                "SpacingBetweenSlices": 7.5,
+                "RescaleIntercept": -1024.0,
+                "RescaleSlope": 1.0,
+                "WindowCenter": 45.0,
+                "WindowWidth": 450.0,
+                "ConvolutionKernel": "SOFT",
+                "SeriesNumber": 2,
+                "TransferSyntaxUID": "1.2.840.10008.1.2.1"
+              },
+              "url": "dicomweb:/imaging/ct-001/f1f5a46a6c0df9a7e532c9e7736a276c.dcm"
+            },
+            {
+              "metadata": {
+                "SOPClassUID": "1.2.840.10008.5.1.4.1.1.2",
+                "SOPInstanceUID": "1.3.6.1.4.1.14519.5.2.1.6450.9002.265516446055396805880308680188",
+                "StudyInstanceUID": "1.3.6.1.4.1.14519.5.2.1.6450.9002.140494957337365122665628989385",
+                "SeriesInstanceUID": "1.3.6.1.4.1.14519.5.2.1.6450.9002.212434881874895270111598521722",
+                "FrameOfReferenceUID": "1.3.6.1.4.1.14519.5.2.1.6450.9002.332782825423809066734466132710",
+                "Modality": "CT",
+                "ImageType": [
+                  "ORIGINAL",
+                  "PRIMARY",
+                  "AXIAL"
+                ],
+                "Rows": 512,
+                "Columns": 512,
+                "InstanceNumber": 15,
+                "SamplesPerPixel": 1,
+                "PhotometricInterpretation": "MONOCHROME2",
+                "BitsAllocated": 16,
+                "BitsStored": 16,
+                "HighBit": 15,
+                "PixelRepresentation": 1,
+                "PixelSpacing": [
+                  0.736328,
+                  0.736328
+                ],
+                "ImageOrientationPatient": [
+                  -1.0,
+                  0.0,
+                  0.0,
+                  0.0,
+                  -1.0,
+                  0.0
+                ],
+                "ImagePositionPatient": [
+                  188.5,
+                  188.5,
+                  -136.0
+                ],
+                "SliceThickness": 5.0,
+                "SpacingBetweenSlices": 7.5,
+                "RescaleIntercept": -1024.0,
+                "RescaleSlope": 1.0,
+                "WindowCenter": 45.0,
+                "WindowWidth": 450.0,
+                "ConvolutionKernel": "SOFT",
+                "SeriesNumber": 2,
+                "TransferSyntaxUID": "1.2.840.10008.1.2.1"
+              },
+              "url": "dicomweb:/imaging/ct-001/2bd3ae5b2c77b5684d868314f1007440.dcm"
+            },
+            {
+              "metadata": {
+                "SOPClassUID": "1.2.840.10008.5.1.4.1.1.2",
+                "SOPInstanceUID": "1.3.6.1.4.1.14519.5.2.1.6450.9002.144612972800844475375003386935",
+                "StudyInstanceUID": "1.3.6.1.4.1.14519.5.2.1.6450.9002.140494957337365122665628989385",
+                "SeriesInstanceUID": "1.3.6.1.4.1.14519.5.2.1.6450.9002.212434881874895270111598521722",
+                "FrameOfReferenceUID": "1.3.6.1.4.1.14519.5.2.1.6450.9002.332782825423809066734466132710",
+                "Modality": "CT",
+                "ImageType": [
+                  "ORIGINAL",
+                  "PRIMARY",
+                  "AXIAL"
+                ],
+                "Rows": 512,
+                "Columns": 512,
+                "InstanceNumber": 14,
+                "SamplesPerPixel": 1,
+                "PhotometricInterpretation": "MONOCHROME2",
+                "BitsAllocated": 16,
+                "BitsStored": 16,
+                "HighBit": 15,
+                "PixelRepresentation": 1,
+                "PixelSpacing": [
+                  0.736328,
+                  0.736328
+                ],
+                "ImageOrientationPatient": [
+                  -1.0,
+                  0.0,
+                  0.0,
+                  0.0,
+                  -1.0,
+                  0.0
+                ],
+                "ImagePositionPatient": [
+                  188.5,
+                  188.5,
+                  -131.0
+                ],
+                "SliceThickness": 5.0,
+                "SpacingBetweenSlices": 7.5,
+                "RescaleIntercept": -1024.0,
+                "RescaleSlope": 1.0,
+                "WindowCenter": 45.0,
+                "WindowWidth": 450.0,
+                "ConvolutionKernel": "SOFT",
+                "SeriesNumber": 2,
+                "TransferSyntaxUID": "1.2.840.10008.1.2.1"
+              },
+              "url": "dicomweb:/imaging/ct-001/fd42905be9ce6670a460293a6fa4edd9.dcm"
+            },
+            {
+              "metadata": {
+                "SOPClassUID": "1.2.840.10008.5.1.4.1.1.2",
+                "SOPInstanceUID": "1.3.6.1.4.1.14519.5.2.1.6450.9002.169583665087466479813798433519",
+                "StudyInstanceUID": "1.3.6.1.4.1.14519.5.2.1.6450.9002.140494957337365122665628989385",
+                "SeriesInstanceUID": "1.3.6.1.4.1.14519.5.2.1.6450.9002.212434881874895270111598521722",
+                "FrameOfReferenceUID": "1.3.6.1.4.1.14519.5.2.1.6450.9002.332782825423809066734466132710",
+                "Modality": "CT",
+                "ImageType": [
+                  "ORIGINAL",
+                  "PRIMARY",
+                  "AXIAL"
+                ],
+                "Rows": 512,
+                "Columns": 512,
+                "InstanceNumber": 13,
+                "SamplesPerPixel": 1,
+                "PhotometricInterpretation": "MONOCHROME2",
+                "BitsAllocated": 16,
+                "BitsStored": 16,
+                "HighBit": 15,
+                "PixelRepresentation": 1,
+                "PixelSpacing": [
+                  0.736328,
+                  0.736328
+                ],
+                "ImageOrientationPatient": [
+                  -1.0,
+                  0.0,
+                  0.0,
+                  0.0,
+                  -1.0,
+                  0.0
+                ],
+                "ImagePositionPatient": [
+                  188.5,
+                  188.5,
+                  -126.0
+                ],
+                "SliceThickness": 5.0,
+                "SpacingBetweenSlices": 7.5,
+                "RescaleIntercept": -1024.0,
+                "RescaleSlope": 1.0,
+                "WindowCenter": 45.0,
+                "WindowWidth": 450.0,
+                "ConvolutionKernel": "SOFT",
+                "SeriesNumber": 2,
+                "TransferSyntaxUID": "1.2.840.10008.1.2.1"
+              },
+              "url": "dicomweb:/imaging/ct-001/61499e532e80f11cdca29e07c27802af.dcm"
+            },
+            {
+              "metadata": {
+                "SOPClassUID": "1.2.840.10008.5.1.4.1.1.2",
+                "SOPInstanceUID": "1.3.6.1.4.1.14519.5.2.1.6450.9002.310365783439707624124706163820",
+                "StudyInstanceUID": "1.3.6.1.4.1.14519.5.2.1.6450.9002.140494957337365122665628989385",
+                "SeriesInstanceUID": "1.3.6.1.4.1.14519.5.2.1.6450.9002.212434881874895270111598521722",
+                "FrameOfReferenceUID": "1.3.6.1.4.1.14519.5.2.1.6450.9002.332782825423809066734466132710",
+                "Modality": "CT",
+                "ImageType": [
+                  "ORIGINAL",
+                  "PRIMARY",
+                  "AXIAL"
+                ],
+                "Rows": 512,
+                "Columns": 512,
+                "InstanceNumber": 12,
+                "SamplesPerPixel": 1,
+                "PhotometricInterpretation": "MONOCHROME2",
+                "BitsAllocated": 16,
+                "BitsStored": 16,
+                "HighBit": 15,
+                "PixelRepresentation": 1,
+                "PixelSpacing": [
+                  0.736328,
+                  0.736328
+                ],
+                "ImageOrientationPatient": [
+                  -1.0,
+                  0.0,
+                  0.0,
+                  0.0,
+                  -1.0,
+                  0.0
+                ],
+                "ImagePositionPatient": [
+                  188.5,
+                  188.5,
+                  -121.0
+                ],
+                "SliceThickness": 5.0,
+                "SpacingBetweenSlices": 7.5,
+                "RescaleIntercept": -1024.0,
+                "RescaleSlope": 1.0,
+                "WindowCenter": 45.0,
+                "WindowWidth": 450.0,
+                "ConvolutionKernel": "SOFT",
+                "SeriesNumber": 2,
+                "TransferSyntaxUID": "1.2.840.10008.1.2.1"
+              },
+              "url": "dicomweb:/imaging/ct-001/8a481b2883f2ba277393bed1af6a1414.dcm"
+            },
+            {
+              "metadata": {
+                "SOPClassUID": "1.2.840.10008.5.1.4.1.1.2",
+                "SOPInstanceUID": "1.3.6.1.4.1.14519.5.2.1.6450.9002.261248850780886397533397671822",
+                "StudyInstanceUID": "1.3.6.1.4.1.14519.5.2.1.6450.9002.140494957337365122665628989385",
+                "SeriesInstanceUID": "1.3.6.1.4.1.14519.5.2.1.6450.9002.212434881874895270111598521722",
+                "FrameOfReferenceUID": "1.3.6.1.4.1.14519.5.2.1.6450.9002.332782825423809066734466132710",
+                "Modality": "CT",
+                "ImageType": [
+                  "ORIGINAL",
+                  "PRIMARY",
+                  "AXIAL"
+                ],
+                "Rows": 512,
+                "Columns": 512,
+                "InstanceNumber": 11,
+                "SamplesPerPixel": 1,
+                "PhotometricInterpretation": "MONOCHROME2",
+                "BitsAllocated": 16,
+                "BitsStored": 16,
+                "HighBit": 15,
+                "PixelRepresentation": 1,
+                "PixelSpacing": [
+                  0.736328,
+                  0.736328
+                ],
+                "ImageOrientationPatient": [
+                  -1.0,
+                  0.0,
+                  0.0,
+                  0.0,
+                  -1.0,
+                  0.0
+                ],
+                "ImagePositionPatient": [
+                  188.5,
+                  188.5,
+                  -116.0
+                ],
+                "SliceThickness": 5.0,
+                "SpacingBetweenSlices": 7.5,
+                "RescaleIntercept": -1024.0,
+                "RescaleSlope": 1.0,
+                "WindowCenter": 45.0,
+                "WindowWidth": 450.0,
+                "ConvolutionKernel": "SOFT",
+                "SeriesNumber": 2,
+                "TransferSyntaxUID": "1.2.840.10008.1.2.1"
+              },
+              "url": "dicomweb:/imaging/ct-001/7af3e9e5fede7c31229e5c21f763dfb6.dcm"
+            },
+            {
+              "metadata": {
+                "SOPClassUID": "1.2.840.10008.5.1.4.1.1.2",
+                "SOPInstanceUID": "1.3.6.1.4.1.14519.5.2.1.6450.9002.305138412638426325161538047150",
+                "StudyInstanceUID": "1.3.6.1.4.1.14519.5.2.1.6450.9002.140494957337365122665628989385",
+                "SeriesInstanceUID": "1.3.6.1.4.1.14519.5.2.1.6450.9002.212434881874895270111598521722",
+                "FrameOfReferenceUID": "1.3.6.1.4.1.14519.5.2.1.6450.9002.332782825423809066734466132710",
+                "Modality": "CT",
+                "ImageType": [
+                  "ORIGINAL",
+                  "PRIMARY",
+                  "AXIAL"
+                ],
+                "Rows": 512,
+                "Columns": 512,
+                "InstanceNumber": 10,
+                "SamplesPerPixel": 1,
+                "PhotometricInterpretation": "MONOCHROME2",
+                "BitsAllocated": 16,
+                "BitsStored": 16,
+                "HighBit": 15,
+                "PixelRepresentation": 1,
+                "PixelSpacing": [
+                  0.736328,
+                  0.736328
+                ],
+                "ImageOrientationPatient": [
+                  -1.0,
+                  0.0,
+                  0.0,
+                  0.0,
+                  -1.0,
+                  0.0
+                ],
+                "ImagePositionPatient": [
+                  188.5,
+                  188.5,
+                  -111.0
+                ],
+                "SliceThickness": 5.0,
+                "SpacingBetweenSlices": 7.5,
+                "RescaleIntercept": -1024.0,
+                "RescaleSlope": 1.0,
+                "WindowCenter": 45.0,
+                "WindowWidth": 450.0,
+                "ConvolutionKernel": "SOFT",
+                "SeriesNumber": 2,
+                "TransferSyntaxUID": "1.2.840.10008.1.2.1"
+              },
+              "url": "dicomweb:/imaging/ct-001/09e52a38c0e4ddbb4c3db020a78ac313.dcm"
+            },
+            {
+              "metadata": {
+                "SOPClassUID": "1.2.840.10008.5.1.4.1.1.2",
+                "SOPInstanceUID": "1.3.6.1.4.1.14519.5.2.1.6450.9002.335901957516323814540278618826",
+                "StudyInstanceUID": "1.3.6.1.4.1.14519.5.2.1.6450.9002.140494957337365122665628989385",
+                "SeriesInstanceUID": "1.3.6.1.4.1.14519.5.2.1.6450.9002.212434881874895270111598521722",
+                "FrameOfReferenceUID": "1.3.6.1.4.1.14519.5.2.1.6450.9002.332782825423809066734466132710",
+                "Modality": "CT",
+                "ImageType": [
+                  "ORIGINAL",
+                  "PRIMARY",
+                  "AXIAL"
+                ],
+                "Rows": 512,
+                "Columns": 512,
+                "InstanceNumber": 9,
+                "SamplesPerPixel": 1,
+                "PhotometricInterpretation": "MONOCHROME2",
+                "BitsAllocated": 16,
+                "BitsStored": 16,
+                "HighBit": 15,
+                "PixelRepresentation": 1,
+                "PixelSpacing": [
+                  0.736328,
+                  0.736328
+                ],
+                "ImageOrientationPatient": [
+                  -1.0,
+                  0.0,
+                  0.0,
+                  0.0,
+                  -1.0,
+                  0.0
+                ],
+                "ImagePositionPatient": [
+                  188.5,
+                  188.5,
+                  -106.0
+                ],
+                "SliceThickness": 5.0,
+                "SpacingBetweenSlices": 7.5,
+                "RescaleIntercept": -1024.0,
+                "RescaleSlope": 1.0,
+                "WindowCenter": 45.0,
+                "WindowWidth": 450.0,
+                "ConvolutionKernel": "SOFT",
+                "SeriesNumber": 2,
+                "TransferSyntaxUID": "1.2.840.10008.1.2.1"
+              },
+              "url": "dicomweb:/imaging/ct-001/ba3043bd5ba9e1dde0ee6b806211fb78.dcm"
+            },
+            {
+              "metadata": {
+                "SOPClassUID": "1.2.840.10008.5.1.4.1.1.2",
+                "SOPInstanceUID": "1.3.6.1.4.1.14519.5.2.1.6450.9002.116882610808975399612245907750",
+                "StudyInstanceUID": "1.3.6.1.4.1.14519.5.2.1.6450.9002.140494957337365122665628989385",
+                "SeriesInstanceUID": "1.3.6.1.4.1.14519.5.2.1.6450.9002.212434881874895270111598521722",
+                "FrameOfReferenceUID": "1.3.6.1.4.1.14519.5.2.1.6450.9002.332782825423809066734466132710",
+                "Modality": "CT",
+                "ImageType": [
+                  "ORIGINAL",
+                  "PRIMARY",
+                  "AXIAL"
+                ],
+                "Rows": 512,
+                "Columns": 512,
+                "InstanceNumber": 8,
+                "SamplesPerPixel": 1,
+                "PhotometricInterpretation": "MONOCHROME2",
+                "BitsAllocated": 16,
+                "BitsStored": 16,
+                "HighBit": 15,
+                "PixelRepresentation": 1,
+                "PixelSpacing": [
+                  0.736328,
+                  0.736328
+                ],
+                "ImageOrientationPatient": [
+                  -1.0,
+                  0.0,
+                  0.0,
+                  0.0,
+                  -1.0,
+                  0.0
+                ],
+                "ImagePositionPatient": [
+                  188.5,
+                  188.5,
+                  -101.0
+                ],
+                "SliceThickness": 5.0,
+                "SpacingBetweenSlices": 7.5,
+                "RescaleIntercept": -1024.0,
+                "RescaleSlope": 1.0,
+                "WindowCenter": 45.0,
+                "WindowWidth": 450.0,
+                "ConvolutionKernel": "SOFT",
+                "SeriesNumber": 2,
+                "TransferSyntaxUID": "1.2.840.10008.1.2.1"
+              },
+              "url": "dicomweb:/imaging/ct-001/00b9916724073deeeafc86b3169882ab.dcm"
+            },
+            {
+              "metadata": {
+                "SOPClassUID": "1.2.840.10008.5.1.4.1.1.2",
+                "SOPInstanceUID": "1.3.6.1.4.1.14519.5.2.1.6450.9002.268904635241371182702641392968",
+                "StudyInstanceUID": "1.3.6.1.4.1.14519.5.2.1.6450.9002.140494957337365122665628989385",
+                "SeriesInstanceUID": "1.3.6.1.4.1.14519.5.2.1.6450.9002.212434881874895270111598521722",
+                "FrameOfReferenceUID": "1.3.6.1.4.1.14519.5.2.1.6450.9002.332782825423809066734466132710",
+                "Modality": "CT",
+                "ImageType": [
+                  "ORIGINAL",
+                  "PRIMARY",
+                  "AXIAL"
+                ],
+                "Rows": 512,
+                "Columns": 512,
+                "InstanceNumber": 7,
+                "SamplesPerPixel": 1,
+                "PhotometricInterpretation": "MONOCHROME2",
+                "BitsAllocated": 16,
+                "BitsStored": 16,
+                "HighBit": 15,
+                "PixelRepresentation": 1,
+                "PixelSpacing": [
+                  0.736328,
+                  0.736328
+                ],
+                "ImageOrientationPatient": [
+                  -1.0,
+                  0.0,
+                  0.0,
+                  0.0,
+                  -1.0,
+                  0.0
+                ],
+                "ImagePositionPatient": [
+                  188.5,
+                  188.5,
+                  -96.0
+                ],
+                "SliceThickness": 5.0,
+                "SpacingBetweenSlices": 7.5,
+                "RescaleIntercept": -1024.0,
+                "RescaleSlope": 1.0,
+                "WindowCenter": 45.0,
+                "WindowWidth": 450.0,
+                "ConvolutionKernel": "SOFT",
+                "SeriesNumber": 2,
+                "TransferSyntaxUID": "1.2.840.10008.1.2.1"
+              },
+              "url": "dicomweb:/imaging/ct-001/ca3726fdd3452c852b6c15deb0cbd45e.dcm"
+            },
+            {
+              "metadata": {
+                "SOPClassUID": "1.2.840.10008.5.1.4.1.1.2",
+                "SOPInstanceUID": "1.3.6.1.4.1.14519.5.2.1.6450.9002.638003145270368713584345327482",
+                "StudyInstanceUID": "1.3.6.1.4.1.14519.5.2.1.6450.9002.140494957337365122665628989385",
+                "SeriesInstanceUID": "1.3.6.1.4.1.14519.5.2.1.6450.9002.212434881874895270111598521722",
+                "FrameOfReferenceUID": "1.3.6.1.4.1.14519.5.2.1.6450.9002.332782825423809066734466132710",
+                "Modality": "CT",
+                "ImageType": [
+                  "ORIGINAL",
+                  "PRIMARY",
+                  "AXIAL"
+                ],
+                "Rows": 512,
+                "Columns": 512,
+                "InstanceNumber": 6,
+                "SamplesPerPixel": 1,
+                "PhotometricInterpretation": "MONOCHROME2",
+                "BitsAllocated": 16,
+                "BitsStored": 16,
+                "HighBit": 15,
+                "PixelRepresentation": 1,
+                "PixelSpacing": [
+                  0.736328,
+                  0.736328
+                ],
+                "ImageOrientationPatient": [
+                  -1.0,
+                  0.0,
+                  0.0,
+                  0.0,
+                  -1.0,
+                  0.0
+                ],
+                "ImagePositionPatient": [
+                  188.5,
+                  188.5,
+                  -91.0
+                ],
+                "SliceThickness": 5.0,
+                "SpacingBetweenSlices": 7.5,
+                "RescaleIntercept": -1024.0,
+                "RescaleSlope": 1.0,
+                "WindowCenter": 45.0,
+                "WindowWidth": 450.0,
+                "ConvolutionKernel": "SOFT",
+                "SeriesNumber": 2,
+                "TransferSyntaxUID": "1.2.840.10008.1.2.1"
+              },
+              "url": "dicomweb:/imaging/ct-001/9e4ef946ddf0ddfab63f8594cc123375.dcm"
+            },
+            {
+              "metadata": {
+                "SOPClassUID": "1.2.840.10008.5.1.4.1.1.2",
+                "SOPInstanceUID": "1.3.6.1.4.1.14519.5.2.1.6450.9002.135807787517115219981295817481",
+                "StudyInstanceUID": "1.3.6.1.4.1.14519.5.2.1.6450.9002.140494957337365122665628989385",
+                "SeriesInstanceUID": "1.3.6.1.4.1.14519.5.2.1.6450.9002.212434881874895270111598521722",
+                "FrameOfReferenceUID": "1.3.6.1.4.1.14519.5.2.1.6450.9002.332782825423809066734466132710",
+                "Modality": "CT",
+                "ImageType": [
+                  "ORIGINAL",
+                  "PRIMARY",
+                  "AXIAL"
+                ],
+                "Rows": 512,
+                "Columns": 512,
+                "InstanceNumber": 5,
+                "SamplesPerPixel": 1,
+                "PhotometricInterpretation": "MONOCHROME2",
+                "BitsAllocated": 16,
+                "BitsStored": 16,
+                "HighBit": 15,
+                "PixelRepresentation": 1,
+                "PixelSpacing": [
+                  0.736328,
+                  0.736328
+                ],
+                "ImageOrientationPatient": [
+                  -1.0,
+                  0.0,
+                  0.0,
+                  0.0,
+                  -1.0,
+                  0.0
+                ],
+                "ImagePositionPatient": [
+                  188.5,
+                  188.5,
+                  -86.0
+                ],
+                "SliceThickness": 5.0,
+                "SpacingBetweenSlices": 7.5,
+                "RescaleIntercept": -1024.0,
+                "RescaleSlope": 1.0,
+                "WindowCenter": 45.0,
+                "WindowWidth": 450.0,
+                "ConvolutionKernel": "SOFT",
+                "SeriesNumber": 2,
+                "TransferSyntaxUID": "1.2.840.10008.1.2.1"
+              },
+              "url": "dicomweb:/imaging/ct-001/b28ab89ec53190d50e250c0489af92ef.dcm"
+            },
+            {
+              "metadata": {
+                "SOPClassUID": "1.2.840.10008.5.1.4.1.1.2",
+                "SOPInstanceUID": "1.3.6.1.4.1.14519.5.2.1.6450.9002.314545320725605676364075300275",
+                "StudyInstanceUID": "1.3.6.1.4.1.14519.5.2.1.6450.9002.140494957337365122665628989385",
+                "SeriesInstanceUID": "1.3.6.1.4.1.14519.5.2.1.6450.9002.212434881874895270111598521722",
+                "FrameOfReferenceUID": "1.3.6.1.4.1.14519.5.2.1.6450.9002.332782825423809066734466132710",
+                "Modality": "CT",
+                "ImageType": [
+                  "ORIGINAL",
+                  "PRIMARY",
+                  "AXIAL"
+                ],
+                "Rows": 512,
+                "Columns": 512,
+                "InstanceNumber": 4,
+                "SamplesPerPixel": 1,
+                "PhotometricInterpretation": "MONOCHROME2",
+                "BitsAllocated": 16,
+                "BitsStored": 16,
+                "HighBit": 15,
+                "PixelRepresentation": 1,
+                "PixelSpacing": [
+                  0.736328,
+                  0.736328
+                ],
+                "ImageOrientationPatient": [
+                  -1.0,
+                  0.0,
+                  0.0,
+                  0.0,
+                  -1.0,
+                  0.0
+                ],
+                "ImagePositionPatient": [
+                  188.5,
+                  188.5,
+                  -81.0
+                ],
+                "SliceThickness": 5.0,
+                "SpacingBetweenSlices": 7.5,
+                "RescaleIntercept": -1024.0,
+                "RescaleSlope": 1.0,
+                "WindowCenter": 45.0,
+                "WindowWidth": 450.0,
+                "ConvolutionKernel": "SOFT",
+                "SeriesNumber": 2,
+                "TransferSyntaxUID": "1.2.840.10008.1.2.1"
+              },
+              "url": "dicomweb:/imaging/ct-001/e57de8f7394052fa8b84e02f4dcf82fd.dcm"
+            },
+            {
+              "metadata": {
+                "SOPClassUID": "1.2.840.10008.5.1.4.1.1.2",
+                "SOPInstanceUID": "1.3.6.1.4.1.14519.5.2.1.6450.9002.122869037917912322494413103106",
+                "StudyInstanceUID": "1.3.6.1.4.1.14519.5.2.1.6450.9002.140494957337365122665628989385",
+                "SeriesInstanceUID": "1.3.6.1.4.1.14519.5.2.1.6450.9002.212434881874895270111598521722",
+                "FrameOfReferenceUID": "1.3.6.1.4.1.14519.5.2.1.6450.9002.332782825423809066734466132710",
+                "Modality": "CT",
+                "ImageType": [
+                  "ORIGINAL",
+                  "PRIMARY",
+                  "AXIAL"
+                ],
+                "Rows": 512,
+                "Columns": 512,
+                "InstanceNumber": 3,
+                "SamplesPerPixel": 1,
+                "PhotometricInterpretation": "MONOCHROME2",
+                "BitsAllocated": 16,
+                "BitsStored": 16,
+                "HighBit": 15,
+                "PixelRepresentation": 1,
+                "PixelSpacing": [
+                  0.736328,
+                  0.736328
+                ],
+                "ImageOrientationPatient": [
+                  -1.0,
+                  0.0,
+                  0.0,
+                  0.0,
+                  -1.0,
+                  0.0
+                ],
+                "ImagePositionPatient": [
+                  188.5,
+                  188.5,
+                  -76.0
+                ],
+                "SliceThickness": 5.0,
+                "SpacingBetweenSlices": 7.5,
+                "RescaleIntercept": -1024.0,
+                "RescaleSlope": 1.0,
+                "WindowCenter": 45.0,
+                "WindowWidth": 450.0,
+                "ConvolutionKernel": "SOFT",
+                "SeriesNumber": 2,
+                "TransferSyntaxUID": "1.2.840.10008.1.2.1"
+              },
+              "url": "dicomweb:/imaging/ct-001/c876fdcf2f0d784831e9285bf9b4d19a.dcm"
+            },
+            {
+              "metadata": {
+                "SOPClassUID": "1.2.840.10008.5.1.4.1.1.2",
+                "SOPInstanceUID": "1.3.6.1.4.1.14519.5.2.1.6450.9002.230603548828747529548024502965",
+                "StudyInstanceUID": "1.3.6.1.4.1.14519.5.2.1.6450.9002.140494957337365122665628989385",
+                "SeriesInstanceUID": "1.3.6.1.4.1.14519.5.2.1.6450.9002.212434881874895270111598521722",
+                "FrameOfReferenceUID": "1.3.6.1.4.1.14519.5.2.1.6450.9002.332782825423809066734466132710",
+                "Modality": "CT",
+                "ImageType": [
+                  "ORIGINAL",
+                  "PRIMARY",
+                  "AXIAL"
+                ],
+                "Rows": 512,
+                "Columns": 512,
+                "InstanceNumber": 2,
+                "SamplesPerPixel": 1,
+                "PhotometricInterpretation": "MONOCHROME2",
+                "BitsAllocated": 16,
+                "BitsStored": 16,
+                "HighBit": 15,
+                "PixelRepresentation": 1,
+                "PixelSpacing": [
+                  0.736328,
+                  0.736328
+                ],
+                "ImageOrientationPatient": [
+                  -1.0,
+                  0.0,
+                  0.0,
+                  0.0,
+                  -1.0,
+                  0.0
+                ],
+                "ImagePositionPatient": [
+                  188.5,
+                  188.5,
+                  -71.0
+                ],
+                "SliceThickness": 5.0,
+                "SpacingBetweenSlices": 7.5,
+                "RescaleIntercept": -1024.0,
+                "RescaleSlope": 1.0,
+                "WindowCenter": 45.0,
+                "WindowWidth": 450.0,
+                "ConvolutionKernel": "SOFT",
+                "SeriesNumber": 2,
+                "TransferSyntaxUID": "1.2.840.10008.1.2.1"
+              },
+              "url": "dicomweb:/imaging/ct-001/cf61ae3bc017ed40eac1f109b698575a.dcm"
+            },
+            {
+              "metadata": {
+                "SOPClassUID": "1.2.840.10008.5.1.4.1.1.2",
+                "SOPInstanceUID": "1.3.6.1.4.1.14519.5.2.1.6450.9002.817558662175971840716236781010",
+                "StudyInstanceUID": "1.3.6.1.4.1.14519.5.2.1.6450.9002.140494957337365122665628989385",
+                "SeriesInstanceUID": "1.3.6.1.4.1.14519.5.2.1.6450.9002.212434881874895270111598521722",
+                "FrameOfReferenceUID": "1.3.6.1.4.1.14519.5.2.1.6450.9002.332782825423809066734466132710",
+                "Modality": "CT",
+                "ImageType": [
+                  "ORIGINAL",
+                  "PRIMARY",
+                  "AXIAL"
+                ],
+                "Rows": 512,
+                "Columns": 512,
+                "InstanceNumber": 1,
+                "SamplesPerPixel": 1,
+                "PhotometricInterpretation": "MONOCHROME2",
+                "BitsAllocated": 16,
+                "BitsStored": 16,
+                "HighBit": 15,
+                "PixelRepresentation": 1,
+                "PixelSpacing": [
+                  0.736328,
+                  0.736328
+                ],
+                "ImageOrientationPatient": [
+                  -1.0,
+                  0.0,
+                  0.0,
+                  0.0,
+                  -1.0,
+                  0.0
+                ],
+                "ImagePositionPatient": [
+                  188.5,
+                  188.5,
+                  -66.0
+                ],
+                "SliceThickness": 5.0,
+                "SpacingBetweenSlices": 7.5,
+                "RescaleIntercept": -1024.0,
+                "RescaleSlope": 1.0,
+                "WindowCenter": 45.0,
+                "WindowWidth": 450.0,
+                "ConvolutionKernel": "SOFT",
+                "SeriesNumber": 2,
+                "TransferSyntaxUID": "1.2.840.10008.1.2.1"
+              },
+              "url": "dicomweb:/imaging/ct-001/f739d3925b342b152aef9ceaba08f753.dcm"
+            }
+          ]
+        },
+        {
+          "SeriesInstanceUID": "1.3.6.1.4.1.14519.5.2.1.6450.9002.230713842590247146149807189576",
+          "SeriesNumber": 3,
+          "SeriesDescription": "CT acquisition 2",
+          "Modality": "CT",
+          "instances": [
+            {
+              "metadata": {
+                "SOPClassUID": "1.2.840.10008.5.1.4.1.1.2",
+                "SOPInstanceUID": "1.3.6.1.4.1.14519.5.2.1.6450.9002.107940003885446219326839243993",
+                "StudyInstanceUID": "1.3.6.1.4.1.14519.5.2.1.6450.9002.140494957337365122665628989385",
+                "SeriesInstanceUID": "1.3.6.1.4.1.14519.5.2.1.6450.9002.230713842590247146149807189576",
+                "FrameOfReferenceUID": "1.3.6.1.4.1.14519.5.2.1.6450.9002.332782825423809066734466132710",
+                "Modality": "CT",
+                "ImageType": [
+                  "ORIGINAL",
+                  "PRIMARY",
+                  "AXIAL"
+                ],
+                "Rows": 512,
+                "Columns": 512,
+                "InstanceNumber": 38,
+                "SamplesPerPixel": 1,
+                "PhotometricInterpretation": "MONOCHROME2",
+                "BitsAllocated": 16,
+                "BitsStored": 16,
+                "HighBit": 15,
+                "PixelRepresentation": 1,
+                "PixelSpacing": [
+                  0.736328,
+                  0.736328
+                ],
+                "ImageOrientationPatient": [
+                  -1.0,
+                  0.0,
+                  0.0,
+                  0.0,
+                  -1.0,
+                  0.0
+                ],
+                "ImagePositionPatient": [
+                  188.5,
+                  188.5,
+                  -251.0
+                ],
+                "SliceThickness": 5.0,
+                "SpacingBetweenSlices": 7.5,
+                "RescaleIntercept": -1024.0,
+                "RescaleSlope": 1.0,
+                "WindowCenter": 2047.0,
+                "WindowWidth": 1600.0,
+                "ConvolutionKernel": "LUNG",
+                "SeriesNumber": 3,
+                "TransferSyntaxUID": "1.2.840.10008.1.2.1"
+              },
+              "url": "dicomweb:/imaging/ct-001/65e0fa4cb84c5c090be752c75941fe62.dcm"
+            },
+            {
+              "metadata": {
+                "SOPClassUID": "1.2.840.10008.5.1.4.1.1.2",
+                "SOPInstanceUID": "1.3.6.1.4.1.14519.5.2.1.6450.9002.317440181884011362373658066901",
+                "StudyInstanceUID": "1.3.6.1.4.1.14519.5.2.1.6450.9002.140494957337365122665628989385",
+                "SeriesInstanceUID": "1.3.6.1.4.1.14519.5.2.1.6450.9002.230713842590247146149807189576",
+                "FrameOfReferenceUID": "1.3.6.1.4.1.14519.5.2.1.6450.9002.332782825423809066734466132710",
+                "Modality": "CT",
+                "ImageType": [
+                  "ORIGINAL",
+                  "PRIMARY",
+                  "AXIAL"
+                ],
+                "Rows": 512,
+                "Columns": 512,
+                "InstanceNumber": 37,
+                "SamplesPerPixel": 1,
+                "PhotometricInterpretation": "MONOCHROME2",
+                "BitsAllocated": 16,
+                "BitsStored": 16,
+                "HighBit": 15,
+                "PixelRepresentation": 1,
+                "PixelSpacing": [
+                  0.736328,
+                  0.736328
+                ],
+                "ImageOrientationPatient": [
+                  -1.0,
+                  0.0,
+                  0.0,
+                  0.0,
+                  -1.0,
+                  0.0
+                ],
+                "ImagePositionPatient": [
+                  188.5,
+                  188.5,
+                  -246.0
+                ],
+                "SliceThickness": 5.0,
+                "SpacingBetweenSlices": 7.5,
+                "RescaleIntercept": -1024.0,
+                "RescaleSlope": 1.0,
+                "WindowCenter": 2047.0,
+                "WindowWidth": 1600.0,
+                "ConvolutionKernel": "LUNG",
+                "SeriesNumber": 3,
+                "TransferSyntaxUID": "1.2.840.10008.1.2.1"
+              },
+              "url": "dicomweb:/imaging/ct-001/4ce386ec7e89c54b78dd23a960ec49aa.dcm"
+            },
+            {
+              "metadata": {
+                "SOPClassUID": "1.2.840.10008.5.1.4.1.1.2",
+                "SOPInstanceUID": "1.3.6.1.4.1.14519.5.2.1.6450.9002.203725521301389257188799812055",
+                "StudyInstanceUID": "1.3.6.1.4.1.14519.5.2.1.6450.9002.140494957337365122665628989385",
+                "SeriesInstanceUID": "1.3.6.1.4.1.14519.5.2.1.6450.9002.230713842590247146149807189576",
+                "FrameOfReferenceUID": "1.3.6.1.4.1.14519.5.2.1.6450.9002.332782825423809066734466132710",
+                "Modality": "CT",
+                "ImageType": [
+                  "ORIGINAL",
+                  "PRIMARY",
+                  "AXIAL"
+                ],
+                "Rows": 512,
+                "Columns": 512,
+                "InstanceNumber": 36,
+                "SamplesPerPixel": 1,
+                "PhotometricInterpretation": "MONOCHROME2",
+                "BitsAllocated": 16,
+                "BitsStored": 16,
+                "HighBit": 15,
+                "PixelRepresentation": 1,
+                "PixelSpacing": [
+                  0.736328,
+                  0.736328
+                ],
+                "ImageOrientationPatient": [
+                  -1.0,
+                  0.0,
+                  0.0,
+                  0.0,
+                  -1.0,
+                  0.0
+                ],
+                "ImagePositionPatient": [
+                  188.5,
+                  188.5,
+                  -241.0
+                ],
+                "SliceThickness": 5.0,
+                "SpacingBetweenSlices": 7.5,
+                "RescaleIntercept": -1024.0,
+                "RescaleSlope": 1.0,
+                "WindowCenter": 2047.0,
+                "WindowWidth": 1600.0,
+                "ConvolutionKernel": "LUNG",
+                "SeriesNumber": 3,
+                "TransferSyntaxUID": "1.2.840.10008.1.2.1"
+              },
+              "url": "dicomweb:/imaging/ct-001/22798a3e582c1d2c65c2a8d0cb914fec.dcm"
+            },
+            {
+              "metadata": {
+                "SOPClassUID": "1.2.840.10008.5.1.4.1.1.2",
+                "SOPInstanceUID": "1.3.6.1.4.1.14519.5.2.1.6450.9002.186474041346431477344254000444",
+                "StudyInstanceUID": "1.3.6.1.4.1.14519.5.2.1.6450.9002.140494957337365122665628989385",
+                "SeriesInstanceUID": "1.3.6.1.4.1.14519.5.2.1.6450.9002.230713842590247146149807189576",
+                "FrameOfReferenceUID": "1.3.6.1.4.1.14519.5.2.1.6450.9002.332782825423809066734466132710",
+                "Modality": "CT",
+                "ImageType": [
+                  "ORIGINAL",
+                  "PRIMARY",
+                  "AXIAL"
+                ],
+                "Rows": 512,
+                "Columns": 512,
+                "InstanceNumber": 35,
+                "SamplesPerPixel": 1,
+                "PhotometricInterpretation": "MONOCHROME2",
+                "BitsAllocated": 16,
+                "BitsStored": 16,
+                "HighBit": 15,
+                "PixelRepresentation": 1,
+                "PixelSpacing": [
+                  0.736328,
+                  0.736328
+                ],
+                "ImageOrientationPatient": [
+                  -1.0,
+                  0.0,
+                  0.0,
+                  0.0,
+                  -1.0,
+                  0.0
+                ],
+                "ImagePositionPatient": [
+                  188.5,
+                  188.5,
+                  -236.0
+                ],
+                "SliceThickness": 5.0,
+                "SpacingBetweenSlices": 7.5,
+                "RescaleIntercept": -1024.0,
+                "RescaleSlope": 1.0,
+                "WindowCenter": 2047.0,
+                "WindowWidth": 1600.0,
+                "ConvolutionKernel": "LUNG",
+                "SeriesNumber": 3,
+                "TransferSyntaxUID": "1.2.840.10008.1.2.1"
+              },
+              "url": "dicomweb:/imaging/ct-001/205d66de84164e4350db82bd3c7b6b01.dcm"
+            },
+            {
+              "metadata": {
+                "SOPClassUID": "1.2.840.10008.5.1.4.1.1.2",
+                "SOPInstanceUID": "1.3.6.1.4.1.14519.5.2.1.6450.9002.209651711122172518678190094056",
+                "StudyInstanceUID": "1.3.6.1.4.1.14519.5.2.1.6450.9002.140494957337365122665628989385",
+                "SeriesInstanceUID": "1.3.6.1.4.1.14519.5.2.1.6450.9002.230713842590247146149807189576",
+                "FrameOfReferenceUID": "1.3.6.1.4.1.14519.5.2.1.6450.9002.332782825423809066734466132710",
+                "Modality": "CT",
+                "ImageType": [
+                  "ORIGINAL",
+                  "PRIMARY",
+                  "AXIAL"
+                ],
+                "Rows": 512,
+                "Columns": 512,
+                "InstanceNumber": 34,
+                "SamplesPerPixel": 1,
+                "PhotometricInterpretation": "MONOCHROME2",
+                "BitsAllocated": 16,
+                "BitsStored": 16,
+                "HighBit": 15,
+                "PixelRepresentation": 1,
+                "PixelSpacing": [
+                  0.736328,
+                  0.736328
+                ],
+                "ImageOrientationPatient": [
+                  -1.0,
+                  0.0,
+                  0.0,
+                  0.0,
+                  -1.0,
+                  0.0
+                ],
+                "ImagePositionPatient": [
+                  188.5,
+                  188.5,
+                  -231.0
+                ],
+                "SliceThickness": 5.0,
+                "SpacingBetweenSlices": 7.5,
+                "RescaleIntercept": -1024.0,
+                "RescaleSlope": 1.0,
+                "WindowCenter": 2047.0,
+                "WindowWidth": 1600.0,
+                "ConvolutionKernel": "LUNG",
+                "SeriesNumber": 3,
+                "TransferSyntaxUID": "1.2.840.10008.1.2.1"
+              },
+              "url": "dicomweb:/imaging/ct-001/585c5e16835a721036b7e476fca16075.dcm"
+            },
+            {
+              "metadata": {
+                "SOPClassUID": "1.2.840.10008.5.1.4.1.1.2",
+                "SOPInstanceUID": "1.3.6.1.4.1.14519.5.2.1.6450.9002.725441696634411309893144194868",
+                "StudyInstanceUID": "1.3.6.1.4.1.14519.5.2.1.6450.9002.140494957337365122665628989385",
+                "SeriesInstanceUID": "1.3.6.1.4.1.14519.5.2.1.6450.9002.230713842590247146149807189576",
+                "FrameOfReferenceUID": "1.3.6.1.4.1.14519.5.2.1.6450.9002.332782825423809066734466132710",
+                "Modality": "CT",
+                "ImageType": [
+                  "ORIGINAL",
+                  "PRIMARY",
+                  "AXIAL"
+                ],
+                "Rows": 512,
+                "Columns": 512,
+                "InstanceNumber": 33,
+                "SamplesPerPixel": 1,
+                "PhotometricInterpretation": "MONOCHROME2",
+                "BitsAllocated": 16,
+                "BitsStored": 16,
+                "HighBit": 15,
+                "PixelRepresentation": 1,
+                "PixelSpacing": [
+                  0.736328,
+                  0.736328
+                ],
+                "ImageOrientationPatient": [
+                  -1.0,
+                  0.0,
+                  0.0,
+                  0.0,
+                  -1.0,
+                  0.0
+                ],
+                "ImagePositionPatient": [
+                  188.5,
+                  188.5,
+                  -226.0
+                ],
+                "SliceThickness": 5.0,
+                "SpacingBetweenSlices": 7.5,
+                "RescaleIntercept": -1024.0,
+                "RescaleSlope": 1.0,
+                "WindowCenter": 2047.0,
+                "WindowWidth": 1600.0,
+                "ConvolutionKernel": "LUNG",
+                "SeriesNumber": 3,
+                "TransferSyntaxUID": "1.2.840.10008.1.2.1"
+              },
+              "url": "dicomweb:/imaging/ct-001/ee6f33ae035e50ad6c78479c8d02a813.dcm"
+            },
+            {
+              "metadata": {
+                "SOPClassUID": "1.2.840.10008.5.1.4.1.1.2",
+                "SOPInstanceUID": "1.3.6.1.4.1.14519.5.2.1.6450.9002.307832883210101563989295988078",
+                "StudyInstanceUID": "1.3.6.1.4.1.14519.5.2.1.6450.9002.140494957337365122665628989385",
+                "SeriesInstanceUID": "1.3.6.1.4.1.14519.5.2.1.6450.9002.230713842590247146149807189576",
+                "FrameOfReferenceUID": "1.3.6.1.4.1.14519.5.2.1.6450.9002.332782825423809066734466132710",
+                "Modality": "CT",
+                "ImageType": [
+                  "ORIGINAL",
+                  "PRIMARY",
+                  "AXIAL"
+                ],
+                "Rows": 512,
+                "Columns": 512,
+                "InstanceNumber": 32,
+                "SamplesPerPixel": 1,
+                "PhotometricInterpretation": "MONOCHROME2",
+                "BitsAllocated": 16,
+                "BitsStored": 16,
+                "HighBit": 15,
+                "PixelRepresentation": 1,
+                "PixelSpacing": [
+                  0.736328,
+                  0.736328
+                ],
+                "ImageOrientationPatient": [
+                  -1.0,
+                  0.0,
+                  0.0,
+                  0.0,
+                  -1.0,
+                  0.0
+                ],
+                "ImagePositionPatient": [
+                  188.5,
+                  188.5,
+                  -221.0
+                ],
+                "SliceThickness": 5.0,
+                "SpacingBetweenSlices": 7.5,
+                "RescaleIntercept": -1024.0,
+                "RescaleSlope": 1.0,
+                "WindowCenter": 2047.0,
+                "WindowWidth": 1600.0,
+                "ConvolutionKernel": "LUNG",
+                "SeriesNumber": 3,
+                "TransferSyntaxUID": "1.2.840.10008.1.2.1"
+              },
+              "url": "dicomweb:/imaging/ct-001/ed1b0f6f377dde63c9a118d4a6c16b3e.dcm"
+            },
+            {
+              "metadata": {
+                "SOPClassUID": "1.2.840.10008.5.1.4.1.1.2",
+                "SOPInstanceUID": "1.3.6.1.4.1.14519.5.2.1.6450.9002.163682453119890723324772830413",
+                "StudyInstanceUID": "1.3.6.1.4.1.14519.5.2.1.6450.9002.140494957337365122665628989385",
+                "SeriesInstanceUID": "1.3.6.1.4.1.14519.5.2.1.6450.9002.230713842590247146149807189576",
+                "FrameOfReferenceUID": "1.3.6.1.4.1.14519.5.2.1.6450.9002.332782825423809066734466132710",
+                "Modality": "CT",
+                "ImageType": [
+                  "ORIGINAL",
+                  "PRIMARY",
+                  "AXIAL"
+                ],
+                "Rows": 512,
+                "Columns": 512,
+                "InstanceNumber": 31,
+                "SamplesPerPixel": 1,
+                "PhotometricInterpretation": "MONOCHROME2",
+                "BitsAllocated": 16,
+                "BitsStored": 16,
+                "HighBit": 15,
+                "PixelRepresentation": 1,
+                "PixelSpacing": [
+                  0.736328,
+                  0.736328
+                ],
+                "ImageOrientationPatient": [
+                  -1.0,
+                  0.0,
+                  0.0,
+                  0.0,
+                  -1.0,
+                  0.0
+                ],
+                "ImagePositionPatient": [
+                  188.5,
+                  188.5,
+                  -216.0
+                ],
+                "SliceThickness": 5.0,
+                "SpacingBetweenSlices": 7.5,
+                "RescaleIntercept": -1024.0,
+                "RescaleSlope": 1.0,
+                "WindowCenter": 2047.0,
+                "WindowWidth": 1600.0,
+                "ConvolutionKernel": "LUNG",
+                "SeriesNumber": 3,
+                "TransferSyntaxUID": "1.2.840.10008.1.2.1"
+              },
+              "url": "dicomweb:/imaging/ct-001/3afde0d6f5d1480b58a15fa07d9a94d3.dcm"
+            },
+            {
+              "metadata": {
+                "SOPClassUID": "1.2.840.10008.5.1.4.1.1.2",
+                "SOPInstanceUID": "1.3.6.1.4.1.14519.5.2.1.6450.9002.165963595320151038230506098762",
+                "StudyInstanceUID": "1.3.6.1.4.1.14519.5.2.1.6450.9002.140494957337365122665628989385",
+                "SeriesInstanceUID": "1.3.6.1.4.1.14519.5.2.1.6450.9002.230713842590247146149807189576",
+                "FrameOfReferenceUID": "1.3.6.1.4.1.14519.5.2.1.6450.9002.332782825423809066734466132710",
+                "Modality": "CT",
+                "ImageType": [
+                  "ORIGINAL",
+                  "PRIMARY",
+                  "AXIAL"
+                ],
+                "Rows": 512,
+                "Columns": 512,
+                "InstanceNumber": 30,
+                "SamplesPerPixel": 1,
+                "PhotometricInterpretation": "MONOCHROME2",
+                "BitsAllocated": 16,
+                "BitsStored": 16,
+                "HighBit": 15,
+                "PixelRepresentation": 1,
+                "PixelSpacing": [
+                  0.736328,
+                  0.736328
+                ],
+                "ImageOrientationPatient": [
+                  -1.0,
+                  0.0,
+                  0.0,
+                  0.0,
+                  -1.0,
+                  0.0
+                ],
+                "ImagePositionPatient": [
+                  188.5,
+                  188.5,
+                  -211.0
+                ],
+                "SliceThickness": 5.0,
+                "SpacingBetweenSlices": 7.5,
+                "RescaleIntercept": -1024.0,
+                "RescaleSlope": 1.0,
+                "WindowCenter": 2047.0,
+                "WindowWidth": 1600.0,
+                "ConvolutionKernel": "LUNG",
+                "SeriesNumber": 3,
+                "TransferSyntaxUID": "1.2.840.10008.1.2.1"
+              },
+              "url": "dicomweb:/imaging/ct-001/49d00db269b60755429b5fd72d5de7db.dcm"
+            },
+            {
+              "metadata": {
+                "SOPClassUID": "1.2.840.10008.5.1.4.1.1.2",
+                "SOPInstanceUID": "1.3.6.1.4.1.14519.5.2.1.6450.9002.287337611972644102641133206521",
+                "StudyInstanceUID": "1.3.6.1.4.1.14519.5.2.1.6450.9002.140494957337365122665628989385",
+                "SeriesInstanceUID": "1.3.6.1.4.1.14519.5.2.1.6450.9002.230713842590247146149807189576",
+                "FrameOfReferenceUID": "1.3.6.1.4.1.14519.5.2.1.6450.9002.332782825423809066734466132710",
+                "Modality": "CT",
+                "ImageType": [
+                  "ORIGINAL",
+                  "PRIMARY",
+                  "AXIAL"
+                ],
+                "Rows": 512,
+                "Columns": 512,
+                "InstanceNumber": 29,
+                "SamplesPerPixel": 1,
+                "PhotometricInterpretation": "MONOCHROME2",
+                "BitsAllocated": 16,
+                "BitsStored": 16,
+                "HighBit": 15,
+                "PixelRepresentation": 1,
+                "PixelSpacing": [
+                  0.736328,
+                  0.736328
+                ],
+                "ImageOrientationPatient": [
+                  -1.0,
+                  0.0,
+                  0.0,
+                  0.0,
+                  -1.0,
+                  0.0
+                ],
+                "ImagePositionPatient": [
+                  188.5,
+                  188.5,
+                  -206.0
+                ],
+                "SliceThickness": 5.0,
+                "SpacingBetweenSlices": 7.5,
+                "RescaleIntercept": -1024.0,
+                "RescaleSlope": 1.0,
+                "WindowCenter": 2047.0,
+                "WindowWidth": 1600.0,
+                "ConvolutionKernel": "LUNG",
+                "SeriesNumber": 3,
+                "TransferSyntaxUID": "1.2.840.10008.1.2.1"
+              },
+              "url": "dicomweb:/imaging/ct-001/7ee8cf6dbadee03ee367c2faed5a3dc1.dcm"
+            },
+            {
+              "metadata": {
+                "SOPClassUID": "1.2.840.10008.5.1.4.1.1.2",
+                "SOPInstanceUID": "1.3.6.1.4.1.14519.5.2.1.6450.9002.211014681708612290574902127883",
+                "StudyInstanceUID": "1.3.6.1.4.1.14519.5.2.1.6450.9002.140494957337365122665628989385",
+                "SeriesInstanceUID": "1.3.6.1.4.1.14519.5.2.1.6450.9002.230713842590247146149807189576",
+                "FrameOfReferenceUID": "1.3.6.1.4.1.14519.5.2.1.6450.9002.332782825423809066734466132710",
+                "Modality": "CT",
+                "ImageType": [
+                  "ORIGINAL",
+                  "PRIMARY",
+                  "AXIAL"
+                ],
+                "Rows": 512,
+                "Columns": 512,
+                "InstanceNumber": 28,
+                "SamplesPerPixel": 1,
+                "PhotometricInterpretation": "MONOCHROME2",
+                "BitsAllocated": 16,
+                "BitsStored": 16,
+                "HighBit": 15,
+                "PixelRepresentation": 1,
+                "PixelSpacing": [
+                  0.736328,
+                  0.736328
+                ],
+                "ImageOrientationPatient": [
+                  -1.0,
+                  0.0,
+                  0.0,
+                  0.0,
+                  -1.0,
+                  0.0
+                ],
+                "ImagePositionPatient": [
+                  188.5,
+                  188.5,
+                  -201.0
+                ],
+                "SliceThickness": 5.0,
+                "SpacingBetweenSlices": 7.5,
+                "RescaleIntercept": -1024.0,
+                "RescaleSlope": 1.0,
+                "WindowCenter": 2047.0,
+                "WindowWidth": 1600.0,
+                "ConvolutionKernel": "LUNG",
+                "SeriesNumber": 3,
+                "TransferSyntaxUID": "1.2.840.10008.1.2.1"
+              },
+              "url": "dicomweb:/imaging/ct-001/7698b50ea42408d898354238fdff25d9.dcm"
+            },
+            {
+              "metadata": {
+                "SOPClassUID": "1.2.840.10008.5.1.4.1.1.2",
+                "SOPInstanceUID": "1.3.6.1.4.1.14519.5.2.1.6450.9002.134356539262398833214091420117",
+                "StudyInstanceUID": "1.3.6.1.4.1.14519.5.2.1.6450.9002.140494957337365122665628989385",
+                "SeriesInstanceUID": "1.3.6.1.4.1.14519.5.2.1.6450.9002.230713842590247146149807189576",
+                "FrameOfReferenceUID": "1.3.6.1.4.1.14519.5.2.1.6450.9002.332782825423809066734466132710",
+                "Modality": "CT",
+                "ImageType": [
+                  "ORIGINAL",
+                  "PRIMARY",
+                  "AXIAL"
+                ],
+                "Rows": 512,
+                "Columns": 512,
+                "InstanceNumber": 27,
+                "SamplesPerPixel": 1,
+                "PhotometricInterpretation": "MONOCHROME2",
+                "BitsAllocated": 16,
+                "BitsStored": 16,
+                "HighBit": 15,
+                "PixelRepresentation": 1,
+                "PixelSpacing": [
+                  0.736328,
+                  0.736328
+                ],
+                "ImageOrientationPatient": [
+                  -1.0,
+                  0.0,
+                  0.0,
+                  0.0,
+                  -1.0,
+                  0.0
+                ],
+                "ImagePositionPatient": [
+                  188.5,
+                  188.5,
+                  -196.0
+                ],
+                "SliceThickness": 5.0,
+                "SpacingBetweenSlices": 7.5,
+                "RescaleIntercept": -1024.0,
+                "RescaleSlope": 1.0,
+                "WindowCenter": 2047.0,
+                "WindowWidth": 1600.0,
+                "ConvolutionKernel": "LUNG",
+                "SeriesNumber": 3,
+                "TransferSyntaxUID": "1.2.840.10008.1.2.1"
+              },
+              "url": "dicomweb:/imaging/ct-001/015e58d7393241b03a412d2c904012cb.dcm"
+            },
+            {
+              "metadata": {
+                "SOPClassUID": "1.2.840.10008.5.1.4.1.1.2",
+                "SOPInstanceUID": "1.3.6.1.4.1.14519.5.2.1.6450.9002.319044096116743526058144517703",
+                "StudyInstanceUID": "1.3.6.1.4.1.14519.5.2.1.6450.9002.140494957337365122665628989385",
+                "SeriesInstanceUID": "1.3.6.1.4.1.14519.5.2.1.6450.9002.230713842590247146149807189576",
+                "FrameOfReferenceUID": "1.3.6.1.4.1.14519.5.2.1.6450.9002.332782825423809066734466132710",
+                "Modality": "CT",
+                "ImageType": [
+                  "ORIGINAL",
+                  "PRIMARY",
+                  "AXIAL"
+                ],
+                "Rows": 512,
+                "Columns": 512,
+                "InstanceNumber": 26,
+                "SamplesPerPixel": 1,
+                "PhotometricInterpretation": "MONOCHROME2",
+                "BitsAllocated": 16,
+                "BitsStored": 16,
+                "HighBit": 15,
+                "PixelRepresentation": 1,
+                "PixelSpacing": [
+                  0.736328,
+                  0.736328
+                ],
+                "ImageOrientationPatient": [
+                  -1.0,
+                  0.0,
+                  0.0,
+                  0.0,
+                  -1.0,
+                  0.0
+                ],
+                "ImagePositionPatient": [
+                  188.5,
+                  188.5,
+                  -191.0
+                ],
+                "SliceThickness": 5.0,
+                "SpacingBetweenSlices": 7.5,
+                "RescaleIntercept": -1024.0,
+                "RescaleSlope": 1.0,
+                "WindowCenter": 2047.0,
+                "WindowWidth": 1600.0,
+                "ConvolutionKernel": "LUNG",
+                "SeriesNumber": 3,
+                "TransferSyntaxUID": "1.2.840.10008.1.2.1"
+              },
+              "url": "dicomweb:/imaging/ct-001/822f5a530b17a8fb007a7da130844cbc.dcm"
+            },
+            {
+              "metadata": {
+                "SOPClassUID": "1.2.840.10008.5.1.4.1.1.2",
+                "SOPInstanceUID": "1.3.6.1.4.1.14519.5.2.1.6450.9002.254147713701552595538044670002",
+                "StudyInstanceUID": "1.3.6.1.4.1.14519.5.2.1.6450.9002.140494957337365122665628989385",
+                "SeriesInstanceUID": "1.3.6.1.4.1.14519.5.2.1.6450.9002.230713842590247146149807189576",
+                "FrameOfReferenceUID": "1.3.6.1.4.1.14519.5.2.1.6450.9002.332782825423809066734466132710",
+                "Modality": "CT",
+                "ImageType": [
+                  "ORIGINAL",
+                  "PRIMARY",
+                  "AXIAL"
+                ],
+                "Rows": 512,
+                "Columns": 512,
+                "InstanceNumber": 25,
+                "SamplesPerPixel": 1,
+                "PhotometricInterpretation": "MONOCHROME2",
+                "BitsAllocated": 16,
+                "BitsStored": 16,
+                "HighBit": 15,
+                "PixelRepresentation": 1,
+                "PixelSpacing": [
+                  0.736328,
+                  0.736328
+                ],
+                "ImageOrientationPatient": [
+                  -1.0,
+                  0.0,
+                  0.0,
+                  0.0,
+                  -1.0,
+                  0.0
+                ],
+                "ImagePositionPatient": [
+                  188.5,
+                  188.5,
+                  -186.0
+                ],
+                "SliceThickness": 5.0,
+                "SpacingBetweenSlices": 7.5,
+                "RescaleIntercept": -1024.0,
+                "RescaleSlope": 1.0,
+                "WindowCenter": 2047.0,
+                "WindowWidth": 1600.0,
+                "ConvolutionKernel": "LUNG",
+                "SeriesNumber": 3,
+                "TransferSyntaxUID": "1.2.840.10008.1.2.1"
+              },
+              "url": "dicomweb:/imaging/ct-001/baa6c7a9646fa693463ef1e297e2fd86.dcm"
+            },
+            {
+              "metadata": {
+                "SOPClassUID": "1.2.840.10008.5.1.4.1.1.2",
+                "SOPInstanceUID": "1.3.6.1.4.1.14519.5.2.1.6450.9002.996429544415588597886109230655",
+                "StudyInstanceUID": "1.3.6.1.4.1.14519.5.2.1.6450.9002.140494957337365122665628989385",
+                "SeriesInstanceUID": "1.3.6.1.4.1.14519.5.2.1.6450.9002.230713842590247146149807189576",
+                "FrameOfReferenceUID": "1.3.6.1.4.1.14519.5.2.1.6450.9002.332782825423809066734466132710",
+                "Modality": "CT",
+                "ImageType": [
+                  "ORIGINAL",
+                  "PRIMARY",
+                  "AXIAL"
+                ],
+                "Rows": 512,
+                "Columns": 512,
+                "InstanceNumber": 24,
+                "SamplesPerPixel": 1,
+                "PhotometricInterpretation": "MONOCHROME2",
+                "BitsAllocated": 16,
+                "BitsStored": 16,
+                "HighBit": 15,
+                "PixelRepresentation": 1,
+                "PixelSpacing": [
+                  0.736328,
+                  0.736328
+                ],
+                "ImageOrientationPatient": [
+                  -1.0,
+                  0.0,
+                  0.0,
+                  0.0,
+                  -1.0,
+                  0.0
+                ],
+                "ImagePositionPatient": [
+                  188.5,
+                  188.5,
+                  -181.0
+                ],
+                "SliceThickness": 5.0,
+                "SpacingBetweenSlices": 7.5,
+                "RescaleIntercept": -1024.0,
+                "RescaleSlope": 1.0,
+                "WindowCenter": 2047.0,
+                "WindowWidth": 1600.0,
+                "ConvolutionKernel": "LUNG",
+                "SeriesNumber": 3,
+                "TransferSyntaxUID": "1.2.840.10008.1.2.1"
+              },
+              "url": "dicomweb:/imaging/ct-001/5744f5d45f181cf52be9ebf31b700286.dcm"
+            },
+            {
+              "metadata": {
+                "SOPClassUID": "1.2.840.10008.5.1.4.1.1.2",
+                "SOPInstanceUID": "1.3.6.1.4.1.14519.5.2.1.6450.9002.247733958664097851558368487723",
+                "StudyInstanceUID": "1.3.6.1.4.1.14519.5.2.1.6450.9002.140494957337365122665628989385",
+                "SeriesInstanceUID": "1.3.6.1.4.1.14519.5.2.1.6450.9002.230713842590247146149807189576",
+                "FrameOfReferenceUID": "1.3.6.1.4.1.14519.5.2.1.6450.9002.332782825423809066734466132710",
+                "Modality": "CT",
+                "ImageType": [
+                  "ORIGINAL",
+                  "PRIMARY",
+                  "AXIAL"
+                ],
+                "Rows": 512,
+                "Columns": 512,
+                "InstanceNumber": 23,
+                "SamplesPerPixel": 1,
+                "PhotometricInterpretation": "MONOCHROME2",
+                "BitsAllocated": 16,
+                "BitsStored": 16,
+                "HighBit": 15,
+                "PixelRepresentation": 1,
+                "PixelSpacing": [
+                  0.736328,
+                  0.736328
+                ],
+                "ImageOrientationPatient": [
+                  -1.0,
+                  0.0,
+                  0.0,
+                  0.0,
+                  -1.0,
+                  0.0
+                ],
+                "ImagePositionPatient": [
+                  188.5,
+                  188.5,
+                  -176.0
+                ],
+                "SliceThickness": 5.0,
+                "SpacingBetweenSlices": 7.5,
+                "RescaleIntercept": -1024.0,
+                "RescaleSlope": 1.0,
+                "WindowCenter": 2047.0,
+                "WindowWidth": 1600.0,
+                "ConvolutionKernel": "LUNG",
+                "SeriesNumber": 3,
+                "TransferSyntaxUID": "1.2.840.10008.1.2.1"
+              },
+              "url": "dicomweb:/imaging/ct-001/21ca146c9d142bf0e86b9670d2b2f9c5.dcm"
+            },
+            {
+              "metadata": {
+                "SOPClassUID": "1.2.840.10008.5.1.4.1.1.2",
+                "SOPInstanceUID": "1.3.6.1.4.1.14519.5.2.1.6450.9002.140018397584719467183417710927",
+                "StudyInstanceUID": "1.3.6.1.4.1.14519.5.2.1.6450.9002.140494957337365122665628989385",
+                "SeriesInstanceUID": "1.3.6.1.4.1.14519.5.2.1.6450.9002.230713842590247146149807189576",
+                "FrameOfReferenceUID": "1.3.6.1.4.1.14519.5.2.1.6450.9002.332782825423809066734466132710",
+                "Modality": "CT",
+                "ImageType": [
+                  "ORIGINAL",
+                  "PRIMARY",
+                  "AXIAL"
+                ],
+                "Rows": 512,
+                "Columns": 512,
+                "InstanceNumber": 22,
+                "SamplesPerPixel": 1,
+                "PhotometricInterpretation": "MONOCHROME2",
+                "BitsAllocated": 16,
+                "BitsStored": 16,
+                "HighBit": 15,
+                "PixelRepresentation": 1,
+                "PixelSpacing": [
+                  0.736328,
+                  0.736328
+                ],
+                "ImageOrientationPatient": [
+                  -1.0,
+                  0.0,
+                  0.0,
+                  0.0,
+                  -1.0,
+                  0.0
+                ],
+                "ImagePositionPatient": [
+                  188.5,
+                  188.5,
+                  -171.0
+                ],
+                "SliceThickness": 5.0,
+                "SpacingBetweenSlices": 7.5,
+                "RescaleIntercept": -1024.0,
+                "RescaleSlope": 1.0,
+                "WindowCenter": 2047.0,
+                "WindowWidth": 1600.0,
+                "ConvolutionKernel": "LUNG",
+                "SeriesNumber": 3,
+                "TransferSyntaxUID": "1.2.840.10008.1.2.1"
+              },
+              "url": "dicomweb:/imaging/ct-001/ab15a8720fe947230d8fa92349cadc6d.dcm"
+            },
+            {
+              "metadata": {
+                "SOPClassUID": "1.2.840.10008.5.1.4.1.1.2",
+                "SOPInstanceUID": "1.3.6.1.4.1.14519.5.2.1.6450.9002.238175934298401247675256129243",
+                "StudyInstanceUID": "1.3.6.1.4.1.14519.5.2.1.6450.9002.140494957337365122665628989385",
+                "SeriesInstanceUID": "1.3.6.1.4.1.14519.5.2.1.6450.9002.230713842590247146149807189576",
+                "FrameOfReferenceUID": "1.3.6.1.4.1.14519.5.2.1.6450.9002.332782825423809066734466132710",
+                "Modality": "CT",
+                "ImageType": [
+                  "ORIGINAL",
+                  "PRIMARY",
+                  "AXIAL"
+                ],
+                "Rows": 512,
+                "Columns": 512,
+                "InstanceNumber": 21,
+                "SamplesPerPixel": 1,
+                "PhotometricInterpretation": "MONOCHROME2",
+                "BitsAllocated": 16,
+                "BitsStored": 16,
+                "HighBit": 15,
+                "PixelRepresentation": 1,
+                "PixelSpacing": [
+                  0.736328,
+                  0.736328
+                ],
+                "ImageOrientationPatient": [
+                  -1.0,
+                  0.0,
+                  0.0,
+                  0.0,
+                  -1.0,
+                  0.0
+                ],
+                "ImagePositionPatient": [
+                  188.5,
+                  188.5,
+                  -166.0
+                ],
+                "SliceThickness": 5.0,
+                "SpacingBetweenSlices": 7.5,
+                "RescaleIntercept": -1024.0,
+                "RescaleSlope": 1.0,
+                "WindowCenter": 2047.0,
+                "WindowWidth": 1600.0,
+                "ConvolutionKernel": "LUNG",
+                "SeriesNumber": 3,
+                "TransferSyntaxUID": "1.2.840.10008.1.2.1"
+              },
+              "url": "dicomweb:/imaging/ct-001/fdb647d9dae90fe763211fe01813f7a9.dcm"
+            },
+            {
+              "metadata": {
+                "SOPClassUID": "1.2.840.10008.5.1.4.1.1.2",
+                "SOPInstanceUID": "1.3.6.1.4.1.14519.5.2.1.6450.9002.226445707939877514394630902956",
+                "StudyInstanceUID": "1.3.6.1.4.1.14519.5.2.1.6450.9002.140494957337365122665628989385",
+                "SeriesInstanceUID": "1.3.6.1.4.1.14519.5.2.1.6450.9002.230713842590247146149807189576",
+                "FrameOfReferenceUID": "1.3.6.1.4.1.14519.5.2.1.6450.9002.332782825423809066734466132710",
+                "Modality": "CT",
+                "ImageType": [
+                  "ORIGINAL",
+                  "PRIMARY",
+                  "AXIAL"
+                ],
+                "Rows": 512,
+                "Columns": 512,
+                "InstanceNumber": 20,
+                "SamplesPerPixel": 1,
+                "PhotometricInterpretation": "MONOCHROME2",
+                "BitsAllocated": 16,
+                "BitsStored": 16,
+                "HighBit": 15,
+                "PixelRepresentation": 1,
+                "PixelSpacing": [
+                  0.736328,
+                  0.736328
+                ],
+                "ImageOrientationPatient": [
+                  -1.0,
+                  0.0,
+                  0.0,
+                  0.0,
+                  -1.0,
+                  0.0
+                ],
+                "ImagePositionPatient": [
+                  188.5,
+                  188.5,
+                  -161.0
+                ],
+                "SliceThickness": 5.0,
+                "SpacingBetweenSlices": 7.5,
+                "RescaleIntercept": -1024.0,
+                "RescaleSlope": 1.0,
+                "WindowCenter": 2047.0,
+                "WindowWidth": 1600.0,
+                "ConvolutionKernel": "LUNG",
+                "SeriesNumber": 3,
+                "TransferSyntaxUID": "1.2.840.10008.1.2.1"
+              },
+              "url": "dicomweb:/imaging/ct-001/8e68d16faa76eb2182958eff202fa429.dcm"
+            },
+            {
+              "metadata": {
+                "SOPClassUID": "1.2.840.10008.5.1.4.1.1.2",
+                "SOPInstanceUID": "1.3.6.1.4.1.14519.5.2.1.6450.9002.206315409613099136238463875640",
+                "StudyInstanceUID": "1.3.6.1.4.1.14519.5.2.1.6450.9002.140494957337365122665628989385",
+                "SeriesInstanceUID": "1.3.6.1.4.1.14519.5.2.1.6450.9002.230713842590247146149807189576",
+                "FrameOfReferenceUID": "1.3.6.1.4.1.14519.5.2.1.6450.9002.332782825423809066734466132710",
+                "Modality": "CT",
+                "ImageType": [
+                  "ORIGINAL",
+                  "PRIMARY",
+                  "AXIAL"
+                ],
+                "Rows": 512,
+                "Columns": 512,
+                "InstanceNumber": 19,
+                "SamplesPerPixel": 1,
+                "PhotometricInterpretation": "MONOCHROME2",
+                "BitsAllocated": 16,
+                "BitsStored": 16,
+                "HighBit": 15,
+                "PixelRepresentation": 1,
+                "PixelSpacing": [
+                  0.736328,
+                  0.736328
+                ],
+                "ImageOrientationPatient": [
+                  -1.0,
+                  0.0,
+                  0.0,
+                  0.0,
+                  -1.0,
+                  0.0
+                ],
+                "ImagePositionPatient": [
+                  188.5,
+                  188.5,
+                  -156.0
+                ],
+                "SliceThickness": 5.0,
+                "SpacingBetweenSlices": 7.5,
+                "RescaleIntercept": -1024.0,
+                "RescaleSlope": 1.0,
+                "WindowCenter": 2047.0,
+                "WindowWidth": 1600.0,
+                "ConvolutionKernel": "LUNG",
+                "SeriesNumber": 3,
+                "TransferSyntaxUID": "1.2.840.10008.1.2.1"
+              },
+              "url": "dicomweb:/imaging/ct-001/88c8b4a5568ecd72e8eb1c169a0f37d4.dcm"
+            },
+            {
+              "metadata": {
+                "SOPClassUID": "1.2.840.10008.5.1.4.1.1.2",
+                "SOPInstanceUID": "1.3.6.1.4.1.14519.5.2.1.6450.9002.418423310428178329138309436573",
+                "StudyInstanceUID": "1.3.6.1.4.1.14519.5.2.1.6450.9002.140494957337365122665628989385",
+                "SeriesInstanceUID": "1.3.6.1.4.1.14519.5.2.1.6450.9002.230713842590247146149807189576",
+                "FrameOfReferenceUID": "1.3.6.1.4.1.14519.5.2.1.6450.9002.332782825423809066734466132710",
+                "Modality": "CT",
+                "ImageType": [
+                  "ORIGINAL",
+                  "PRIMARY",
+                  "AXIAL"
+                ],
+                "Rows": 512,
+                "Columns": 512,
+                "InstanceNumber": 18,
+                "SamplesPerPixel": 1,
+                "PhotometricInterpretation": "MONOCHROME2",
+                "BitsAllocated": 16,
+                "BitsStored": 16,
+                "HighBit": 15,
+                "PixelRepresentation": 1,
+                "PixelSpacing": [
+                  0.736328,
+                  0.736328
+                ],
+                "ImageOrientationPatient": [
+                  -1.0,
+                  0.0,
+                  0.0,
+                  0.0,
+                  -1.0,
+                  0.0
+                ],
+                "ImagePositionPatient": [
+                  188.5,
+                  188.5,
+                  -151.0
+                ],
+                "SliceThickness": 5.0,
+                "SpacingBetweenSlices": 7.5,
+                "RescaleIntercept": -1024.0,
+                "RescaleSlope": 1.0,
+                "WindowCenter": 2047.0,
+                "WindowWidth": 1600.0,
+                "ConvolutionKernel": "LUNG",
+                "SeriesNumber": 3,
+                "TransferSyntaxUID": "1.2.840.10008.1.2.1"
+              },
+              "url": "dicomweb:/imaging/ct-001/f3305352b0e8de58c4f924cd54fb2062.dcm"
+            },
+            {
+              "metadata": {
+                "SOPClassUID": "1.2.840.10008.5.1.4.1.1.2",
+                "SOPInstanceUID": "1.3.6.1.4.1.14519.5.2.1.6450.9002.132888368317306874314234352347",
+                "StudyInstanceUID": "1.3.6.1.4.1.14519.5.2.1.6450.9002.140494957337365122665628989385",
+                "SeriesInstanceUID": "1.3.6.1.4.1.14519.5.2.1.6450.9002.230713842590247146149807189576",
+                "FrameOfReferenceUID": "1.3.6.1.4.1.14519.5.2.1.6450.9002.332782825423809066734466132710",
+                "Modality": "CT",
+                "ImageType": [
+                  "ORIGINAL",
+                  "PRIMARY",
+                  "AXIAL"
+                ],
+                "Rows": 512,
+                "Columns": 512,
+                "InstanceNumber": 17,
+                "SamplesPerPixel": 1,
+                "PhotometricInterpretation": "MONOCHROME2",
+                "BitsAllocated": 16,
+                "BitsStored": 16,
+                "HighBit": 15,
+                "PixelRepresentation": 1,
+                "PixelSpacing": [
+                  0.736328,
+                  0.736328
+                ],
+                "ImageOrientationPatient": [
+                  -1.0,
+                  0.0,
+                  0.0,
+                  0.0,
+                  -1.0,
+                  0.0
+                ],
+                "ImagePositionPatient": [
+                  188.5,
+                  188.5,
+                  -146.0
+                ],
+                "SliceThickness": 5.0,
+                "SpacingBetweenSlices": 7.5,
+                "RescaleIntercept": -1024.0,
+                "RescaleSlope": 1.0,
+                "WindowCenter": 2047.0,
+                "WindowWidth": 1600.0,
+                "ConvolutionKernel": "LUNG",
+                "SeriesNumber": 3,
+                "TransferSyntaxUID": "1.2.840.10008.1.2.1"
+              },
+              "url": "dicomweb:/imaging/ct-001/359c30905498937d3f77326e1f28c0c3.dcm"
+            },
+            {
+              "metadata": {
+                "SOPClassUID": "1.2.840.10008.5.1.4.1.1.2",
+                "SOPInstanceUID": "1.3.6.1.4.1.14519.5.2.1.6450.9002.187006968286209568244148473106",
+                "StudyInstanceUID": "1.3.6.1.4.1.14519.5.2.1.6450.9002.140494957337365122665628989385",
+                "SeriesInstanceUID": "1.3.6.1.4.1.14519.5.2.1.6450.9002.230713842590247146149807189576",
+                "FrameOfReferenceUID": "1.3.6.1.4.1.14519.5.2.1.6450.9002.332782825423809066734466132710",
+                "Modality": "CT",
+                "ImageType": [
+                  "ORIGINAL",
+                  "PRIMARY",
+                  "AXIAL"
+                ],
+                "Rows": 512,
+                "Columns": 512,
+                "InstanceNumber": 16,
+                "SamplesPerPixel": 1,
+                "PhotometricInterpretation": "MONOCHROME2",
+                "BitsAllocated": 16,
+                "BitsStored": 16,
+                "HighBit": 15,
+                "PixelRepresentation": 1,
+                "PixelSpacing": [
+                  0.736328,
+                  0.736328
+                ],
+                "ImageOrientationPatient": [
+                  -1.0,
+                  0.0,
+                  0.0,
+                  0.0,
+                  -1.0,
+                  0.0
+                ],
+                "ImagePositionPatient": [
+                  188.5,
+                  188.5,
+                  -141.0
+                ],
+                "SliceThickness": 5.0,
+                "SpacingBetweenSlices": 7.5,
+                "RescaleIntercept": -1024.0,
+                "RescaleSlope": 1.0,
+                "WindowCenter": 2047.0,
+                "WindowWidth": 1600.0,
+                "ConvolutionKernel": "LUNG",
+                "SeriesNumber": 3,
+                "TransferSyntaxUID": "1.2.840.10008.1.2.1"
+              },
+              "url": "dicomweb:/imaging/ct-001/6e98cf59935d9b3ff31b84867b7ca82a.dcm"
+            },
+            {
+              "metadata": {
+                "SOPClassUID": "1.2.840.10008.5.1.4.1.1.2",
+                "SOPInstanceUID": "1.3.6.1.4.1.14519.5.2.1.6450.9002.285450152702821472716769260103",
+                "StudyInstanceUID": "1.3.6.1.4.1.14519.5.2.1.6450.9002.140494957337365122665628989385",
+                "SeriesInstanceUID": "1.3.6.1.4.1.14519.5.2.1.6450.9002.230713842590247146149807189576",
+                "FrameOfReferenceUID": "1.3.6.1.4.1.14519.5.2.1.6450.9002.332782825423809066734466132710",
+                "Modality": "CT",
+                "ImageType": [
+                  "ORIGINAL",
+                  "PRIMARY",
+                  "AXIAL"
+                ],
+                "Rows": 512,
+                "Columns": 512,
+                "InstanceNumber": 15,
+                "SamplesPerPixel": 1,
+                "PhotometricInterpretation": "MONOCHROME2",
+                "BitsAllocated": 16,
+                "BitsStored": 16,
+                "HighBit": 15,
+                "PixelRepresentation": 1,
+                "PixelSpacing": [
+                  0.736328,
+                  0.736328
+                ],
+                "ImageOrientationPatient": [
+                  -1.0,
+                  0.0,
+                  0.0,
+                  0.0,
+                  -1.0,
+                  0.0
+                ],
+                "ImagePositionPatient": [
+                  188.5,
+                  188.5,
+                  -136.0
+                ],
+                "SliceThickness": 5.0,
+                "SpacingBetweenSlices": 7.5,
+                "RescaleIntercept": -1024.0,
+                "RescaleSlope": 1.0,
+                "WindowCenter": 2047.0,
+                "WindowWidth": 1600.0,
+                "ConvolutionKernel": "LUNG",
+                "SeriesNumber": 3,
+                "TransferSyntaxUID": "1.2.840.10008.1.2.1"
+              },
+              "url": "dicomweb:/imaging/ct-001/668ad7365d18033ad396798e99d88bc9.dcm"
+            },
+            {
+              "metadata": {
+                "SOPClassUID": "1.2.840.10008.5.1.4.1.1.2",
+                "SOPInstanceUID": "1.3.6.1.4.1.14519.5.2.1.6450.9002.234958920088479184337657696937",
+                "StudyInstanceUID": "1.3.6.1.4.1.14519.5.2.1.6450.9002.140494957337365122665628989385",
+                "SeriesInstanceUID": "1.3.6.1.4.1.14519.5.2.1.6450.9002.230713842590247146149807189576",
+                "FrameOfReferenceUID": "1.3.6.1.4.1.14519.5.2.1.6450.9002.332782825423809066734466132710",
+                "Modality": "CT",
+                "ImageType": [
+                  "ORIGINAL",
+                  "PRIMARY",
+                  "AXIAL"
+                ],
+                "Rows": 512,
+                "Columns": 512,
+                "InstanceNumber": 14,
+                "SamplesPerPixel": 1,
+                "PhotometricInterpretation": "MONOCHROME2",
+                "BitsAllocated": 16,
+                "BitsStored": 16,
+                "HighBit": 15,
+                "PixelRepresentation": 1,
+                "PixelSpacing": [
+                  0.736328,
+                  0.736328
+                ],
+                "ImageOrientationPatient": [
+                  -1.0,
+                  0.0,
+                  0.0,
+                  0.0,
+                  -1.0,
+                  0.0
+                ],
+                "ImagePositionPatient": [
+                  188.5,
+                  188.5,
+                  -131.0
+                ],
+                "SliceThickness": 5.0,
+                "SpacingBetweenSlices": 7.5,
+                "RescaleIntercept": -1024.0,
+                "RescaleSlope": 1.0,
+                "WindowCenter": 2047.0,
+                "WindowWidth": 1600.0,
+                "ConvolutionKernel": "LUNG",
+                "SeriesNumber": 3,
+                "TransferSyntaxUID": "1.2.840.10008.1.2.1"
+              },
+              "url": "dicomweb:/imaging/ct-001/bd1470dbc298790ffb9536a9c20e1a42.dcm"
+            },
+            {
+              "metadata": {
+                "SOPClassUID": "1.2.840.10008.5.1.4.1.1.2",
+                "SOPInstanceUID": "1.3.6.1.4.1.14519.5.2.1.6450.9002.121077793125733454841152824785",
+                "StudyInstanceUID": "1.3.6.1.4.1.14519.5.2.1.6450.9002.140494957337365122665628989385",
+                "SeriesInstanceUID": "1.3.6.1.4.1.14519.5.2.1.6450.9002.230713842590247146149807189576",
+                "FrameOfReferenceUID": "1.3.6.1.4.1.14519.5.2.1.6450.9002.332782825423809066734466132710",
+                "Modality": "CT",
+                "ImageType": [
+                  "ORIGINAL",
+                  "PRIMARY",
+                  "AXIAL"
+                ],
+                "Rows": 512,
+                "Columns": 512,
+                "InstanceNumber": 13,
+                "SamplesPerPixel": 1,
+                "PhotometricInterpretation": "MONOCHROME2",
+                "BitsAllocated": 16,
+                "BitsStored": 16,
+                "HighBit": 15,
+                "PixelRepresentation": 1,
+                "PixelSpacing": [
+                  0.736328,
+                  0.736328
+                ],
+                "ImageOrientationPatient": [
+                  -1.0,
+                  0.0,
+                  0.0,
+                  0.0,
+                  -1.0,
+                  0.0
+                ],
+                "ImagePositionPatient": [
+                  188.5,
+                  188.5,
+                  -126.0
+                ],
+                "SliceThickness": 5.0,
+                "SpacingBetweenSlices": 7.5,
+                "RescaleIntercept": -1024.0,
+                "RescaleSlope": 1.0,
+                "WindowCenter": 2047.0,
+                "WindowWidth": 1600.0,
+                "ConvolutionKernel": "LUNG",
+                "SeriesNumber": 3,
+                "TransferSyntaxUID": "1.2.840.10008.1.2.1"
+              },
+              "url": "dicomweb:/imaging/ct-001/71256832683dbc2f9f991ada28e6773a.dcm"
+            },
+            {
+              "metadata": {
+                "SOPClassUID": "1.2.840.10008.5.1.4.1.1.2",
+                "SOPInstanceUID": "1.3.6.1.4.1.14519.5.2.1.6450.9002.291829012457974568649725636874",
+                "StudyInstanceUID": "1.3.6.1.4.1.14519.5.2.1.6450.9002.140494957337365122665628989385",
+                "SeriesInstanceUID": "1.3.6.1.4.1.14519.5.2.1.6450.9002.230713842590247146149807189576",
+                "FrameOfReferenceUID": "1.3.6.1.4.1.14519.5.2.1.6450.9002.332782825423809066734466132710",
+                "Modality": "CT",
+                "ImageType": [
+                  "ORIGINAL",
+                  "PRIMARY",
+                  "AXIAL"
+                ],
+                "Rows": 512,
+                "Columns": 512,
+                "InstanceNumber": 12,
+                "SamplesPerPixel": 1,
+                "PhotometricInterpretation": "MONOCHROME2",
+                "BitsAllocated": 16,
+                "BitsStored": 16,
+                "HighBit": 15,
+                "PixelRepresentation": 1,
+                "PixelSpacing": [
+                  0.736328,
+                  0.736328
+                ],
+                "ImageOrientationPatient": [
+                  -1.0,
+                  0.0,
+                  0.0,
+                  0.0,
+                  -1.0,
+                  0.0
+                ],
+                "ImagePositionPatient": [
+                  188.5,
+                  188.5,
+                  -121.0
+                ],
+                "SliceThickness": 5.0,
+                "SpacingBetweenSlices": 7.5,
+                "RescaleIntercept": -1024.0,
+                "RescaleSlope": 1.0,
+                "WindowCenter": 2047.0,
+                "WindowWidth": 1600.0,
+                "ConvolutionKernel": "LUNG",
+                "SeriesNumber": 3,
+                "TransferSyntaxUID": "1.2.840.10008.1.2.1"
+              },
+              "url": "dicomweb:/imaging/ct-001/d9ef308ba92bfc8e11bdf64b31ab5c93.dcm"
+            },
+            {
+              "metadata": {
+                "SOPClassUID": "1.2.840.10008.5.1.4.1.1.2",
+                "SOPInstanceUID": "1.3.6.1.4.1.14519.5.2.1.6450.9002.326262776961350536922243469338",
+                "StudyInstanceUID": "1.3.6.1.4.1.14519.5.2.1.6450.9002.140494957337365122665628989385",
+                "SeriesInstanceUID": "1.3.6.1.4.1.14519.5.2.1.6450.9002.230713842590247146149807189576",
+                "FrameOfReferenceUID": "1.3.6.1.4.1.14519.5.2.1.6450.9002.332782825423809066734466132710",
+                "Modality": "CT",
+                "ImageType": [
+                  "ORIGINAL",
+                  "PRIMARY",
+                  "AXIAL"
+                ],
+                "Rows": 512,
+                "Columns": 512,
+                "InstanceNumber": 11,
+                "SamplesPerPixel": 1,
+                "PhotometricInterpretation": "MONOCHROME2",
+                "BitsAllocated": 16,
+                "BitsStored": 16,
+                "HighBit": 15,
+                "PixelRepresentation": 1,
+                "PixelSpacing": [
+                  0.736328,
+                  0.736328
+                ],
+                "ImageOrientationPatient": [
+                  -1.0,
+                  0.0,
+                  0.0,
+                  0.0,
+                  -1.0,
+                  0.0
+                ],
+                "ImagePositionPatient": [
+                  188.5,
+                  188.5,
+                  -116.0
+                ],
+                "SliceThickness": 5.0,
+                "SpacingBetweenSlices": 7.5,
+                "RescaleIntercept": -1024.0,
+                "RescaleSlope": 1.0,
+                "WindowCenter": 2047.0,
+                "WindowWidth": 1600.0,
+                "ConvolutionKernel": "LUNG",
+                "SeriesNumber": 3,
+                "TransferSyntaxUID": "1.2.840.10008.1.2.1"
+              },
+              "url": "dicomweb:/imaging/ct-001/399f4f175aeac78c0661e93a3b0c931a.dcm"
+            },
+            {
+              "metadata": {
+                "SOPClassUID": "1.2.840.10008.5.1.4.1.1.2",
+                "SOPInstanceUID": "1.3.6.1.4.1.14519.5.2.1.6450.9002.215115743511830780090524318988",
+                "StudyInstanceUID": "1.3.6.1.4.1.14519.5.2.1.6450.9002.140494957337365122665628989385",
+                "SeriesInstanceUID": "1.3.6.1.4.1.14519.5.2.1.6450.9002.230713842590247146149807189576",
+                "FrameOfReferenceUID": "1.3.6.1.4.1.14519.5.2.1.6450.9002.332782825423809066734466132710",
+                "Modality": "CT",
+                "ImageType": [
+                  "ORIGINAL",
+                  "PRIMARY",
+                  "AXIAL"
+                ],
+                "Rows": 512,
+                "Columns": 512,
+                "InstanceNumber": 10,
+                "SamplesPerPixel": 1,
+                "PhotometricInterpretation": "MONOCHROME2",
+                "BitsAllocated": 16,
+                "BitsStored": 16,
+                "HighBit": 15,
+                "PixelRepresentation": 1,
+                "PixelSpacing": [
+                  0.736328,
+                  0.736328
+                ],
+                "ImageOrientationPatient": [
+                  -1.0,
+                  0.0,
+                  0.0,
+                  0.0,
+                  -1.0,
+                  0.0
+                ],
+                "ImagePositionPatient": [
+                  188.5,
+                  188.5,
+                  -111.0
+                ],
+                "SliceThickness": 5.0,
+                "SpacingBetweenSlices": 7.5,
+                "RescaleIntercept": -1024.0,
+                "RescaleSlope": 1.0,
+                "WindowCenter": 2047.0,
+                "WindowWidth": 1600.0,
+                "ConvolutionKernel": "LUNG",
+                "SeriesNumber": 3,
+                "TransferSyntaxUID": "1.2.840.10008.1.2.1"
+              },
+              "url": "dicomweb:/imaging/ct-001/d0413ca75b717b184d46d9fee446a4cb.dcm"
+            },
+            {
+              "metadata": {
+                "SOPClassUID": "1.2.840.10008.5.1.4.1.1.2",
+                "SOPInstanceUID": "1.3.6.1.4.1.14519.5.2.1.6450.9002.885781526712094290558509555073",
+                "StudyInstanceUID": "1.3.6.1.4.1.14519.5.2.1.6450.9002.140494957337365122665628989385",
+                "SeriesInstanceUID": "1.3.6.1.4.1.14519.5.2.1.6450.9002.230713842590247146149807189576",
+                "FrameOfReferenceUID": "1.3.6.1.4.1.14519.5.2.1.6450.9002.332782825423809066734466132710",
+                "Modality": "CT",
+                "ImageType": [
+                  "ORIGINAL",
+                  "PRIMARY",
+                  "AXIAL"
+                ],
+                "Rows": 512,
+                "Columns": 512,
+                "InstanceNumber": 9,
+                "SamplesPerPixel": 1,
+                "PhotometricInterpretation": "MONOCHROME2",
+                "BitsAllocated": 16,
+                "BitsStored": 16,
+                "HighBit": 15,
+                "PixelRepresentation": 1,
+                "PixelSpacing": [
+                  0.736328,
+                  0.736328
+                ],
+                "ImageOrientationPatient": [
+                  -1.0,
+                  0.0,
+                  0.0,
+                  0.0,
+                  -1.0,
+                  0.0
+                ],
+                "ImagePositionPatient": [
+                  188.5,
+                  188.5,
+                  -106.0
+                ],
+                "SliceThickness": 5.0,
+                "SpacingBetweenSlices": 7.5,
+                "RescaleIntercept": -1024.0,
+                "RescaleSlope": 1.0,
+                "WindowCenter": 2047.0,
+                "WindowWidth": 1600.0,
+                "ConvolutionKernel": "LUNG",
+                "SeriesNumber": 3,
+                "TransferSyntaxUID": "1.2.840.10008.1.2.1"
+              },
+              "url": "dicomweb:/imaging/ct-001/b8e56cd4a810c4e32f42606c810cef31.dcm"
+            },
+            {
+              "metadata": {
+                "SOPClassUID": "1.2.840.10008.5.1.4.1.1.2",
+                "SOPInstanceUID": "1.3.6.1.4.1.14519.5.2.1.6450.9002.349023763924075937619612658606",
+                "StudyInstanceUID": "1.3.6.1.4.1.14519.5.2.1.6450.9002.140494957337365122665628989385",
+                "SeriesInstanceUID": "1.3.6.1.4.1.14519.5.2.1.6450.9002.230713842590247146149807189576",
+                "FrameOfReferenceUID": "1.3.6.1.4.1.14519.5.2.1.6450.9002.332782825423809066734466132710",
+                "Modality": "CT",
+                "ImageType": [
+                  "ORIGINAL",
+                  "PRIMARY",
+                  "AXIAL"
+                ],
+                "Rows": 512,
+                "Columns": 512,
+                "InstanceNumber": 8,
+                "SamplesPerPixel": 1,
+                "PhotometricInterpretation": "MONOCHROME2",
+                "BitsAllocated": 16,
+                "BitsStored": 16,
+                "HighBit": 15,
+                "PixelRepresentation": 1,
+                "PixelSpacing": [
+                  0.736328,
+                  0.736328
+                ],
+                "ImageOrientationPatient": [
+                  -1.0,
+                  0.0,
+                  0.0,
+                  0.0,
+                  -1.0,
+                  0.0
+                ],
+                "ImagePositionPatient": [
+                  188.5,
+                  188.5,
+                  -101.0
+                ],
+                "SliceThickness": 5.0,
+                "SpacingBetweenSlices": 7.5,
+                "RescaleIntercept": -1024.0,
+                "RescaleSlope": 1.0,
+                "WindowCenter": 2047.0,
+                "WindowWidth": 1600.0,
+                "ConvolutionKernel": "LUNG",
+                "SeriesNumber": 3,
+                "TransferSyntaxUID": "1.2.840.10008.1.2.1"
+              },
+              "url": "dicomweb:/imaging/ct-001/247fbbe456608f73c9983f2f3b4266ef.dcm"
+            },
+            {
+              "metadata": {
+                "SOPClassUID": "1.2.840.10008.5.1.4.1.1.2",
+                "SOPInstanceUID": "1.3.6.1.4.1.14519.5.2.1.6450.9002.328584074598503893866491164862",
+                "StudyInstanceUID": "1.3.6.1.4.1.14519.5.2.1.6450.9002.140494957337365122665628989385",
+                "SeriesInstanceUID": "1.3.6.1.4.1.14519.5.2.1.6450.9002.230713842590247146149807189576",
+                "FrameOfReferenceUID": "1.3.6.1.4.1.14519.5.2.1.6450.9002.332782825423809066734466132710",
+                "Modality": "CT",
+                "ImageType": [
+                  "ORIGINAL",
+                  "PRIMARY",
+                  "AXIAL"
+                ],
+                "Rows": 512,
+                "Columns": 512,
+                "InstanceNumber": 7,
+                "SamplesPerPixel": 1,
+                "PhotometricInterpretation": "MONOCHROME2",
+                "BitsAllocated": 16,
+                "BitsStored": 16,
+                "HighBit": 15,
+                "PixelRepresentation": 1,
+                "PixelSpacing": [
+                  0.736328,
+                  0.736328
+                ],
+                "ImageOrientationPatient": [
+                  -1.0,
+                  0.0,
+                  0.0,
+                  0.0,
+                  -1.0,
+                  0.0
+                ],
+                "ImagePositionPatient": [
+                  188.5,
+                  188.5,
+                  -96.0
+                ],
+                "SliceThickness": 5.0,
+                "SpacingBetweenSlices": 7.5,
+                "RescaleIntercept": -1024.0,
+                "RescaleSlope": 1.0,
+                "WindowCenter": 2047.0,
+                "WindowWidth": 1600.0,
+                "ConvolutionKernel": "LUNG",
+                "SeriesNumber": 3,
+                "TransferSyntaxUID": "1.2.840.10008.1.2.1"
+              },
+              "url": "dicomweb:/imaging/ct-001/16654fe9c67ee70c64ff57e2f6ffe42f.dcm"
+            },
+            {
+              "metadata": {
+                "SOPClassUID": "1.2.840.10008.5.1.4.1.1.2",
+                "SOPInstanceUID": "1.3.6.1.4.1.14519.5.2.1.6450.9002.104719281134436856489435910378",
+                "StudyInstanceUID": "1.3.6.1.4.1.14519.5.2.1.6450.9002.140494957337365122665628989385",
+                "SeriesInstanceUID": "1.3.6.1.4.1.14519.5.2.1.6450.9002.230713842590247146149807189576",
+                "FrameOfReferenceUID": "1.3.6.1.4.1.14519.5.2.1.6450.9002.332782825423809066734466132710",
+                "Modality": "CT",
+                "ImageType": [
+                  "ORIGINAL",
+                  "PRIMARY",
+                  "AXIAL"
+                ],
+                "Rows": 512,
+                "Columns": 512,
+                "InstanceNumber": 6,
+                "SamplesPerPixel": 1,
+                "PhotometricInterpretation": "MONOCHROME2",
+                "BitsAllocated": 16,
+                "BitsStored": 16,
+                "HighBit": 15,
+                "PixelRepresentation": 1,
+                "PixelSpacing": [
+                  0.736328,
+                  0.736328
+                ],
+                "ImageOrientationPatient": [
+                  -1.0,
+                  0.0,
+                  0.0,
+                  0.0,
+                  -1.0,
+                  0.0
+                ],
+                "ImagePositionPatient": [
+                  188.5,
+                  188.5,
+                  -91.0
+                ],
+                "SliceThickness": 5.0,
+                "SpacingBetweenSlices": 7.5,
+                "RescaleIntercept": -1024.0,
+                "RescaleSlope": 1.0,
+                "WindowCenter": 2047.0,
+                "WindowWidth": 1600.0,
+                "ConvolutionKernel": "LUNG",
+                "SeriesNumber": 3,
+                "TransferSyntaxUID": "1.2.840.10008.1.2.1"
+              },
+              "url": "dicomweb:/imaging/ct-001/638b5a8a35ec3438d18571d9019bd2d8.dcm"
+            },
+            {
+              "metadata": {
+                "SOPClassUID": "1.2.840.10008.5.1.4.1.1.2",
+                "SOPInstanceUID": "1.3.6.1.4.1.14519.5.2.1.6450.9002.220639277278960805866142340407",
+                "StudyInstanceUID": "1.3.6.1.4.1.14519.5.2.1.6450.9002.140494957337365122665628989385",
+                "SeriesInstanceUID": "1.3.6.1.4.1.14519.5.2.1.6450.9002.230713842590247146149807189576",
+                "FrameOfReferenceUID": "1.3.6.1.4.1.14519.5.2.1.6450.9002.332782825423809066734466132710",
+                "Modality": "CT",
+                "ImageType": [
+                  "ORIGINAL",
+                  "PRIMARY",
+                  "AXIAL"
+                ],
+                "Rows": 512,
+                "Columns": 512,
+                "InstanceNumber": 5,
+                "SamplesPerPixel": 1,
+                "PhotometricInterpretation": "MONOCHROME2",
+                "BitsAllocated": 16,
+                "BitsStored": 16,
+                "HighBit": 15,
+                "PixelRepresentation": 1,
+                "PixelSpacing": [
+                  0.736328,
+                  0.736328
+                ],
+                "ImageOrientationPatient": [
+                  -1.0,
+                  0.0,
+                  0.0,
+                  0.0,
+                  -1.0,
+                  0.0
+                ],
+                "ImagePositionPatient": [
+                  188.5,
+                  188.5,
+                  -86.0
+                ],
+                "SliceThickness": 5.0,
+                "SpacingBetweenSlices": 7.5,
+                "RescaleIntercept": -1024.0,
+                "RescaleSlope": 1.0,
+                "WindowCenter": 1530.0,
+                "WindowWidth": 1600.0,
+                "ConvolutionKernel": "LUNG",
+                "SeriesNumber": 3,
+                "TransferSyntaxUID": "1.2.840.10008.1.2.1"
+              },
+              "url": "dicomweb:/imaging/ct-001/368d7b58592cae9103a0c062579ff5f5.dcm"
+            },
+            {
+              "metadata": {
+                "SOPClassUID": "1.2.840.10008.5.1.4.1.1.2",
+                "SOPInstanceUID": "1.3.6.1.4.1.14519.5.2.1.6450.9002.176105731980316748373892291576",
+                "StudyInstanceUID": "1.3.6.1.4.1.14519.5.2.1.6450.9002.140494957337365122665628989385",
+                "SeriesInstanceUID": "1.3.6.1.4.1.14519.5.2.1.6450.9002.230713842590247146149807189576",
+                "FrameOfReferenceUID": "1.3.6.1.4.1.14519.5.2.1.6450.9002.332782825423809066734466132710",
+                "Modality": "CT",
+                "ImageType": [
+                  "ORIGINAL",
+                  "PRIMARY",
+                  "AXIAL"
+                ],
+                "Rows": 512,
+                "Columns": 512,
+                "InstanceNumber": 4,
+                "SamplesPerPixel": 1,
+                "PhotometricInterpretation": "MONOCHROME2",
+                "BitsAllocated": 16,
+                "BitsStored": 16,
+                "HighBit": 15,
+                "PixelRepresentation": 1,
+                "PixelSpacing": [
+                  0.736328,
+                  0.736328
+                ],
+                "ImageOrientationPatient": [
+                  -1.0,
+                  0.0,
+                  0.0,
+                  0.0,
+                  -1.0,
+                  0.0
+                ],
+                "ImagePositionPatient": [
+                  188.5,
+                  188.5,
+                  -81.0
+                ],
+                "SliceThickness": 5.0,
+                "SpacingBetweenSlices": 7.5,
+                "RescaleIntercept": -1024.0,
+                "RescaleSlope": 1.0,
+                "WindowCenter": 1505.0,
+                "WindowWidth": 1600.0,
+                "ConvolutionKernel": "LUNG",
+                "SeriesNumber": 3,
+                "TransferSyntaxUID": "1.2.840.10008.1.2.1"
+              },
+              "url": "dicomweb:/imaging/ct-001/114f23472678d891a68623451a69f1e6.dcm"
+            },
+            {
+              "metadata": {
+                "SOPClassUID": "1.2.840.10008.5.1.4.1.1.2",
+                "SOPInstanceUID": "1.3.6.1.4.1.14519.5.2.1.6450.9002.109306834254937327766293712754",
+                "StudyInstanceUID": "1.3.6.1.4.1.14519.5.2.1.6450.9002.140494957337365122665628989385",
+                "SeriesInstanceUID": "1.3.6.1.4.1.14519.5.2.1.6450.9002.230713842590247146149807189576",
+                "FrameOfReferenceUID": "1.3.6.1.4.1.14519.5.2.1.6450.9002.332782825423809066734466132710",
+                "Modality": "CT",
+                "ImageType": [
+                  "ORIGINAL",
+                  "PRIMARY",
+                  "AXIAL"
+                ],
+                "Rows": 512,
+                "Columns": 512,
+                "InstanceNumber": 3,
+                "SamplesPerPixel": 1,
+                "PhotometricInterpretation": "MONOCHROME2",
+                "BitsAllocated": 16,
+                "BitsStored": 16,
+                "HighBit": 15,
+                "PixelRepresentation": 1,
+                "PixelSpacing": [
+                  0.736328,
+                  0.736328
+                ],
+                "ImageOrientationPatient": [
+                  -1.0,
+                  0.0,
+                  0.0,
+                  0.0,
+                  -1.0,
+                  0.0
+                ],
+                "ImagePositionPatient": [
+                  188.5,
+                  188.5,
+                  -76.0
+                ],
+                "SliceThickness": 5.0,
+                "SpacingBetweenSlices": 7.5,
+                "RescaleIntercept": -1024.0,
+                "RescaleSlope": 1.0,
+                "WindowCenter": 1549.0,
+                "WindowWidth": 1600.0,
+                "ConvolutionKernel": "LUNG",
+                "SeriesNumber": 3,
+                "TransferSyntaxUID": "1.2.840.10008.1.2.1"
+              },
+              "url": "dicomweb:/imaging/ct-001/333fd6bdb0560b71d7733e2cbb086528.dcm"
+            },
+            {
+              "metadata": {
+                "SOPClassUID": "1.2.840.10008.5.1.4.1.1.2",
+                "SOPInstanceUID": "1.3.6.1.4.1.14519.5.2.1.6450.9002.527305753716328040591047043623",
+                "StudyInstanceUID": "1.3.6.1.4.1.14519.5.2.1.6450.9002.140494957337365122665628989385",
+                "SeriesInstanceUID": "1.3.6.1.4.1.14519.5.2.1.6450.9002.230713842590247146149807189576",
+                "FrameOfReferenceUID": "1.3.6.1.4.1.14519.5.2.1.6450.9002.332782825423809066734466132710",
+                "Modality": "CT",
+                "ImageType": [
+                  "ORIGINAL",
+                  "PRIMARY",
+                  "AXIAL"
+                ],
+                "Rows": 512,
+                "Columns": 512,
+                "InstanceNumber": 2,
+                "SamplesPerPixel": 1,
+                "PhotometricInterpretation": "MONOCHROME2",
+                "BitsAllocated": 16,
+                "BitsStored": 16,
+                "HighBit": 15,
+                "PixelRepresentation": 1,
+                "PixelSpacing": [
+                  0.736328,
+                  0.736328
+                ],
+                "ImageOrientationPatient": [
+                  -1.0,
+                  0.0,
+                  0.0,
+                  0.0,
+                  -1.0,
+                  0.0
+                ],
+                "ImagePositionPatient": [
+                  188.5,
+                  188.5,
+                  -71.0
+                ],
+                "SliceThickness": 5.0,
+                "SpacingBetweenSlices": 7.5,
+                "RescaleIntercept": -1024.0,
+                "RescaleSlope": 1.0,
+                "WindowCenter": 1498.0,
+                "WindowWidth": 1600.0,
+                "ConvolutionKernel": "LUNG",
+                "SeriesNumber": 3,
+                "TransferSyntaxUID": "1.2.840.10008.1.2.1"
+              },
+              "url": "dicomweb:/imaging/ct-001/56712b1a0e83429acb5ddfec9684469a.dcm"
+            },
+            {
+              "metadata": {
+                "SOPClassUID": "1.2.840.10008.5.1.4.1.1.2",
+                "SOPInstanceUID": "1.3.6.1.4.1.14519.5.2.1.6450.9002.174855892783417818319196469890",
+                "StudyInstanceUID": "1.3.6.1.4.1.14519.5.2.1.6450.9002.140494957337365122665628989385",
+                "SeriesInstanceUID": "1.3.6.1.4.1.14519.5.2.1.6450.9002.230713842590247146149807189576",
+                "FrameOfReferenceUID": "1.3.6.1.4.1.14519.5.2.1.6450.9002.332782825423809066734466132710",
+                "Modality": "CT",
+                "ImageType": [
+                  "ORIGINAL",
+                  "PRIMARY",
+                  "AXIAL"
+                ],
+                "Rows": 512,
+                "Columns": 512,
+                "InstanceNumber": 1,
+                "SamplesPerPixel": 1,
+                "PhotometricInterpretation": "MONOCHROME2",
+                "BitsAllocated": 16,
+                "BitsStored": 16,
+                "HighBit": 15,
+                "PixelRepresentation": 1,
+                "PixelSpacing": [
+                  0.736328,
+                  0.736328
+                ],
+                "ImageOrientationPatient": [
+                  -1.0,
+                  0.0,
+                  0.0,
+                  0.0,
+                  -1.0,
+                  0.0
+                ],
+                "ImagePositionPatient": [
+                  188.5,
+                  188.5,
+                  -66.0
+                ],
+                "SliceThickness": 5.0,
+                "SpacingBetweenSlices": 7.5,
+                "RescaleIntercept": -1024.0,
+                "RescaleSlope": 1.0,
+                "WindowCenter": 1471.0,
+                "WindowWidth": 1600.0,
+                "ConvolutionKernel": "LUNG",
+                "SeriesNumber": 3,
+                "TransferSyntaxUID": "1.2.840.10008.1.2.1"
+              },
+              "url": "dicomweb:/imaging/ct-001/eec4b5308a73b7abe8115ee965945617.dcm"
+            }
+          ]
+        },
+        {
+          "SeriesInstanceUID": "1.3.6.1.4.1.14519.5.2.1.6450.9002.185498582525296662848624544683",
+          "SeriesNumber": 5,
+          "SeriesDescription": "CT acquisition 3",
+          "Modality": "CT",
+          "instances": [
+            {
+              "metadata": {
+                "SOPClassUID": "1.2.840.10008.5.1.4.1.1.2",
+                "SOPInstanceUID": "1.3.6.1.4.1.14519.5.2.1.6450.9002.925139420375814043164527775280",
+                "StudyInstanceUID": "1.3.6.1.4.1.14519.5.2.1.6450.9002.140494957337365122665628989385",
+                "SeriesInstanceUID": "1.3.6.1.4.1.14519.5.2.1.6450.9002.185498582525296662848624544683",
+                "FrameOfReferenceUID": "1.3.6.1.4.1.14519.5.2.1.6450.9002.332782825423809066734466132710",
+                "Modality": "CT",
+                "ImageType": [
+                  "ORIGINAL",
+                  "PRIMARY",
+                  "AXIAL"
+                ],
+                "Rows": 512,
+                "Columns": 512,
+                "InstanceNumber": 11,
+                "SamplesPerPixel": 1,
+                "PhotometricInterpretation": "MONOCHROME2",
+                "BitsAllocated": 16,
+                "BitsStored": 16,
+                "HighBit": 15,
+                "PixelRepresentation": 1,
+                "PixelSpacing": [
+                  0.736328,
+                  0.736328
+                ],
+                "ImageOrientationPatient": [
+                  -1.0,
+                  0.0,
+                  0.0,
+                  0.0,
+                  -1.0,
+                  0.0
+                ],
+                "ImagePositionPatient": [
+                  188.5,
+                  188.5,
+                  -170.5
+                ],
+                "SliceThickness": 5.0,
+                "SpacingBetweenSlices": 5.0,
+                "RescaleIntercept": -1024.0,
+                "RescaleSlope": 1.0,
+                "WindowCenter": 40.0,
+                "WindowWidth": 400.0,
+                "ConvolutionKernel": "SOFT",
+                "SeriesNumber": 5,
+                "TransferSyntaxUID": "1.2.840.10008.1.2.1"
+              },
+              "url": "dicomweb:/imaging/ct-001/4643aad99f361f1f76bb47d52405adc0.dcm"
+            },
+            {
+              "metadata": {
+                "SOPClassUID": "1.2.840.10008.5.1.4.1.1.2",
+                "SOPInstanceUID": "1.3.6.1.4.1.14519.5.2.1.6450.9002.224641795444998197001554773292",
+                "StudyInstanceUID": "1.3.6.1.4.1.14519.5.2.1.6450.9002.140494957337365122665628989385",
+                "SeriesInstanceUID": "1.3.6.1.4.1.14519.5.2.1.6450.9002.185498582525296662848624544683",
+                "FrameOfReferenceUID": "1.3.6.1.4.1.14519.5.2.1.6450.9002.332782825423809066734466132710",
+                "Modality": "CT",
+                "ImageType": [
+                  "ORIGINAL",
+                  "PRIMARY",
+                  "AXIAL"
+                ],
+                "Rows": 512,
+                "Columns": 512,
+                "InstanceNumber": 10,
+                "SamplesPerPixel": 1,
+                "PhotometricInterpretation": "MONOCHROME2",
+                "BitsAllocated": 16,
+                "BitsStored": 16,
+                "HighBit": 15,
+                "PixelRepresentation": 1,
+                "PixelSpacing": [
+                  0.736328,
+                  0.736328
+                ],
+                "ImageOrientationPatient": [
+                  -1.0,
+                  0.0,
+                  0.0,
+                  0.0,
+                  -1.0,
+                  0.0
+                ],
+                "ImagePositionPatient": [
+                  188.5,
+                  188.5,
+                  -165.5
+                ],
+                "SliceThickness": 5.0,
+                "SpacingBetweenSlices": 5.0,
+                "RescaleIntercept": -1024.0,
+                "RescaleSlope": 1.0,
+                "WindowCenter": 40.0,
+                "WindowWidth": 400.0,
+                "ConvolutionKernel": "SOFT",
+                "SeriesNumber": 5,
+                "TransferSyntaxUID": "1.2.840.10008.1.2.1"
+              },
+              "url": "dicomweb:/imaging/ct-001/4776366d338186c51a7ca3f37677b399.dcm"
+            },
+            {
+              "metadata": {
+                "SOPClassUID": "1.2.840.10008.5.1.4.1.1.2",
+                "SOPInstanceUID": "1.3.6.1.4.1.14519.5.2.1.6450.9002.176260869337523580460757308408",
+                "StudyInstanceUID": "1.3.6.1.4.1.14519.5.2.1.6450.9002.140494957337365122665628989385",
+                "SeriesInstanceUID": "1.3.6.1.4.1.14519.5.2.1.6450.9002.185498582525296662848624544683",
+                "FrameOfReferenceUID": "1.3.6.1.4.1.14519.5.2.1.6450.9002.332782825423809066734466132710",
+                "Modality": "CT",
+                "ImageType": [
+                  "ORIGINAL",
+                  "PRIMARY",
+                  "AXIAL"
+                ],
+                "Rows": 512,
+                "Columns": 512,
+                "InstanceNumber": 9,
+                "SamplesPerPixel": 1,
+                "PhotometricInterpretation": "MONOCHROME2",
+                "BitsAllocated": 16,
+                "BitsStored": 16,
+                "HighBit": 15,
+                "PixelRepresentation": 1,
+                "PixelSpacing": [
+                  0.736328,
+                  0.736328
+                ],
+                "ImageOrientationPatient": [
+                  -1.0,
+                  0.0,
+                  0.0,
+                  0.0,
+                  -1.0,
+                  0.0
+                ],
+                "ImagePositionPatient": [
+                  188.5,
+                  188.5,
+                  -160.5
+                ],
+                "SliceThickness": 5.0,
+                "SpacingBetweenSlices": 5.0,
+                "RescaleIntercept": -1024.0,
+                "RescaleSlope": 1.0,
+                "WindowCenter": 40.0,
+                "WindowWidth": 400.0,
+                "ConvolutionKernel": "SOFT",
+                "SeriesNumber": 5,
+                "TransferSyntaxUID": "1.2.840.10008.1.2.1"
+              },
+              "url": "dicomweb:/imaging/ct-001/89327e8c3e0e342720a6c7a08ffdfbf9.dcm"
+            },
+            {
+              "metadata": {
+                "SOPClassUID": "1.2.840.10008.5.1.4.1.1.2",
+                "SOPInstanceUID": "1.3.6.1.4.1.14519.5.2.1.6450.9002.330077149604215563566947307436",
+                "StudyInstanceUID": "1.3.6.1.4.1.14519.5.2.1.6450.9002.140494957337365122665628989385",
+                "SeriesInstanceUID": "1.3.6.1.4.1.14519.5.2.1.6450.9002.185498582525296662848624544683",
+                "FrameOfReferenceUID": "1.3.6.1.4.1.14519.5.2.1.6450.9002.332782825423809066734466132710",
+                "Modality": "CT",
+                "ImageType": [
+                  "ORIGINAL",
+                  "PRIMARY",
+                  "AXIAL"
+                ],
+                "Rows": 512,
+                "Columns": 512,
+                "InstanceNumber": 8,
+                "SamplesPerPixel": 1,
+                "PhotometricInterpretation": "MONOCHROME2",
+                "BitsAllocated": 16,
+                "BitsStored": 16,
+                "HighBit": 15,
+                "PixelRepresentation": 1,
+                "PixelSpacing": [
+                  0.736328,
+                  0.736328
+                ],
+                "ImageOrientationPatient": [
+                  -1.0,
+                  0.0,
+                  0.0,
+                  0.0,
+                  -1.0,
+                  0.0
+                ],
+                "ImagePositionPatient": [
+                  188.5,
+                  188.5,
+                  -155.5
+                ],
+                "SliceThickness": 5.0,
+                "SpacingBetweenSlices": 5.0,
+                "RescaleIntercept": -1024.0,
+                "RescaleSlope": 1.0,
+                "WindowCenter": 40.0,
+                "WindowWidth": 400.0,
+                "ConvolutionKernel": "SOFT",
+                "SeriesNumber": 5,
+                "TransferSyntaxUID": "1.2.840.10008.1.2.1"
+              },
+              "url": "dicomweb:/imaging/ct-001/21c1b889a9bdfc0027552cfaff55fa70.dcm"
+            },
+            {
+              "metadata": {
+                "SOPClassUID": "1.2.840.10008.5.1.4.1.1.2",
+                "SOPInstanceUID": "1.3.6.1.4.1.14519.5.2.1.6450.9002.419569706541988634031090301673",
+                "StudyInstanceUID": "1.3.6.1.4.1.14519.5.2.1.6450.9002.140494957337365122665628989385",
+                "SeriesInstanceUID": "1.3.6.1.4.1.14519.5.2.1.6450.9002.185498582525296662848624544683",
+                "FrameOfReferenceUID": "1.3.6.1.4.1.14519.5.2.1.6450.9002.332782825423809066734466132710",
+                "Modality": "CT",
+                "ImageType": [
+                  "ORIGINAL",
+                  "PRIMARY",
+                  "AXIAL"
+                ],
+                "Rows": 512,
+                "Columns": 512,
+                "InstanceNumber": 7,
+                "SamplesPerPixel": 1,
+                "PhotometricInterpretation": "MONOCHROME2",
+                "BitsAllocated": 16,
+                "BitsStored": 16,
+                "HighBit": 15,
+                "PixelRepresentation": 1,
+                "PixelSpacing": [
+                  0.736328,
+                  0.736328
+                ],
+                "ImageOrientationPatient": [
+                  -1.0,
+                  0.0,
+                  0.0,
+                  0.0,
+                  -1.0,
+                  0.0
+                ],
+                "ImagePositionPatient": [
+                  188.5,
+                  188.5,
+                  -150.5
+                ],
+                "SliceThickness": 5.0,
+                "SpacingBetweenSlices": 5.0,
+                "RescaleIntercept": -1024.0,
+                "RescaleSlope": 1.0,
+                "WindowCenter": 40.0,
+                "WindowWidth": 400.0,
+                "ConvolutionKernel": "SOFT",
+                "SeriesNumber": 5,
+                "TransferSyntaxUID": "1.2.840.10008.1.2.1"
+              },
+              "url": "dicomweb:/imaging/ct-001/c796986fcd782156938cf99f3f528b1b.dcm"
+            },
+            {
+              "metadata": {
+                "SOPClassUID": "1.2.840.10008.5.1.4.1.1.2",
+                "SOPInstanceUID": "1.3.6.1.4.1.14519.5.2.1.6450.9002.269741086671501163223668983041",
+                "StudyInstanceUID": "1.3.6.1.4.1.14519.5.2.1.6450.9002.140494957337365122665628989385",
+                "SeriesInstanceUID": "1.3.6.1.4.1.14519.5.2.1.6450.9002.185498582525296662848624544683",
+                "FrameOfReferenceUID": "1.3.6.1.4.1.14519.5.2.1.6450.9002.332782825423809066734466132710",
+                "Modality": "CT",
+                "ImageType": [
+                  "ORIGINAL",
+                  "PRIMARY",
+                  "AXIAL"
+                ],
+                "Rows": 512,
+                "Columns": 512,
+                "InstanceNumber": 6,
+                "SamplesPerPixel": 1,
+                "PhotometricInterpretation": "MONOCHROME2",
+                "BitsAllocated": 16,
+                "BitsStored": 16,
+                "HighBit": 15,
+                "PixelRepresentation": 1,
+                "PixelSpacing": [
+                  0.736328,
+                  0.736328
+                ],
+                "ImageOrientationPatient": [
+                  -1.0,
+                  0.0,
+                  0.0,
+                  0.0,
+                  -1.0,
+                  0.0
+                ],
+                "ImagePositionPatient": [
+                  188.5,
+                  188.5,
+                  -145.5
+                ],
+                "SliceThickness": 5.0,
+                "SpacingBetweenSlices": 5.0,
+                "RescaleIntercept": -1024.0,
+                "RescaleSlope": 1.0,
+                "WindowCenter": 40.0,
+                "WindowWidth": 400.0,
+                "ConvolutionKernel": "SOFT",
+                "SeriesNumber": 5,
+                "TransferSyntaxUID": "1.2.840.10008.1.2.1"
+              },
+              "url": "dicomweb:/imaging/ct-001/c386cbe4dcc5dca9ade461aa0ce1c907.dcm"
+            },
+            {
+              "metadata": {
+                "SOPClassUID": "1.2.840.10008.5.1.4.1.1.2",
+                "SOPInstanceUID": "1.3.6.1.4.1.14519.5.2.1.6450.9002.202748631808996933620572202766",
+                "StudyInstanceUID": "1.3.6.1.4.1.14519.5.2.1.6450.9002.140494957337365122665628989385",
+                "SeriesInstanceUID": "1.3.6.1.4.1.14519.5.2.1.6450.9002.185498582525296662848624544683",
+                "FrameOfReferenceUID": "1.3.6.1.4.1.14519.5.2.1.6450.9002.332782825423809066734466132710",
+                "Modality": "CT",
+                "ImageType": [
+                  "ORIGINAL",
+                  "PRIMARY",
+                  "AXIAL"
+                ],
+                "Rows": 512,
+                "Columns": 512,
+                "InstanceNumber": 5,
+                "SamplesPerPixel": 1,
+                "PhotometricInterpretation": "MONOCHROME2",
+                "BitsAllocated": 16,
+                "BitsStored": 16,
+                "HighBit": 15,
+                "PixelRepresentation": 1,
+                "PixelSpacing": [
+                  0.736328,
+                  0.736328
+                ],
+                "ImageOrientationPatient": [
+                  -1.0,
+                  0.0,
+                  0.0,
+                  0.0,
+                  -1.0,
+                  0.0
+                ],
+                "ImagePositionPatient": [
+                  188.5,
+                  188.5,
+                  -140.5
+                ],
+                "SliceThickness": 5.0,
+                "SpacingBetweenSlices": 5.0,
+                "RescaleIntercept": -1024.0,
+                "RescaleSlope": 1.0,
+                "WindowCenter": 40.0,
+                "WindowWidth": 400.0,
+                "ConvolutionKernel": "SOFT",
+                "SeriesNumber": 5,
+                "TransferSyntaxUID": "1.2.840.10008.1.2.1"
+              },
+              "url": "dicomweb:/imaging/ct-001/b1be4a96edf7ff4a84f32fd12216fd84.dcm"
+            },
+            {
+              "metadata": {
+                "SOPClassUID": "1.2.840.10008.5.1.4.1.1.2",
+                "SOPInstanceUID": "1.3.6.1.4.1.14519.5.2.1.6450.9002.275673595808181021723388818652",
+                "StudyInstanceUID": "1.3.6.1.4.1.14519.5.2.1.6450.9002.140494957337365122665628989385",
+                "SeriesInstanceUID": "1.3.6.1.4.1.14519.5.2.1.6450.9002.185498582525296662848624544683",
+                "FrameOfReferenceUID": "1.3.6.1.4.1.14519.5.2.1.6450.9002.332782825423809066734466132710",
+                "Modality": "CT",
+                "ImageType": [
+                  "ORIGINAL",
+                  "PRIMARY",
+                  "AXIAL"
+                ],
+                "Rows": 512,
+                "Columns": 512,
+                "InstanceNumber": 4,
+                "SamplesPerPixel": 1,
+                "PhotometricInterpretation": "MONOCHROME2",
+                "BitsAllocated": 16,
+                "BitsStored": 16,
+                "HighBit": 15,
+                "PixelRepresentation": 1,
+                "PixelSpacing": [
+                  0.736328,
+                  0.736328
+                ],
+                "ImageOrientationPatient": [
+                  -1.0,
+                  0.0,
+                  0.0,
+                  0.0,
+                  -1.0,
+                  0.0
+                ],
+                "ImagePositionPatient": [
+                  188.5,
+                  188.5,
+                  -135.5
+                ],
+                "SliceThickness": 5.0,
+                "SpacingBetweenSlices": 5.0,
+                "RescaleIntercept": -1024.0,
+                "RescaleSlope": 1.0,
+                "WindowCenter": 40.0,
+                "WindowWidth": 400.0,
+                "ConvolutionKernel": "SOFT",
+                "SeriesNumber": 5,
+                "TransferSyntaxUID": "1.2.840.10008.1.2.1"
+              },
+              "url": "dicomweb:/imaging/ct-001/3fbb2025a6facb2379e02522458f5b86.dcm"
+            },
+            {
+              "metadata": {
+                "SOPClassUID": "1.2.840.10008.5.1.4.1.1.2",
+                "SOPInstanceUID": "1.3.6.1.4.1.14519.5.2.1.6450.9002.313292496600355135292573467507",
+                "StudyInstanceUID": "1.3.6.1.4.1.14519.5.2.1.6450.9002.140494957337365122665628989385",
+                "SeriesInstanceUID": "1.3.6.1.4.1.14519.5.2.1.6450.9002.185498582525296662848624544683",
+                "FrameOfReferenceUID": "1.3.6.1.4.1.14519.5.2.1.6450.9002.332782825423809066734466132710",
+                "Modality": "CT",
+                "ImageType": [
+                  "ORIGINAL",
+                  "PRIMARY",
+                  "AXIAL"
+                ],
+                "Rows": 512,
+                "Columns": 512,
+                "InstanceNumber": 3,
+                "SamplesPerPixel": 1,
+                "PhotometricInterpretation": "MONOCHROME2",
+                "BitsAllocated": 16,
+                "BitsStored": 16,
+                "HighBit": 15,
+                "PixelRepresentation": 1,
+                "PixelSpacing": [
+                  0.736328,
+                  0.736328
+                ],
+                "ImageOrientationPatient": [
+                  -1.0,
+                  0.0,
+                  0.0,
+                  0.0,
+                  -1.0,
+                  0.0
+                ],
+                "ImagePositionPatient": [
+                  188.5,
+                  188.5,
+                  -130.5
+                ],
+                "SliceThickness": 5.0,
+                "SpacingBetweenSlices": 5.0,
+                "RescaleIntercept": -1024.0,
+                "RescaleSlope": 1.0,
+                "WindowCenter": 40.0,
+                "WindowWidth": 400.0,
+                "ConvolutionKernel": "SOFT",
+                "SeriesNumber": 5,
+                "TransferSyntaxUID": "1.2.840.10008.1.2.1"
+              },
+              "url": "dicomweb:/imaging/ct-001/d33c62591d27b738434aaca0163bfc23.dcm"
+            },
+            {
+              "metadata": {
+                "SOPClassUID": "1.2.840.10008.5.1.4.1.1.2",
+                "SOPInstanceUID": "1.3.6.1.4.1.14519.5.2.1.6450.9002.287029085569252526851370433919",
+                "StudyInstanceUID": "1.3.6.1.4.1.14519.5.2.1.6450.9002.140494957337365122665628989385",
+                "SeriesInstanceUID": "1.3.6.1.4.1.14519.5.2.1.6450.9002.185498582525296662848624544683",
+                "FrameOfReferenceUID": "1.3.6.1.4.1.14519.5.2.1.6450.9002.332782825423809066734466132710",
+                "Modality": "CT",
+                "ImageType": [
+                  "ORIGINAL",
+                  "PRIMARY",
+                  "AXIAL"
+                ],
+                "Rows": 512,
+                "Columns": 512,
+                "InstanceNumber": 2,
+                "SamplesPerPixel": 1,
+                "PhotometricInterpretation": "MONOCHROME2",
+                "BitsAllocated": 16,
+                "BitsStored": 16,
+                "HighBit": 15,
+                "PixelRepresentation": 1,
+                "PixelSpacing": [
+                  0.736328,
+                  0.736328
+                ],
+                "ImageOrientationPatient": [
+                  -1.0,
+                  0.0,
+                  0.0,
+                  0.0,
+                  -1.0,
+                  0.0
+                ],
+                "ImagePositionPatient": [
+                  188.5,
+                  188.5,
+                  -125.5
+                ],
+                "SliceThickness": 5.0,
+                "SpacingBetweenSlices": 5.0,
+                "RescaleIntercept": -1024.0,
+                "RescaleSlope": 1.0,
+                "WindowCenter": 40.0,
+                "WindowWidth": 400.0,
+                "ConvolutionKernel": "SOFT",
+                "SeriesNumber": 5,
+                "TransferSyntaxUID": "1.2.840.10008.1.2.1"
+              },
+              "url": "dicomweb:/imaging/ct-001/b841463c1780980a8a73469423bf44d7.dcm"
+            },
+            {
+              "metadata": {
+                "SOPClassUID": "1.2.840.10008.5.1.4.1.1.2",
+                "SOPInstanceUID": "1.3.6.1.4.1.14519.5.2.1.6450.9002.189211777064455155313299093565",
+                "StudyInstanceUID": "1.3.6.1.4.1.14519.5.2.1.6450.9002.140494957337365122665628989385",
+                "SeriesInstanceUID": "1.3.6.1.4.1.14519.5.2.1.6450.9002.185498582525296662848624544683",
+                "FrameOfReferenceUID": "1.3.6.1.4.1.14519.5.2.1.6450.9002.332782825423809066734466132710",
+                "Modality": "CT",
+                "ImageType": [
+                  "ORIGINAL",
+                  "PRIMARY",
+                  "AXIAL"
+                ],
+                "Rows": 512,
+                "Columns": 512,
+                "InstanceNumber": 1,
+                "SamplesPerPixel": 1,
+                "PhotometricInterpretation": "MONOCHROME2",
+                "BitsAllocated": 16,
+                "BitsStored": 16,
+                "HighBit": 15,
+                "PixelRepresentation": 1,
+                "PixelSpacing": [
+                  0.736328,
+                  0.736328
+                ],
+                "ImageOrientationPatient": [
+                  -1.0,
+                  0.0,
+                  0.0,
+                  0.0,
+                  -1.0,
+                  0.0
+                ],
+                "ImagePositionPatient": [
+                  188.5,
+                  188.5,
+                  -120.5
+                ],
+                "SliceThickness": 5.0,
+                "SpacingBetweenSlices": 5.0,
+                "RescaleIntercept": -1024.0,
+                "RescaleSlope": 1.0,
+                "WindowCenter": 40.0,
+                "WindowWidth": 400.0,
+                "ConvolutionKernel": "SOFT",
+                "SeriesNumber": 5,
+                "TransferSyntaxUID": "1.2.840.10008.1.2.1"
+              },
+              "url": "dicomweb:/imaging/ct-001/0b8031ef7b99c6358408212b3a290bec.dcm"
+            }
+          ]
+        },
+        {
+          "SeriesInstanceUID": "1.3.6.1.4.1.14519.5.2.1.6450.9002.575993375121771138791672854373",
+          "SeriesNumber": 1,
+          "SeriesDescription": "Scout 4",
+          "Modality": "CT",
+          "instances": [
+            {
+              "metadata": {
+                "SOPClassUID": "1.2.840.10008.5.1.4.1.1.2",
+                "SOPInstanceUID": "1.3.6.1.4.1.14519.5.2.1.6450.9002.169630295006019451980366093215",
+                "StudyInstanceUID": "1.3.6.1.4.1.14519.5.2.1.6450.9002.140494957337365122665628989385",
+                "SeriesInstanceUID": "1.3.6.1.4.1.14519.5.2.1.6450.9002.575993375121771138791672854373",
+                "FrameOfReferenceUID": "1.3.6.1.4.1.14519.5.2.1.6450.9002.332782825423809066734466132710",
+                "Modality": "CT",
+                "ImageType": [
+                  "ORIGINAL",
+                  "PRIMARY",
+                  "LOCALIZER"
+                ],
+                "Rows": 395,
+                "Columns": 512,
+                "InstanceNumber": 1,
+                "SamplesPerPixel": 1,
+                "PhotometricInterpretation": "MONOCHROME2",
+                "BitsAllocated": 16,
+                "BitsStored": 16,
+                "HighBit": 15,
+                "PixelRepresentation": 1,
+                "PixelSpacing": [
+                  1.014672,
+                  0.969483
+                ],
+                "ImageOrientationPatient": [
+                  1.0,
+                  0.0,
+                  0.0,
+                  0.0,
+                  0.0,
+                  -1.0
+                ],
+                "ImagePositionPatient": [
+                  -248.187592,
+                  0.0,
+                  0.0
+                ],
+                "SliceThickness": 1.0,
+                "SpacingBetweenSlices": 10.0,
+                "RescaleIntercept": -1024.0,
+                "RescaleSlope": 1.0,
+                "WindowCenter": 1018.0,
+                "WindowWidth": 1060.0,
+                "SeriesNumber": 1,
+                "TransferSyntaxUID": "1.2.840.10008.1.2.1"
+              },
+              "url": "dicomweb:/imaging/ct-001/5abc905ebbd301b7604afdd1ca37c45c.dcm"
+            },
+            {
+              "metadata": {
+                "SOPClassUID": "1.2.840.10008.5.1.4.1.1.2",
+                "SOPInstanceUID": "1.3.6.1.4.1.14519.5.2.1.6450.9002.401901923568251875680431927837",
+                "StudyInstanceUID": "1.3.6.1.4.1.14519.5.2.1.6450.9002.140494957337365122665628989385",
+                "SeriesInstanceUID": "1.3.6.1.4.1.14519.5.2.1.6450.9002.575993375121771138791672854373",
+                "FrameOfReferenceUID": "1.3.6.1.4.1.14519.5.2.1.6450.9002.332782825423809066734466132710",
+                "Modality": "CT",
+                "ImageType": [
+                  "ORIGINAL",
+                  "PRIMARY",
+                  "LOCALIZER"
+                ],
+                "Rows": 395,
+                "Columns": 512,
+                "InstanceNumber": 2,
+                "SamplesPerPixel": 1,
+                "PhotometricInterpretation": "MONOCHROME2",
+                "BitsAllocated": 16,
+                "BitsStored": 16,
+                "HighBit": 15,
+                "PixelRepresentation": 1,
+                "PixelSpacing": [
+                  1.014672,
+                  0.969483
+                ],
+                "ImageOrientationPatient": [
+                  0.0,
+                  1.0,
+                  0.0,
+                  0.0,
+                  0.0,
+                  -1.0
+                ],
+                "ImagePositionPatient": [
+                  0.0,
+                  -248.187592,
+                  0.0
+                ],
+                "SliceThickness": 1.0,
+                "SpacingBetweenSlices": 10.0,
+                "RescaleIntercept": -1024.0,
+                "RescaleSlope": 1.0,
+                "WindowCenter": 1485.0,
+                "WindowWidth": 2064.0,
+                "SeriesNumber": 1,
+                "TransferSyntaxUID": "1.2.840.10008.1.2.1"
+              },
+              "url": "dicomweb:/imaging/ct-001/9f20f18d066b175f998d9f67b33f1bab.dcm"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}
