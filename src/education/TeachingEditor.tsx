@@ -38,7 +38,7 @@ export function TeachingEditor() {
     setRecord(null);
     setRole("");
     let active = true;
-    fetch(`/imaging/${encodeURIComponent(caseId)}/catalog.json`)
+    fetch(`/imaging/${encodeURIComponent(caseId)}/catalog.json`, { cache: "no-store" })
       .then((r) => r.json())
       .then((s) => {
         if (active) setStudy(s);

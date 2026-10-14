@@ -10,7 +10,7 @@ export function CaseLibrary() {
     [count, setCount] = useState(0);
   useEffect(() => {
     let active = true;
-    fetch("/imaging/cases.json")
+    fetch("/imaging/cases.json", { cache: "no-store" })
       .then((r) => {
         if (!r.ok) throw Error("Case listing unavailable");
         return r.json();

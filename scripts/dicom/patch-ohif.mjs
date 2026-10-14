@@ -6,7 +6,7 @@ export async function patchOHIF(source) {
     "extensions/cornerstone/src/services/ViewportService/CornerstoneViewportService.ts",
   );
   let text = await readFile(file, "utf8");
-  if (text.includes("// RadRepPilot: isolate series presentation")) return;
+  if (!text.includes("// RadRepPilot: isolate series presentation")) {
   const anchor =
     "    return viewport.setStack(imageIds, initialImageIndexToUse).then(() => {";
   if (text.split(anchor).length !== 2)
@@ -33,4 +33,25 @@ export async function patchOHIF(source) {
 ` + anchor,
   );
   await writeFile(file, text);
+  }
+  const scrollbarFile = resolve(source, 'extensions/cornerstone/src/Viewport/Overlays/ViewportImageScrollbar.tsx');
+  let scrollbar = await readFile(scrollbarFile, 'utf8');
+  if (scrollbar.includes('// RadRepPilot: ignore delayed events from a replaced stack')) return;
+  const scrollbarAnchor = '      // find the index of imageId in the imageIds';
+  if (scrollbar.split(scrollbarAnchor).length !== 2) throw new Error('Pinned OHIF scrollbar patch context changed');
+  scrollbar = scrollbar.replace(scrollbarAnchor, `      // RadRepPilot: ignore delayed events from a replaced stack.
+      if (viewportType === Enums.ViewportType.STACK) {
+        const stack = viewport as any;
+        const activeIds = stack.getImageIds();
+        const eventImageId = event.detail.imageId ?? event.detail.image?.imageId;
+        const index = eventImageId ? activeIds.indexOf(eventImageId) : stack.getCurrentImageIdIndex();
+        if (index < 0 || !numberOfSlices) return;
+        setImageSliceData({
+          imageIndex: Math.max(0, Math.min(numberOfSlices - 1, index)),
+          numberOfSlices,
+        });
+        return;
+      }
+` + scrollbarAnchor);
+  await writeFile(scrollbarFile, scrollbar);
 }

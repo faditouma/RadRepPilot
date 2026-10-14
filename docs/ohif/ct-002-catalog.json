@@ -22,7 +22,7 @@
   "displayPreset": "lung",
   "purpose": "diagnostic_candidate",
   "workflow": "nodule",
-  "viewerVersion": "3.11.1+radrep.1",
+  "viewerVersion": "3.11.1+radrep.2",
   "assessmentEligible": false,
   "clinicalReview": null,
   "licence": {

@@ -25,7 +25,8 @@ const run = (command, args) =>
 await access(resolve(root, ".ohif-build/index.html"));
 await access(resolve(root, ".dicom-study/delivery/manifest.json"));
 process.env.VITE_TEACHING_PREVIEW = "true";
-await run("npm", ["run", "build"]);
+// The preview is hosted at the origin root; callback routes need absolute assets.
+await run("npm", ["run", "build", "--", "--base=/"]);
 const output = resolve(root, ".vercel/output");
 const stat = resolve(output, "static");
 await rm(stat, { recursive: true, force: true });

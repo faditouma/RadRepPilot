@@ -40,7 +40,7 @@
   "displayPreset": "soft-tissue",
   "purpose": "demonstration",
   "workflow": "nodule",
-  "viewerVersion": "3.11.1+radrep.1",
+  "viewerVersion": "3.11.1+radrep.2",
   "assessmentEligible": false,
   "clinicalReview": null,
   "licence": {

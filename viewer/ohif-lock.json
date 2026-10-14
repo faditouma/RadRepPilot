@@ -5,6 +5,6 @@
   "publicUrl": "/ohif/",
   "routerBasename": "/ohif",
   "documentation": "https://docs.ohif.org/3.11/deployment/iframe/",
-  "radrepPatch": "radrep.1",
+  "radrepPatch": "radrep.2",
   "patchSource": "scripts/dicom/patch-ohif.mjs"
 }

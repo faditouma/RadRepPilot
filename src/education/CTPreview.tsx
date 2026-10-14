@@ -48,7 +48,7 @@ export function CTPreview() {
     setAttemptId(null);
     setHelper(null);
     setError("");
-    fetch(`/imaging/${encodeURIComponent(caseId)}/catalog.json`)
+    fetch(`/imaging/${encodeURIComponent(caseId)}/catalog.json`, { cache: "no-store" })
       .then(async (r) => {
         if (!r.ok) throw Error("Case unavailable in this preview");
         const c = await r.json();

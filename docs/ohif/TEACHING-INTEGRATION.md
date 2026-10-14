@@ -18,7 +18,7 @@ Case draft/attempt storage records identity, case/version, workflow ID/version, 
 
 ## Viewer fixes
 
-OHIF remains pinned at v3.11.1 / commit 3c2b027e8bc7a238ffe46ecb5f57c6c913069c3e, with a reproducible `radrep.1` patch in `scripts/dicom/patch-ohif.mjs`. It stops cine on a series change, resets the new stack to its middle slice, clears stale position/LUT presentation and clamps the index before applying the stack. It selects the preferred series using OHIF's documented `initialSeriesInstanceUID` parameter. `radrepWindow` sets a display preset (soft tissue for the demonstration; lung for the diagnostic candidate). Source pixel data and DICOM window metadata remain unchanged. The OHIF series panel starts collapsed to provide a larger image; it can be reopened for series switching.
+OHIF remains pinned at v3.11.1 / commit 3c2b027e8bc7a238ffe46ecb5f57c6c913069c3e, with a reproducible `radrep.2` patch in `scripts/dicom/patch-ohif.mjs`. It stops cine on a series change, resets the new stack to its middle slice, clears stale position/LUT presentation and clamps the index before applying the stack. It selects the preferred series using OHIF's documented `initialSeriesInstanceUID` parameter. `radrepWindow` sets a display preset (soft tissue for the demonstration; lung for the diagnostic candidate). Source pixel data and DICOM window metadata remain unchanged. The OHIF series panel starts collapsed to provide a larger image; it can be reopened for series switching.
 
 ## Protected editorial and feedback workflow
 
@@ -73,3 +73,13 @@ The reset email was reported to land on the legacy GitHub Pages site (`faditouma
 The application now intercepts `PASSWORD_RECOVERY` globally, including a recovery link that lands at the home page without `mode=recovery`. It captures only recovery intent before the SDK consumes the fragment and stores no tokens in that marker. The password form stays visible until the user submits a change. A separate protected `/#/account/security` route and profile links are available from the case listing and settings. Successful password change displays explicit confirmation.
 
 Auth accounts, learner profiles and preferences remain separate. A narrow existence check confirmed the troubleshooting user's profile and preference records both exist; no personal profile values were read or changed. End-to-end actual password change remains a user handoff: automated tests validate recovery routing and no automatic password change, but must not be claimed as the user's completed reset.
+
+### Deployed callback and cine checks
+
+The Vercel preview build now explicitly uses Vite base `/`. The default relative base used for other deployments resolved module scripts under `/auth/assets/` when the reset email opened `/auth/callback`, leaving the bootstrap screen visible. Ordinary deployment configuration is unchanged. Verify direct callback navigation as well as hash routes after deployment.
+
+OHIF patch `radrep.2` additionally ignores delayed STACK_NEW_IMAGE events whose image ID is not in the active series and derives the scrollbar position from the active stack. The previous patch stopped cine/reset the stack but a delayed image event could still overwrite the overlay position with a previous series index. The deployed browser regression check reproduced cine advancement on the 38-image stack, switched to the 11-image stack and showed slice 6/11 with playback stopped. The delayed-event counter is checked again after pending image loads settle.
+
+Account verification was explicitly deferred by the user after an expired reset link and email rate limit. No further recovery emails were requested by the agent. Still pending: actual RadRepPilot sign-in in the verification browser, account-owned structured/manual draft save and resume, immutable account submission and pending-review feedback, profile save, and editorial access with a genuinely authorized author role. Browser-local attempts are not account-synced evidence.
+
+Case listing and editorial/reading catalogue fetches use `cache: no-store` so preview updates do not leave stale viewer-version metadata in new attempts. DICOM files retain their permitted cached storage.
