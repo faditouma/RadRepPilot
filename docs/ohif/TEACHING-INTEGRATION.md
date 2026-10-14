@@ -65,3 +65,11 @@ Login/signup now provide confirmation resend and password recovery. The standalo
 Dashboard configuration and actual reset-email delivery still need verification after administrator dashboard sign-in. Do not change email confirmation requirements or manually confirm accounts. Open the protected preview in the same browser before following a reset link. Existing confirmed accounts should use sign-in/password recovery; repeat signup does not prove a new email was sent. Profiles are created by the existing account-setup workflow, separately from Auth registration.
 
 Migration `20261014141808_guided_teaching_attempt_guards.sql` is applied. It prevents new account drafts/attempts for retired or unknown/unverified cases, bounds generated/structured payload sizes, and exposes only safe case-status metadata to the preview listing. Reference answers remain private.
+
+### Recovery flow correction (October 14)
+
+The reset email was reported to land on the legacy GitHub Pages site (`faditouma.github.io/RadRepPilot/`), which did not contain the preview callback. The project administrator confirmed saving the exact protected-preview recovery redirect above. The production Site URL was not changed. Request a new email from the preview after that configuration change; old links may be used or expired.
+
+The application now intercepts `PASSWORD_RECOVERY` globally, including a recovery link that lands at the home page without `mode=recovery`. It captures only recovery intent before the SDK consumes the fragment and stores no tokens in that marker. The password form stays visible until the user submits a change. A separate protected `/#/account/security` route and profile links are available from the case listing and settings. Successful password change displays explicit confirmation.
+
+Auth accounts, learner profiles and preferences remain separate. A narrow existence check confirmed the troubleshooting user's profile and preference records both exist; no personal profile values were read or changed. End-to-end actual password change remains a user handoff: automated tests validate recovery routing and no automatic password change, but must not be claimed as the user's completed reset.

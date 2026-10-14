@@ -1,3 +1,4 @@
+import { Link } from 'react-router-dom';
 import { type FormEvent, useEffect, useState } from 'react';
 import { useSupabaseSession } from '../components/auth/useSupabaseSession';
 import {
@@ -84,7 +85,9 @@ export function Preferences() {
       title="Profile and Preferences"
       description="Manage your educational profile and default reporting preferences for RadRepPilot."
     >
-      {message ? <div className="auth-notice">{message}</div> : null}
+      <p>Your account stores your sign-in email and password. Your learning profile stores your name, learner role and preferences; saving this form creates or updates it.</p>
+      <p><Link to="/account/security">Change password</Link> · <Link to="/learn">Learning library</Link></p>
+      {message ? <div className="auth-notice" role="status">{message}</div> : null}
 
       <form className="settings-form" onSubmit={handleSubmit}>
         <section className="settings-section">

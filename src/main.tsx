@@ -1,4 +1,5 @@
-import { AuthCallback } from "./pages/AuthCallback";
+import { AuthFlowBoundary } from "./components/auth/AuthFlowBoundary";
+import { AccountSecurity } from "./pages/AccountSecurity";
 import React, { lazy, Suspense } from "react";
 import { I18nProvider } from "./i18n/I18nContext";
 import ReactDOM from "react-dom/client";
@@ -29,9 +30,7 @@ import { Education } from "./education/Education";
 ReactDOM.createRoot(document.getElementById("root") as HTMLElement).render(
   <React.StrictMode>
     <I18nProvider>
-      {location.pathname === "/auth/callback" ? (
-        <AuthCallback />
-      ) : (
+      <AuthFlowBoundary>
         <Suspense fallback={<p role="status">Loading RadRepPilot…</p>}>
           <HashRouter>
             <Routes>
@@ -66,6 +65,7 @@ ReactDOM.createRoot(document.getElementById("root") as HTMLElement).render(
               <Route element={<ProtectedRoute />}>
                 <Route element={<AppLayout />}>
                   <Route path="/account-setup" element={<AccountSetup />} />
+                  <Route path="/account/security" element={<AccountSecurity />} />
                   <Route path="/dashboard" element={<Dashboard />} />
                   <Route path="/reports" element={<Reports />} />
                   <Route path="/reports/new" element={<NewReport />} />
@@ -75,7 +75,7 @@ ReactDOM.createRoot(document.getElementById("root") as HTMLElement).render(
             </Routes>
           </HashRouter>
         </Suspense>
-      )}
+      </AuthFlowBoundary>
     </I18nProvider>
   </React.StrictMode>,
 );

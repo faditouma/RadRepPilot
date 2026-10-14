@@ -26,7 +26,8 @@ const appLinks = [
   { to: '/dashboard', label: 'Dashboard' },
   { to: '/reports', label: 'Reports' },
   { to: '/reports/new', label: 'New Report' },
-  { to: '/preferences', label: 'Preferences' },
+  { to: '/preferences', label: 'Profile and preferences' },
+  { to: '/account/security', label: 'Password' },
 ];
 
 export function Navbar({ variant = 'public' }: NavbarProps) {

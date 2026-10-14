@@ -53,6 +53,8 @@ export function CaseLibrary() {
             Choose imaging / requisitions
           </Link>
           <Link to="/learn/editor/ct-002">Editorial review</Link>
+          <Link to="/preferences">Profile and preferences</Link>
+          <Link to="/account/security">Change password</Link>
           <Link to="/login" state={{ from: { pathname: "/learn" } }}>
             Account sign-in
           </Link>
