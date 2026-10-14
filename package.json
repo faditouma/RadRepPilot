@@ -17,7 +17,9 @@
     "education:preview": "EDUCATION_LOCAL_PREVIEW=true node server/app.mjs",
     "education:import": "node scripts/education/import.mjs",
     "education:seed": "node scripts/education/seed.mjs",
-    "education:test": "node --test server/*.test.mjs"
+    "education:test": "node --test server/*.test.mjs",
+    "build:ohif": "node scripts/dicom/build-ohif.mjs",
+    "build:ohif-preview": "node scripts/dicom/package-preview.mjs"
   },
   "dependencies": {
     "@supabase/supabase-js": "^2.106.2",

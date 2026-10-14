@@ -40,3 +40,13 @@ reports/acr-extraction/*.xlsx
 
 # Private educational storage (never served by Vite/GitHub Pages)
 .education-storage/
+
+# Reproducible OHIF build and acquired DICOM (not committed)
+.ohif-source/
+.ohif-build/
+.dicom-study/
+.vercel/output/
+
+# Python acquisition runtime artifacts
+__pycache__/
+*.pyc

@@ -20,6 +20,7 @@ const Workspace = lazy(() =>
   import("./pages/Workspace").then((m) => ({ default: m.Workspace })),
 );
 import "./styles.css";
+import { CTPreview } from "./education/CTPreview";
 import { Education } from "./education/Education";
 
 ReactDOM.createRoot(document.getElementById("root") as HTMLElement).render(
@@ -34,6 +35,7 @@ ReactDOM.createRoot(document.getElementById("root") as HTMLElement).render(
             <Route path="/disclaimer" element={<Disclaimer />} />
             <Route path="/feedback" element={<Feedback />} />
           </Route>
+          <Route path="/learn/ct/:caseId" element={<CTPreview />} />
           <Route path="/learn/*" element={<Education />} />
           <Route path="/workspace" element={<Workspace />} />
           <Route path="/workspace/:workspaceSection" element={<Workspace />} />

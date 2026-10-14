@@ -308,6 +308,7 @@ export function Education() {
               <option value="referrer">GP / referring clinician</option>
             </select>
           </label>
+          <Link to="/learn/ct/ct-001">Actual DICOM CT · editorial preview ↗</Link>
           <Link to="/workspace/modules">Existing reporting tools ↗</Link>
           <Link to="/workspace/requisitions">Requisition builder ↗</Link>
           <Link to="/login">Account / sign in</Link>
@@ -454,7 +455,8 @@ export function Education() {
                 <Link to="/workspace/calculators">
                   Calculators and classification tools
                 </Link>
-                <Link to="/workspace/modules">Reporting templates</Link>
+                <Link to="/learn/ct/ct-001">Actual DICOM CT · editorial preview ↗</Link>
+          <Link to="/workspace/modules">Reporting templates</Link>
                 <Link to="/workspace/requisitions">
                   Structured requisition builder
                 </Link>

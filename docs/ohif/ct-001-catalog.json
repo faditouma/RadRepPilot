@@ -1,0 +1,69 @@
+{
+  "id": "ct-001",
+  "version": 1,
+  "title": "CT study 001 \u00b7 Chest",
+  "status": "draft",
+  "modality": "CT",
+  "history": "Review the acquired chest CT images and describe observations and study limitations. No original diagnostic report has been imported. Source collection membership is not an imaging diagnosis.",
+  "historyProvenance": "Original educational task; no fictional patient details added",
+  "studyInstanceUID": "1.3.6.1.4.1.14519.5.2.1.6450.9002.140494957337365122665628989385",
+  "manifestPath": "/imaging/ct-001/manifest.json",
+  "series": [
+    {
+      "SeriesInstanceUID": "1.3.6.1.4.1.14519.5.2.1.6450.9002.212434881874895270111598521722",
+      "SeriesNumber": 2,
+      "SeriesDescription": "CT acquisition 1",
+      "count": 38
+    },
+    {
+      "SeriesInstanceUID": "1.3.6.1.4.1.14519.5.2.1.6450.9002.230713842590247146149807189576",
+      "SeriesNumber": 3,
+      "SeriesDescription": "CT acquisition 2",
+      "count": 38
+    },
+    {
+      "SeriesInstanceUID": "1.3.6.1.4.1.14519.5.2.1.6450.9002.185498582525296662848624544683",
+      "SeriesNumber": 5,
+      "SeriesDescription": "CT acquisition 3",
+      "count": 11
+    },
+    {
+      "SeriesInstanceUID": "1.3.6.1.4.1.14519.5.2.1.6450.9002.575993375121771138791672854373",
+      "SeriesNumber": 1,
+      "SeriesDescription": "Scout 4",
+      "count": 2
+    }
+  ],
+  "instanceCount": 89,
+  "completeness": "All 4 source series / 89 instances available in this IDC study; clinical completeness has not been approved.",
+  "viewerVersion": "3.11.1",
+  "assessmentEligible": false,
+  "clinicalReview": null,
+  "licence": {
+    "name": "CC BY 3.0",
+    "version": "3.0",
+    "url": "https://creativecommons.org/licenses/by/3.0/"
+  },
+  "attribution": {
+    "format": "apa",
+    "citations": [
+      "Albertina, B., Watson, M., Holback, C., Jarosz, R., Kirk, S., Lee, Y., Rieger-Christ, K., &amp; Lemmerman, J. (2016). <i>The Cancer Genome Atlas Lung Adenocarcinoma Collection (TCGA-LUAD)</i> (Version 4) [Dataset]. The Cancer Imaging Archive. https://doi.org/10.7937/K9/TCIA.2016.JGNIHEP5"
+    ],
+    "idc_acknowledgment": "Fedorov, A., Longabaugh, W. J. R., Pot, D., Clunie, D. A., Pieper, S. D., Gibbs, D. L., Bridge, C., Herrmann, M. D., Homeyer, A., Lewis, R., Aerts, H. J. W. L., Krishnaswamy, D., Thiriveedhi, V. K., Ciausu, C., Schacherer, D. P., Bontempi, D., Pihl, T., Wagner, U., Farahani, K., et al. (2023). National Cancer Institute Imaging Data Commons: Toward Transparency,                     Reproducibility, and Scalability in Imaging Artificial                     Intelligence. RadioGraphics, 43(12). https://doi.org/10.1148/rg.230180",
+    "recommendation": "In addition to the per-dataset citations, always acknowledge IDC itself by citing Fedorov et al., https://doi.org/10.1148/rg.230180 (see idc_acknowledgment).",
+    "filters_applied": {
+      "terms": {
+        "StudyInstanceUID": [
+          "1.3.6.1.4.1.14519.5.2.1.6450.9002.140494957337365122665628989385"
+        ]
+      },
+      "ranges": {}
+    },
+    "warnings": []
+  },
+  "modifications": [
+    "Removed private tags and descriptive/identifier/date fields from delivery copies",
+    "Neutral delivery filenames and display labels",
+    "Pixel bytes, orientation, calibration and SOP identifiers preserved"
+  ]
+}
