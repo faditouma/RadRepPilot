@@ -3,6 +3,36 @@ window.config = {
   routerBasename: "/ohif",
   extensions: [],
   modes: [],
+  modesConfiguration: {
+    "@ohif/mode-longitudinal": {
+      routes: [
+        {
+          path: "longitudinal",
+          layoutTemplate: () => ({
+            id: "@ohif/extension-default.layoutTemplateModule.viewerLayout",
+            props: {
+              leftPanels: [
+                "@ohif/extension-measurement-tracking.panelModule.seriesList",
+              ],
+              leftPanelClosed: true,
+              leftPanelResizable: true,
+              rightPanels: [],
+              rightPanelClosed: true,
+              viewports: [
+                {
+                  namespace:
+                    "@ohif/extension-measurement-tracking.viewportModule.cornerstone-tracked",
+                  displaySetsToDisplay: [
+                    "@ohif/extension-default.sopClassHandlerModule.stack",
+                  ],
+                },
+              ],
+            },
+          }),
+        },
+      ],
+    },
+  },
   showStudyList: false,
   showLoadingIndicator: true,
   showErrorDetails: "always",

@@ -1,3 +1,4 @@
+import { patchOHIF } from './patch-ohif.mjs';
 import { readFile, writeFile, mkdir, cp, access } from "node:fs/promises";
 import { resolve } from "node:path";
 import { spawn } from "node:child_process";
@@ -48,6 +49,7 @@ try {
     repo,
   );
 }
+await patchOHIF(source);
 await cp(
   resolve(repo, "viewer/config.js"),
   resolve(source, "platform/app/public/config/radrep.js"),

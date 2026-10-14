@@ -1,36 +1,43 @@
-import { type FormEvent, useEffect, useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
-import { useSupabaseSession } from '../components/auth/useSupabaseSession';
-import { isSupabaseConfigured, supabase } from '../lib/supabaseClient';
-import { PageShell } from './PageShell';
-import { useI18n } from '../i18n/I18nContext';
+import { AccountRecovery } from "../components/auth/AccountRecovery";
+import { type FormEvent, useEffect, useState } from "react";
+import { Link, useNavigate } from "react-router-dom";
+import { useSupabaseSession } from "../components/auth/useSupabaseSession";
+import { isSupabaseConfigured, supabase } from "../lib/supabaseClient";
+import { PageShell } from "./PageShell";
+import { useI18n } from "../i18n/I18nContext";
 
 export function Signup() {
   const { text } = useI18n();
   const navigate = useNavigate();
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
-  const [message, setMessage] = useState('');
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [message, setMessage] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
   const { isLoading, session } = useSupabaseSession();
 
   useEffect(() => {
     if (!isLoading && session) {
-      navigate('/dashboard', { replace: true });
+      navigate("/dashboard", { replace: true });
     }
   }, [isLoading, navigate, session]);
 
   async function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
-    setMessage('');
+    setMessage("");
 
     if (!supabase) {
-      setMessage('Supabase is not configured yet. Add VITE_SUPABASE_URL and VITE_SUPABASE_ANON_KEY to your local .env file.');
+      setMessage(
+        "Supabase is not configured yet. Add VITE_SUPABASE_URL and VITE_SUPABASE_ANON_KEY to your local .env file.",
+      );
       return;
     }
 
     setIsSubmitting(true);
-    const { data, error } = await supabase.auth.signUp({ email, password });
+    const { data, error } = await supabase.auth.signUp({
+      email: email.trim(),
+      password,
+      options: { emailRedirectTo: `${location.origin}/auth/callback` },
+    });
     setIsSubmitting(false);
 
     if (error) {
@@ -39,12 +46,14 @@ export function Signup() {
     }
 
     if (data.session) {
-      setMessage('Account created successfully. Opening your dashboard...');
-      navigate('/dashboard', { replace: true });
+      setMessage("Account created successfully. Opening your dashboard...");
+      navigate("/dashboard", { replace: true });
       return;
     }
 
-    setMessage('Signup request sent. Please check your email to confirm your account before signing in.');
+    setMessage(
+      "If a new account was created, check your email to confirm it. If you already have an account, use Sign in or Forgot password; signing up again does not reset your password.",
+    );
   }
 
   return (
@@ -55,7 +64,7 @@ export function Signup() {
     >
       <form className="auth-form" onSubmit={handleSubmit}>
         <label>
-          {text('Email')}
+          {text("Email")}
           <input
             autoComplete="email"
             disabled={!isSupabaseConfigured || isSubmitting}
@@ -67,7 +76,7 @@ export function Signup() {
         </label>
 
         <label>
-          {text('Password')}
+          {text("Password")}
           <input
             autoComplete="new-password"
             disabled={!isSupabaseConfigured || isSubmitting}
@@ -81,7 +90,8 @@ export function Signup() {
 
         {!isSupabaseConfigured ? (
           <div className="auth-notice" role="status">
-            Supabase is ready in code, but local environment values are missing. Create a `.env` file from `.env.example`.
+            Supabase is ready in code, but local environment values are missing.
+            Create a `.env` file from `.env.example`.
           </div>
         ) : null}
 
@@ -91,13 +101,19 @@ export function Signup() {
           </div>
         ) : null}
 
-        <button className="auth-submit" disabled={!isSupabaseConfigured || isSubmitting} type="submit">
-          {text(isSubmitting ? 'Creating account...' : 'Create account')}
+        <button
+          className="auth-submit"
+          disabled={!isSupabaseConfigured || isSubmitting}
+          type="submit"
+        >
+          {text(isSubmitting ? "Creating account..." : "Create account")}
         </button>
       </form>
 
+      <AccountRecovery email={email} />
       <p className="auth-switch">
-        {text('Already have an account?')} <Link to="/login">{text('Sign in')}</Link>
+        {text("Already have an account?")}{" "}
+        <Link to="/login">{text("Sign in")}</Link>
       </p>
     </PageShell>
   );

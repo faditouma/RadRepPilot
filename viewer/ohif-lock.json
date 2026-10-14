@@ -4,5 +4,7 @@
   "commit": "3c2b027e8bc7a238ffe46ecb5f57c6c913069c3e",
   "publicUrl": "/ohif/",
   "routerBasename": "/ohif",
-  "documentation": "https://docs.ohif.org/3.11/deployment/iframe/"
+  "documentation": "https://docs.ohif.org/3.11/deployment/iframe/",
+  "radrepPatch": "radrep.1",
+  "patchSource": "scripts/dicom/patch-ohif.mjs"
 }

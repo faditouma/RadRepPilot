@@ -1,3 +1,7 @@
+# Current teaching integration
+
+See [TEACHING-INTEGRATION.md](TEACHING-INTEGRATION.md) for the current operational scope, corrected ct-001 suitability and ct-002 diagnostic candidate. The material below documents the first OHIF milestone and its historical limitations.
+
 # Protected CT editorial preview
 
 The `education/ohif-ct` branch adds an independently built OHIF application in an iframe beside the existing reporting application. It does not replace RadRepPilot’s French workspace, templates or calculators. The teaching case is an unpublished draft, with no manufactured findings, rubric, reviewer or approval date. Assessment remains disabled.

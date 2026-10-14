@@ -1,3 +1,4 @@
+import { AuthCallback } from "./pages/AuthCallback";
 import React, { lazy, Suspense } from "react";
 import { I18nProvider } from "./i18n/I18nContext";
 import ReactDOM from "react-dom/client";
@@ -21,38 +22,60 @@ const Workspace = lazy(() =>
 );
 import "./styles.css";
 import { CTPreview } from "./education/CTPreview";
+import { CaseLibrary } from "./education/CaseLibrary";
+import { TeachingEditor } from "./education/TeachingEditor";
 import { Education } from "./education/Education";
 
 ReactDOM.createRoot(document.getElementById("root") as HTMLElement).render(
   <React.StrictMode>
     <I18nProvider>
-    <Suspense fallback={<p role="status">Loading RadRepPilot…</p>}>
-      <HashRouter>
-        <Routes>
-          <Route element={<PublicLayout />}>
-            <Route path="/" element={<HomeRoute />} />
-            <Route path="/about" element={<About />} />
-            <Route path="/disclaimer" element={<Disclaimer />} />
-            <Route path="/feedback" element={<Feedback />} />
-          </Route>
-          <Route path="/learn/ct/:caseId" element={<CTPreview />} />
-          <Route path="/learn/*" element={<Education />} />
-          <Route path="/workspace" element={<Workspace />} />
-          <Route path="/workspace/:workspaceSection" element={<Workspace />} />
-          <Route path="/login" element={<Login />} />
-          <Route path="/signup" element={<Signup />} />
-          <Route element={<ProtectedRoute />}>
-            <Route element={<AppLayout />}>
-              <Route path="/account-setup" element={<AccountSetup />} />
-              <Route path="/dashboard" element={<Dashboard />} />
-              <Route path="/reports" element={<Reports />} />
-              <Route path="/reports/new" element={<NewReport />} />
-              <Route path="/preferences" element={<Preferences />} />
-            </Route>
-          </Route>
-        </Routes>
-      </HashRouter>
-    </Suspense>
-  </I18nProvider>
+      {location.pathname === "/auth/callback" ? (
+        <AuthCallback />
+      ) : (
+        <Suspense fallback={<p role="status">Loading RadRepPilot…</p>}>
+          <HashRouter>
+            <Routes>
+              <Route element={<PublicLayout />}>
+                <Route path="/" element={<HomeRoute />} />
+                <Route path="/about" element={<About />} />
+                <Route path="/disclaimer" element={<Disclaimer />} />
+                <Route path="/feedback" element={<Feedback />} />
+              </Route>
+              <Route
+                path="/learn/editor/:caseId"
+                element={<TeachingEditor />}
+              />
+              <Route path="/learn/ct/:caseId" element={<CTPreview />} />
+              <Route
+                path="/learn/*"
+                element={
+                  import.meta.env.VITE_TEACHING_PREVIEW === "true" ? (
+                    <CaseLibrary />
+                  ) : (
+                    <Education />
+                  )
+                }
+              />
+              <Route path="/workspace" element={<Workspace />} />
+              <Route
+                path="/workspace/:workspaceSection"
+                element={<Workspace />}
+              />
+              <Route path="/login" element={<Login />} />
+              <Route path="/signup" element={<Signup />} />
+              <Route element={<ProtectedRoute />}>
+                <Route element={<AppLayout />}>
+                  <Route path="/account-setup" element={<AccountSetup />} />
+                  <Route path="/dashboard" element={<Dashboard />} />
+                  <Route path="/reports" element={<Reports />} />
+                  <Route path="/reports/new" element={<NewReport />} />
+                  <Route path="/preferences" element={<Preferences />} />
+                </Route>
+              </Route>
+            </Routes>
+          </HashRouter>
+        </Suspense>
+      )}
+    </I18nProvider>
   </React.StrictMode>,
 );

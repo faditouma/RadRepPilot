@@ -6,6 +6,8 @@ export interface DICOMStudy {
   instanceCount: number;
   completeness: string;
   viewerVersion: string;
+  preferredSeriesUID?: string;
+  displayPreset?: string;
 }
 export function OHIFViewer({ study }: { study: DICOMStudy }) {
   const [completed, setCompleted] = useState(0),
@@ -23,7 +25,7 @@ export function OHIFViewer({ study }: { study: DICOMStudy }) {
   }, []);
   const key = `${study.id}:${study.version}`;
   const manifest = new URL(study.manifestPath, location.origin).href;
-  const src = `/ohif/viewer/dicomjson?url=${encodeURIComponent(manifest)}&caseKey=${encodeURIComponent(key)}`;
+  const src = `/ohif/viewer/dicomjson?url=${encodeURIComponent(manifest)}&caseKey=${encodeURIComponent(key)}&initialSeriesInstanceUID=${encodeURIComponent(study.preferredSeriesUID || "")}&radrepWindow=${encodeURIComponent(study.displayPreset || "soft-tissue")}`;
   useEffect(() => {
     setCompleted(0);
     setBooted(false);
@@ -110,8 +112,7 @@ export function OHIFViewer({ study }: { study: DICOMStudy }) {
       <p className="edu-muted">
         Scroll the mouse wheel over an image. Use OHIF’s Window/Level, Zoom,
         Pan, series thumbnails and Cine controls. Measurements use preserved
-        DICOM pixel spacing. No answer annotations or structured reports were
-        acquired.
+        DICOM pixel spacing. No answer annotations or structured reports are delivered to this viewer.
       </p>
     </section>
   );

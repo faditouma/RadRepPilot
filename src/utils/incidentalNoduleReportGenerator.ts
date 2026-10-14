@@ -10,7 +10,8 @@ export function generateIncidentalNoduleReport(schema: ReportingWorkflowSchema, 
     v('shortAxisMm') ? `${v('shortAxisMm')} mm short axis` : '',
     v('volumeMm3') ? `${v('volumeMm3')} mm³` : '',
   ].filter(Boolean).join(', ');
-  const nodule = `${v('numberOfNodules') === 'multiple' ? 'Dominant' : 'Solitary'} ${v('noduleType') || 'pulmonary'} nodule${v('location') ? ` in the ${v('location')}` : ''}${measurements ? ` measuring ${measurements}` : ''}${v('seriesImage') ? ` (${v('seriesImage')})` : ''}${v('morphology') ? ` with ${v('morphology')} morphology` : ''}.`;
+  const hasNoduleInput = ['numberOfNodules','noduleType','location','sizeMm','longAxisMm','shortAxisMm','volumeMm3','morphology','seriesImage'].some(key => Boolean(v(key)));
+  const nodule = hasNoduleInput ? `${v('numberOfNodules') === 'multiple' ? 'Dominant' : v('numberOfNodules') === 'solitary' ? 'Solitary' : ''} ${v('noduleType') || 'pulmonary'} nodule${v('location') ? ` in the ${v('location')}` : ''}${measurements ? ` measuring ${measurements}` : ''}${v('seriesImage') ? ` (${v('seriesImage')})` : ''}${v('morphology') ? ` with ${v('morphology')} morphology` : ''}.`.trim() : '';
   const comparison = v('priorImagingAvailable') === 'yes'
     ? `Comparison: ${v('stability') || 'not characterized'}${v('growthDetails') ? `; ${v('growthDetails')}` : ''}${v('comparisonDate') ? ` since ${v('comparisonDate')}` : ''}.`
     : 'No prior imaging is entered for comparison.';

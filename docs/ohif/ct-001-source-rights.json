@@ -177,7 +177,7 @@
     "Pixel bytes, orientation, calibration and SOP identifiers preserved"
   ],
   "completeness": {
-    "status": "complete source study as available in IDC",
+    "status": "all indexed procedural CT series",
     "series": 4,
     "instances": 89,
     "sourceExpectedInstances": 89,
@@ -1454,5 +1454,7 @@
       "ranges": {}
     },
     "warnings": []
-  }
+  },
+  "rightsReviewStatus": "verified",
+  "casePurpose": "interventional imaging demonstration; not a routine diagnostic chest CT"
 }

@@ -1,0 +1,11 @@
+create function public.education_case_accepts_attempt(p_case text,p_version integer) returns boolean language sql stable security definer set search_path='' as $$select exists(select 1 from public.education_teaching_cases where case_id=p_case and case_version=p_version and clinical_status<>'retired' and rights_status='verified')$$;
+revoke all on function public.education_case_accepts_attempt(text,integer) from public; grant execute on function public.education_case_accepts_attempt(text,integer) to authenticated;
+drop policy ohif_attempts_insert_own on public.education_ohif_attempts;
+create policy ohif_attempts_insert_own on public.education_ohif_attempts for insert to authenticated with check((select auth.uid())=user_id and public.education_case_accepts_attempt(case_id,case_version));
+drop policy ohif_drafts_insert_own on public.education_ohif_drafts;
+create policy ohif_drafts_insert_own on public.education_ohif_drafts for insert to authenticated with check((select auth.uid())=user_id and public.education_case_accepts_attempt(case_id,case_version));
+drop policy ohif_drafts_update_own on public.education_ohif_drafts;
+create policy ohif_drafts_update_own on public.education_ohif_drafts for update to authenticated using((select auth.uid())=user_id) with check((select auth.uid())=user_id and public.education_case_accepts_attempt(case_id,case_version));
+grant execute on function public.education_case_status(text,integer) to anon;
+alter table public.education_ohif_drafts add constraint guided_draft_payload_limit check(jsonb_typeof(structured_answers)='object' and jsonb_typeof(generated_report)='object' and octet_length(structured_answers::text)<=65536 and octet_length(generated_report::text)<=65536);
+alter table public.education_ohif_attempts add constraint guided_attempt_payload_limit check(jsonb_typeof(structured_answers)='object' and jsonb_typeof(generated_report)='object' and octet_length(structured_answers::text)<=65536 and octet_length(generated_report::text)<=65536);

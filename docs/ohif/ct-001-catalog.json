@@ -1,10 +1,10 @@
 {
   "id": "ct-001",
-  "version": 1,
-  "title": "CT study 001 \u00b7 Chest",
+  "version": 2,
+  "title": "Interventional CT demonstration 001",
   "status": "draft",
   "modality": "CT",
-  "history": "Review the acquired chest CT images and describe observations and study limitations. No original diagnostic report has been imported. Source collection membership is not an imaging diagnosis.",
+  "history": "Interventional source study labelled CT LUNG BIOPSY, with DYNAMIC MODE acquisition. Imaging demonstration only; not a routine diagnostic chest CT or an approved assessment task.",
   "historyProvenance": "Original educational task; no fictional patient details added",
   "studyInstanceUID": "1.3.6.1.4.1.14519.5.2.1.6450.9002.140494957337365122665628989385",
   "manifestPath": "/imaging/ct-001/manifest.json",
@@ -35,8 +35,12 @@
     }
   ],
   "instanceCount": 89,
-  "completeness": "All 4 source series / 89 instances available in this IDC study; clinical completeness has not been approved.",
-  "viewerVersion": "3.11.1",
+  "completeness": "All source-listed procedural CT images; not a complete routine diagnostic chest CT.",
+  "preferredSeriesUID": "1.3.6.1.4.1.14519.5.2.1.6450.9002.212434881874895270111598521722",
+  "displayPreset": "soft-tissue",
+  "purpose": "demonstration",
+  "workflow": "nodule",
+  "viewerVersion": "3.11.1+radrep.1",
   "assessmentEligible": false,
   "clinicalReview": null,
   "licence": {

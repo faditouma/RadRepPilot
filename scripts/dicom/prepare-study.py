@@ -23,9 +23,10 @@ def order_key(d):return (round(projection(d),5),str(d.get('TemporalPositionIdent
 fields=['SOPClassUID','SOPInstanceUID','StudyInstanceUID','SeriesInstanceUID','FrameOfReferenceUID','Modality','ImageType','Rows','Columns','InstanceNumber','SamplesPerPixel','PhotometricInterpretation','BitsAllocated','BitsStored','HighBit','PixelRepresentation','PixelSpacing','ImageOrientationPatient','ImagePositionPatient','SliceThickness','SpacingBetweenSlices','RescaleIntercept','RescaleSlope','RescaleType','WindowCenter','WindowWidth','NumberOfFrames','PlanarConfiguration','ConvolutionKernel']
 
 def prepare(args):
- repo=Path(args.repo);index=json.loads(Path(args.index).read_text());rows=index['rows']
+ repo=Path(args.repo);case_id=getattr(args,'case_id','ct-001');record_path=repo/'docs/ohif'/f'{case_id}-source-rights.json';previous=json.loads(record_path.read_text());index=json.loads(Path(args.index).read_text());rows=index['rows']
+ if previous.get('rightsReviewStatus')!='verified':raise ValueError('Independent rights review is required before processing')
  if not rows or not all(r['license_short_name']=='CC BY 3.0' for r in rows):raise ValueError('Rights not approved for this curated CC BY 3.0 import')
- if {r['StudyInstanceUID'] for r in rows}!={'1.3.6.1.4.1.14519.5.2.1.6450.9002.140494957337365122665628989385'}:raise ValueError('Unexpected study: independent source/rights review required')
+ if {r['StudyInstanceUID'] for r in rows}!={previous['studyInstanceUID']}:raise ValueError('Unexpected study: independent source/rights review required')
  group=collections.defaultdict(list);files={}
  for p in Path(args.source).glob('*.dcm'):
   raw=p.read_bytes();d=pydicom.dcmread(p)
@@ -37,7 +38,7 @@ def prepare(args):
   if str(d.SOPInstanceUID)in files:raise ValueError('Duplicate SOP instance')
   files[str(d.SOPInstanceUID)]=(p,raw);group[str(d.SeriesInstanceUID)].append(d)
  assert set(group)=={r['SeriesInstanceUID']for r in rows},'Series missing or unexpectedly added'
- out=repo/'.dicom-study/delivery';out.mkdir(parents=True,exist_ok=True)
+ out=repo/('.dicom-study/delivery' if case_id=='ct-001' else f'.dicom-study/{case_id}/delivery');out.mkdir(parents=True,exist_ok=True)
  series=[];inventory=[];geometries=[]
  # Axial reconstructions precede scouts; acquisition ordering uses actual SeriesNumber.
  row_order=sorted(rows,key=lambda r:('SCOUT'in str(r.get('SeriesDescription','')).upper(),int(r.get('SeriesNumber')or 0)))
@@ -54,29 +55,29 @@ def prepare(args):
    d.remove_private_tags()
    for keyword in ['PatientName','PatientID','PatientBirthDate','PatientAddress','OtherPatientIDs','OtherPatientNames','AccessionNumber','InstitutionName','InstitutionAddress','ReferringPhysicianName','PerformingPhysicianName','OperatorsName','StudyID','StudyDescription','SeriesDescription','ProtocolName','PatientComments','AdditionalPatientHistory','StudyDate','SeriesDate','AcquisitionDate','ContentDate','InstanceCreationDate']:
     if keyword in d:del d[keyword]
-   d.PatientName='';d.PatientID='CT-001';d.PatientIdentityRemoved='YES';d.DeidentificationMethod=['TCIA/IDC source; delivery metadata minimized','Pixel privacy approval pending']
+   d.PatientName='';d.PatientID=case_id.upper();d.PatientIdentityRemoved='YES';d.DeidentificationMethod=['TCIA/IDC source; delivery metadata minimized','Pixel privacy approval pending']
    d.SeriesDescription=('Scout'if localizer else 'CT acquisition')+f' {number}'
    filename=sha(str(d.SOPInstanceUID).encode())[:32]+'.dcm';dest=out/filename
    d.save_as(dest,enforce_file_format=True);delivery=dest.read_bytes();assert sha(pydicom.dcmread(dest).PixelData)==pixel_hash,'Pixels changed'
    metadata={k:normalize(getattr(d,k))for k in fields if k in d};metadata['SeriesNumber']=int(row.get('SeriesNumber')or number);metadata['TransferSyntaxUID']=str(d.file_meta.TransferSyntaxUID)
-   instances.append({'metadata':metadata,'url':'dicomweb:/imaging/ct-001/'+filename})
+   instances.append({'metadata':metadata,'url':f'dicomweb:/imaging/{case_id}/'+filename})
    inventory.append({'file':filename,'SOPInstanceUID':str(d.SOPInstanceUID),'SeriesInstanceUID':str(d.SeriesInstanceUID),'sourceFile':p.name,'sourceSHA256':sha(raw),'deliverySHA256':sha(delivery),'pixelSHA256':pixel_hash,'sourceBytes':len(raw),'deliveryBytes':len(delivery),'frame':frame,'projection':projection(d)})
   label=('Scout'if localizer else 'CT acquisition')+f' {number}'
   series.append({'SeriesInstanceUID':row['SeriesInstanceUID'],'SeriesNumber':int(row.get('SeriesNumber')or number),'SeriesDescription':label,'Modality':'CT','instances':instances})
- study={'StudyInstanceUID':rows[0]['StudyInstanceUID'],'StudyDescription':'CT study 001','PatientName':'','PatientID':'CT-001','StudyDate':'','StudyTime':'','AccessionNumber':'','PatientAge':'','PatientSex':'','NumInstances':len(files),'Modalities':'CT','series':series}
+ study={'StudyInstanceUID':rows[0]['StudyInstanceUID'],'StudyDescription':f'CT study {case_id[3:]}','PatientName':'','PatientID':case_id.upper(),'StudyDate':'','StudyTime':'','AccessionNumber':'','PatientAge':'','PatientSex':'','NumInstances':len(files),'Modalities':'CT','series':series}
  (out/'manifest.json').write_text(json.dumps({'studies':[study]},indent=2))
  (out/'checksums.json').write_text(json.dumps(inventory,indent=2))
  records=repo/'docs/ohif';records.mkdir(parents=True,exist_ok=True)
- previous_path=records/'ct-001-source-rights.json'
+ previous_path=record_path
  previous=json.loads(previous_path.read_text()) if previous_path.exists() else {}
- rights={'caseId':'ct-001','studyInstanceUID':study['StudyInstanceUID'],'collection':'TCGA-LUAD','source':'IDC current REST index / TCIA original data','sourceDOIs':sorted({r['source_DOI']for r in rows}),'licence':{'name':'CC BY 3.0','version':'3.0','url':'https://creativecommons.org/licenses/by/3.0/'},'series':rows,'accessDate':'2026-10-13','commercial':{'status':'allowed','evidence':'IDC individual series license_short_name'},'adaptation':{'status':'allowed','evidence':'CC BY 3.0; attribution/modification notice retained'},'redistribution':{'status':'allowed','evidence':'CC BY 3.0'},'AIInference':{'status':'unknown','evidence':'Not assessed; disabled'},'training':{'status':'prohibited','evidence':'Platform default'},'clinicalReview':None,'privacyReview':{'status':'editorial preview only; unknown BurnedInAnnotation requires pixel inspection before publication','approval':None},'modifications':['Removed private tags and descriptive/identifier/date fields from delivery copies','Neutral delivery filenames and display labels','Pixel bytes, orientation, calibration and SOP identifiers preserved'],'completeness':{'status':'complete source study as available in IDC','series':len(series),'instances':len(files),'sourceExpectedInstances':sum(r['instanceCount']for r in rows),'excludedObjects':[]},'geometry':geometries,'checksums':inventory}
+ rights={**previous,'caseId':case_id,'studyInstanceUID':study['StudyInstanceUID'],'collection':previous['collection'],'source':'IDC current REST index / TCIA original data','sourceDOIs':sorted({r['source_DOI']for r in rows}),'licence':{'name':'CC BY 3.0','version':'3.0','url':'https://creativecommons.org/licenses/by/3.0/'},'series':rows,'accessDate':'2026-10-13','commercial':{'status':'allowed','evidence':'IDC individual series license_short_name'},'adaptation':{'status':'allowed','evidence':'CC BY 3.0; attribution/modification notice retained'},'redistribution':{'status':'allowed','evidence':'CC BY 3.0'},'AIInference':{'status':'unknown','evidence':'Not assessed; disabled'},'training':{'status':'prohibited','evidence':'Platform default'},'clinicalReview':None,'privacyReview':{'status':'editorial preview only; unknown BurnedInAnnotation requires pixel inspection before publication','approval':None},'modifications':['Removed private tags and descriptive/identifier/date fields from delivery copies','Neutral delivery filenames and display labels','Pixel bytes, orientation, calibration and SOP identifiers preserved'],'completeness':{'status':'all indexed procedural CT series' if case_id=='ct-001' else 'selected diagnostic CT series; answer-revealing derived objects excluded','series':len(series),'instances':len(files),'sourceExpectedInstances':sum(r['instanceCount']for r in rows),'excludedObjects':[]},'geometry':geometries,'checksums':inventory}
  for key,file in [('licenceEvidence','licenses'),('attribution','citations')]:
-  p=Path('/tmp/radrep-ct-'+file+'.json')
+  p=Path('/tmp/radrep-ct-'+file+'.json') if case_id=='ct-001' else Path('/private/tmp/radrep-lidc/'+file+'.json')
   if p.exists():rights[key]=json.loads(p.read_text())
   elif key in previous:rights[key]=previous[key]
   else:raise ValueError('Missing independently reviewed '+key+' evidence')
- (records/'ct-001-source-rights.json').write_text(json.dumps(rights,indent=2))
- catalog={'id':'ct-001','version':1,'title':'CT study 001 · Chest','status':'draft','modality':'CT','history':'Review the acquired chest CT images and describe observations and study limitations. No original diagnostic report has been imported. Source collection membership is not an imaging diagnosis.','historyProvenance':'Original educational task; no fictional patient details added','studyInstanceUID':study['StudyInstanceUID'],'manifestPath':'/imaging/ct-001/manifest.json','series':[{k:s[k]for k in ['SeriesInstanceUID','SeriesNumber','SeriesDescription']}|{'count':len(s['instances'])}for s in series],'instanceCount':len(files),'completeness':'All 4 source series / 89 instances available in this IDC study; clinical completeness has not been approved.','viewerVersion':'3.11.1','assessmentEligible':False,'clinicalReview':None,'licence':rights['licence'],'attribution':rights.get('attribution',{}),'modifications':rights['modifications']}
- (records/'ct-001-catalog.json').write_text(json.dumps(catalog,indent=2));print(json.dumps({'instances':len(files),'series':len(series),'geometry':geometries},indent=2))
+ (records/f'{case_id}-source-rights.json').write_text(json.dumps(rights,indent=2))
+ catalog={'id':case_id,'version':2 if case_id=='ct-001' else 1,'title':'Interventional CT demonstration 001' if case_id=='ct-001' else 'Chest CT study 002','status':'draft','modality':'CT','history':'Interventional source study labelled CT LUNG BIOPSY, with DYNAMIC MODE acquisition. Imaging demonstration only; not a routine diagnostic chest CT or an approved assessment task.' if case_id=='ct-001' else 'Describe the supplied diagnostic chest CT series, including pulmonary observations and technical limitations. Source clinical history and comparison are not supplied. This focused teaching candidate awaits clinical review.','historyProvenance':'Original educational task; no fictional patient details added','studyInstanceUID':study['StudyInstanceUID'],'manifestPath':f'/imaging/{case_id}/manifest.json','series':[{k:s[k]for k in ['SeriesInstanceUID','SeriesNumber','SeriesDescription']}|{'count':len(s['instances'])}for s in series],'instanceCount':len(files),'completeness':'All source-listed procedural CT images; not a complete routine diagnostic chest CT.' if case_id=='ct-001' else 'Selected diagnostic CT series: 101 images. Derived answer annotations are withheld. Not presented as a complete clinical study.','preferredSeriesUID':series[0]['SeriesInstanceUID'],'displayPreset':'soft-tissue' if case_id=='ct-001' else 'lung','purpose':'demonstration' if case_id=='ct-001' else 'diagnostic_candidate','workflow':'nodule','viewerVersion':'3.11.1+radrep.1','assessmentEligible':False,'clinicalReview':None,'licence':rights['licence'],'attribution':rights.get('attribution',{}),'modifications':rights['modifications']}
+ (records/f'{case_id}-catalog.json').write_text(json.dumps(catalog,indent=2));print(json.dumps({'instances':len(files),'series':len(series),'geometry':geometries},indent=2))
 if __name__=='__main__':
- p=argparse.ArgumentParser();p.add_argument('--repo',required=True);p.add_argument('--source',required=True);p.add_argument('--index',required=True);prepare(p.parse_args())
+ p=argparse.ArgumentParser();p.add_argument('--repo',required=True);p.add_argument('--source',required=True);p.add_argument('--index',required=True);p.add_argument('--case-id',default='ct-001',choices=['ct-001','ct-002']);prepare(p.parse_args())

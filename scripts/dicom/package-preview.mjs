@@ -24,6 +24,7 @@ const run = (command, args) =>
   });
 await access(resolve(root, ".ohif-build/index.html"));
 await access(resolve(root, ".dicom-study/delivery/manifest.json"));
+process.env.VITE_TEACHING_PREVIEW = "true";
 await run("npm", ["run", "build"]);
 const output = resolve(root, ".vercel/output");
 const stat = resolve(output, "static");
@@ -33,14 +34,27 @@ await cp(resolve(root, "dist"), stat, { recursive: true });
 await cp(resolve(root, ".ohif-build"), resolve(stat, "ohif"), {
   recursive: true,
 });
-await cp(
-  resolve(root, ".dicom-study/delivery"),
-  resolve(stat, "imaging/ct-001"),
-  { recursive: true },
-);
-await cp(
-  resolve(root, "docs/ohif/ct-001-catalog.json"),
-  resolve(stat, "imaging/ct-001/catalog.json"),
+const catalogues = [];
+for (const caseId of ["ct-001", "ct-002"]) {
+  const delivery = resolve(
+    root,
+    caseId === "ct-001"
+      ? ".dicom-study/delivery"
+      : `.dicom-study/${caseId}/delivery`,
+  );
+  await cp(delivery, resolve(stat, `imaging/${caseId}`), { recursive: true });
+  const catalog = JSON.parse(
+    await readFile(resolve(root, `docs/ohif/${caseId}-catalog.json`), "utf8"),
+  );
+  catalogues.push(catalog);
+  await writeFile(
+    resolve(stat, `imaging/${caseId}/catalog.json`),
+    JSON.stringify(catalog),
+  );
+}
+await writeFile(
+  resolve(stat, "imaging/cases.json"),
+  JSON.stringify(catalogues),
 );
 await writeFile(
   resolve(output, "config.json"),
@@ -76,13 +90,22 @@ await writeFile(
       ],
       overrides: {
         ...Object.fromEntries(
-          (await readdir(resolve(root, ".dicom-study/delivery")))
-            .filter((f) => f.endsWith(".dcm"))
-            .map((f) => [
-              "imaging/ct-001/" + f,
-              { contentType: "application/dicom" },
-            ]),
+          (
+            await Promise.all(
+              ["ct-001", "ct-002"].map(async (id) =>
+                (await readdir(resolve(stat, `imaging/${id}`)))
+                  .filter((f) => f.endsWith(".dcm"))
+                  .map((f) => [
+                    `imaging/${id}/${f}`,
+                    { contentType: "application/dicom" },
+                  ]),
+              ),
+            )
+          ).flat(),
         ),
+        "imaging/ct-002/manifest.json": { contentType: "application/json" },
+        "imaging/ct-002/catalog.json": { contentType: "application/json" },
+        "imaging/cases.json": { contentType: "application/json" },
         "imaging/ct-001/manifest.json": { contentType: "application/json" },
         "imaging/ct-001/catalog.json": { contentType: "application/json" },
       },
