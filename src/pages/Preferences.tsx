@@ -1,3 +1,4 @@
+import { frenchInterfaceEnabled } from '../i18n/languageAvailability';
 import { Link } from 'react-router-dom';
 import { type FormEvent, useEffect, useState } from 'react';
 import { useSupabaseSession } from '../components/auth/useSupabaseSession';
@@ -128,6 +129,7 @@ export function Preferences() {
         <section className="settings-section">
           <h2>Reporting defaults</h2>
           <div className="settings-grid">
+            {frenchInterfaceEnabled ? (
             <label>
               Default language
               <select
@@ -141,6 +143,7 @@ export function Preferences() {
                 ))}
               </select>
             </label>
+            ) : null}
             <label>
               Preferred reporting structure
               <select

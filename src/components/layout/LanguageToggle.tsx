@@ -1,7 +1,9 @@
+import { frenchInterfaceEnabled } from '../../i18n/languageAvailability';
 import { useI18n } from '../../i18n/I18nContext';
 
 export function LanguageToggle() {
   const { language, setLanguage, text } = useI18n();
+  if (!frenchInterfaceEnabled) return null;
 
   return (
     <div className="language-toggle" role="group" aria-label={text('Choose interface language')}>

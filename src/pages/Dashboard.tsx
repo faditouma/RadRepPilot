@@ -1,3 +1,4 @@
+import { frenchInterfaceEnabled } from '../i18n/languageAvailability';
 import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { useSupabaseSession } from '../components/auth/useSupabaseSession';
@@ -114,10 +115,12 @@ export function Dashboard() {
         <h2>Current preferences</h2>
         {hasPreferences && preferences ? (
           <div className="preference-summary-grid">
+            {frenchInterfaceEnabled ? (
             <div>
               <span>Default language</span>
               <strong>{preferences.default_language}</strong>
             </div>
+            ) : null}
             <div>
               <span>Reporting style</span>
               <strong>{preferences.reporting_style}</strong>

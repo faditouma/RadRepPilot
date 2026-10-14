@@ -1,3 +1,4 @@
+import { frenchInterfaceEnabled } from './languageAvailability';
 import { createContext, useContext, useEffect, useMemo, useState, type ReactNode } from 'react';
 import { translateClinicalDisplayText, translateClinicalExactText } from './clinicalFrench';
 
@@ -318,13 +319,13 @@ interface I18nContextValue {
 const I18nContext = createContext<I18nContextValue | null>(null);
 
 function initialLanguage(): InterfaceLanguage {
-  if (typeof window === 'undefined') return 'en';
+  if (!frenchInterfaceEnabled || typeof window === 'undefined') return 'en';
   const stored = window.localStorage.getItem(LANGUAGE_STORAGE_KEY);
   return stored === 'fr' ? 'fr' : 'en';
 }
 
 export function I18nProvider({ children }: { children: ReactNode }) {
-  const [language, setLanguage] = useState<InterfaceLanguage>(initialLanguage);
+  const [language, updateLanguage] = useState<InterfaceLanguage>(initialLanguage);
 
   useEffect(() => {
     window.localStorage.setItem(LANGUAGE_STORAGE_KEY, language);
@@ -334,7 +335,7 @@ export function I18nProvider({ children }: { children: ReactNode }) {
   const value = useMemo<I18nContextValue>(
     () => ({
       language,
-      setLanguage,
+      setLanguage: (next) => updateLanguage(frenchInterfaceEnabled ? next : 'en'),
       text: (english) => translateInterfaceText(english, language),
       clinicalText: (english) => translateClinicalInterfaceText(english, language),
     }),
