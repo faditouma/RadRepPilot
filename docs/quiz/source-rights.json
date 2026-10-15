@@ -1,0 +1,323 @@
+{
+  "accessDate": "2026-10-14T19:46:31.453Z",
+  "cases": [
+    {
+      "id": "xr-001",
+      "assets": [
+        {
+          "id": "img-1ba090c1-507a-4bc3-965b-239e93b35f8d",
+          "sourceUrl": "https://commons.wikimedia.org/wiki/File%3AClavicle_fracture.jpg",
+          "stableIdentifier": "commons:pageid:1139694",
+          "sourceTitle": "File:Clavicle fracture.jpg",
+          "creator": "mexican 2000",
+          "attribution": "Clavicle fracture.jpg — mexican 2000. CC BY-SA 2.0. Delivery copy converted to PNG; metadata removed.",
+          "attributionRevealsAnswer": true,
+          "license": {
+            "name": "CC BY-SA 2.0",
+            "version": "2.0",
+            "url": "https://creativecommons.org/licenses/by-sa/2.0",
+            "shareAlike": true,
+            "obligations": "Adapted image material must retain same/compatible licence, attribution, source link and modification notice; application code has separate licensing."
+          },
+          "rights": {
+            "commercial": {
+              "status": "allowed",
+              "evidence": "https://commons.wikimedia.org/wiki/File%3AClavicle_fracture.jpg#Licensing"
+            },
+            "adaptation": {
+              "status": "allowed",
+              "evidence": "https://commons.wikimedia.org/wiki/File%3AClavicle_fracture.jpg#Licensing"
+            },
+            "redistribution": {
+              "status": "allowed",
+              "evidence": "https://commons.wikimedia.org/wiki/File%3AClavicle_fracture.jpg#Licensing"
+            },
+            "display": {
+              "status": "allowed",
+              "evidence": "https://commons.wikimedia.org/wiki/File%3AClavicle_fracture.jpg#Licensing"
+            },
+            "retrievalIndexing": {
+              "status": "unknown",
+              "evidence": "Not reviewed separately"
+            },
+            "aiInference": {
+              "status": "unknown",
+              "evidence": "Not reviewed separately"
+            },
+            "training": {
+              "status": "prohibited",
+              "evidence": "Platform policy: no training by default"
+            }
+          },
+          "collectionDOI": null,
+          "requiredPublications": [],
+          "accessDate": "2026-10-14T19:22:15.455Z",
+          "rightsReviewStatus": "verified",
+          "modifications": [
+            "Converted validated delivery copy to PNG",
+            "Removed EXIF/XMP metadata; burned-in information not removed",
+            "Rectangular crop {\"left\":70,\"top\":60,\"width\":880,\"height\":740}; no reconstruction or generative editing; R marker preserved"
+          ],
+          "checksum": "da95e2d7ba656f758ab7750e3d0fd5b41986839706956c442652ec4f306d341d",
+          "deliveryChecksum": "2be0446dc7a97f71a348965b27533512fd9b2a96c0d4fb2e589a7812dbdb94c5",
+          "bytes": 243951,
+          "deliveryBytes": 1175088,
+          "width": 880,
+          "height": 740,
+          "originalFormat": "jpeg",
+          "sourceDescription": "Fracture of the right clavicle (x-ray).Broken Collar Bone",
+          "privacyReview": null,
+          "downloadUrl": "https://upload.wikimedia.org/wikipedia/commons/f/f6/Clavicle_fracture.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=original",
+          "imagePath": "/quiz-images/2be0446dc7a97f71a348965b27533512.png",
+          "caseId": "xr-001",
+          "viewIndex": 0,
+          "technicalPrivacyInspection": {
+            "metadata": "PNG output strips EXIF/XMP",
+            "visibleIdentifiers": "Peripheral burned-in identifying text excluded by crop",
+            "clinicalPrivacyApproval": null
+          },
+          "suitability": "Selected right clavicle photograph. Peripheral burned-in identifiers excluded by a rectangular crop; anatomy in the selected field and R marker retained. No claims about a complete trauma series."
+        }
+      ]
+    },
+    {
+      "id": "xr-002",
+      "assets": [
+        {
+          "id": "img-a86a03cc-54b1-4b62-8ca5-c2577f8e89bd",
+          "sourceUrl": "https://commons.wikimedia.org/wiki/File%3APneumothorax_CXR.jpg",
+          "stableIdentifier": "commons:pageid:2235891",
+          "sourceTitle": "File:Pneumothorax CXR.jpg",
+          "creator": "Photographed by User Clinical Cases 00:42, 7 November 2006",
+          "attribution": "Pneumothorax CXR.jpg — Photographed by User Clinical Cases 00:42, 7 November 2006. CC BY-SA 2.5. Delivery copy converted to PNG; metadata removed.",
+          "attributionRevealsAnswer": true,
+          "license": {
+            "name": "CC BY-SA 2.5",
+            "version": "2.5",
+            "url": "https://creativecommons.org/licenses/by-sa/2.5",
+            "shareAlike": true,
+            "obligations": "Adapted image material must retain same/compatible licence, attribution, source link and modification notice; application code has separate licensing."
+          },
+          "rights": {
+            "commercial": {
+              "status": "allowed",
+              "evidence": "https://commons.wikimedia.org/wiki/File%3APneumothorax_CXR.jpg#Licensing"
+            },
+            "adaptation": {
+              "status": "allowed",
+              "evidence": "https://commons.wikimedia.org/wiki/File%3APneumothorax_CXR.jpg#Licensing"
+            },
+            "redistribution": {
+              "status": "allowed",
+              "evidence": "https://commons.wikimedia.org/wiki/File%3APneumothorax_CXR.jpg#Licensing"
+            },
+            "display": {
+              "status": "allowed",
+              "evidence": "https://commons.wikimedia.org/wiki/File%3APneumothorax_CXR.jpg#Licensing"
+            },
+            "retrievalIndexing": {
+              "status": "unknown",
+              "evidence": "Not reviewed separately"
+            },
+            "aiInference": {
+              "status": "unknown",
+              "evidence": "Not reviewed separately"
+            },
+            "training": {
+              "status": "prohibited",
+              "evidence": "Platform policy: no training by default"
+            }
+          },
+          "collectionDOI": null,
+          "requiredPublications": [],
+          "accessDate": "2026-10-14T19:21:40.442Z",
+          "rightsReviewStatus": "verified",
+          "modifications": [
+            "Converted validated delivery copy to PNG",
+            "Removed EXIF/XMP metadata; burned-in information not removed"
+          ],
+          "checksum": "f36d1809cc50c920818d577041963d8d6ec0036ab3928db92264ffce80053f35",
+          "deliveryChecksum": "be543309aab2440824b6362b2b703c70a0f87a33ae630f60a777c718df3538b7",
+          "bytes": 144679,
+          "deliveryBytes": 545275,
+          "width": 877,
+          "height": 807,
+          "originalFormat": "jpeg",
+          "sourceDescription": "Left pneumothorax. This X-ray is used on clinicalcases.org to illustrate a fictional case history of tension pneumothorax. Note the large, well-demarcated area devoid of lung markings, the tracheal deviation and movement of the heart away from the affected side.  There is also small pleural effusion on the left side.\nThe patient's left is your right (as if you are looking at the patient facing you). The left-right orientation is assisted by the shape of the heart, a small amount of air in the stomach under the left side of the diaphragm on the left, and the radio-opaque liver under the right side of the diaphragm. The sternoclavicular joints are symmetrically situated indicating that the X-ray is not rotated. Generally, a radiopaque X-ray marker showing L or R indicates the patient's orientation, but one is not present on this X-ray.  The metallic spots are snaps for EKG (or ECG) readings.",
+          "privacyReview": null,
+          "downloadUrl": "https://upload.wikimedia.org/wikipedia/commons/2/2f/Pneumothorax_CXR.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=original",
+          "imagePath": "/quiz-images/be543309aab2440824b6362b2b703c70.png",
+          "caseId": "xr-002",
+          "viewIndex": 0,
+          "technicalPrivacyInspection": {
+            "metadata": "PNG output strips EXIF/XMP",
+            "visibleIdentifiers": "No names, dates or accession numbers observed in visual inspection",
+            "clinicalPrivacyApproval": null
+          },
+          "suitability": "Single unannotated chest image; original contains an existing black redaction. Source describes left pleural air, displacement and a small left effusion. Fictional source vignette is not source-patient history."
+        }
+      ]
+    },
+    {
+      "id": "xr-003",
+      "assets": [
+        {
+          "id": "img-f7ba6b25-11e7-4cf7-8687-9b5ee7058867",
+          "sourceUrl": "https://commons.wikimedia.org/wiki/File%3ANormal_posteroanterior_(PA)_chest_radiograph_(X-ray).jpg",
+          "stableIdentifier": "commons:pageid:61738612",
+          "sourceTitle": "File:Normal posteroanterior (PA) chest radiograph (X-ray).jpg",
+          "creator": "Mikael Häggström",
+          "attribution": "Normal posteroanterior (PA) chest radiograph (X-ray).jpg — Mikael Häggström. CC0. Delivery copy converted to PNG; metadata removed.",
+          "attributionRevealsAnswer": true,
+          "license": {
+            "name": "CC0",
+            "version": "1.0",
+            "url": "https://creativecommons.org/publicdomain/zero/1.0/deed.en",
+            "shareAlike": false,
+            "obligations": "Retain credit, source and licence link and indicate modifications for CC BY."
+          },
+          "rights": {
+            "commercial": {
+              "status": "allowed",
+              "evidence": "https://commons.wikimedia.org/wiki/File%3ANormal_posteroanterior_(PA)_chest_radiograph_(X-ray).jpg#Licensing"
+            },
+            "adaptation": {
+              "status": "allowed",
+              "evidence": "https://commons.wikimedia.org/wiki/File%3ANormal_posteroanterior_(PA)_chest_radiograph_(X-ray).jpg#Licensing"
+            },
+            "redistribution": {
+              "status": "allowed",
+              "evidence": "https://commons.wikimedia.org/wiki/File%3ANormal_posteroanterior_(PA)_chest_radiograph_(X-ray).jpg#Licensing"
+            },
+            "display": {
+              "status": "allowed",
+              "evidence": "https://commons.wikimedia.org/wiki/File%3ANormal_posteroanterior_(PA)_chest_radiograph_(X-ray).jpg#Licensing"
+            },
+            "retrievalIndexing": {
+              "status": "unknown",
+              "evidence": "Not reviewed separately"
+            },
+            "aiInference": {
+              "status": "unknown",
+              "evidence": "Not reviewed separately"
+            },
+            "training": {
+              "status": "prohibited",
+              "evidence": "Platform policy: no training by default"
+            }
+          },
+          "collectionDOI": null,
+          "requiredPublications": [],
+          "accessDate": "2026-10-14T19:21:39.786Z",
+          "rightsReviewStatus": "verified",
+          "modifications": [
+            "Converted validated delivery copy to PNG",
+            "Removed EXIF/XMP metadata; burned-in information not removed"
+          ],
+          "checksum": "4cbbcf805291db949e4ff085ca3c7258b2823de21b2857ae684e6c91ff9a38a4",
+          "deliveryChecksum": "90c9dc872b3657dee1a8d4fb8e62706cb62f131462cc784b703419c8cc96b5dd",
+          "bytes": 906335,
+          "deliveryBytes": 3438760,
+          "width": 1929,
+          "height": 2207,
+          "originalFormat": "jpeg",
+          "sourceDescription": "Posteroanterior chest radiograph (\"X-ray\") taken of a 21 year old woman who presented with pain on the left side of her thorax after colliding with another player during a soccer game. It shows a normal chest without any signs of injury. Dx and Sin stand for \"right\" and \"left\" respectively.",
+          "privacyReview": null,
+          "downloadUrl": "https://upload.wikimedia.org/wikipedia/commons/a/a1/Normal_posteroanterior_%28PA%29_chest_radiograph_%28X-ray%29.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=original",
+          "imagePath": "/quiz-images/90c9dc872b3657dee1a8d4fb8e62706c.png",
+          "caseId": "xr-003",
+          "viewIndex": 0,
+          "technicalPrivacyInspection": {
+            "metadata": "PNG output strips EXIF/XMP",
+            "visibleIdentifiers": "No names, dates or accession numbers observed in visual inspection",
+            "clinicalPrivacyApproval": null
+          },
+          "suitability": "Linked PA/lateral sources describe the same age/history and identify the companion view. Lateral source notes previous cropping for a low field. Selected two views, not a complete diagnostic study."
+        },
+        {
+          "id": "img-7b3f3997-70d3-4c0c-8ff1-347a1e59e096",
+          "sourceUrl": "https://commons.wikimedia.org/wiki/File%3ANormal_lateral_chest_radiograph_(X-ray).jpg",
+          "stableIdentifier": "commons:pageid:61738611",
+          "sourceTitle": "File:Normal lateral chest radiograph (X-ray).jpg",
+          "creator": "Mikael Häggström",
+          "attribution": "Normal lateral chest radiograph (X-ray).jpg — Mikael Häggström. CC0. Delivery copy converted to PNG; metadata removed.",
+          "attributionRevealsAnswer": true,
+          "license": {
+            "name": "CC0",
+            "version": "1.0",
+            "url": "https://creativecommons.org/publicdomain/zero/1.0/deed.en",
+            "shareAlike": false,
+            "obligations": "Retain credit, source and licence link and indicate modifications for CC BY."
+          },
+          "rights": {
+            "commercial": {
+              "status": "allowed",
+              "evidence": "https://commons.wikimedia.org/wiki/File%3ANormal_lateral_chest_radiograph_(X-ray).jpg#Licensing"
+            },
+            "adaptation": {
+              "status": "allowed",
+              "evidence": "https://commons.wikimedia.org/wiki/File%3ANormal_lateral_chest_radiograph_(X-ray).jpg#Licensing"
+            },
+            "redistribution": {
+              "status": "allowed",
+              "evidence": "https://commons.wikimedia.org/wiki/File%3ANormal_lateral_chest_radiograph_(X-ray).jpg#Licensing"
+            },
+            "display": {
+              "status": "allowed",
+              "evidence": "https://commons.wikimedia.org/wiki/File%3ANormal_lateral_chest_radiograph_(X-ray).jpg#Licensing"
+            },
+            "retrievalIndexing": {
+              "status": "unknown",
+              "evidence": "Not reviewed separately"
+            },
+            "aiInference": {
+              "status": "unknown",
+              "evidence": "Not reviewed separately"
+            },
+            "training": {
+              "status": "prohibited",
+              "evidence": "Platform policy: no training by default"
+            }
+          },
+          "collectionDOI": null,
+          "requiredPublications": [],
+          "accessDate": "2026-10-14T19:23:08.414Z",
+          "rightsReviewStatus": "verified",
+          "modifications": [
+            "Converted validated delivery copy to PNG",
+            "Removed EXIF/XMP metadata; burned-in information not removed"
+          ],
+          "checksum": "d22911286846412a02aa484ffb8140e46cd3f5a2aab4687b63645075fa4e793b",
+          "deliveryChecksum": "0a94e6a46ac32f218dfade13643816d1a33596267377f22769f4589db10b743a",
+          "bytes": 1114909,
+          "deliveryBytes": 4008300,
+          "width": 1769,
+          "height": 2453,
+          "originalFormat": "jpeg",
+          "sourceDescription": "Lateral chest radiograph (\"X-ray\") taken of a 21 year old woman who presented with pain on the left side of her thorax after colliding with another player during a soccer game. It shows a normal chest without any signs of injury.",
+          "privacyReview": null,
+          "downloadUrl": "https://upload.wikimedia.org/wikipedia/commons/8/8f/Normal_lateral_chest_radiograph_%28X-ray%29.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=original",
+          "imagePath": "/quiz-images/0a94e6a46ac32f218dfade13643816d1.png",
+          "caseId": "xr-003",
+          "viewIndex": 1,
+          "technicalPrivacyInspection": {
+            "metadata": "PNG output strips EXIF/XMP",
+            "visibleIdentifiers": "No names, dates or accession numbers observed in visual inspection",
+            "clinicalPrivacyApproval": null
+          },
+          "suitability": "Linked PA/lateral sources describe the same age/history and identify the companion view. Lateral source notes previous cropping for a low field. Selected two views, not a complete diagnostic study."
+        }
+      ]
+    }
+  ],
+  "excluded": [
+    {
+      "source": "File:Colles fracture.JPG",
+      "reason": "Fracture circles reveal the answer; not used for an unassisted question."
+    },
+    {
+      "source": "File:Chest X-ray of pneumothorax.png",
+      "reason": "Annotated multistage treatment composite; not imported for the quiz."
+    }
+  ]
+}

@@ -1,0 +1,860 @@
+[
+  {
+    "id": "xr-001",
+    "version": 1,
+    "title": "Shoulder-region radiograph 01",
+    "modality": "X-ray",
+    "bodySystem": "Musculoskeletal",
+    "difficulty": "Introductory",
+    "minutes": 5,
+    "context": "Clinical history and indication were not supplied with the source image. Describe the selected shoulder-region radiograph; do not infer a mechanism of injury or additional views.",
+    "contextProvenance": "Original teaching task; no fictional patient history added.",
+    "questions": [
+      {
+        "id": "scope",
+        "label": "How should the supplied examination be described?",
+        "section": "technique",
+        "kind": "select",
+        "options": [
+          {
+            "id": "selected",
+            "label": "Selected image(s); a complete examination is not supplied",
+            "sentence": "Selected radiographic image(s) reviewed. A complete examination is not supplied."
+          },
+          {
+            "id": "complete",
+            "label": "Complete examination with calibrated measurements",
+            "sentence": "Complete radiographic examination with calibrated measurements reviewed."
+          },
+          {
+            "id": "uncertain",
+            "label": "Uncertain",
+            "sentence": "I am uncertain about this observation."
+          },
+          {
+            "id": "not_assessable",
+            "label": "Not assessable from supplied images",
+            "sentence": "This finding cannot be assessed from the supplied images."
+          }
+        ]
+      },
+      {
+        "id": "limits",
+        "label": "What measurement limitation belongs in your report?",
+        "section": "technique",
+        "kind": "select",
+        "options": [
+          {
+            "id": "uncalibrated",
+            "label": "No reliable spatial calibration is supplied",
+            "sentence": "No reliable spatial calibration is supplied; calibrated measurements are not reported."
+          },
+          {
+            "id": "measured",
+            "label": "Calibrated measurements are available",
+            "sentence": "Spatially calibrated measurements are available."
+          },
+          {
+            "id": "uncertain",
+            "label": "Uncertain",
+            "sentence": "I am uncertain about this observation."
+          },
+          {
+            "id": "not_assessable",
+            "label": "Not assessable from supplied images",
+            "sentence": "This finding cannot be assessed from the supplied images."
+          }
+        ]
+      },
+      {
+        "id": "finding",
+        "label": "Which broad osseous observation is supported?",
+        "section": "findings",
+        "kind": "select",
+        "options": [
+          {
+            "id": "fracture",
+            "label": "A fracture is visible",
+            "sentence": "A fracture is visible in the supplied image."
+          },
+          {
+            "id": "none",
+            "label": "No fracture is visible",
+            "sentence": "No fracture is visible in the supplied image."
+          },
+          {
+            "id": "uncertain",
+            "label": "Uncertain",
+            "sentence": "I am uncertain about this observation."
+          },
+          {
+            "id": "not_assessable",
+            "label": "Not assessable from supplied images",
+            "sentence": "This finding cannot be assessed from the supplied images."
+          }
+        ]
+      },
+      {
+        "id": "location",
+        "label": "Where is the principal osseous finding?",
+        "section": "findings",
+        "kind": "select",
+        "options": [
+          {
+            "id": "right_clavicle",
+            "label": "Right clavicle",
+            "sentence": "The principal finding involves the right clavicle."
+          },
+          {
+            "id": "left_clavicle",
+            "label": "Left clavicle",
+            "sentence": "The principal finding involves the left clavicle."
+          },
+          {
+            "id": "right_humerus",
+            "label": "Right proximal humerus",
+            "sentence": "The principal finding involves the right proximal humerus."
+          },
+          {
+            "id": "none",
+            "label": "No focal osseous finding",
+            "sentence": "No focal osseous abnormality is identified."
+          },
+          {
+            "id": "uncertain",
+            "label": "Uncertain",
+            "sentence": "I am uncertain about this observation."
+          },
+          {
+            "id": "not_assessable",
+            "label": "Not assessable from supplied images",
+            "sentence": "This finding cannot be assessed from the supplied images."
+          }
+        ]
+      },
+      {
+        "id": "impression",
+        "label": "Choose the impression that best matches your observations.",
+        "section": "impression",
+        "kind": "select",
+        "options": [
+          {
+            "id": "fracture",
+            "label": "Clavicular fracture",
+            "sentence": "Clavicular fracture."
+          },
+          {
+            "id": "normal",
+            "label": "No acute osseous abnormality",
+            "sentence": "No acute osseous abnormality."
+          },
+          {
+            "id": "humerus",
+            "label": "Proximal humeral fracture",
+            "sentence": "Proximal humeral fracture."
+          },
+          {
+            "id": "uncertain",
+            "label": "Uncertain",
+            "sentence": "I am uncertain about this observation."
+          },
+          {
+            "id": "not_assessable",
+            "label": "Not assessable from supplied images",
+            "sentence": "This finding cannot be assessed from the supplied images."
+          }
+        ]
+      }
+    ],
+    "conflicts": [
+      {
+        "when": {
+          "finding": "none",
+          "impression": "fracture"
+        },
+        "message": "Your findings and impression disagree about whether a fracture is present. Reconcile them before submitting."
+      },
+      {
+        "when": {
+          "finding": "fracture",
+          "impression": "normal"
+        },
+        "message": "Your findings and impression disagree about whether a fracture is present. Reconcile them before submitting."
+      }
+    ],
+    "hints": [
+      "Follow the visible cortex of each bone from one end to the other.",
+      "Check orientation markings before describing laterality."
+    ],
+    "rubric": [
+      {
+        "id": "study-scope",
+        "title": "State the study limitations",
+        "expected": {
+          "scope": [
+            "selected"
+          ],
+          "limits": [
+            "uncalibrated"
+          ]
+        },
+        "wording": "Selected radiographic image reviewed; calibrated measurements and the complete trauma series are not supplied.",
+        "explanation": "This is a selected photograph of a radiograph, with no reliable DICOM spatial calibration.",
+        "evidence": "Image provenance and delivery manifest",
+        "severity": "minor",
+        "provenance": "Authored draft explanation based on the linked source; clinical review pending",
+        "assessable": true
+      },
+      {
+        "id": "clavicle-fracture",
+        "title": "Identify the fracture and its location",
+        "expected": {
+          "finding": [
+            "fracture"
+          ],
+          "location": [
+            "right_clavicle"
+          ],
+          "impression": [
+            "fracture"
+          ]
+        },
+        "wording": "Fracture of the right clavicle.",
+        "explanation": "The source specifically documents a right clavicle fracture. A fracture mentioned in findings, a wrong location, and an inconsistent impression are evaluated as one underlying concept, rather than three repeated penalties.",
+        "evidence": "https://commons.wikimedia.org/wiki/File%3AClavicle_fracture.jpg",
+        "severity": "major",
+        "provenance": "Authored draft explanation based on the linked source; clinical review pending",
+        "assessable": true
+      }
+    ],
+    "referenceDraft": {
+      "technique": "Selected right shoulder-region radiograph. A complete trauma series and valid spatial calibration are not supplied.",
+      "findings": "A fracture of the right clavicle is shown. Further characterization and exclusion of additional injuries require review of the original examination.",
+      "impression": "Right clavicle fracture."
+    },
+    "sourceDiagnosis": "Right clavicle fracture",
+    "sourceFindings": [
+      "Right clavicle fracture"
+    ],
+    "additionalInterpretations": "Fracture morphology, precise segment, displacement measurements and other negative findings are not established from the caption and await clinical review.",
+    "assets": [
+      {
+        "path": "/quiz-images/2be0446dc7a97f71a348965b27533512.png",
+        "label": "Selected radiograph",
+        "width": 880,
+        "height": 740,
+        "attribution": "Clavicle fracture.jpg — mexican 2000. CC BY-SA 2.0. Delivery copy converted to PNG; metadata removed.",
+        "sourceUrl": "https://commons.wikimedia.org/wiki/File%3AClavicle_fracture.jpg",
+        "license": {
+          "name": "CC BY-SA 2.0",
+          "version": "2.0",
+          "url": "https://creativecommons.org/licenses/by-sa/2.0",
+          "shareAlike": true,
+          "obligations": "Adapted image material must retain same/compatible licence, attribution, source link and modification notice; application code has separate licensing."
+        },
+        "modifications": [
+          "Converted validated delivery copy to PNG",
+          "Removed EXIF/XMP metadata; burned-in information not removed",
+          "Rectangular crop {\"left\":70,\"top\":60,\"width\":880,\"height\":740}; no reconstruction or generative editing; R marker preserved"
+        ]
+      }
+    ],
+    "status": "draft",
+    "clinicalReview": null,
+    "privacyReview": null,
+    "rubricVersion": "1-draft",
+    "assessmentEligible": false,
+    "creditLimitation": "Required source credits can reveal the source diagnosis. These drafts are not available as blinded assessments.",
+    "learningObjectives": [
+      "Describe supplied images without inventing missing information",
+      "Match observations to a concise impression"
+    ]
+  },
+  {
+    "id": "xr-002",
+    "version": 1,
+    "title": "Chest radiograph 02",
+    "modality": "X-ray",
+    "bodySystem": "Chest",
+    "difficulty": "Intermediate",
+    "minutes": 7,
+    "context": "Source-patient history and indication are unavailable. Review the selected frontal chest image. The source’s separate fictional vignette is not used as this patient’s history.",
+    "contextProvenance": "Original teaching task; no fictional patient facts added.",
+    "questions": [
+      {
+        "id": "scope",
+        "label": "How should the supplied examination be described?",
+        "section": "technique",
+        "kind": "select",
+        "options": [
+          {
+            "id": "selected",
+            "label": "Selected image(s); a complete examination is not supplied",
+            "sentence": "Selected radiographic image(s) reviewed. A complete examination is not supplied."
+          },
+          {
+            "id": "complete",
+            "label": "Complete examination with calibrated measurements",
+            "sentence": "Complete radiographic examination with calibrated measurements reviewed."
+          },
+          {
+            "id": "uncertain",
+            "label": "Uncertain",
+            "sentence": "I am uncertain about this observation."
+          },
+          {
+            "id": "not_assessable",
+            "label": "Not assessable from supplied images",
+            "sentence": "This finding cannot be assessed from the supplied images."
+          }
+        ]
+      },
+      {
+        "id": "limits",
+        "label": "What measurement limitation belongs in your report?",
+        "section": "technique",
+        "kind": "select",
+        "options": [
+          {
+            "id": "uncalibrated",
+            "label": "No reliable spatial calibration is supplied",
+            "sentence": "No reliable spatial calibration is supplied; calibrated measurements are not reported."
+          },
+          {
+            "id": "measured",
+            "label": "Calibrated measurements are available",
+            "sentence": "Spatially calibrated measurements are available."
+          },
+          {
+            "id": "uncertain",
+            "label": "Uncertain",
+            "sentence": "I am uncertain about this observation."
+          },
+          {
+            "id": "not_assessable",
+            "label": "Not assessable from supplied images",
+            "sentence": "This finding cannot be assessed from the supplied images."
+          }
+        ]
+      },
+      {
+        "id": "pleura",
+        "label": "Which broad pleural observation is supported?",
+        "section": "findings",
+        "kind": "select",
+        "options": [
+          {
+            "id": "air",
+            "label": "Pleural air is visible",
+            "sentence": "Pleural air is visible."
+          },
+          {
+            "id": "none",
+            "label": "No pleural abnormality is visible",
+            "sentence": "No pleural abnormality is visible."
+          },
+          {
+            "id": "opacity",
+            "label": "Pleural opacity without pleural air",
+            "sentence": "Pleural opacity without pleural air is present."
+          },
+          {
+            "id": "uncertain",
+            "label": "Uncertain",
+            "sentence": "I am uncertain about this observation."
+          },
+          {
+            "id": "not_assessable",
+            "label": "Not assessable from supplied images",
+            "sentence": "This finding cannot be assessed from the supplied images."
+          }
+        ]
+      },
+      {
+        "id": "side",
+        "label": "Where is the principal pleural abnormality?",
+        "section": "findings",
+        "kind": "select",
+        "options": [
+          {
+            "id": "left",
+            "label": "Left",
+            "sentence": "The principal pleural abnormality is left-sided."
+          },
+          {
+            "id": "right",
+            "label": "Right",
+            "sentence": "The principal pleural abnormality is right-sided."
+          },
+          {
+            "id": "both",
+            "label": "Both sides",
+            "sentence": "Pleural abnormalities involve both sides."
+          },
+          {
+            "id": "none",
+            "label": "No focal pleural abnormality",
+            "sentence": "No focal pleural abnormality is identified."
+          },
+          {
+            "id": "uncertain",
+            "label": "Uncertain",
+            "sentence": "I am uncertain about this observation."
+          },
+          {
+            "id": "not_assessable",
+            "label": "Not assessable from supplied images",
+            "sentence": "This finding cannot be assessed from the supplied images."
+          }
+        ]
+      },
+      {
+        "id": "additional",
+        "label": "Which additional source-supported observations did you identify?",
+        "section": "findings",
+        "kind": "checkbox-group",
+        "options": [
+          {
+            "id": "shift",
+            "label": "Tracheal/cardiac displacement away from the affected side",
+            "sentence": "Tracheal and cardiac displacement away from the affected side is present."
+          },
+          {
+            "id": "fluid",
+            "label": "A small pleural effusion on the affected side",
+            "sentence": "A small pleural effusion is present on the affected side."
+          },
+          {
+            "id": "none",
+            "label": "No additional observation",
+            "sentence": "No additional observation is identified."
+          },
+          {
+            "id": "uncertain",
+            "label": "Uncertain",
+            "sentence": "I am uncertain about this observation."
+          },
+          {
+            "id": "not_assessable",
+            "label": "Not assessable from supplied images",
+            "sentence": "This finding cannot be assessed from the supplied images."
+          }
+        ]
+      },
+      {
+        "id": "impression",
+        "label": "Choose a cautious impression consistent with your observations.",
+        "section": "impression",
+        "kind": "select",
+        "options": [
+          {
+            "id": "pneumothorax",
+            "label": "Pneumothorax; clinical tension physiology is not established here",
+            "sentence": "Pneumothorax. Clinical tension physiology cannot be established from this image and the supplied context alone."
+          },
+          {
+            "id": "normal",
+            "label": "No pleural abnormality",
+            "sentence": "No pleural abnormality."
+          },
+          {
+            "id": "tension",
+            "label": "Tension pneumothorax is clinically confirmed",
+            "sentence": "Tension pneumothorax is clinically confirmed."
+          },
+          {
+            "id": "uncertain",
+            "label": "Uncertain",
+            "sentence": "I am uncertain about this observation."
+          },
+          {
+            "id": "not_assessable",
+            "label": "Not assessable from supplied images",
+            "sentence": "This finding cannot be assessed from the supplied images."
+          }
+        ]
+      }
+    ],
+    "conflicts": [
+      {
+        "when": {
+          "pleura": "none",
+          "impression": "pneumothorax"
+        },
+        "message": "Your pleural findings and impression are incompatible. Reconcile them before submitting."
+      },
+      {
+        "when": {
+          "pleura": "air",
+          "impression": "normal"
+        },
+        "message": "Your pleural findings and impression are incompatible. Reconcile them before submitting."
+      }
+    ],
+    "hints": [
+      "Review the lung margins and peripheral lung markings systematically.",
+      "Revisit orientation, the mediastinum and the costophrenic regions."
+    ],
+    "rubric": [
+      {
+        "id": "pleural-air",
+        "title": "Identify the pleural finding and side",
+        "expected": {
+          "pleura": [
+            "air"
+          ],
+          "side": [
+            "left"
+          ],
+          "impression": [
+            "pneumothorax"
+          ]
+        },
+        "wording": "Left pneumothorax.",
+        "explanation": "The source describes a left pneumothorax and specifies how patient left relates to the displayed image. It does not provide real source-patient physiology.",
+        "evidence": "https://commons.wikimedia.org/wiki/File%3APneumothorax_CXR.jpg",
+        "severity": "major",
+        "provenance": "Authored draft explanation based on the linked source; clinical review pending",
+        "assessable": true
+      },
+      {
+        "id": "shift",
+        "title": "Recognize displacement",
+        "expected": {
+          "additional": [
+            "shift"
+          ]
+        },
+        "wording": "Tracheal and cardiac displacement away from the left-sided abnormality.",
+        "explanation": "Displacement is explicitly described by the source.",
+        "evidence": "https://commons.wikimedia.org/wiki/File%3APneumothorax_CXR.jpg",
+        "severity": "major",
+        "provenance": "Authored draft explanation based on the linked source; clinical review pending",
+        "assessable": true
+      },
+      {
+        "id": "effusion",
+        "title": "Recognize the additional pleural finding",
+        "expected": {
+          "additional": [
+            "fluid"
+          ]
+        },
+        "wording": "Small left pleural effusion.",
+        "explanation": "The source description also documents a small left pleural effusion.",
+        "evidence": "https://commons.wikimedia.org/wiki/File%3APneumothorax_CXR.jpg",
+        "severity": "minor",
+        "provenance": "Authored draft explanation based on the linked source; clinical review pending",
+        "assessable": true
+      }
+    ],
+    "criticalErrors": [
+      {
+        "when": {
+          "impression": "tension"
+        },
+        "title": "Unsupported clinical certainty",
+        "explanation": "The source links to a fictional vignette. The supplied image and task do not establish that the source patient had clinically confirmed tension physiology.",
+        "evidence": "https://commons.wikimedia.org/wiki/File%3APneumothorax_CXR.jpg",
+        "reviewStatus": "draft"
+      }
+    ],
+    "referenceDraft": {
+      "technique": "Selected frontal chest radiograph; a complete examination is not supplied.",
+      "findings": "Left pneumothorax with tracheal/cardiac displacement away from the affected side and a small left pleural effusion.",
+      "impression": "Left pneumothorax. Clinical tension physiology requires clinical assessment and is not established by the supplied context."
+    },
+    "sourceDiagnosis": "Left pneumothorax",
+    "sourceFindings": [
+      "Left pleural air",
+      "Tracheal/cardiac displacement",
+      "Small left pleural effusion"
+    ],
+    "additionalInterpretations": "Clinical physiology and management recommendations await clinical review.",
+    "assets": [
+      {
+        "path": "/quiz-images/be543309aab2440824b6362b2b703c70.png",
+        "label": "Selected radiograph",
+        "width": 877,
+        "height": 807,
+        "attribution": "Pneumothorax CXR.jpg — Photographed by User Clinical Cases 00:42, 7 November 2006. CC BY-SA 2.5. Delivery copy converted to PNG; metadata removed.",
+        "sourceUrl": "https://commons.wikimedia.org/wiki/File%3APneumothorax_CXR.jpg",
+        "license": {
+          "name": "CC BY-SA 2.5",
+          "version": "2.5",
+          "url": "https://creativecommons.org/licenses/by-sa/2.5",
+          "shareAlike": true,
+          "obligations": "Adapted image material must retain same/compatible licence, attribution, source link and modification notice; application code has separate licensing."
+        },
+        "modifications": [
+          "Converted validated delivery copy to PNG",
+          "Removed EXIF/XMP metadata; burned-in information not removed"
+        ]
+      }
+    ],
+    "status": "draft",
+    "clinicalReview": null,
+    "privacyReview": null,
+    "rubricVersion": "1-draft",
+    "assessmentEligible": false,
+    "creditLimitation": "Required source credits can reveal the source diagnosis. These drafts are not available as blinded assessments.",
+    "learningObjectives": [
+      "Describe supplied images without inventing missing information",
+      "Match observations to a concise impression"
+    ]
+  },
+  {
+    "id": "xr-003",
+    "version": 1,
+    "title": "Chest radiographs 03",
+    "modality": "X-ray",
+    "bodySystem": "Chest",
+    "difficulty": "Introductory",
+    "minutes": 5,
+    "context": "A 21-year-old woman presented with left-sided thoracic pain after a collision with another player during soccer.",
+    "contextProvenance": "Source-provided history from the linked PA and lateral image descriptions; no new patient facts added.",
+    "questions": [
+      {
+        "id": "views",
+        "label": "Which supplied views are available?",
+        "section": "technique",
+        "kind": "select",
+        "options": [
+          {
+            "id": "pa_lateral",
+            "label": "PA and lateral radiographs",
+            "sentence": "Supplied PA and lateral chest radiographs reviewed."
+          },
+          {
+            "id": "ap",
+            "label": "AP radiograph only",
+            "sentence": "AP chest radiograph reviewed."
+          },
+          {
+            "id": "ct",
+            "label": "CT series",
+            "sentence": "CT series reviewed."
+          },
+          {
+            "id": "uncertain",
+            "label": "Uncertain",
+            "sentence": "I am uncertain about this observation."
+          },
+          {
+            "id": "not_assessable",
+            "label": "Not assessable from supplied images",
+            "sentence": "This finding cannot be assessed from the supplied images."
+          }
+        ]
+      },
+      {
+        "id": "limits",
+        "label": "What measurement limitation belongs in your report?",
+        "section": "technique",
+        "kind": "select",
+        "options": [
+          {
+            "id": "uncalibrated",
+            "label": "No reliable spatial calibration is supplied",
+            "sentence": "No reliable spatial calibration is supplied; calibrated measurements are not reported."
+          },
+          {
+            "id": "measured",
+            "label": "Calibrated measurements are available",
+            "sentence": "Spatially calibrated measurements are available."
+          },
+          {
+            "id": "uncertain",
+            "label": "Uncertain",
+            "sentence": "I am uncertain about this observation."
+          },
+          {
+            "id": "not_assessable",
+            "label": "Not assessable from supplied images",
+            "sentence": "This finding cannot be assessed from the supplied images."
+          }
+        ]
+      },
+      {
+        "id": "finding",
+        "label": "What broad conclusion is supported by the supplied images?",
+        "section": "findings",
+        "kind": "select",
+        "options": [
+          {
+            "id": "no_injury",
+            "label": "No convincing injury is identified",
+            "sentence": "No convincing injury is identified on the supplied radiographs."
+          },
+          {
+            "id": "fracture",
+            "label": "A visible osseous injury",
+            "sentence": "A visible osseous injury is present."
+          },
+          {
+            "id": "pleural_air",
+            "label": "Pleural air is visible",
+            "sentence": "Pleural air is visible."
+          },
+          {
+            "id": "uncertain",
+            "label": "Uncertain",
+            "sentence": "I am uncertain about this observation."
+          },
+          {
+            "id": "not_assessable",
+            "label": "Not assessable from supplied images",
+            "sentence": "This finding cannot be assessed from the supplied images."
+          }
+        ]
+      },
+      {
+        "id": "impression",
+        "label": "Choose the conclusion that matches your observations.",
+        "section": "impression",
+        "kind": "select",
+        "options": [
+          {
+            "id": "no_injury",
+            "label": "No convincing acute injury on supplied images",
+            "sentence": "No convincing acute injury on the supplied images."
+          },
+          {
+            "id": "fracture",
+            "label": "Visible osseous injury",
+            "sentence": "Visible osseous injury."
+          },
+          {
+            "id": "pneumothorax",
+            "label": "Pneumothorax",
+            "sentence": "Pneumothorax."
+          },
+          {
+            "id": "uncertain",
+            "label": "Uncertain",
+            "sentence": "I am uncertain about this observation."
+          },
+          {
+            "id": "not_assessable",
+            "label": "Not assessable from supplied images",
+            "sentence": "This finding cannot be assessed from the supplied images."
+          }
+        ]
+      }
+    ],
+    "conflicts": [
+      {
+        "when": {
+          "finding": "no_injury",
+          "impression": "fracture"
+        },
+        "message": "Your findings and impression disagree about injury. Reconcile them before submitting."
+      },
+      {
+        "when": {
+          "finding": "no_injury",
+          "impression": "pneumothorax"
+        },
+        "message": "Your findings and impression disagree about pleural air. Reconcile them before submitting."
+      }
+    ],
+    "hints": [
+      "Use the same systematic review even when the image initially appears unremarkable."
+    ],
+    "rubric": [
+      {
+        "id": "views",
+        "title": "Identify the supplied projections",
+        "expected": {
+          "views": [
+            "pa_lateral"
+          ]
+        },
+        "wording": "PA and lateral chest radiographs.",
+        "explanation": "The paired source pages identify their respective projections and provide the same patient history.",
+        "evidence": "https://commons.wikimedia.org/wiki/File%3ANormal_posteroanterior_(PA)_chest_radiograph_(X-ray).jpg",
+        "severity": "minor",
+        "provenance": "Authored draft explanation based on the linked source; clinical review pending",
+        "assessable": true
+      },
+      {
+        "id": "no-injury",
+        "title": "Avoid unsupported injury findings",
+        "expected": {
+          "finding": [
+            "no_injury"
+          ],
+          "impression": [
+            "no_injury"
+          ]
+        },
+        "wording": "No convincing acute injury on the supplied chest images.",
+        "explanation": "The source describes a normal chest without signs of injury. This is not evidence for an exhaustive normal report or for excluding occult injury.",
+        "evidence": "https://commons.wikimedia.org/wiki/File%3ANormal_posteroanterior_(PA)_chest_radiograph_(X-ray).jpg",
+        "severity": "major",
+        "provenance": "Authored draft explanation based on the linked source; clinical review pending",
+        "assessable": true
+      }
+    ],
+    "referenceDraft": {
+      "technique": "Supplied PA and lateral chest radiographs. The lateral source notes prior field cropping.",
+      "findings": "No convincing acute injury is identified on the supplied images. A complete original examination is not supplied.",
+      "impression": "No convincing acute injury on the supplied chest radiographs."
+    },
+    "sourceDiagnosis": "Normal chest; no signs of injury described by the source",
+    "sourceFindings": [
+      "Source describes normal chest without signs of injury"
+    ],
+    "additionalInterpretations": "A comprehensive normal report and exclusion of occult injury are not supported by the caption and await clinical review.",
+    "assets": [
+      {
+        "path": "/quiz-images/90c9dc872b3657dee1a8d4fb8e62706c.png",
+        "label": "PA",
+        "width": 1929,
+        "height": 2207,
+        "attribution": "Normal posteroanterior (PA) chest radiograph (X-ray).jpg — Mikael Häggström. CC0. Delivery copy converted to PNG; metadata removed.",
+        "sourceUrl": "https://commons.wikimedia.org/wiki/File%3ANormal_posteroanterior_(PA)_chest_radiograph_(X-ray).jpg",
+        "license": {
+          "name": "CC0",
+          "version": "1.0",
+          "url": "https://creativecommons.org/publicdomain/zero/1.0/deed.en",
+          "shareAlike": false,
+          "obligations": "Retain credit, source and licence link and indicate modifications for CC BY."
+        },
+        "modifications": [
+          "Converted validated delivery copy to PNG",
+          "Removed EXIF/XMP metadata; burned-in information not removed"
+        ]
+      },
+      {
+        "path": "/quiz-images/0a94e6a46ac32f218dfade13643816d1.png",
+        "label": "Lateral",
+        "width": 1769,
+        "height": 2453,
+        "attribution": "Normal lateral chest radiograph (X-ray).jpg — Mikael Häggström. CC0. Delivery copy converted to PNG; metadata removed.",
+        "sourceUrl": "https://commons.wikimedia.org/wiki/File%3ANormal_lateral_chest_radiograph_(X-ray).jpg",
+        "license": {
+          "name": "CC0",
+          "version": "1.0",
+          "url": "https://creativecommons.org/publicdomain/zero/1.0/deed.en",
+          "shareAlike": false,
+          "obligations": "Retain credit, source and licence link and indicate modifications for CC BY."
+        },
+        "modifications": [
+          "Converted validated delivery copy to PNG",
+          "Removed EXIF/XMP metadata; burned-in information not removed"
+        ]
+      }
+    ],
+    "status": "draft",
+    "clinicalReview": null,
+    "privacyReview": null,
+    "rubricVersion": "1-draft",
+    "assessmentEligible": false,
+    "creditLimitation": "Required source credits can reveal the source diagnosis. These drafts are not available as blinded assessments.",
+    "learningObjectives": [
+      "Describe supplied images without inventing missing information",
+      "Match observations to a concise impression"
+    ]
+  }
+]

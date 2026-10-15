@@ -23,7 +23,7 @@ const Workspace = lazy(() =>
 );
 import "./styles.css";
 import { CTPreview } from "./education/CTPreview";
-import { CaseLibrary } from "./education/CaseLibrary";
+import { LearningApp } from "./learning/LearningApp";
 import { TeachingEditor } from "./education/TeachingEditor";
 import { Education } from "./education/Education";
 
@@ -45,11 +45,12 @@ ReactDOM.createRoot(document.getElementById("root") as HTMLElement).render(
                 element={<TeachingEditor />}
               />
               <Route path="/learn/ct/:caseId" element={<CTPreview />} />
+              <Route path="/learn/case/:caseId" element={<LearningApp />} />
               <Route
                 path="/learn/*"
                 element={
                   import.meta.env.VITE_TEACHING_PREVIEW === "true" ? (
-                    <CaseLibrary />
+                    <LearningApp />
                   ) : (
                     <Education />
                   )

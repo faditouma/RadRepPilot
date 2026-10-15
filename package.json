@@ -19,7 +19,9 @@
     "education:seed": "node scripts/education/seed.mjs",
     "education:test": "node --test server/*.test.mjs",
     "build:ohif": "node scripts/dicom/build-ohif.mjs",
-    "build:ohif-preview": "node scripts/dicom/package-preview.mjs"
+    "build:ohif-preview": "node scripts/dicom/package-preview.mjs",
+    "quiz:prepare": "node scripts/quiz/prepare-xrays.mjs && node scripts/quiz/build-content.mjs",
+    "quiz:test": "node --test server/quiz.test.cjs"
   },
   "dependencies": {
     "@supabase/supabase-js": "^2.106.2",

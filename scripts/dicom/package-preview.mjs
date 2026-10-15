@@ -9,6 +9,7 @@ import {
 } from "node:fs/promises";
 import { resolve } from "node:path";
 import { spawn } from "node:child_process";
+import { randomBytes } from "node:crypto";
 const root = process.cwd();
 const run = (command, args) =>
   new Promise((ok, no) => {
@@ -35,6 +36,46 @@ await cp(resolve(root, "dist"), stat, { recursive: true });
 await cp(resolve(root, ".ohif-build"), resolve(stat, "ohif"), {
   recursive: true,
 });
+// Private functions hold rubrics; no answer keys are copied to static output.
+await cp(resolve(root, ".quiz-images"), resolve(stat, "quiz-images"), {
+  recursive: true,
+});
+const quizFunction = resolve(output, "functions/api/quiz.func");
+await mkdir(quizFunction, { recursive: true });
+await cp(
+  resolve(root, "server/quiz-handler.cjs"),
+  resolve(quizFunction, "index.cjs"),
+);
+await cp(
+  resolve(root, "server/quiz-domain.cjs"),
+  resolve(quizFunction, "quiz-domain.cjs"),
+);
+await cp(
+  resolve(root, "server/quiz-content"),
+  resolve(quizFunction, "quiz-content"),
+  { recursive: true },
+);
+let signing;
+try {
+  signing = (
+    await readFile(resolve(root, ".quiz-signing-secret"), "utf8")
+  ).trim();
+} catch {
+  signing = randomBytes(48).toString("hex");
+  await writeFile(resolve(root, ".quiz-signing-secret"), signing, {
+    mode: 0o600,
+  });
+}
+await writeFile(
+  resolve(quizFunction, ".vc-config.json"),
+  JSON.stringify({
+    runtime: "nodejs22.x",
+    handler: "index.cjs",
+    launcherType: "Nodejs",
+    maxDuration: 10,
+    environment: { QUIZ_SIGNING_SECRET: signing, QUIZ_EDITORIAL_PREVIEW: "1" },
+  }),
+);
 const catalogues = [];
 for (const caseId of ["ct-001", "ct-002"]) {
   const delivery = resolve(
@@ -85,6 +126,8 @@ await writeFile(
           continue: true,
         },
         { handle: "filesystem" },
+        { src: "/api/(.*)", status: 404 },
+        { src: "/quiz-images/(.*)", status: 404 },
         { src: "/imaging/(.*)", status: 404 },
         { src: "/ohif/(.*)", dest: "/ohif/index.html" },
         { src: "/(.*)", dest: "/index.html" },

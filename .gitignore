@@ -50,3 +50,8 @@ reports/acr-extraction/*.xlsx
 # Python acquisition runtime artifacts
 __pycache__/
 *.pyc
+
+# Private quiz deliveries and signing material
+.quiz-images/
+.quiz-signing-secret
+node_modules
